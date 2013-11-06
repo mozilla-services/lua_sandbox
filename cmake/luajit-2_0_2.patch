@@ -1,0 +1,126 @@
+diff -Naur LuaJIT-2.0.2/src/lj_api.c luajit-2_0_2/src/lj_api.c
+--- LuaJIT-2.0.2/src/lj_api.c	2013-06-03 12:00:00.000000000 -0700
++++ luajit-2_0_2/src/lj_api.c	2013-11-03 17:10:37.331653677 -0800
+@@ -1178,6 +1178,18 @@
+     res = (int)(g->gc.stepmul);
+     g->gc.stepmul = (MSize)data;
+     break;
++  case LUA_GCSETMEMLIMIT:
++   res = data;
++   lj_gc_fullgc(L);
++   g->gc.maxmem = g->gc.total;
++   g->gc.memlimit = (MSize)data;
++   break;
++  case LUA_GCMAXCOUNT:
++    res = (int)(g->gc.maxmem >> 10);
++    break;
++  case LUA_GCMAXCOUNTB:
++    res = (int)(g->gc.maxmem & 0x3ff);
++    break;
+   default:
+     res = -1;  /* Invalid option. */
+   }
+diff -Naur LuaJIT-2.0.2/src/lj_dispatch.c luajit-2_0_2/src/lj_dispatch.c
+--- LuaJIT-2.0.2/src/lj_dispatch.c	2013-06-03 12:00:00.000000000 -0700
++++ luajit-2_0_2/src/lj_dispatch.c	2013-11-03 17:10:37.331653677 -0800
+@@ -339,6 +339,11 @@
+   return (int)G(L)->hookcstart;
+ }
+ 
++LUA_API int lua_gethookcountremaining(lua_State *L)
++{
++  return (int)G(L)->hookcount;
++}
++
+ /* Call a hook. */
+ static void callhook(lua_State *L, int event, BCLine line)
+ {
+diff -Naur LuaJIT-2.0.2/src/lj_gc.c luajit-2_0_2/src/lj_gc.c
+--- LuaJIT-2.0.2/src/lj_gc.c	2013-06-03 12:00:00.000000000 -0700
++++ luajit-2_0_2/src/lj_gc.c	2013-11-04 08:32:35.423616628 -0800
+@@ -800,24 +800,37 @@
+ {
+   global_State *g = G(L);
+   lua_assert((osz == 0) == (p == NULL));
+-  p = g->allocf(g->allocd, p, osz, nsz);
++  if (g->gc.memlimit == 0 || (g->gc.total - osz) + nsz < g->gc.memlimit) {
++    p = g->allocf(g->allocd, p, osz, nsz); 
++  } else {
++    p = NULL;
++  }
+   if (p == NULL && nsz > 0)
+     lj_err_mem(L);
+   lua_assert((nsz == 0) == (p == NULL));
+   lua_assert(checkptr32(p));
+   g->gc.total = (g->gc.total - osz) + nsz;
+-  return p;
++  if (g->gc.total > g->gc.maxmem) { 
++    g->gc.maxmem = g->gc.total;
++  }
++  return p; 
+ }
+ 
+ /* Allocate new GC object and link it to the root set. */
+ void * LJ_FASTCALL lj_mem_newgco(lua_State *L, MSize size)
+ {
+   global_State *g = G(L);
+-  GCobj *o = (GCobj *)g->allocf(g->allocd, NULL, 0, size);
++  GCobj *o = NULL;
++  if (g->gc.memlimit == 0 || g->gc.total + size < g->gc.memlimit) {
++    o = (GCobj *)g->allocf(g->allocd, NULL, 0, size);
++  }
+   if (o == NULL)
+     lj_err_mem(L);
+   lua_assert(checkptr32(o));
+   g->gc.total += size;
++  if (g->gc.total > g->gc.maxmem) { 
++    g->gc.maxmem = g->gc.total;
++  }
+   setgcrefr(o->gch.nextgc, g->gc.root);
+   setgcref(g->gc.root, o);
+   newwhite(g, o);
+diff -Naur LuaJIT-2.0.2/src/lj_obj.h luajit-2_0_2/src/lj_obj.h
+--- LuaJIT-2.0.2/src/lj_obj.h	2013-06-03 12:00:00.000000000 -0700
++++ luajit-2_0_2/src/lj_obj.h	2013-11-03 17:10:37.331653677 -0800
+@@ -490,6 +490,8 @@
+ 
+ typedef struct GCState {
+   MSize total;		/* Memory currently allocated. */
++  MSize maxmem;		/* Maximum Memory that was allocated */
++  MSize memlimit;		/* Maximum Memory limit 0 = unlimited */
+   MSize threshold;	/* Memory threshold. */
+   uint8_t currentwhite;	/* Current white color. */
+   uint8_t state;	/* GC state. */
+diff -Naur LuaJIT-2.0.2/src/lj_state.c luajit-2_0_2/src/lj_state.c
+--- LuaJIT-2.0.2/src/lj_state.c	2013-06-03 12:00:00.000000000 -0700
++++ luajit-2_0_2/src/lj_state.c	2013-11-03 17:10:37.331653677 -0800
+@@ -208,6 +208,8 @@
+   setgcref(g->gc.root, obj2gco(L));
+   setmref(g->gc.sweep, &g->gc.root);
+   g->gc.total = sizeof(GG_State);
++  g->gc.maxmem = g->gc.total;
++  g->gc.memlimit = 0;
+   g->gc.pause = LUAI_GCPAUSE;
+   g->gc.stepmul = LUAI_GCMUL;
+   lj_dispatch_init((GG_State *)L);
+diff -Naur LuaJIT-2.0.2/src/lua.h luajit-2_0_2/src/lua.h
+--- LuaJIT-2.0.2/src/lua.h	2013-06-03 12:00:00.000000000 -0700
++++ luajit-2_0_2/src/lua.h	2013-11-03 17:10:37.331653677 -0800
+@@ -226,6 +226,9 @@
+ #define LUA_GCSTEP		5
+ #define LUA_GCSETPAUSE		6
+ #define LUA_GCSETSTEPMUL	7
++#define LUA_GCSETMEMLIMIT	8
++#define LUA_GCMAXCOUNT	9
++#define LUA_GCMAXCOUNTB	10
+ 
+ LUA_API int (lua_gc) (lua_State *L, int what, int data);
+ 
+@@ -340,6 +343,7 @@
+ LUA_API lua_Hook lua_gethook (lua_State *L);
+ LUA_API int lua_gethookmask (lua_State *L);
+ LUA_API int lua_gethookcount (lua_State *L);
++LUA_API int lua_gethookcountremaining (lua_State *L);
+ 
+ /* From Lua 5.2. */
+ LUA_API void *lua_upvalueid (lua_State *L, int idx, int n);
