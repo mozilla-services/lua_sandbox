@@ -1,0 +1,284 @@
+diff -Naur lua-cjson-2.1.0/CMakeLists.txt lua-cjson-2_1_0.new/CMakeLists.txt
+--- lua-cjson-2.1.0/CMakeLists.txt	Wed Nov  6 19:36:00 2013
++++ lua-cjson-2_1_0.new/CMakeLists.txt	Sat Nov  9 12:57:29 2013
+@@ -1,13 +1,7 @@
+-# If Lua is installed in a non-standard location, please set the LUA_DIR
+-# environment variable to point to prefix for the install. Eg:
+-#       Unix: export LUA_DIR=/home/user/pkg
+-#       Windows: set LUA_DIR=c:\lua51
+-
+ project(lua-cjson C)
+ cmake_minimum_required(VERSION 2.6)
+ 
+ option(USE_INTERNAL_FPCONV "Use internal strtod() / g_fmt() code for performance")
+-option(MULTIPLE_THREADS "Support multi-threaded apps with internal fpconv - recommended" ON)
+ 
+ if(NOT CMAKE_BUILD_TYPE)
+     set(CMAKE_BUILD_TYPE Release CACHE STRING
+@@ -15,8 +9,7 @@
+         FORCE)
+ endif()
+ 
+-find_package(Lua51 REQUIRED)
+-include_directories(${LUA_INCLUDE_DIR})
++include_directories("${EP_BASE}/include/luajit-2.0")
+ 
+ if(NOT USE_INTERNAL_FPCONV)
+     # Use libc number conversion routines (strtod(), sprintf())
+@@ -31,46 +24,11 @@
+     if(IEEE_BIG_ENDIAN)
+         add_definitions(-DIEEE_BIG_ENDIAN)
+     endif()
+-
+-    if(MULTIPLE_THREADS)
+-        set(CMAKE_THREAD_PREFER_PTHREAD TRUE)
+-        find_package(Threads REQUIRED)
+-        if(NOT CMAKE_USE_PTHREADS_INIT)
+-            message(FATAL_ERROR
+-                    "Pthreads not found - required by MULTIPLE_THREADS option")
+-        endif()
+-        add_definitions(-DMULTIPLE_THREADS)
+-    endif()
+-endif()
+-
+-# Handle platforms missing isinf() macro (Eg, some Solaris systems).
+-include(CheckSymbolExists)
+-CHECK_SYMBOL_EXISTS(isinf math.h HAVE_ISINF)
+-if(NOT HAVE_ISINF)
+-    add_definitions(-DUSE_INTERNAL_ISINF)
+-endif()
+-
+-set(_MODULE_LINK "${CMAKE_THREAD_LIBS_INIT}")
+-get_filename_component(_lua_lib_dir ${LUA_LIBRARY} PATH)
+-
+-if(APPLE)
+-    set(CMAKE_SHARED_MODULE_CREATE_C_FLAGS
+-        "${CMAKE_SHARED_MODULE_CREATE_C_FLAGS} -undefined dynamic_lookup")
+-endif()
+-
+-if(WIN32)
+-    # Win32 modules need to be linked to the Lua library.
+-    set(_MODULE_LINK ${LUA_LIBRARY} ${_MODULE_LINK})
+-    set(_lua_module_dir "${_lua_lib_dir}")
+-    # Windows sprintf()/strtod() handle NaN/inf differently. Not supported.
+-    add_definitions(-DDISABLE_INVALID_NUMBERS)
+-else()
+-    set(_lua_module_dir "${_lua_lib_dir}/lua/5.1")
+ endif()
+ 
+-add_library(cjson MODULE lua_cjson.c strbuf.c ${FPCONV_SOURCES})
+-set_target_properties(cjson PROPERTIES PREFIX "")
+-target_link_libraries(cjson ${_MODULE_LINK})
+-install(TARGETS cjson DESTINATION "${_lua_module_dir}")
++# Windows sprintf()/strtod() handle NaN/inf differently. Not supported.
++add_definitions(-DDISABLE_INVALID_NUMBERS -DLUA_BUILD_AS_DLL -DLUA_CORE -D_CRT_SECURE_NO_WARNINGS)
++add_library(cjson SHARED lua_cjson.c strbuf.c ${FPCONV_SOURCES})
++target_link_libraries(cjson "${EP_BASE}/lib/lua51.lib")
+ 
+-# vi:ai et sw=4 ts=4:
++install(TARGETS cjson DESTINATION lib)
+diff -Naur lua-cjson-2.1.0/fpconv.c lua-cjson-2_1_0.new/fpconv.c
+--- lua-cjson-2.1.0/fpconv.c	Wed Nov  6 19:36:00 2013
++++ lua-cjson-2_1_0.new/fpconv.c	Sat Nov  9 12:51:38 2013
+@@ -35,6 +35,10 @@
+ 
+ #include "fpconv.h"
+ 
++#ifdef _WIN32
++#define snprintf _snprintf
++#endif
++
+ /* Lua CJSON assumes the locale is the same for all threads within a
+  * process and doesn't change after initialisation.
+  *
+@@ -72,7 +76,7 @@
+  * invalid characters are counted - strtod() will find the valid
+  * number if it exists.  The risk is that slightly more memory might
+  * be allocated before a parse error occurs. */
+-static inline int valid_number_character(char ch)
++static int valid_number_character(char ch)
+ {
+     char lower_ch;
+ 
+diff -Naur lua-cjson-2.1.0/fpconv.h lua-cjson-2_1_0.new/fpconv.h
+--- lua-cjson-2.1.0/fpconv.h	Wed Nov  6 19:36:00 2013
++++ lua-cjson-2_1_0.new/fpconv.h	Sat Nov  9 12:51:38 2013
+@@ -7,12 +7,12 @@
+ # define FPCONV_G_FMT_BUFSIZE   32
+ 
+ #ifdef USE_INTERNAL_FPCONV
+-static inline void fpconv_init()
++static void fpconv_init()
+ {
+     /* Do nothing - not required */
+ }
+ #else
+-extern inline void fpconv_init();
++extern void fpconv_init();
+ #endif
+ 
+ extern int fpconv_g_fmt(char*, double, int);
+diff -Naur lua-cjson-2.1.0/lua_cjson.c lua-cjson-2_1_0.new/lua_cjson.c
+--- lua-cjson-2.1.0/lua_cjson.c	Wed Nov  6 19:36:00 2013
++++ lua-cjson-2_1_0.new/lua_cjson.c	Sat Nov  9 12:51:38 2013
+@@ -54,6 +54,11 @@
+ #define CJSON_VERSION   "2.1.0"
+ #endif
+ 
++#ifdef _WIN32
++#define snprintf _snprintf
++#define strncasecmp _strnicmp
++#endif
++
+ /* Workaround for Solaris platforms missing isinf() */
+ #if !defined(isinf) && (defined(USE_INTERNAL_ISINF) || defined(MISSING_ISINF))
+ #define isinf(x) (!isnan(x) && isnan((x) - (x)))
+@@ -461,7 +466,7 @@
+ static void json_append_string(lua_State *l, strbuf_t *json, int lindex)
+ {
+     const char *escstr;
+-    int i;
++    size_t i;
+     const char *str;
+     size_t len;
+ 
+@@ -506,7 +511,7 @@
+             /* Integer >= 1 ? */
+             if (floor(k) == k && k >= 1) {
+                 if (k > max)
+-                    max = k;
++                    max = (int)k;
+                 items++;
+                 lua_pop(l, 1);
+                 continue;
+@@ -1111,7 +1116,7 @@
+                exp, found, token->index + 1);
+ }
+ 
+-static inline void json_decode_ascend(json_parse_t *json)
++static void json_decode_ascend(json_parse_t *json)
+ {
+     json->current_depth--;
+ }
+@@ -1413,7 +1418,7 @@
+     return 1;
+ }
+ 
+-int luaopen_cjson_safe(lua_State *l)
++LUALIB_API int luaopen_cjson_safe(lua_State *l)
+ {
+     lua_cjson_safe_new(l);
+ 
+diff -Naur lua-cjson-2.1.0/strbuf.c lua-cjson-2_1_0.new/strbuf.c
+--- lua-cjson-2.1.0/strbuf.c	Wed Nov  6 19:36:00 2013
++++ lua-cjson-2_1_0.new/strbuf.c	Sat Nov  9 12:51:38 2013
+@@ -28,6 +28,9 @@
+ #include <string.h>
+ 
+ #include "strbuf.h"
++#ifdef _WIN32
++#define snprintf _snprintf
++#endif
+ 
+ static void die(const char *fmt, ...)
+ {
+@@ -91,7 +94,7 @@
+     s->increment = increment;
+ }
+ 
+-static inline void debug_stats(strbuf_t *s)
++static void debug_stats(strbuf_t *s)
+ {
+     if (s->debug) {
+         fprintf(stderr, "strbuf(%lx) reallocs: %d, length: %d, size: %d\n",
+diff -Naur lua-cjson-2.1.0/strbuf.h lua-cjson-2_1_0.new/strbuf.h
+--- lua-cjson-2.1.0/strbuf.h	Wed Nov  6 19:36:00 2013
++++ lua-cjson-2_1_0.new/strbuf.h	Sat Nov  9 12:51:38 2013
+@@ -75,74 +75,74 @@
+ static void strbuf_ensure_null(strbuf_t *s);
+ 
+ /* Reset string for before use */
+-static inline void strbuf_reset(strbuf_t *s)
++static void strbuf_reset(strbuf_t *s)
+ {
+     s->length = 0;
+ }
+ 
+-static inline int strbuf_allocated(strbuf_t *s)
++static int strbuf_allocated(strbuf_t *s)
+ {
+     return s->buf != NULL;
+ }
+ 
+ /* Return bytes remaining in the string buffer
+  * Ensure there is space for a NULL terminator. */
+-static inline int strbuf_empty_length(strbuf_t *s)
++static int strbuf_empty_length(strbuf_t *s)
+ {
+     return s->size - s->length - 1;
+ }
+ 
+-static inline void strbuf_ensure_empty_length(strbuf_t *s, int len)
++static void strbuf_ensure_empty_length(strbuf_t *s, int len)
+ {
+     if (len > strbuf_empty_length(s))
+         strbuf_resize(s, s->length + len);
+ }
+ 
+-static inline char *strbuf_empty_ptr(strbuf_t *s)
++static char *strbuf_empty_ptr(strbuf_t *s)
+ {
+     return s->buf + s->length;
+ }
+ 
+-static inline void strbuf_extend_length(strbuf_t *s, int len)
++static void strbuf_extend_length(strbuf_t *s, int len)
+ {
+     s->length += len;
+ }
+ 
+-static inline int strbuf_length(strbuf_t *s)
++static int strbuf_length(strbuf_t *s)
+ {
+     return s->length;
+ }
+ 
+-static inline void strbuf_append_char(strbuf_t *s, const char c)
++static void strbuf_append_char(strbuf_t *s, const char c)
+ {
+     strbuf_ensure_empty_length(s, 1);
+     s->buf[s->length++] = c;
+ }
+ 
+-static inline void strbuf_append_char_unsafe(strbuf_t *s, const char c)
++static void strbuf_append_char_unsafe(strbuf_t *s, const char c)
+ {
+     s->buf[s->length++] = c;
+ }
+ 
+-static inline void strbuf_append_mem(strbuf_t *s, const char *c, int len)
++static void strbuf_append_mem(strbuf_t *s, const char *c, int len)
+ {
+     strbuf_ensure_empty_length(s, len);
+     memcpy(s->buf + s->length, c, len);
+     s->length += len;
+ }
+ 
+-static inline void strbuf_append_mem_unsafe(strbuf_t *s, const char *c, int len)
++static void strbuf_append_mem_unsafe(strbuf_t *s, const char *c, int len)
+ {
+     memcpy(s->buf + s->length, c, len);
+     s->length += len;
+ }
+ 
+-static inline void strbuf_ensure_null(strbuf_t *s)
++static void strbuf_ensure_null(strbuf_t *s)
+ {
+     s->buf[s->length] = 0;
+ }
+ 
+-static inline char *strbuf_string(strbuf_t *s, int *len)
++static char *strbuf_string(strbuf_t *s, int *len)
+ {
+     if (len)
+         *len = s->length;

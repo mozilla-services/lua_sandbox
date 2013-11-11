@@ -12,26 +12,49 @@ endif()
 
 set(EP_BASE "${CMAKE_BINARY_DIR}/ep_base")
 set_property(DIRECTORY PROPERTY EP_BASE ${EP_BASE})
+set(LUA_JIT_INCLUDE "${EP_BASE}/include/luajit-2.0")
+set(CJSON_PATCH_FILE "lua-cjson-2_1_0.patch")
 
-externalproject_add(
-    luajit-2_0_2
-    BUILD_IN_SOURCE 1
-    URL http://luajit.org/download/LuaJIT-2.0.2.tar.gz
-    URL_MD5 112dfb82548b03377fbefbba2e0e3a5b
-    PATCH_COMMAND ${PATCH_EXECUTABLE} -p1 < ${CMAKE_CURRENT_LIST_DIR}/luajit-2_0_2.patch
-    CONFIGURE_COMMAND ""
-    BUILD_COMMAND make
-    INSTALL_COMMAND make install PREFIX="${EP_BASE}"
-)
-include_directories("${EP_BASE}/include/luajit-2.0")
+if (WIN32)
+    set(CJSON_PATCH_FILE "lua-cjson-2_1_0.win.patch")
+    externalproject_add(
+        luajit-2_0_2
+        BUILD_IN_SOURCE 1
+        URL http://luajit.org/download/LuaJIT-2.0.2.tar.gz
+        URL_MD5 112dfb82548b03377fbefbba2e0e3a5b
+        PATCH_COMMAND ${PATCH_EXECUTABLE} -p1 < ${CMAKE_CURRENT_LIST_DIR}/luajit-2_0_2.patch
+        CONFIGURE_COMMAND ""
+        BUILD_COMMAND cmake -E chdir src msvcbuild.bat
+        INSTALL_COMMAND cmake -E copy src/lua51.dll ${EP_BASE}/lib/lua51.dll 
+        COMMAND cmake -E copy src/lua51.lib ${EP_BASE}/lib/lua51.lib
+        COMMAND cmake -E copy src/lauxlib.h "${LUA_JIT_INCLUDE}/lauxlib.h"
+        COMMAND cmake -E copy src/luaconf.h "${LUA_JIT_INCLUDE}/luaconf.h"
+        COMMAND cmake -E copy src/lua.h "${LUA_JIT_INCLUDE}/lua.h"
+        COMMAND cmake -E copy src/luajit.h "${LUA_JIT_INCLUDE}/luajit.h"
+        COMMAND cmake -E copy src/lualib.h "${LUA_JIT_INCLUDE}/lualib.h"
+        )
+else()
+    externalproject_add(
+        luajit-2_0_2
+        BUILD_IN_SOURCE 1
+        URL http://luajit.org/download/LuaJIT-2.0.2.tar.gz
+        URL_MD5 112dfb82548b03377fbefbba2e0e3a5b
+        PATCH_COMMAND ${PATCH_EXECUTABLE} -p1 < ${CMAKE_CURRENT_LIST_DIR}/luajit-2_0_2.patch
+        CONFIGURE_COMMAND ""
+        BUILD_COMMAND make
+        INSTALL_COMMAND make install PREFIX="${EP_BASE}"
+    )
+endif()
+
+include_directories(${LUA_JIT_INCLUDE})
 
 externalproject_add(
     lpeg-0_12
     URL http://www.inf.puc-rio.br/~roberto/lpeg/lpeg-0.12.tar.gz
     URL_MD5 4abb3c28cd8b6565c6a65e88f06c9162
     PATCH_COMMAND ${PATCH_EXECUTABLE} -p1 < ${CMAKE_CURRENT_LIST_DIR}/lpeg-0_12.patch
-    CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${EP_BASE} -DADDRESS_MODEL=${ADDRESS_MODEL} -DEP_BASE=${EP_BASE} --no-warn-unused-cli
-    INSTALL_DIRECTORY ${EP_BASE}
+    CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${EP_BASE} -DEP_BASE=${EP_BASE}
+    INSTALL_DIR ${EP_BASE}
 )
 add_dependencies(lpeg-0_12 luajit-2_0_2)
 
@@ -39,9 +62,9 @@ externalproject_add(
     lua-cjson-2_1_0
     URL http://www.kyne.com.au/~mark/software/download/lua-cjson-2.1.0.tar.gz
     URL_MD5 24f270663e9f6ca8ba2a02cef19f7963
-    PATCH_COMMAND ${PATCH_EXECUTABLE} -p0 < ${CMAKE_CURRENT_LIST_DIR}/lua-cjson-2_1_0.patch
+    PATCH_COMMAND ${PATCH_EXECUTABLE} -p1 < "${CMAKE_CURRENT_LIST_DIR}/${CJSON_PATCH_FILE}"
     CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${EP_BASE} -DEP_BASE=${EP_BASE}
-    INSTALL_DIRECTORY ${EP_BASE}
+    INSTALL_DIR ${EP_BASE}
 )
 add_dependencies(lua-cjson-2_1_0 luajit-2_0_2)
 

@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-/// @brief Lua circular buffer - time series data store for Heka plugins @file
+/// @brief Lua circular buffer - time series data store for sandboxes @file
 #ifndef lua_circular_buffer_h_
 #define lua_circular_buffer_h_
 
@@ -17,45 +17,45 @@ typedef struct circular_buffer circular_buffer;
 
 /**
  * Output the circular buffer user data
- * 
+ *
  * @param lua Lua state.
  * @param cb Circular buffer userdata object.
  * @param output Output stream where the data is written.
  * @return Zero on success
- * 
+ *
  */
 int output_circular_buffer(lua_State* lua, circular_buffer* cb,
                            output_data* output);
 
-/** 
+/**
  * Get the current output format string.
- * 
+ *
  * @param cb Circular buffer userdata object.
- * 
+ *
  * @return const char*
  */
 const char* get_output_format(circular_buffer* cb);
 
 /**
  * Serialize the circular buffer user data
- * 
+ *
  * @param lua Lua state.
  * @param key Lua variable name.
  * @param cb  Circular buffer userdata object.
  * @param output Output stream where the data is written.
  * @return Zero on success
- * 
+ *
  */
 int serialize_circular_buffer(lua_State* lua, const char* key,
                               circular_buffer* cb, output_data* output);
 
 /**
  * Circular buffer library loader
- * 
+ *
  * @param lua Lua state.
- * 
+ *
  * @return 1 on success
- * 
+ *
  */
 int luaopen_circular_buffer(lua_State* lua);
 

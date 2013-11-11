@@ -16,6 +16,10 @@
 #include <string.h>
 #include <time.h>
 
+#ifdef _WIN32
+#define snprintf _snprintf
+#endif
+
 #define mu_assert(cond, ...)                                                   \
 do {                                                                           \
   if (!(cond)) {                                                               \
@@ -43,10 +47,10 @@ do {                                                                           \
 int mu_tests_run = 0;
 char mu_err[MU_ERR_LEN] = { 0 };
 char* e = NULL;
-const char*  written_data = NULL;
+const char* written_data = NULL;
 size_t written_data_len = 0;
 
-////////////////////////////////////////////////////////////////////////////////
+
 int file_exists(const char* fn)
 {
   FILE* fh;
@@ -58,7 +62,7 @@ int file_exists(const char* fn)
   return 0;
 }
 
-////////////////////////////////////////////////////////////////////////////////
+
 char* read_file(const char* fn)
 {
   char* str = NULL;
@@ -70,7 +74,7 @@ char* read_file(const char* fn)
   mu_assert(result == 0, "fseek(SEEK_END) failed %d", result);
 
   long pos = ftell(fh);
-  mu_assert(pos != -1u, "ftell() failed %s", strerror(errno));
+  mu_assert(pos != -1, "ftell() failed %s", strerror(errno));
   rewind(fh);
 
   str = malloc(pos + 1);
@@ -84,7 +88,7 @@ char* read_file(const char* fn)
   return str;
 }
 
-////////////////////////////////////////////////////////////////////////////////
+
 int process(lua_sandbox* lsb, double ts)
 {
   static const char* func_name = "process";
@@ -124,7 +128,7 @@ int process(lua_sandbox* lsb, double ts)
   return status;
 }
 
-////////////////////////////////////////////////////////////////////////////////
+
 int report(lua_sandbox* lsb, double tc)
 {
   static const char* func_name = "report";
@@ -151,7 +155,7 @@ int report(lua_sandbox* lsb, double tc)
   return 0;
 }
 
-////////////////////////////////////////////////////////////////////////////////
+
 int write_output(lua_State* lua)
 {
   static const char* default_type = "txt";
@@ -200,7 +204,7 @@ int write_output(lua_State* lua)
   return 0;
 }
 
-////////////////////////////////////////////////////////////////////////////////
+
 static char* test_create_error()
 {
   lua_sandbox* sb = lsb_create(NULL, "lua/simple.lua", LSB_MEMORY + 1,
@@ -220,7 +224,7 @@ static char* test_create_error()
   return NULL;
 }
 
-////////////////////////////////////////////////////////////////////////////////
+
 static char* test_init_error()
 {
   // null sandbox
@@ -240,7 +244,7 @@ static char* test_init_error()
   mu_assert(!e, "lsb_destroy() received: %s", e);
 
   // out of memory
-  sb = lsb_create(NULL, "lua/simple.lua", 8000, 1000, 1024);
+  sb = lsb_create(NULL, "lua/simple.lua", 6000, 1000, 1024);
   mu_assert(sb, "lsb_create() received: NULL");
   result = lsb_init(sb, NULL);
   mu_assert(result == 2, "lsb_init() received: %d %s", result,
@@ -251,7 +255,7 @@ static char* test_init_error()
   return NULL;
 }
 
-////////////////////////////////////////////////////////////////////////////////
+
 static char* test_destroy_error()
 {
   const char* expected = "preserve_global_data could not open: "
@@ -275,7 +279,7 @@ static char* test_destroy_error()
   return NULL;
 }
 
-////////////////////////////////////////////////////////////////////////////////
+
 static char* test_usage_error()
 {
   unsigned u = lsb_usage(NULL, LSB_UT_MEMORY, LSB_US_CURRENT);
@@ -297,7 +301,7 @@ static char* test_usage_error()
   return NULL;
 }
 
-////////////////////////////////////////////////////////////////////////////////
+
 static char* test_misc()
 {
   lsb_state s = lsb_get_state(NULL);
@@ -309,7 +313,7 @@ static char* test_misc()
   return NULL;
 }
 
-////////////////////////////////////////////////////////////////////////////////
+
 static char* test_simple()
 {
   lua_sandbox* sb = lsb_create(NULL, "lua/simple.lua", 65765, 1000,
@@ -363,7 +367,7 @@ static char* test_simple()
   return NULL;
 }
 
-////////////////////////////////////////////////////////////////////////////////
+
 static char* test_output()
 {
   const char* outputs[] = {
@@ -423,7 +427,7 @@ static char* test_output()
   return NULL;
 }
 
-////////////////////////////////////////////////////////////////////////////////
+
 static char* test_cbuf_errors()
 {
   const char* tests[] =
@@ -479,7 +483,7 @@ static char* test_cbuf_errors()
   return NULL;
 }
 
-////////////////////////////////////////////////////////////////////////////////
+
 static char* test_cbuf()
 {
   const char* outputs[] = {
@@ -540,7 +544,7 @@ static char* test_cbuf()
   return NULL;
 }
 
-////////////////////////////////////////////////////////////////////////////////
+
 static char* test_cbuf_delta()
 {
   const char* outputs[] = {
@@ -592,7 +596,7 @@ static char* test_cbuf_delta()
   return NULL;
 }
 
-////////////////////////////////////////////////////////////////////////////////
+
 static char* test_cjson()
 {
 
@@ -614,7 +618,7 @@ static char* test_cjson()
   return NULL;
 }
 
-////////////////////////////////////////////////////////////////////////////////
+
 static char* test_errors()
 {
   const char* tests[] = {
@@ -652,7 +656,7 @@ static char* test_errors()
   return NULL;
 }
 
-////////////////////////////////////////////////////////////////////////////////
+
 static char* test_lpeg()
 {
   const char* expected = "{\"table\":[\"1\",\"string with spaces\","
@@ -678,7 +682,7 @@ static char* test_lpeg()
   return NULL;
 }
 
-////////////////////////////////////////////////////////////////////////////////
+
 static char* test_serialize()
 {
   const char* output_file = "serialize.preserve";
@@ -701,7 +705,7 @@ static char* test_serialize()
   return NULL;
 }
 
-////////////////////////////////////////////////////////////////////////////////
+
 static char* test_serialize_failure()
 {
   const char* output_file = "serialize_failure.preserve";
@@ -723,7 +727,7 @@ static char* test_serialize_failure()
   return NULL;
 }
 
-////////////////////////////////////////////////////////////////////////////////
+
 static char* test_serialize_noglobal()
 {
   const char* output_file = "serialize_noglobal.preserve";
@@ -745,7 +749,7 @@ static char* test_serialize_noglobal()
   return NULL;
 }
 
-////////////////////////////////////////////////////////////////////////////////
+
 static char* benchmark_counter()
 {
   int iter = 10000000;
@@ -767,7 +771,7 @@ static char* benchmark_counter()
   return NULL;
 }
 
-////////////////////////////////////////////////////////////////////////////////
+
 static char* benchmark_serialize()
 {
   int iter = 10000;
@@ -791,7 +795,7 @@ static char* benchmark_serialize()
   return NULL;
 }
 
-////////////////////////////////////////////////////////////////////////////////
+
 static char* benchmark_deserialize()
 {
   int iter = 10000;
@@ -814,12 +818,12 @@ static char* benchmark_deserialize()
   return NULL;
 }
 
-////////////////////////////////////////////////////////////////////////////////
+
 static char* benchmark_lpeg_decoder()
 {
   int iter = 100000;
 
-  lua_sandbox* sb = lsb_create(NULL, "lua/decoder.lua", 8 * 1024 * 1024, 1e6,
+  lua_sandbox* sb = lsb_create(NULL, "lua/decoder.lua", 8 * 1024 * 1024, 1000000,
                                1024 * 63);
   mu_assert(sb, "lsb_create() received: NULL");
   int result = lsb_init(sb, NULL);
@@ -839,7 +843,7 @@ static char* benchmark_lpeg_decoder()
   return NULL;
 }
 
-////////////////////////////////////////////////////////////////////////////////
+
 static char* benchmark_lua_types_output()
 {
   int iter = 100000;
@@ -864,7 +868,7 @@ static char* benchmark_lua_types_output()
   return NULL;
 }
 
-////////////////////////////////////////////////////////////////////////////////
+
 static char* benchmark_cbuf_output()
 {
   int iter = 100000;
@@ -889,7 +893,7 @@ static char* benchmark_cbuf_output()
   return NULL;
 }
 
-////////////////////////////////////////////////////////////////////////////////
+
 static char* benchmark_table_output()
 {
   int iter = 100000;
@@ -914,7 +918,7 @@ static char* benchmark_table_output()
   return NULL;
 }
 
-////////////////////////////////////////////////////////////////////////////////
+
 static char* all_tests()
 {
   mu_run_test(test_create_error);
@@ -944,7 +948,7 @@ static char* all_tests()
   return NULL;
 }
 
-////////////////////////////////////////////////////////////////////////////////
+
 int main()
 {
   char* result = all_tests();

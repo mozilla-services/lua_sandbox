@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-/// @brief Sandboxed Lua execution @file
+/// @brief Lua sandboxed implementation @file
 #include <setjmp.h>
 #include <stdlib.h>
 #include <stdio.h>
@@ -24,14 +24,16 @@ static const char* disable_base_functions[] = { "collectgarbage", "coroutine",
 
 static jmp_buf g_jbuf;
 
-////////////////////////////////////////////////////////////////////////////////
+
 lua_sandbox* lsb_create(void* parent,
                         const char* lua_file,
                         unsigned memory_limit,
                         unsigned instruction_limit,
                         unsigned output_limit)
 {
-  if (!lua_file) return NULL;
+  if (!lua_file) {
+    return NULL;
+  }
 
   if (memory_limit > LSB_MEMORY || instruction_limit > LSB_INSTRUCTION
       || output_limit > LSB_OUTPUT) {
@@ -43,39 +45,41 @@ lua_sandbox* lsb_create(void* parent,
   }
 
   lua_sandbox* lsb = malloc(sizeof(lua_sandbox));
-  if (!lsb) return NULL;
+  if (!lsb) {
+    return NULL;
+  }
+  lsb->lua = luaL_newstate();
 
-  lsb->m_lua = luaL_newstate();
-  if (!lsb->m_lua) {
+  if (!lsb->lua) {
     free(lsb);
     return NULL;
   }
 
-  lsb->m_parent = parent;
-  memset(lsb->m_usage, 0, sizeof(lsb->m_usage));
-  lsb->m_usage[LSB_UT_MEMORY][LSB_US_LIMIT] = memory_limit;
-  lsb->m_usage[LSB_UT_INSTRUCTION][LSB_US_LIMIT] = instruction_limit;
-  lsb->m_usage[LSB_UT_OUTPUT][LSB_US_LIMIT] = output_limit;
-  lsb->m_state = LSB_UNKNOWN;
-  lsb->m_error_message[0] = 0;
-  lsb->m_output.m_pos = 0;
-  lsb->m_output.m_maxsize = output_limit;
-  lsb->m_output.m_size = OUTPUT_SIZE;
-  lsb->m_output.m_data = malloc(lsb->m_output.m_size);
+  lsb->parent = parent;
+  memset(lsb->usage, 0, sizeof(lsb->usage));
+  lsb->usage[LSB_UT_MEMORY][LSB_US_LIMIT] = memory_limit;
+  lsb->usage[LSB_UT_INSTRUCTION][LSB_US_LIMIT] = instruction_limit;
+  lsb->usage[LSB_UT_OUTPUT][LSB_US_LIMIT] = output_limit;
+  lsb->state = LSB_UNKNOWN;
+  lsb->error_message[0] = 0;
+  lsb->output.pos = 0;
+  lsb->output.maxsize = output_limit;
+  lsb->output.size = OUTPUT_SIZE;
+  lsb->output.data = malloc(lsb->output.size);
   size_t len = strlen(lua_file);
-  lsb->m_lua_file = malloc(len + 1);
-  if (!lsb->m_output.m_data || !lsb->m_lua_file) {
+  lsb->lua_file = malloc(len + 1);
+  if (!lsb->output.data || !lsb->lua_file) {
     free(lsb);
-    lua_close(lsb->m_lua);
-    lsb->m_lua = NULL;
+    lua_close(lsb->lua);
+    lsb->lua = NULL;
     return NULL;
   }
-  strcpy(lsb->m_lua_file, lua_file);
-  srand(time(NULL));
+  strcpy(lsb->lua_file, lua_file);
+  srand((unsigned int)time(NULL));
   return lsb;
 }
 
-////////////////////////////////////////////////////////////////////////////////
+
 int unprotected_panic(lua_State* lua)
 {
   (void)lua;
@@ -83,77 +87,80 @@ int unprotected_panic(lua_State* lua)
   return 0;
 }
 
-////////////////////////////////////////////////////////////////////////////////
+
 int lsb_init(lua_sandbox* lsb, const char* data_file)
 {
-  if (!lsb) return 0;
+  if (!lsb) {
+    return 0;
+  }
 
-  load_library(lsb->m_lua, "", luaopen_base, disable_base_functions);
-  lua_pop(lsb->m_lua, 1);
+  load_library(lsb->lua, "", luaopen_base, disable_base_functions);
+  lua_pop(lsb->lua, 1);
 
-  lua_pushcfunction(lsb->m_lua, &require_library);
-  lua_setglobal(lsb->m_lua, "require");
+  lua_pushcfunction(lsb->lua, &require_library);
+  lua_setglobal(lsb->lua, "require");
 
-  lua_pushlightuserdata(lsb->m_lua, (void*)lsb);
-  lua_pushcclosure(lsb->m_lua, &output, 1);
-  lua_setglobal(lsb->m_lua, "output");
+  lua_pushlightuserdata(lsb->lua, (void*)lsb);
+  lua_pushcclosure(lsb->lua, &output, 1);
+  lua_setglobal(lsb->lua, "output");
 
-  lua_sethook(lsb->m_lua, instruction_manager, LUA_MASKCOUNT,
-              lsb->m_usage[LSB_UT_INSTRUCTION][LSB_US_LIMIT]);
-
-  lua_gc(lsb->m_lua, LUA_GCSETMEMLIMIT,
-         (int)lsb->m_usage[LSB_UT_MEMORY][LSB_US_LIMIT]);
+  lua_sethook(lsb->lua, instruction_manager, LUA_MASKCOUNT,
+              lsb->usage[LSB_UT_INSTRUCTION][LSB_US_LIMIT]);
+  lua_gc(lsb->lua, LUA_GCSETMEMLIMIT,
+         (int)lsb->usage[LSB_UT_MEMORY][LSB_US_LIMIT]);
   int jump = setjmp(g_jbuf);
-  lua_CFunction pf = lua_atpanic(lsb->m_lua, unprotected_panic);
-  if (jump || luaL_dofile(lsb->m_lua, lsb->m_lua_file) != 0) {
-    int len = snprintf(lsb->m_error_message, LSB_ERROR_SIZE, "%s",
-                       lua_tostring(lsb->m_lua, -1));
+  lua_CFunction pf = lua_atpanic(lsb->lua, unprotected_panic);
+  if (jump || luaL_dofile(lsb->lua, lsb->lua_file) != 0) {
+    int len = snprintf(lsb->error_message, LSB_ERROR_SIZE, "%s",
+                       lua_tostring(lsb->lua, -1));
     if (len >= LSB_ERROR_SIZE || len < 0) {
-      lsb->m_error_message[LSB_ERROR_SIZE - 1] = 0;
+      lsb->error_message[LSB_ERROR_SIZE - 1] = 0;
     }
     sandbox_terminate(lsb);
     return 2;
   } else {
-    lua_gc(lsb->m_lua, LUA_GCCOLLECT, 0);
-    lsb->m_usage[LSB_UT_INSTRUCTION][LSB_US_CURRENT] =
-      instruction_usage(lsb);
-    if (lsb->m_usage[LSB_UT_INSTRUCTION][LSB_US_CURRENT]
-        > lsb->m_usage[LSB_UT_INSTRUCTION][LSB_US_MAXIMUM]) {
-      lsb->m_usage[LSB_UT_INSTRUCTION][LSB_US_MAXIMUM] =
-        lsb->m_usage[LSB_UT_INSTRUCTION][LSB_US_CURRENT];
+    lua_gc(lsb->lua, LUA_GCCOLLECT, 0);
+    lsb->usage[LSB_UT_INSTRUCTION][LSB_US_CURRENT] =
+      (unsigned)instruction_usage(lsb);
+    if (lsb->usage[LSB_UT_INSTRUCTION][LSB_US_CURRENT]
+        > lsb->usage[LSB_UT_INSTRUCTION][LSB_US_MAXIMUM]) {
+      lsb->usage[LSB_UT_INSTRUCTION][LSB_US_MAXIMUM] =
+        lsb->usage[LSB_UT_INSTRUCTION][LSB_US_CURRENT];
     }
-    lsb->m_state = LSB_RUNNING;
+    lsb->state = LSB_RUNNING;
     if (data_file != NULL && strlen(data_file) > 0) {
       if (restore_global_data(lsb, data_file)) return 3;
     }
   }
-  lua_atpanic(lsb->m_lua, pf);
+  lua_atpanic(lsb->lua, pf);
   return 0;
 }
 
-////////////////////////////////////////////////////////////////////////////////
+
 char* lsb_destroy(lua_sandbox* lsb, const char* data_file)
 {
   char* err = NULL;
-  if (!lsb) return err;
+  if (!lsb) {
+    return err;
+  }
 
-  if (lsb->m_lua && data_file && strlen(data_file) > 0) {
+  if (lsb->lua && data_file && strlen(data_file) > 0) {
     if (preserve_global_data(lsb, data_file) != 0) {
-      size_t len = strlen(lsb->m_error_message);
+      size_t len = strlen(lsb->error_message);
       err = malloc(len + 1);
       if (err != NULL) {
-        strcpy(err, lsb->m_error_message);
+        strcpy(err, lsb->error_message);
       }
     }
   }
   sandbox_terminate(lsb);
-  free(lsb->m_output.m_data);
-  free(lsb->m_lua_file);
+  free(lsb->output.data);
+  free(lsb->lua_file);
   free(lsb);
   return err;
 }
 
-////////////////////////////////////////////////////////////////////////////////
+
 unsigned lsb_usage(lua_sandbox* lsb, lsb_usage_type utype,
                    lsb_usage_stat ustat)
 {
@@ -163,80 +170,82 @@ unsigned lsb_usage(lua_sandbox* lsb, lsb_usage_type utype,
   if (utype == LSB_UT_MEMORY) {
     switch (ustat) {
     case LSB_US_CURRENT:
-      return lua_gc(lsb->m_lua, LUA_GCCOUNT, 0) * 1024
-             + lua_gc(lsb->m_lua, LUA_GCCOUNTB, 0);
+      return lua_gc(lsb->lua, LUA_GCCOUNT, 0) * 1024
+             + lua_gc(lsb->lua, LUA_GCCOUNTB, 0);
     case LSB_US_MAXIMUM:
-      return lua_gc(lsb->m_lua, LUA_GCMAXCOUNT, 0) * 1024
-             + lua_gc(lsb->m_lua, LUA_GCMAXCOUNTB, 0);
+      return lua_gc(lsb->lua, LUA_GCMAXCOUNT, 0) * 1024
+             + lua_gc(lsb->lua, LUA_GCMAXCOUNTB, 0);
     default:
       break;
     }
   }
-  return lsb->m_usage[utype][ustat];
+  return lsb->usage[utype][ustat];
 }
 
-////////////////////////////////////////////////////////////////////////////////
+
 const char* lsb_get_error(lua_sandbox* lsb)
 {
   if (lsb) {
-    return lsb->m_error_message;
+    return lsb->error_message;
   }
   return "";
 }
 
-////////////////////////////////////////////////////////////////////////////////
+
 lua_State* lsb_get_lua(lua_sandbox* lsb)
 {
-  return lsb->m_lua;
+  return lsb->lua;
 }
 
-////////////////////////////////////////////////////////////////////////////////
+
 void* lsb_get_parent(lua_sandbox* lsb)
 {
-  return lsb->m_parent;
+  return lsb->parent;
 }
 
-////////////////////////////////////////////////////////////////////////////////
+
 lsb_state lsb_get_state(lua_sandbox* lsb)
 {
   if (lsb) {
-    return lsb->m_state;
+    return lsb->state;
   }
   return LSB_UNKNOWN;
 }
 
-////////////////////////////////////////////////////////////////////////////////
+
 void lsb_add_function(lua_sandbox* lsb, lua_CFunction func,
                       const char* func_name)
 {
-  lua_pushlightuserdata(lsb->m_lua, (void*)lsb);
-  lua_pushcclosure(lsb->m_lua, func, 1);
-  lua_setglobal(lsb->m_lua, func_name);
+  lua_pushlightuserdata(lsb->lua, (void*)lsb);
+  lua_pushcclosure(lsb->lua, func, 1);
+  lua_setglobal(lsb->lua, func_name);
 }
 
-////////////////////////////////////////////////////////////////////////////////
+
 const char* lsb_get_output(lua_sandbox* lsb, size_t* len)
 {
   if (len) {
-    *len = lsb->m_output.m_pos;
+    *len = lsb->output.pos;
   }
-  if (lsb->m_output.m_pos == 0) return "";
+  if (lsb->output.pos == 0) return "";
 
-  lsb->m_output.m_pos = 0;
-  return lsb->m_output.m_data;
+  lsb->output.pos = 0;
+  return lsb->output.data;
 }
 
-////////////////////////////////////////////////////////////////////////////////
+
 const char* lsb_output_userdata(lua_sandbox* lsb, int index, int append)
 {
-  if (!append) lsb->m_output.m_pos = 0;
+  if (!append) {
+    lsb->output.pos = 0;
+  }
 
-  void* ud = lua_touserdata(lsb->m_lua, index);
-  if (heka_circular_buffer == userdata_type(lsb->m_lua, ud, index)) {
+  void* ud = lua_touserdata(lsb->lua, index);
+  if (heka_circular_buffer == userdata_type(lsb->lua, ud, index)) {
     circular_buffer* cb = (circular_buffer*)ud;
-    size_t last_pos = lsb->m_output.m_pos;
-    if (output_circular_buffer(lsb->m_lua, cb, &lsb->m_output)) {
-      lsb->m_output.m_pos = last_pos;
+    size_t last_pos = lsb->output.pos;
+    if (output_circular_buffer(lsb->lua, cb, &lsb->output)) {
+      lsb->output.pos = last_pos;
       return NULL;
     }
     return get_output_format(cb);
@@ -247,54 +256,57 @@ const char* lsb_output_userdata(lua_sandbox* lsb, int index, int append)
   return NULL;
 }
 
-////////////////////////////////////////////////////////////////////////////////
+
 int lsb_output_protobuf(lua_sandbox* lsb, int index, int append)
 {
-  if (!append) lsb->m_output.m_pos = 0;
+  if (!append) {
+    lsb->output.pos = 0;
+  }
 
-  size_t last_pos = lsb->m_output.m_pos;
+  size_t last_pos = lsb->output.pos;
   if (serialize_table_as_pb(lsb, index) != 0) {
-    lsb->m_output.m_pos = last_pos;
+    lsb->output.pos = last_pos;
     return 1;
   }
 
   return 0;
 }
 
-////////////////////////////////////////////////////////////////////////////////
+
 int lsb_pcall_setup(lua_sandbox* lsb, const char* func_name)
 {
 
-  lua_sethook(lsb->m_lua, instruction_manager, LUA_MASKCOUNT,
-              lsb->m_usage[LSB_UT_INSTRUCTION][LSB_US_LIMIT]);
-  lua_getglobal(lsb->m_lua, func_name);
-  if (!lua_isfunction(lsb->m_lua, -1)) {
-    int len = snprintf(lsb->m_error_message, LSB_ERROR_SIZE,
+  lua_sethook(lsb->lua, instruction_manager, LUA_MASKCOUNT,
+              lsb->usage[LSB_UT_INSTRUCTION][LSB_US_LIMIT]);
+  lua_getglobal(lsb->lua, func_name);
+  if (!lua_isfunction(lsb->lua, -1)) {
+    int len = snprintf(lsb->error_message, LSB_ERROR_SIZE,
                        "%s() function was not found",
                        func_name);
     if (len >= LSB_ERROR_SIZE || len < 0) {
-      lsb->m_error_message[LSB_ERROR_SIZE - 1] = 0;
+      lsb->error_message[LSB_ERROR_SIZE - 1] = 0;
     }
     return 1;
   }
   return 0;
 }
 
-////////////////////////////////////////////////////////////////////////////////
+
 void lsb_pcall_teardown(lua_sandbox* lsb)
 {
-  lsb->m_usage[LSB_UT_INSTRUCTION][LSB_US_CURRENT] = instruction_usage(lsb);
-  if (lsb->m_usage[LSB_UT_INSTRUCTION][LSB_US_CURRENT]
-      > lsb->m_usage[LSB_UT_INSTRUCTION][LSB_US_MAXIMUM]) {
-    lsb->m_usage[LSB_UT_INSTRUCTION][LSB_US_MAXIMUM] =
-      lsb->m_usage[LSB_UT_INSTRUCTION][LSB_US_CURRENT];
+  lsb->usage[LSB_UT_INSTRUCTION][LSB_US_CURRENT] =
+    (unsigned)instruction_usage(lsb);
+  if (lsb->usage[LSB_UT_INSTRUCTION][LSB_US_CURRENT]
+      > lsb->usage[LSB_UT_INSTRUCTION][LSB_US_MAXIMUM]) {
+    lsb->usage[LSB_UT_INSTRUCTION][LSB_US_MAXIMUM] =
+      lsb->usage[LSB_UT_INSTRUCTION][LSB_US_CURRENT];
   }
 }
 
-////////////////////////////////////////////////////////////////////////////////
+
 void lsb_terminate(lua_sandbox* lsb, const char* err)
 {
-  strncpy(lsb->m_error_message, err, LSB_ERROR_SIZE);
-  lsb->m_error_message[LSB_ERROR_SIZE - 1] = 0;
+  strncpy(lsb->error_message, err, LSB_ERROR_SIZE);
+  lsb->error_message[LSB_ERROR_SIZE - 1] = 0;
   sandbox_terminate(lsb);
 }

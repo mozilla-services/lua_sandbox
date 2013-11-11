@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-/// @brief Sandboxed Lua execution @file
+/// @brief Lua sandbox Heka protobuf serialization @file
 
 #include "lua_serialize_protobuf.h"
 
@@ -12,34 +12,34 @@
 #include <string.h>
 #include <time.h>
 
-////////////////////////////////////////////////////////////////////////////////
+
 int serialize_table_as_pb(lua_sandbox* lsb, int index)
 {
-  output_data* d = &lsb->m_output;
-  d->m_pos = 0;
+  output_data* d = &lsb->output;
+  d->pos = 0;
   size_t needed = 18;
-  if (needed > d->m_size - d->m_pos) {
+  if (needed > d->size - d->pos) {
     if (realloc_output(d, needed)) return 1;
   }
 
   // create a type 4 uuid
-  d->m_data[d->m_pos++] = 2 | (1 << 3);
-  d->m_data[d->m_pos++] = 16;
+  d->data[d->pos++] = 2 | (1 << 3);
+  d->data[d->pos++] = 16;
   for (int x = 0; x < 16; ++x) {
-    d->m_data[d->m_pos++] = rand() % 255;
+    d->data[d->pos++] = rand() % 255;
   }
-  d->m_data[8] = (d->m_data[8] & 0x0F) | 0x40;
-  d->m_data[10] = (d->m_data[10] & 0x0F) | 0xA0;
+  d->data[8] = (d->data[8] & 0x0F) | 0x40;
+  d->data[10] = (d->data[10] & 0x0F) | 0xA0;
 
   // use existing or create a timestamp
-  lua_getfield(lsb->m_lua, index, "Timestamp");
+  lua_getfield(lsb->lua, index, "Timestamp");
   long long ts;
-  if (lua_isnumber(lsb->m_lua, -1)) {
-    ts = (long long)lua_tonumber(lsb->m_lua, -1);
+  if (lua_isnumber(lsb->lua, -1)) {
+    ts = (long long)lua_tonumber(lsb->lua, -1);
   } else {
-    ts = time(NULL) * 1e9;
+    ts = (long long)(time(NULL) * 1e9);
   }
-  lua_pop(lsb->m_lua, 1);
+  lua_pop(lsb->lua, 1);
   if (pb_write_tag(d, 2, 0)) return 1;
   if (pb_write_varint(d, ts)) return 1;
 
@@ -53,171 +53,175 @@ int serialize_table_as_pb(lua_sandbox* lsb, int index)
   if (encode_fields(lsb, d, 10, "Fields", index)) return 1;
   // if we go above 15 pb_write_tag will need to start varint encoding
   needed = 1;
-  if (needed > d->m_size - d->m_pos) {
+  if (needed > d->size - d->pos) {
     if (realloc_output(d, needed)) return 1;
   }
-  d->m_data[d->m_pos] = 0; // NULL terminate incase someone tries to treat this
-                           // as a string
+  d->data[d->pos] = 0; // NULL terminate incase someone tries to treat this
+                       // as a string
 
   return 0;
 }
 
-////////////////////////////////////////////////////////////////////////////////
+
 int pb_write_varint(output_data* d, long long i)
 {
   size_t needed = 10;
-  if (needed > d->m_size - d->m_pos) {
+  if (needed > d->size - d->pos) {
     if (realloc_output(d, needed)) return 1;
   }
 
   if (i == 0) {
-    d->m_data[d->m_pos++] = 0;
+    d->data[d->pos++] = 0;
     return 0;
   }
 
   while (i) {
-    d->m_data[d->m_pos++] = (i & 0x7F) | 0x80;
+    d->data[d->pos++] = (i & 0x7F) | 0x80;
     i >>= 7;
   }
-  d->m_data[d->m_pos - 1] &= 0x7F; // end the varint
+  d->data[d->pos - 1] &= 0x7F; // end the varint
   return 0;
 }
 
-////////////////////////////////////////////////////////////////////////////////
+
 int pb_write_double(output_data* d, double i)
 {
   size_t needed = sizeof(double);
-  if (needed > d->m_size - d->m_pos) {
+  if (needed > d->size - d->pos) {
     if (realloc_output(d, needed)) return 1;
   }
 
-  memcpy(&d->m_data[d->m_pos], &i, needed);
-  d->m_pos += needed;
+  memcpy(&d->data[d->pos], &i, needed);
+  d->pos += needed;
   return 0;
 }
 
-////////////////////////////////////////////////////////////////////////////////
+
 int pb_write_bool(output_data* d, int i)
 {
   size_t needed = 1;
-  if (needed > d->m_size - d->m_pos) {
+  if (needed > d->size - d->pos) {
     if (realloc_output(d, needed)) return 1;
   }
 
   if (i) {
-    d->m_data[d->m_pos++] = 1;
+    d->data[d->pos++] = 1;
   } else {
-    d->m_data[d->m_pos++] = 0;
+    d->data[d->pos++] = 0;
   }
   return 0;
 }
 
-////////////////////////////////////////////////////////////////////////////////
+
 int pb_write_tag(output_data* d, char id, char wire_type)
 {
   size_t needed = 1;
-  if (needed > d->m_size - d->m_pos) {
+  if (needed > d->size - d->pos) {
     if (realloc_output(d, needed)) return 1;
   }
 
-  d->m_data[d->m_pos++] = wire_type | (id << 3);
+  d->data[d->pos++] = wire_type | (id << 3);
   return 0;
 }
 
-////////////////////////////////////////////////////////////////////////////////
+
 int pb_write_string(output_data* d, char id, const char* s, size_t len)
 {
 
-  if (pb_write_tag(d, id, 2)) return 1;
-  if (pb_write_varint(d, len)) return 1;
+  if (pb_write_tag(d, id, 2)) {
+    return 1;
+  }
+  if (pb_write_varint(d, len)) {
+    return 1;
+  }
 
   size_t needed = len;
-  if (needed > d->m_size - d->m_pos) {
+  if (needed > d->size - d->pos) {
     if (realloc_output(d, needed)) return 1;
   }
-  memcpy(&d->m_data[d->m_pos], s, len);
-  d->m_pos += len;
+  memcpy(&d->data[d->pos], s, len);
+  d->pos += len;
   return 0;
 }
 
-////////////////////////////////////////////////////////////////////////////////
+
 int encode_string(lua_sandbox* lsb, output_data* d, char id, const char* name,
                   int index)
 {
   int result = 0;
-  lua_getfield(lsb->m_lua, index, name);
-  if (lua_isstring(lsb->m_lua, -1)) {
+  lua_getfield(lsb->lua, index, name);
+  if (lua_isstring(lsb->lua, -1)) {
     size_t len;
-    const char* s = lua_tolstring(lsb->m_lua, -1, &len);
+    const char* s = lua_tolstring(lsb->lua, -1, &len);
     result = pb_write_string(d, id, s, len);
   }
-  lua_pop(lsb->m_lua, 1);
+  lua_pop(lsb->lua, 1);
   return result;
 }
 
-////////////////////////////////////////////////////////////////////////////////
+
 int encode_int(lua_sandbox* lsb, output_data* d, char id, const char* name,
                int index)
 {
   int result = 0;
-  lua_getfield(lsb->m_lua, index, name);
-  if (lua_isnumber(lsb->m_lua, -1)) {
-    long long i = (long long)lua_tonumber(lsb->m_lua, -1);
+  lua_getfield(lsb->lua, index, name);
+  if (lua_isnumber(lsb->lua, -1)) {
+    long long i = (long long)lua_tonumber(lsb->lua, -1);
     if (!(result = pb_write_tag(d, id, 0))) {
       result = pb_write_varint(d, i);
     }
   }
-  lua_pop(lsb->m_lua, 1);
+  lua_pop(lsb->lua, 1);
   return result;
 }
 
-////////////////////////////////////////////////////////////////////////////////
+
 int encode_double(lua_sandbox* lsb, output_data* d, char id)
 {
   // todo add big endian support if necessary
-  double n = lua_tonumber(lsb->m_lua, -1);
+  double n = lua_tonumber(lsb->lua, -1);
   if (pb_write_tag(d, id, 1)) return 1;
   return pb_write_double(d, n);
 }
 
-////////////////////////////////////////////////////////////////////////////////
+
 int encode_field_array(lua_sandbox* lsb, output_data* d, int t,
                        const char* representation)
 {
   int result = 0, first = 1;
-  lua_checkstack(lsb->m_lua, 2);
-  lua_pushnil(lsb->m_lua);
-  while (result == 0 && lua_next(lsb->m_lua, -2) != 0) {
+  lua_checkstack(lsb->lua, 2);
+  lua_pushnil(lsb->lua);
+  while (result == 0 && lua_next(lsb->lua, -2) != 0) {
     // numerics are not packed, the space savings aren't worth the extra
     // buffer manipulation
-    if (lua_type(lsb->m_lua, -1) != t) {
-      snprintf(lsb->m_error_message, LSB_ERROR_SIZE, "array has mixed types");
+    if (lua_type(lsb->lua, -1) != t) {
+      snprintf(lsb->error_message, LSB_ERROR_SIZE, "array has mixed types");
       return 1;
     }
     result = encode_field_value(lsb, d, first, representation);
     first = 0;
-    lua_pop(lsb->m_lua, 1); // Remove the value leaving the key on top for
-                            // the next interation.
+    lua_pop(lsb->lua, 1); // Remove the value leaving the key on top for
+                          // the next interation.
   }
   return result;
 }
 
-////////////////////////////////////////////////////////////////////////////////
+
 int encode_field_object(lua_sandbox* lsb, output_data* d)
 {
   int result = 0;
   const char* representation = NULL;
-  lua_getfield(lsb->m_lua, -1, "representation");
-  if (lua_isstring(lsb->m_lua, -1)) {
-    representation = lua_tostring(lsb->m_lua, -1);
+  lua_getfield(lsb->lua, -1, "representation");
+  if (lua_isstring(lsb->lua, -1)) {
+    representation = lua_tostring(lsb->lua, -1);
   }
-  lua_getfield(lsb->m_lua, -2, "value");
+  lua_getfield(lsb->lua, -2, "value");
   result = encode_field_value(lsb, d, 1, representation);
-  lua_pop(lsb->m_lua, 2); // remove representation and  value
+  lua_pop(lsb->lua, 2); // remove representation and  value
   return result;
 }
 
-////////////////////////////////////////////////////////////////////////////////
+
 int encode_field_value(lua_sandbox* lsb, output_data* d, int first,
                        const char* representation)
 {
@@ -225,7 +229,7 @@ int encode_field_value(lua_sandbox* lsb, output_data* d, int first,
   size_t len;
   const char* s;
 
-  int t = lua_type(lsb->m_lua, -1);
+  int t = lua_type(lsb->lua, -1);
   switch (t) {
   case LUA_TSTRING:
     if (first && representation) { // this uglyness keeps the protobuf
@@ -235,7 +239,7 @@ int encode_field_value(lua_sandbox* lsb, output_data* d, int first,
         return 1;
       }
     }
-    s = lua_tolstring(lsb->m_lua, -1, &len);
+    s = lua_tolstring(lsb->lua, -1, &len);
     result = pb_write_string(d, 4, s, len);
     break;
   case LUA_TNUMBER:
@@ -263,13 +267,13 @@ int encode_field_value(lua_sandbox* lsb, output_data* d, int first,
       }
     }
     if (pb_write_tag(d, 8, 0)) return 1;
-    result = pb_write_bool(d, lua_toboolean(lsb->m_lua, -1));
+    result = pb_write_bool(d, lua_toboolean(lsb->lua, -1));
     break;
   case LUA_TTABLE:
     {
-      lua_rawgeti(lsb->m_lua, -1, 1);
-      int t = lua_type(lsb->m_lua, -1);
-      lua_pop(lsb->m_lua, 1); // remove the array test value
+      lua_rawgeti(lsb->lua, -1, 1);
+      int t = lua_type(lsb->lua, -1);
+      lua_pop(lsb->lua, 1); // remove the array test value
       if (LUA_TNIL == t) {
         result = encode_field_object(lsb, d);
       } else {
@@ -278,18 +282,18 @@ int encode_field_value(lua_sandbox* lsb, output_data* d, int first,
     }
     break;
   default:
-    snprintf(lsb->m_error_message, LSB_ERROR_SIZE, "unsupported type %d", t);
+    snprintf(lsb->error_message, LSB_ERROR_SIZE, "unsupported type %d", t);
     result = 1;
   }
   return result;
 }
 
-////////////////////////////////////////////////////////////////////////////////
+
 int update_field_length(output_data* d, size_t len_pos)
 {
-  size_t len = d->m_pos - len_pos - 1;
+  size_t len = d->pos - len_pos - 1;
   if (len < 128) {
-    d->m_data[len_pos] = len;
+    d->data[len_pos] = (char)len;
     return 0;
   }
   size_t l = len, cnt = 0;
@@ -298,45 +302,47 @@ int update_field_length(output_data* d, size_t len_pos)
     ++cnt;  // compute the number of bytes needed for the varint length
   }
   size_t needed = cnt - 1;
-  if (needed > d->m_size - d->m_pos) {
+  if (needed > d->size - d->pos) {
     if (realloc_output(d, needed)) return 1;
   }
-  size_t end_pos = d->m_pos + needed;
-  memmove(&d->m_data[len_pos + cnt], &d->m_data[len_pos + 1], len);
-  d->m_pos = len_pos;
+  size_t end_pos = d->pos + needed;
+  memmove(&d->data[len_pos + cnt], &d->data[len_pos + 1], len);
+  d->pos = len_pos;
   if (pb_write_varint(d, len)) return 1;
-  d->m_pos = end_pos;
+  d->pos = end_pos;
   return 0;
 }
 
-////////////////////////////////////////////////////////////////////////////////
+
 int encode_fields(lua_sandbox* lsb, output_data* d, char id, const char* name,
                   int index)
 {
   int result = 0;
-  lua_getfield(lsb->m_lua, index, name);
-  if (!lua_istable(lsb->m_lua, -1)) return result;
+  lua_getfield(lsb->lua, index, name);
+  if (!lua_istable(lsb->lua, -1)) {
+    return result;
+  }
 
   size_t len_pos, len;
-  lua_checkstack(lsb->m_lua, 2);
-  lua_pushnil(lsb->m_lua);
-  while (result == 0 && lua_next(lsb->m_lua, -2) != 0) {
+  lua_checkstack(lsb->lua, 2);
+  lua_pushnil(lsb->lua);
+  while (result == 0 && lua_next(lsb->lua, -2) != 0) {
     if (pb_write_tag(d, id, 2)) return 1;
-    len_pos = d->m_pos;
+    len_pos = d->pos;
     if (pb_write_varint(d, 0)) return 1;  // length tbd later
-    if (lua_isstring(lsb->m_lua, -2)) {
-      const char* s = lua_tolstring(lsb->m_lua, -2, &len);
+    if (lua_isstring(lsb->lua, -2)) {
+      const char* s = lua_tolstring(lsb->lua, -2, &len);
       if (pb_write_string(d, 1, s, len)) return 1;
     } else {
-      snprintf(lsb->m_error_message, LSB_ERROR_SIZE,
+      snprintf(lsb->error_message, LSB_ERROR_SIZE,
                "field name must be a string");
       return 1;
     }
     if (encode_field_value(lsb, d, 1, NULL)) return 1;
     if (update_field_length(d, len_pos)) return 1;
-    lua_pop(lsb->m_lua, 1); // Remove the value leaving the key on top for
-                            // the next interation.
+    lua_pop(lsb->lua, 1); // Remove the value leaving the key on top for
+                          // the next interation.
   }
-  lua_pop(lsb->m_lua, 1); // remove the fields table
+  lua_pop(lsb->lua, 1); // remove the fields table
   return result;
 }
