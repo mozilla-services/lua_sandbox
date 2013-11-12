@@ -45,10 +45,15 @@ lua_sandbox* lsb_create(void* parent,
   }
 
   lua_sandbox* lsb = malloc(sizeof(lua_sandbox));
+  memset(lsb->usage, 0, sizeof(lsb->usage));
   if (!lsb) {
     return NULL;
   }
+#ifdef LUA_JIT
   lsb->lua = luaL_newstate();
+#else
+  lsb->lua = lua_newstate(memory_manager, lsb);
+#endif
 
   if (!lsb->lua) {
     free(lsb);
@@ -56,7 +61,6 @@ lua_sandbox* lsb_create(void* parent,
   }
 
   lsb->parent = parent;
-  memset(lsb->usage, 0, sizeof(lsb->usage));
   lsb->usage[LSB_UT_MEMORY][LSB_US_LIMIT] = memory_limit;
   lsb->usage[LSB_UT_INSTRUCTION][LSB_US_LIMIT] = instruction_limit;
   lsb->usage[LSB_UT_OUTPUT][LSB_US_LIMIT] = output_limit;
@@ -93,6 +97,10 @@ int lsb_init(lua_sandbox* lsb, const char* data_file)
   if (!lsb) {
     return 0;
   }
+#ifndef LUA_JIT
+  unsigned mem_limit = lsb->usage[LSB_UT_MEMORY][LSB_US_LIMIT];
+  lsb->usage[LSB_UT_MEMORY][LSB_US_LIMIT] = 0;
+#endif
 
   load_library(lsb->lua, "", luaopen_base, disable_base_functions);
   lua_pop(lsb->lua, 1);
@@ -106,10 +114,14 @@ int lsb_init(lua_sandbox* lsb, const char* data_file)
 
   lua_sethook(lsb->lua, instruction_manager, LUA_MASKCOUNT,
               lsb->usage[LSB_UT_INSTRUCTION][LSB_US_LIMIT]);
+#ifdef LUA_JIT
   lua_gc(lsb->lua, LUA_GCSETMEMLIMIT,
          (int)lsb->usage[LSB_UT_MEMORY][LSB_US_LIMIT]);
-  int jump = setjmp(g_jbuf);
+#else
+  lsb->usage[LSB_UT_MEMORY][LSB_US_LIMIT] = mem_limit;
+#endif
   lua_CFunction pf = lua_atpanic(lsb->lua, unprotected_panic);
+  int jump = setjmp(g_jbuf);
   if (jump || luaL_dofile(lsb->lua, lsb->lua_file) != 0) {
     int len = snprintf(lsb->error_message, LSB_ERROR_SIZE, "%s",
                        lua_tostring(lsb->lua, -1));
@@ -167,6 +179,7 @@ unsigned lsb_usage(lua_sandbox* lsb, lsb_usage_type utype,
   if (!lsb || utype >= LSB_UT_MAX || ustat >= LSB_US_MAX) {
     return 0;
   }
+#ifdef LUA_JIT
   if (utype == LSB_UT_MEMORY) {
     switch (ustat) {
     case LSB_US_CURRENT:
@@ -179,6 +192,7 @@ unsigned lsb_usage(lua_sandbox* lsb, lsb_usage_type utype,
       break;
     }
   }
+#endif
   return lsb->usage[utype][ustat];
 }
 

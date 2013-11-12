@@ -49,9 +49,4 @@ set(CPACK_PACKAGE_VENDOR        "Mozilla Services")
 set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_SOURCE_DIR}/LICENSE.txt")
 include(CPack)
 include(CTest)
-
-set(Boost_USE_STATIC_LIBS    ON)
-set(Boost_USE_MULTITHREADED  ON)
-set(Boost_USE_STATIC_RUNTIME OFF)
-
 include(doxygen)

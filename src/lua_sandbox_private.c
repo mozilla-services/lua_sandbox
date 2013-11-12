@@ -45,6 +45,36 @@ void load_library(lua_State* lua, const char* table, lua_CFunction f,
   }
 }
 
+#ifndef LUA_JIT
+void* memory_manager(void* ud, void* ptr, size_t osize, size_t nsize)
+{
+    lua_sandbox* lsb = (lua_sandbox*)ud;
+
+    void* nptr = NULL;
+    if (nsize == 0) {
+        free(ptr);
+        lsb->usage[LSB_UT_MEMORY][LSB_US_CURRENT] -= (unsigned)osize;
+    } else {
+        unsigned new_state_memory =
+          (unsigned)(lsb->usage[LSB_UT_MEMORY][LSB_US_CURRENT] + nsize - osize);
+        if (0 == lsb->usage[LSB_UT_MEMORY][LSB_US_LIMIT]
+            || new_state_memory
+            <= lsb->usage[LSB_UT_MEMORY][LSB_US_LIMIT]) {
+            nptr = realloc(ptr, nsize);
+            if (nptr != NULL) {
+                lsb->usage[LSB_UT_MEMORY][LSB_US_CURRENT] =
+                  new_state_memory;
+                if (lsb->usage[LSB_UT_MEMORY][LSB_US_CURRENT]
+                    > lsb->usage[LSB_UT_MEMORY][LSB_US_MAXIMUM]) {
+                    lsb->usage[LSB_UT_MEMORY][LSB_US_MAXIMUM] =
+                      lsb->usage[LSB_UT_MEMORY][LSB_US_CURRENT];
+                }
+            }
+        }
+    }
+    return nptr;
+}
+#endif
 
 void instruction_manager(lua_State* lua, lua_Debug* ar)
 {

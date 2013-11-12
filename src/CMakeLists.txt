@@ -11,7 +11,7 @@ lua_serialize_protobuf.c
 lua_circular_buffer.c
 )
 
-if(WIN32)
+if(MSVC)
     add_definitions(-D_CRT_SECURE_NO_WARNINGS)
     set(LUA_SANDBOX_LIBS
     "${EP_BASE}/lib/lua51.lib"
@@ -21,6 +21,19 @@ if(WIN32)
     add_library(luasandbox SHARED ${LUA_SANDBOX_SRC})
     install(DIRECTORY "${EP_BASE}/lib/"  DESTINATION lib FILES_MATCHING PATTERN "*.dll")
     install(DIRECTORY "${EP_BASE}/lib/"  DESTINATION lib FILES_MATCHING PATTERN "*.lib")
+elseif(MINGW)
+    set(LUA_SANDBOX_LIBS
+    "${EP_BASE}/lib/liblua.dll"
+    "${EP_BASE}/lib/liblpeg.dll"
+    "${EP_BASE}/lib/libcjson.dll"
+    )
+    add_library(luasandbox SHARED ${LUA_SANDBOX_SRC})
+    set_target_properties(luasandbox PROPERTIES LINK_FLAGS -s)
+    if (ADDRESS_MODEL EQUAL 32)
+        set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -m32")
+        set_target_properties(luasandbox PROPERTIES LINK_FLAGS "-s -m32")
+    endif()
+    install(DIRECTORY "${EP_BASE}/lib/"  DESTINATION lib FILES_MATCHING PATTERN "*.dll")
 else()
     set(LUA_SANDBOX_LIBS
     "${EP_BASE}/lib/libluajit-5.1.a"
@@ -38,6 +51,6 @@ target_link_libraries(luasandbox ${LUA_SANDBOX_LIBS})
 add_dependencies(luasandbox luajit-2_0_2 lpeg-0_12 lua-cjson-2_1_0)
 install(TARGETS luasandbox DESTINATION lib)
 install(DIRECTORY "${CMAKE_SOURCE_DIR}/include/" DESTINATION include)
-install(DIRECTORY "${LUA_JIT_INCLUDE}/" DESTINATION include)
+install(DIRECTORY "${LUA_INCLUDE_DIR}/" DESTINATION include)
 
 add_subdirectory(test)

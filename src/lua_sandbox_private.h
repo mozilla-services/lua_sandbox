@@ -51,6 +51,22 @@ extern const char* disable_none[];
  */
 void load_library(lua_State* lua, const char* table, lua_CFunction f,
                   const char** disable);
+#ifndef LUA_JIT
+/**
+* Implementation of the memory allocator for the Lua state.
+*
+* See: http://www.lua.org/manual/5.1/manual.html#lua_Alloc
+*
+* @param ud Pointer to the lua_sandbox
+* @param ptr Pointer to the memory block being allocated/reallocated/freed.
+* @param osize The original size of the memory block.
+* @param nsize The new size of the memory block.
+*
+* @return void* A pointer to the memory block.
+*/
+void* memory_manager(void* ud, void* ptr, size_t osize, size_t nsize);
+#endif
+
 
 /**
  * Lua hook to monitor the instruction usage of the sandbox.

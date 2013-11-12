@@ -21,7 +21,7 @@ diff -Naur lua-cjson-2.1.0/CMakeLists.txt lua-cjson-2_1_0.new/CMakeLists.txt
  
 -find_package(Lua51 REQUIRED)
 -include_directories(${LUA_INCLUDE_DIR})
-+include_directories("${EP_BASE}/include/luajit-2.0")
++include_directories("${EP_BASE}/include")
  
  if(NOT USE_INTERNAL_FPCONV)
      # Use libc number conversion routines (strtod(), sprintf())

@@ -9,6 +9,11 @@ set(CPACK_PACKAGE_VERSION_MAJOR 0)
 set(CPACK_PACKAGE_VERSION_MINOR 1)
 set(CPACK_PACKAGE_VERSION_PATCH 0)
 
+option(LUA_JIT "Enable LuaJIT" on)
+if(LUA_JIT)
+    add_definitions(-DLUA_JIT)
+endif()
+
 find_package(Git REQUIRED)
 
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")

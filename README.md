@@ -1,6 +1,6 @@
 Prerequisites {#mainpage}
 ====
-* C compiler (GCC 4.7+, Visual Studio 2013)
+* C compiler (GCC 4.7+, Visual Studio 2013 (LuaJIT), MinGW (Lua 5.1))
 * CMake (2.8.7+) - http://cmake.org/cmake/resources/software.html
 * Git http://git-scm.com/download
 

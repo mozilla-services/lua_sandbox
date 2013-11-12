@@ -390,7 +390,12 @@ int ignore_value_type(lua_sandbox* lsb, serialization_data* data, int index)
 int restore_global_data(lua_sandbox* lsb, const char* data_file)
 {
   // Clear the sandbox limits during restoration.
+#ifdef LUA_JIT
   lua_gc(lsb->lua, LUA_GCSETMEMLIMIT, 0);
+#else
+  unsigned limit = lsb->usage[LSB_UT_MEMORY][LSB_US_LIMIT];
+  lsb->usage[LSB_UT_MEMORY][LSB_US_LIMIT] = 0;
+#endif
   lua_sethook(lsb->lua, instruction_manager, 0, 0);
 
   int err = 0;
@@ -406,7 +411,14 @@ int restore_global_data(lua_sandbox* lsb, const char* data_file)
       return 1;
     }
   }
+#ifdef LUA_JIT
   lua_gc(lsb->lua, LUA_GCSETMEMLIMIT,
          lsb->usage[LSB_UT_MEMORY][LSB_US_LIMIT]); // reinstate limit
+#else
+  lua_gc(lsb->lua, LUA_GCCOLLECT, 0);
+  lsb->usage[LSB_UT_MEMORY][LSB_US_LIMIT] = limit;
+  lsb->usage[LSB_UT_MEMORY][LSB_US_MAXIMUM] =
+    lsb->usage[LSB_UT_MEMORY][LSB_US_CURRENT];
+#endif
   return 0;
 }
