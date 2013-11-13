@@ -44,7 +44,7 @@ typedef enum {
 #define  LSB_EXPORT __declspec(dllimport)
 #endif
 #else
-#define MYLIB_EXPORT
+#define LSB_EXPORT
 #endif
 
 typedef struct lua_sandbox lua_sandbox;

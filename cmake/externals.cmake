@@ -27,7 +27,7 @@ if (LUA_JIT)
             PATCH_COMMAND ${PATCH_EXECUTABLE} -p1 < ${CMAKE_CURRENT_LIST_DIR}/luajit-2_0_2.patch
             CONFIGURE_COMMAND ""
             BUILD_COMMAND cmake -E chdir src msvcbuild.bat
-            INSTALL_COMMAND cmake -E copy src/lua51.dll ${EP_BASE}/lib/lua51.dll 
+            INSTALL_COMMAND cmake -E copy src/lua51.dll ${EP_BASE}/lib/lua51.dll
             COMMAND cmake -E copy src/lua51.lib ${EP_BASE}/lib/lua51.lib
             COMMAND cmake -E copy src/lauxlib.h "${LUA_INCLUDE_DIR}/lauxlib.h"
             COMMAND cmake -E copy src/luaconf.h "${LUA_INCLUDE_DIR}/luaconf.h"
@@ -44,7 +44,12 @@ if (LUA_JIT)
             PATCH_COMMAND ${PATCH_EXECUTABLE} -p1 < ${CMAKE_CURRENT_LIST_DIR}/luajit-2_0_2.patch
             CONFIGURE_COMMAND ""
             BUILD_COMMAND make
-            INSTALL_COMMAND make install PREFIX="${EP_BASE}"
+            INSTALL_COMMAND cmake -E copy src/libluajit.a ${EP_BASE}/lib/liblua.a
+            COMMAND cmake -E copy src/lauxlib.h "${LUA_INCLUDE_DIR}/lauxlib.h"
+            COMMAND cmake -E copy src/luaconf.h "${LUA_INCLUDE_DIR}/luaconf.h"
+            COMMAND cmake -E copy src/lua.h "${LUA_INCLUDE_DIR}/lua.h"
+            COMMAND cmake -E copy src/luajit.h "${LUA_INCLUDE_DIR}/luajit.h"
+            COMMAND cmake -E copy src/lualib.h "${LUA_INCLUDE_DIR}/lualib.h"
         )
     else()
         message(FATAL_ERROR "Cannot use LuaJIT with ${CMAKE_GENERATOR}")

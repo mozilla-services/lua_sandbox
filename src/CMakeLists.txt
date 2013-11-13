@@ -36,10 +36,10 @@ elseif(MINGW)
     install(DIRECTORY "${EP_BASE}/lib/"  DESTINATION lib FILES_MATCHING PATTERN "*.dll")
 else()
     set(LUA_SANDBOX_LIBS
-    "${EP_BASE}/lib/libluajit-5.1.a"
+    "${EP_BASE}/lib/liblua.a"
     "${EP_BASE}/lib/liblpeg.a"
     "${EP_BASE}/lib/libcjson.a"
-    -ldl - lm
+    -ldl -lm
     )
     add_library(luasandbox STATIC ${LUA_SANDBOX_SRC})
     install(DIRECTORY "${EP_BASE}/lib/"  DESTINATION lib FILES_MATCHING PATTERN "*.a")
