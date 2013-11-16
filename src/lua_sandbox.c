@@ -180,7 +180,7 @@ unsigned lsb_usage(lua_sandbox* lsb, lsb_usage_type utype,
     return 0;
   }
 #ifdef LUA_JIT
-  if (utype == LSB_UT_MEMORY) {
+  if (lsb->lua && utype == LSB_UT_MEMORY) {
     switch (ustat) {
     case LSB_US_CURRENT:
       return lua_gc(lsb->lua, LUA_GCCOUNT, 0) * 1024

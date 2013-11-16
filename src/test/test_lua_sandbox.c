@@ -295,6 +295,11 @@ static char* test_usage_error()
   u = lsb_usage(NULL, LSB_UT_MEMORY, LSB_US_MAX + 1);
   mu_assert(u == 0, "Invalid usage stat received: %u", u);
 
+  mu_assert(sb, "lsb_create() received: NULL");
+  lsb_terminate(sb, "forced termination");
+  u = lsb_usage(sb, LSB_UT_MEMORY, LSB_US_CURRENT);
+  mu_assert(u == 0, "Terminated memory usage received: %u", u);
+
   e = lsb_destroy(sb, NULL);
   mu_assert(!e, "lsb_destroy() received: %s", e);
 
