@@ -249,7 +249,7 @@ int output(lua_State* lua)
       }
       break;
     case LUA_TTABLE: // encode as JSON
-      if (!appendc(&lsb->output, '{')) {
+      {
         serialization_data data;
         data.globals = NULL;
         data.tables.size = 64;
@@ -261,21 +261,15 @@ int output(lua_State* lua)
           result = 1;
         } else {
           lua_checkstack(lsb->lua, 2);
-          lua_getfield(lsb->lua, i, "_name");
-          if (lua_type(lsb->lua, -1) != LUA_TSTRING) {
-            lua_pop(lsb->lua, 1); // remove the failed _name result
-            lua_pushstring(lsb->lua, "table"); // add default name
-          }
+          lua_pushnil(lsb->lua); // no root key
           lua_pushvalue(lsb->lua, i);
-          result = serialize_kvp_as_json(lsb, &data, 1);
+          result = serialize_kvp_as_json(lsb, &data, 0);
           if (result == 0) {
-            result = appends(&lsb->output, "}\n");
+            result = appendc(&lsb->output, '\n');
           }
-          lua_pop(lsb->lua, 2); // remove the name and copy of the table
+          lua_pop(lsb->lua, 2); // remove the nil root key and copy of the table
           free(data.tables.array);
         }
-      } else {
-        result = 1;
       }
       break;
     case LUA_TUSERDATA:

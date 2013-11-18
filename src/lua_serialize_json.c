@@ -121,6 +121,7 @@ int serialize_data_as_json(lua_sandbox* lsb, int index, output_data* output)
                 ? "true" : "false")) {
       return 1;
     }
+  case LUA_TNIL:
     break;
   default:
     snprintf(lsb->error_message, LSB_ERROR_SIZE,

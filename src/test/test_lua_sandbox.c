@@ -376,19 +376,19 @@ static char* test_simple()
 static char* test_output()
 {
   const char* outputs[] = {
-    "{\"table\":{\"value\":1}}\n1.2 string nil true false"
+    "{\"value\":1}\n1.2 string nil true false"
     , ""
 #ifdef LUA_JIT
-    , "{\"table\":{\"Timestamp\":0,\"Value\":0,\"StatisticValues\":[{\"SampleCount\":0,\"Sum\":0,\"Maximum\":0,\"Minimum\":0},{\"SampleCount\":0,\"Sum\":0,\"Maximum\":0,\"Minimum\":0}],\"Unit\":\"s\",\"MetricName\":\"example\",\"Dimensions\":[{\"Name\":\"d1\",\"Value\":\"v1\"},{\"Name\":\"d2\",\"Value\":\"v2\"}]}}\n"
+    , "{\"Timestamp\":0,\"Value\":0,\"StatisticValues\":[{\"SampleCount\":0,\"Sum\":0,\"Maximum\":0,\"Minimum\":0},{\"SampleCount\":0,\"Sum\":0,\"Maximum\":0,\"Minimum\":0}],\"Unit\":\"s\",\"MetricName\":\"example\",\"Dimensions\":[{\"Name\":\"d1\",\"Value\":\"v1\"},{\"Name\":\"d2\",\"Value\":\"v2\"}]}\n"
 #else
-    , "{\"table\":{\"StatisticValues\":[{\"Minimum\":0,\"SampleCount\":0,\"Sum\":0,\"Maximum\":0},{\"Minimum\":0,\"SampleCount\":0,\"Sum\":0,\"Maximum\":0}],\"Dimensions\":[{\"Name\":\"d1\",\"Value\":\"v1\"},{\"Name\":\"d2\",\"Value\":\"v2\"}],\"MetricName\":\"example\",\"Timestamp\":0,\"Value\":0,\"Unit\":\"s\"}}\n"
+    , "{\"StatisticValues\":[{\"Minimum\":0,\"SampleCount\":0,\"Sum\":0,\"Maximum\":0},{\"Minimum\":0,\"SampleCount\":0,\"Sum\":0,\"Maximum\":0}],\"Dimensions\":[{\"Name\":\"d1\",\"Value\":\"v1\"},{\"Name\":\"d2\",\"Value\":\"v2\"}],\"MetricName\":\"example\",\"Timestamp\":0,\"Value\":0,\"Unit\":\"s\"}\n"
 #endif
-    , "{\"table\":{\"a\":{\"y\":2,\"x\":1}}}\n"
-    , "{\"table\":[1,2,3]}\n"
-    , "{\"table\":{\"x\":1}}\n"
-    , "{\"array\":[1,2,3]}\n"
-    , "{\"table\":{}}\n"
-    , "{\"table\":{\"special\\tcharacters\":\"\\\"\\t\\r\\n\\b\\f\\\\\\/\"}}\n"
+    , "{\"a\":{\"y\":2,\"x\":1}}\n"
+    , "[1,2,3]\n"
+    , "{\"x\":1}\n"
+    , "[1,2,3]\n"
+    , "{}\n"
+    , "{\"special\\tcharacters\":\"\\\"\\t\\r\\n\\b\\f\\\\\\/\"}\n"
     , "\x10\x80\x94\xeb\xdc\x03\x1a\x04\x74\x79\x70\x65\x22\x06\x6c\x6f\x67\x67\x65\x72\x28\x09\x32\x07\x70\x61\x79\x6c\x6f\x61\x64\x3a\x0b\x65\x6e\x76\x5f\x76\x65\x72\x73\x69\x6f\x6e\x4a\x08\x68\x6f\x73\x74\x6e\x61\x6d\x65"
     , "\x10\x80\x94\xeb\xdc\x03\x52\x12\x0a\x05\x63\x6f\x75\x6e\x74\x10\x03\x39\x00\x00\x00\x00\x00\x00\xf0\x3f"
     , "\x10\x80\x94\xeb\xdc\x03\x52\x25\x0a\x06\x63\x6f\x75\x6e\x74\x73\x10\x03\x39\x00\x00\x00\x00\x00\x00\x00\x40\x39\x00\x00\x00\x00\x00\x00\x08\x40\x39\x00\x00\x00\x00\x00\x00\x10\x40"
@@ -676,8 +676,8 @@ static char* test_errors()
 
 static char* test_lpeg()
 {
-  const char* expected = "{\"table\":[\"1\",\"string with spaces\","
-    "\"quoted string, with comma and \\\"quoted\\\" text\"]}\n";
+  const char* expected = "[\"1\",\"string with spaces\","
+    "\"quoted string, with comma and \\\"quoted\\\" text\"]\n";
 
   lua_sandbox* sb = lsb_create(NULL, "lua/lpeg_csv.lua", 100000, 1000,
                                8000);
