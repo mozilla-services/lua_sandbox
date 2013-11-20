@@ -21,5 +21,6 @@ include(mozsvc)
 include(externals)
 
 include_directories("${CMAKE_SOURCE_DIR}/include")
+install(DIRECTORY "${CMAKE_SOURCE_DIR}/modules/" DESTINATION modules)
 
 add_subdirectory(src)

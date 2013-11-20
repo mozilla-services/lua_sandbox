@@ -353,8 +353,8 @@ int require_library(lua_State* lua)
       luaL_error(lua, "require_path exceeded %d", MAX_PATH);
     }
     
-    if (luaL_dofile(lsb->lua, fn) != 0) {
-      lua_error(lua);
+    if (luaL_dofile(lua, fn) != 0) {
+      luaL_error(lua, "%s", lua_tostring(lua, -1));
     }
   }
   return 1;

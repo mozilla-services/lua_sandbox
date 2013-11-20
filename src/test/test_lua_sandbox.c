@@ -654,7 +654,7 @@ static char* test_cjson()
 static char* test_errors()
 {
   const char* tests[] = {
-    "process() cannot open ../../modules/unknown.lua: No such file or directory"
+    "process() lua/errors.lua:9: cannot open ../../modules/unknown.lua: No such file or directory"
     , "process() lua/errors.lua:11: output() must have at least one argument"
     , "process() not enough memory"
     , "process() instruction_limit exceeded"
