@@ -51,20 +51,21 @@ typedef struct lua_sandbox lua_sandbox;
 
 /**
  * Allocates and initializes the structure around the Lua sandbox.
- *
+ * 
  * @param parent Pointer to associate the owner to this sandbox.
  * @param lua_file Filename of the Lua script to run in this sandbox.
+ * @param require_path Location of the common sandbox modules
  * @param memory_limit Sets the sandbox memory limit (bytes).
  * @param instruction_limit Sets the sandbox Lua instruction limit (count).
  * This limit is per call to process_message or timer_event
  * @param output_limit Sets the single message payload limit (bytes). This
  * limit applies to the in memory output buffer.  The buffer is reset back
  * to zero when inject_message is called.
- *
  * @return lua_sandbox Sandbox pointer or NULL on failure.
  */
 LSB_EXPORT lua_sandbox* lsb_create(void* parent,
                                    const char* lua_file,
+                                   const char* require_path,
                                    unsigned memory_limit,
                                    unsigned instruction_limit,
                                    unsigned output_limit);
@@ -72,11 +73,11 @@ LSB_EXPORT lua_sandbox* lsb_create(void* parent,
 /**
  * Initializes the Lua sandbox and loads/runs the Lua script that was specified
  * in lua_create_sandbox.
- *
+ * 
  * @param lsb Pointer to the sandbox.
  * @param state_file Filename where the global data is read. Use a NULL or empty
  *                   string no data restoration.
- *
+ * 
  * @return int Zero on success, non-zero on failure.
  */
 LSB_EXPORT int lsb_init(lua_sandbox* lsb, const char* state_file);
