@@ -654,7 +654,7 @@ static char* test_cjson()
 static char* test_errors()
 {
   const char* tests[] = {
-    "process() lua/errors.lua:9: cannot open ../../modules/unknown.lua: No such file or directory"
+    "process() lua/errors.lua:9: cannot open lua/unknown.lua: No such file or directory"
     , "process() lua/errors.lua:11: output() must have at least one argument"
     , "process() not enough memory"
     , "process() instruction_limit exceeded"
@@ -662,11 +662,14 @@ static char* test_errors()
     , "process() must return a single numeric value"
     , "process() must return a single numeric value"
     , "process() lua/errors.lua:27: output_limit exceeded"
+    , "process() lua/errors.lua:30: lua/bad_module.lua:1: attempt to perform arithmetic on global 'nilvalue' (a nil value)"
+    , "process() lua/errors.lua:32: invalid module name '../invalid'"
+    , "process() lua/errors.lua:34: require_path exceeded 255"
     , NULL
   };
 
   for (int i = 0; tests[i]; ++i) {
-    lua_sandbox* sb = lsb_create(NULL, "lua/errors.lua", "../../modules", 32767, 1000,
+    lua_sandbox* sb = lsb_create(NULL, "lua/errors.lua", "lua", 32767, 1000,
                                  128);
     mu_assert(sb, "lsb_create() received: NULL");
 

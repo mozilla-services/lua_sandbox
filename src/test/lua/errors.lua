@@ -26,6 +26,12 @@ function process(tc)
         for i=1,15 do
             output("012345678901234567890123456789010123456789012345678901234567890123456789012345678901234567890123456789")
         end
+    elseif tc == 8 then
+        local v = require "bad_module"
+    elseif tc == 9 then
+        local v = require "../invalid"
+    elseif tc == 10 then
+        local v = require "pathoverflowpathoverflowpathoverflowpathoverflowpathoverflowpathoverflowpathoverflowpathoverflowpathoverflowpathoverflowpathoverflowpathoverflowpathoverflowpathoverflowpathoverflowpathoverflowpathoverflowpathoverflowpathoverflowpathoverflowpathoverflow"
     end
     return 0
 end
