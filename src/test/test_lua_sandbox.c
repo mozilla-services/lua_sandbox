@@ -260,7 +260,7 @@ static char* test_init_error()
   result = lsb_init(sb, NULL);
   mu_assert(result == 2, "lsb_init() received: %d %s", result,
             lsb_get_error(sb));
-  const char *expected = "lua/lpeg_grammar.lua:7: require_library() external modules are disabled";
+  const char *expected = "lua/lpeg_grammar.lua:9: require_library() external modules are disabled";
   mu_assert(strcmp(lsb_get_error(sb), expected) == 0, 
             "lsb_get_error() received: %s", lsb_get_error(sb));
 
@@ -722,7 +722,13 @@ static char* test_lpeg_grammar()
 {
   const char* tests[] = {
     "{\"offset_min\":0,\"offset_sign\":\"-\",\"offset_hour\":7,\"sec\":\"59\",\"min\":\"23\",\"day\":\"05\",\"sec_frac\":0.217,\"hour\":\"23\",\"month\":\"05\",\"year\":\"1999\"}\n"
-    ,"3"
+    ,"7 6 5 4 4 3 3 2 1 0 0"
+    ,"9.25971839e+17"
+    ,"{\"day\":\"12\",\"min\":\"20\",\"sec\":\"50\",\"sec_frac\":0.52,\"year\":\"1985\",\"month\":\"04\",\"hour\":\"23\"}\n"
+    ,"{\"offset_min\":0,\"offset_sign\":\"-\",\"offset_hour\":8,\"sec\":\"57\",\"min\":\"39\",\"day\":\"19\",\"hour\":\"16\",\"month\":\"12\",\"year\":\"1996\"}\n"
+    ,"{\"day\":\"31\",\"sec\":\"60\",\"min\":\"59\",\"year\":\"1990\",\"month\":\"12\",\"hour\":\"23\"}\n"
+    ,"{\"offset_min\":0,\"offset_sign\":\"-\",\"offset_hour\":8,\"sec\":\"60\",\"min\":\"59\",\"day\":\"31\",\"hour\":\"15\",\"month\":\"12\",\"year\":\"1990\"}\n"
+    ,"{\"offset_min\":20,\"offset_sign\":\"+\",\"offset_hour\":0,\"sec\":\"27\",\"min\":\"00\",\"day\":\"01\",\"sec_frac\":0.87,\"hour\":\"12\",\"month\":\"01\",\"year\":\"1937\"}\n"
     , NULL
     };
 
@@ -843,7 +849,7 @@ static char* benchmark_counter()
 
 static char* benchmark_serialize()
 {
-  int iter = 10000;
+  int iter = 1000;
   const char* output_file = "serialize.preserve";
 
   clock_t t = clock();
@@ -867,7 +873,7 @@ static char* benchmark_serialize()
 
 static char* benchmark_deserialize()
 {
-  int iter = 10000;
+  int iter = 1000;
 
   clock_t t = clock();
   for (int x = 0; x < iter; ++x) {
@@ -890,7 +896,7 @@ static char* benchmark_deserialize()
 
 static char* benchmark_lpeg_decoder()
 {
-  int iter = 100000;
+  int iter = 10000;
 
   lua_sandbox* sb = lsb_create(NULL, "lua/decoder.lua", "../../modules", 8 * 1024 * 1024, 1000000,
                                1024 * 63);
@@ -915,7 +921,7 @@ static char* benchmark_lpeg_decoder()
 
 static char* benchmark_lua_types_output()
 {
-  int iter = 100000;
+  int iter = 10000;
 
   lua_sandbox* sb = lsb_create(NULL, "lua/output.lua", "../../modules", 100000, 1000,
                                1024 * 63);
@@ -940,7 +946,7 @@ static char* benchmark_lua_types_output()
 
 static char* benchmark_cbuf_output()
 {
-  int iter = 100000;
+  int iter = 10000;
 
   lua_sandbox* sb = lsb_create(NULL, "lua/output.lua", "../../modules", 100000, 1000,
                                1024 * 63);
@@ -965,7 +971,7 @@ static char* benchmark_cbuf_output()
 
 static char* benchmark_table_output()
 {
-  int iter = 100000;
+  int iter = 10000;
 
   lua_sandbox* sb = lsb_create(NULL, "lua/output.lua", "../../modules", 100000, 1000,
                                1024 * 63);
@@ -1021,6 +1027,8 @@ static char* all_tests()
 
 int main()
 {
+  setenv("TZ", "UTC", 1);
+  tzset();
   char* result = all_tests();
   if (result) {
     printf("%s\n", result);

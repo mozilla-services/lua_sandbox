@@ -20,7 +20,7 @@
 
 static const char* disable_base_functions[] = { "collectgarbage", "coroutine",
   "dofile", "getfenv", "getmetatable", "load", "loadfile", "loadstring",
-  "module", "print", "rawequal", "require", "setfenv", NULL };
+  "module", "print", "rawequal", "require", NULL };
 
 static jmp_buf g_jbuf;
 
