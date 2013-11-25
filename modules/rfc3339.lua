@@ -58,20 +58,19 @@ grammar =  l.Ct(full_date * l.S"Tt " * full_time)
 
 -- Utility function to convert the table output into the number of nanoseconds since the UNIX epoch
 function time_ns(t)
-    if t then
-        local offset = 0
-        if t.offset_hour then
-            offset = (t.offset_hour * 60 * 60) + (t.offset_min * 60)
-            if t.offset_sign == "+" then offset = offset * -1 end
-        end
+    if not t then return 0 end
 
-        local frac = 0
-        if t.sec_frac then
-            frac = t.sec_frac
-        end
-        return (os.time(t) + frac + offset) * 1e9
+    local offset = 0
+    if t.offset_hour then
+        offset = (t.offset_hour * 60 * 60) + (t.offset_min * 60)
+        if t.offset_sign == "+" then offset = offset * -1 end
     end
-    return 0
+
+    local frac = 0
+    if t.sec_frac then
+        frac = t.sec_frac
+    end
+    return (os.time(t) + frac + offset) * 1e9
 end
 
 return M
