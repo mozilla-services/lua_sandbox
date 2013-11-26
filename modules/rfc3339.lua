@@ -1,8 +1,8 @@
 -- Imports
-local l = lpeg
+local l = require "lpeg"
 l.locale(l)
-local os = os
-local string = string
+local os = require "os"
+local string = require "string"
 local tonumber = tonumber
 
 -- Verify TZ

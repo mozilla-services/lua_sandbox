@@ -38,6 +38,8 @@ struct lua_sandbox {
 };
 
 extern const char* disable_none[];
+extern const char* package_table;
+extern const char* loaded_table;
 
 ////////////////////////////////////////////////////////////////////////////////
 /// Sandbox management functions.

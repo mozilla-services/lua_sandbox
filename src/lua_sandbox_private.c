@@ -28,6 +28,8 @@
 #define MAX_PATH 255
 
 const char* disable_none[] = { NULL };
+const char* package_table = "package";
+const char* loaded_table = "loaded";
 
 
 void load_library(lua_State* lua, const char* table, lua_CFunction f,
@@ -307,6 +309,23 @@ LUALIB_API int (luaopen_lpeg)(lua_State* L);
 int require_library(lua_State* lua)
 {
   const char* name = luaL_checkstring(lua, 1);
+  lua_getglobal(lua, package_table);
+  if (!lua_istable(lua, -1)) {
+    luaL_error(lua, "%s table is missing", package_table);
+  }
+  lua_getfield(lua, -1, loaded_table);
+  if (!lua_istable(lua, -1)) {
+    luaL_error(lua, "%s.%s table is missing", package_table, loaded_table);
+  }
+  lua_getfield(lua, -1, name);
+  if (!lua_isnil(lua, -1)) {
+    return 1; // returned the cache copy
+  }
+  lua_pop(lua, 1); // remove the nil
+  int pos = lua_gettop(lua);
+  lua_pushboolean(lua, 1);
+  lua_setfield(lua, pos, name); // mark it as loaded to prevent a dependency loop
+
   if (strcmp(name, LUA_STRLIBNAME) == 0) {
     load_library(lua, name, luaopen_string, disable_none);
   } else  if (strcmp(name, LUA_MATHLIBNAME) == 0) {
@@ -357,5 +376,7 @@ int require_library(lua_State* lua)
       luaL_error(lua, "%s", lua_tostring(lua, -1));
     }
   }
+  lua_pushvalue(lua, -1);
+  lua_setfield(lua, pos, name);
   return 1;
 }

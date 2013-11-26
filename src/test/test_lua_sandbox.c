@@ -429,7 +429,7 @@ static char* test_output()
 
   for (int x = 0; outputs[x]; ++x) {
     result = process(sb, x);
-    mu_assert(!result, "process() failed: %d %s", result, lsb_get_error(sb));
+    mu_assert(!result, "process() test: %d failed: %d %s", x, result, lsb_get_error(sb));
     if (outputs[x][0]) {
       if (outputs[x][0] == 0x10) {
         size_t header = 18;
@@ -665,6 +665,8 @@ static char* test_errors()
     , "process() lua/errors.lua:30: lua/bad_module.lua:1: attempt to perform arithmetic on global 'nilvalue' (a nil value)"
     , "process() lua/errors.lua:32: invalid module name '../invalid'"
     , "process() lua/errors.lua:34: require_path exceeded 255"
+    , "process() lua/errors.lua:37: package table is missing"
+    , "process() lua/errors.lua:40: package.loaded table is missing"
     , NULL
   };
 

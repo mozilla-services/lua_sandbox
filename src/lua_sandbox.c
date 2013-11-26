@@ -18,9 +18,8 @@
 #include "lua_serialize_protobuf.h"
 #include "lua_circular_buffer.h"
 
-static const char* disable_base_functions[] = { "collectgarbage", "coroutine",
-  "dofile", "getfenv", "getmetatable", "load", "loadfile", "loadstring",
-  "module", "print", "rawequal", "require", NULL };
+static const char* disable_base_functions[] = { "collectgarbage", "coroutine", 
+  "dofile", "load", "loadfile", "loadstring", "module", "print", "require", NULL };
 
 static jmp_buf g_jbuf;
 
@@ -116,6 +115,18 @@ int lsb_init(lua_sandbox* lsb, const char* data_file)
 
   load_library(lsb->lua, "", luaopen_base, disable_base_functions);
   lua_pop(lsb->lua, 1);
+
+  // Create a simple package cache
+  lua_createtable(lsb->lua, 0, 1);
+  lua_pushvalue(lsb->lua, -1);
+  lua_setglobal(lsb->lua, package_table);
+  // Add empty metatable to prevent serialization
+  lua_newtable(lsb->lua);
+  lua_setmetatable(lsb->lua, -2);
+  // add the loaded table
+  lua_newtable(lsb->lua);
+  lua_setfield(lsb->lua, -2, loaded_table);
+  lua_pop(lsb->lua, 1); // remove the package table
 
   lua_pushlightuserdata(lsb->lua, (void*)lsb);
   lua_pushcclosure(lsb->lua, &require_library, 1);
