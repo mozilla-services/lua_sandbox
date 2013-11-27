@@ -327,11 +327,7 @@ int encode_fields(lua_sandbox* lsb, output_data* d, char id, const char* name,
   lua_checkstack(lsb->lua, 2);
   lua_pushnil(lsb->lua);
   while (result == 0 && lua_next(lsb->lua, -2) != 0) {
-    if (lua_type(lsb->lua, -1) == LUA_TNIL) {
-      lua_pop(lsb->lua, 1); // remove the nil
-      continue;
-    }
-    if (pb_write_tag(d, id, 2)) return 1; 
+    if (pb_write_tag(d, id, 2)) return 1;
     len_pos = d->pos;
     if (pb_write_varint(d, 0)) return 1;  // length tbd later
     if (lua_isstring(lsb->lua, -2)) {
