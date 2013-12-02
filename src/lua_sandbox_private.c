@@ -19,7 +19,17 @@
 #include "lua_serialize_protobuf.h"
 #include "lua_circular_buffer.h"
 
+
+#ifdef _WIN32
+#define PATH_DELIMITER '\\'
+#else
+#define PATH_DELIMITER '/'
+#endif
+#define MAX_PATH 255
+
 const char* disable_none[] = { NULL };
+const char* package_table = "package";
+const char* loaded_table = "loaded";
 
 
 void load_library(lua_State* lua, const char* table, lua_CFunction f,
@@ -48,31 +58,31 @@ void load_library(lua_State* lua, const char* table, lua_CFunction f,
 #ifndef LUA_JIT
 void* memory_manager(void* ud, void* ptr, size_t osize, size_t nsize)
 {
-    lua_sandbox* lsb = (lua_sandbox*)ud;
+  lua_sandbox* lsb = (lua_sandbox*)ud;
 
-    void* nptr = NULL;
-    if (nsize == 0) {
-        free(ptr);
-        lsb->usage[LSB_UT_MEMORY][LSB_US_CURRENT] -= (unsigned)osize;
-    } else {
-        unsigned new_state_memory =
-          (unsigned)(lsb->usage[LSB_UT_MEMORY][LSB_US_CURRENT] + nsize - osize);
-        if (0 == lsb->usage[LSB_UT_MEMORY][LSB_US_LIMIT]
-            || new_state_memory
-            <= lsb->usage[LSB_UT_MEMORY][LSB_US_LIMIT]) {
-            nptr = realloc(ptr, nsize);
-            if (nptr != NULL) {
-                lsb->usage[LSB_UT_MEMORY][LSB_US_CURRENT] =
-                  new_state_memory;
-                if (lsb->usage[LSB_UT_MEMORY][LSB_US_CURRENT]
-                    > lsb->usage[LSB_UT_MEMORY][LSB_US_MAXIMUM]) {
-                    lsb->usage[LSB_UT_MEMORY][LSB_US_MAXIMUM] =
-                      lsb->usage[LSB_UT_MEMORY][LSB_US_CURRENT];
-                }
-            }
+  void* nptr = NULL;
+  if (nsize == 0) {
+    free(ptr);
+    lsb->usage[LSB_UT_MEMORY][LSB_US_CURRENT] -= (unsigned)osize;
+  } else {
+    unsigned new_state_memory =
+      (unsigned)(lsb->usage[LSB_UT_MEMORY][LSB_US_CURRENT] + nsize - osize);
+    if (0 == lsb->usage[LSB_UT_MEMORY][LSB_US_LIMIT]
+        || new_state_memory
+        <= lsb->usage[LSB_UT_MEMORY][LSB_US_LIMIT]) {
+      nptr = realloc(ptr, nsize);
+      if (nptr != NULL) {
+        lsb->usage[LSB_UT_MEMORY][LSB_US_CURRENT] =
+          new_state_memory;
+        if (lsb->usage[LSB_UT_MEMORY][LSB_US_CURRENT]
+            > lsb->usage[LSB_UT_MEMORY][LSB_US_MAXIMUM]) {
+          lsb->usage[LSB_UT_MEMORY][LSB_US_MAXIMUM] =
+            lsb->usage[LSB_UT_MEMORY][LSB_US_CURRENT];
         }
+      }
     }
-    return nptr;
+  }
+  return nptr;
 }
 #endif
 
@@ -299,6 +309,23 @@ LUALIB_API int (luaopen_lpeg)(lua_State* L);
 int require_library(lua_State* lua)
 {
   const char* name = luaL_checkstring(lua, 1);
+  lua_getglobal(lua, package_table);
+  if (!lua_istable(lua, -1)) {
+    luaL_error(lua, "%s table is missing", package_table);
+  }
+  lua_getfield(lua, -1, loaded_table);
+  if (!lua_istable(lua, -1)) {
+    luaL_error(lua, "%s.%s table is missing", package_table, loaded_table);
+  }
+  lua_getfield(lua, -1, name);
+  if (!lua_isnil(lua, -1)) {
+    return 1; // returned the cache copy
+  }
+  lua_pop(lua, 1); // remove the nil
+  int pos = lua_gettop(lua);
+  lua_pushboolean(lua, 1);
+  lua_setfield(lua, pos, name); // mark it as loaded to prevent a dependency loop
+
   if (strcmp(name, LUA_STRLIBNAME) == 0) {
     load_library(lua, name, luaopen_string, disable_none);
   } else  if (strcmp(name, LUA_MATHLIBNAME) == 0) {
@@ -321,7 +348,35 @@ int require_library(lua_State* lua)
     lua_pushvalue(lua, -1);
     lua_setglobal(lua, name);
   } else {
-    luaL_error(lua, "library '%s' is not available", name);
+    void* luserdata = lua_touserdata(lua, lua_upvalueindex(1));
+    if (NULL == luserdata) {
+      luaL_error(lua, "require_library() invalid lightuserdata");
+    }
+    lua_sandbox* lsb = (lua_sandbox*)luserdata;
+
+    if (!lsb->require_path) {
+      luaL_error(lua, "require_library() external modules are disabled");
+    }
+
+    int i = 0;
+    while (name[i]) {
+      if (!isalnum(name[i]) && name[i] != '_') {
+        luaL_error(lua, "invalid module name '%s'", name);
+      }
+      ++i;
+    }
+    char fn[MAX_PATH];
+    i = snprintf(fn, MAX_PATH, "%s%c%s.lua", lsb->require_path, PATH_DELIMITER,
+                 name);
+    if (i < 0 || i >= MAX_PATH) {
+      luaL_error(lua, "require_path exceeded %d", MAX_PATH);
+    }
+
+    if (luaL_dofile(lua, fn) != 0) {
+      luaL_error(lua, "%s", lua_tostring(lua, -1));
+    }
   }
+  lua_pushvalue(lua, -1);
+  lua_setfield(lua, pos, name);
   return 1;
 }

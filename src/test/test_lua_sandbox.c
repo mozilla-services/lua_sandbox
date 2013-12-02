@@ -207,18 +207,18 @@ int write_output(lua_State* lua)
 
 static char* test_create_error()
 {
-  lua_sandbox* sb = lsb_create(NULL, "lua/simple.lua", LSB_MEMORY + 1,
+  lua_sandbox* sb = lsb_create(NULL, "lua/simple.lua", "../../modules", LSB_MEMORY + 1,
                                1000, 1024);
   mu_assert(!sb, "lsb_create() memory_limit");
 
-  sb = lsb_create(NULL, "lua/simple.lua", 65765, LSB_INSTRUCTION + 1,
+  sb = lsb_create(NULL, "lua/simple.lua", "../../modules", 65765, LSB_INSTRUCTION + 1,
                   1024);
   mu_assert(!sb, "lsb_create() instruction_limit");
 
-  sb = lsb_create(NULL, "lua/simple.lua", 65765, 1000, LSB_OUTPUT + 1);
+  sb = lsb_create(NULL, "lua/simple.lua", "../../modules", 65765, 1000, LSB_OUTPUT + 1);
   mu_assert(!sb, "lsb_create() output_limit");
 
-  sb = lsb_create(NULL, NULL, 65765, 1000, 1024);
+  sb = lsb_create(NULL, NULL, "../../modules", 65765, 1000, 1024);
   mu_assert(!sb, "lsb_create() null lua_file");
 
   return NULL;
@@ -232,7 +232,7 @@ static char* test_init_error()
   mu_assert(result == 0, "lsb_init() null sandbox ptr");
 
   // load error
-  lua_sandbox* sb = lsb_create(NULL, "lua/simple1.lua", 65765, 1000,
+  lua_sandbox* sb = lsb_create(NULL, "lua/simple1.lua", "../../modules", 65765, 1000,
                                1024);
   mu_assert(sb, "lsb_create() received: NULL");
   result = lsb_init(sb, NULL);
@@ -244,13 +244,28 @@ static char* test_init_error()
   mu_assert(!e, "lsb_destroy() received: %s", e);
 
   // out of memory
-  sb = lsb_create(NULL, "lua/simple.lua", 6000, 1000, 1024);
+  sb = lsb_create(NULL, "lua/simple.lua", "../../modules", 6000, 1000, 1024);
   mu_assert(sb, "lsb_create() received: NULL");
   result = lsb_init(sb, NULL);
   mu_assert(result == 2, "lsb_init() received: %d %s", result,
             lsb_get_error(sb));
   e = lsb_destroy(sb, NULL);
   mu_assert(!e, "lsb_destroy() received: %s\n", e);
+
+  sb = lsb_create(NULL, "lua/lpeg_grammar.lua", NULL, 100000, 1000,
+                               8000);
+  mu_assert(sb, "lsb_create() received: NULL");
+
+  // disabled external modules
+  result = lsb_init(sb, NULL);
+  mu_assert(result == 2, "lsb_init() received: %d %s", result,
+            lsb_get_error(sb));
+  const char *expected = "lua/lpeg_grammar.lua:9: require_library() external modules are disabled";
+  mu_assert(strcmp(lsb_get_error(sb), expected) == 0, 
+            "lsb_get_error() received: %s", lsb_get_error(sb));
+
+  e = lsb_destroy(sb, NULL);
+  mu_assert(!e, "lsb_destroy() received: %s", e);
 
   return NULL;
 }
@@ -263,7 +278,7 @@ static char* test_destroy_error()
   e = lsb_destroy(NULL, NULL);
   mu_assert(!e, "lsb_destroy() received: %s", e);
 
-  lua_sandbox* sb = lsb_create(NULL, "lua/simple.lua", 65765, 1000,
+  lua_sandbox* sb = lsb_create(NULL, "lua/simple.lua", "../../modules", 65765, 1000,
                                1024);
   mu_assert(sb, "lsb_create() received: NULL");
   int result = lsb_init(sb, NULL);
@@ -285,7 +300,7 @@ static char* test_usage_error()
   unsigned u = lsb_usage(NULL, LSB_UT_MEMORY, LSB_US_CURRENT);
   mu_assert(u == 0, "NULL sandbox memory usage received: %u", u);
 
-  lua_sandbox* sb = lsb_create(NULL, "lua/simple.lua", 65765, 1000,
+  lua_sandbox* sb = lsb_create(NULL, "lua/simple.lua", "../../modules", 65765, 1000,
                                1024);
   mu_assert(sb, "lsb_create() received: NULL");
 
@@ -321,7 +336,7 @@ static char* test_misc()
 
 static char* test_simple()
 {
-  lua_sandbox* sb = lsb_create(NULL, "lua/simple.lua", 65765, 1000,
+  lua_sandbox* sb = lsb_create(NULL, "lua/simple.lua", "../../modules", 65765, 1000,
                                1024);
   mu_assert(sb, "lsb_create() received: NULL");
 
@@ -403,7 +418,7 @@ static char* test_output()
     , NULL
   };
 
-  lua_sandbox* sb = lsb_create(NULL, "lua/output.lua", 100000,
+  lua_sandbox* sb = lsb_create(NULL, "lua/output.lua", "../../modules", 100000,
                                1000, 63 * 1024);
   mu_assert(sb, "lsb_create() received: NULL");
 
@@ -414,7 +429,7 @@ static char* test_output()
 
   for (int x = 0; outputs[x]; ++x) {
     result = process(sb, x);
-    mu_assert(!result, "process() failed: %d %s", result, lsb_get_error(sb));
+    mu_assert(!result, "process() test: %d failed: %d %s", x, result, lsb_get_error(sb));
     if (outputs[x][0]) {
       if (outputs[x][0] == 0x10) {
         size_t header = 18;
@@ -474,7 +489,7 @@ static char* test_cbuf_errors()
   };
 
   for (int i = 0; tests[i]; ++i) {
-    lua_sandbox* sb = lsb_create(NULL, "lua/circular_buffer_errors.lua",
+    lua_sandbox* sb = lsb_create(NULL, "lua/circular_buffer_errors.lua", "../../modules",
                                  32767, 1000, 128);
     mu_assert(sb, "lsb_create() received: NULL");
 
@@ -507,7 +522,7 @@ static char* test_cbuf()
     , NULL
   };
 
-  lua_sandbox* sb = lsb_create(NULL, "lua/circular_buffer.lua", 32767,
+  lua_sandbox* sb = lsb_create(NULL, "lua/circular_buffer.lua", "../../modules", 32767,
                                1000, 32767);
   mu_assert(sb, "lsb_create() received: NULL");
 
@@ -572,7 +587,7 @@ static char* test_cbuf_delta()
     , NULL
   };
 
-  lua_sandbox* sb = lsb_create(NULL, "lua/circular_buffer_delta.lua",
+  lua_sandbox* sb = lsb_create(NULL, "lua/circular_buffer_delta.lua", "../../modules",
                                32767, 1000, 32767);
   mu_assert(sb, "lsb_create() received: NULL");
 
@@ -617,7 +632,7 @@ static char* test_cbuf_delta()
 static char* test_cjson()
 {
 
-  lua_sandbox* sb = lsb_create(NULL, "lua/cjson.lua", 32767, 1000,
+  lua_sandbox* sb = lsb_create(NULL, "lua/cjson.lua", "../../modules", 32767, 1000,
                                32767);
   mu_assert(sb, "lsb_create() received: NULL");
 
@@ -639,7 +654,7 @@ static char* test_cjson()
 static char* test_errors()
 {
   const char* tests[] = {
-    "process() lua/errors.lua:9: library 'unknown' is not available"
+    "process() lua/errors.lua:9: cannot open lua/unknown.lua: No such file or directory"
     , "process() lua/errors.lua:11: output() must have at least one argument"
     , "process() not enough memory"
     , "process() instruction_limit exceeded"
@@ -647,11 +662,16 @@ static char* test_errors()
     , "process() must return a single numeric value"
     , "process() must return a single numeric value"
     , "process() lua/errors.lua:27: output_limit exceeded"
+    , "process() lua/errors.lua:30: lua/bad_module.lua:1: attempt to perform arithmetic on global 'nilvalue' (a nil value)"
+    , "process() lua/errors.lua:32: invalid module name '../invalid'"
+    , "process() lua/errors.lua:34: require_path exceeded 255"
+    , "process() lua/errors.lua:37: package table is missing"
+    , "process() lua/errors.lua:40: package.loaded table is missing"
     , NULL
   };
 
   for (int i = 0; tests[i]; ++i) {
-    lua_sandbox* sb = lsb_create(NULL, "lua/errors.lua", 32767, 1000,
+    lua_sandbox* sb = lsb_create(NULL, "lua/errors.lua", "lua", 32767, 1000,
                                  128);
     mu_assert(sb, "lsb_create() received: NULL");
 
@@ -679,7 +699,7 @@ static char* test_lpeg()
   const char* expected = "[\"1\",\"string with spaces\","
     "\"quoted string, with comma and \\\"quoted\\\" text\"]\n";
 
-  lua_sandbox* sb = lsb_create(NULL, "lua/lpeg_csv.lua", 100000, 1000,
+  lua_sandbox* sb = lsb_create(NULL, "lua/lpeg_csv.lua", "../../modules", 100000, 1000,
                                8000);
   mu_assert(sb, "lsb_create() received: NULL");
 
@@ -700,10 +720,46 @@ static char* test_lpeg()
 }
 
 
+static char* test_lpeg_grammar()
+{
+  const char* tests[] = {
+    "{\"offset_min\":0,\"offset_sign\":\"-\",\"offset_hour\":7,\"sec\":\"59\",\"min\":\"23\",\"day\":\"05\",\"sec_frac\":0.217,\"hour\":\"23\",\"month\":\"05\",\"year\":\"1999\"}\n"
+    ,"7 6 5 4 4 3 3 2 1 0 0"
+    ,"9.25971839e+17"
+    ,"{\"day\":\"12\",\"min\":\"20\",\"sec\":\"50\",\"sec_frac\":0.52,\"year\":\"1985\",\"month\":\"04\",\"hour\":\"23\"}\n"
+    ,"{\"offset_min\":0,\"offset_sign\":\"-\",\"offset_hour\":8,\"sec\":\"57\",\"min\":\"39\",\"day\":\"19\",\"hour\":\"16\",\"month\":\"12\",\"year\":\"1996\"}\n"
+    ,"{\"day\":\"31\",\"sec\":\"60\",\"min\":\"59\",\"year\":\"1990\",\"month\":\"12\",\"hour\":\"23\"}\n"
+    ,"{\"offset_min\":0,\"offset_sign\":\"-\",\"offset_hour\":8,\"sec\":\"60\",\"min\":\"59\",\"day\":\"31\",\"hour\":\"15\",\"month\":\"12\",\"year\":\"1990\"}\n"
+    ,"{\"offset_min\":20,\"offset_sign\":\"+\",\"offset_hour\":0,\"sec\":\"27\",\"min\":\"00\",\"day\":\"01\",\"sec_frac\":0.87,\"hour\":\"12\",\"month\":\"01\",\"year\":\"1937\"}\n"
+    , NULL
+    };
+
+  lua_sandbox* sb = lsb_create(NULL, "lua/lpeg_grammar.lua", "../../modules", 100000, 1000,
+                               8000);
+  mu_assert(sb, "lsb_create() received: NULL");
+
+  int result = lsb_init(sb, NULL);
+  mu_assert(result == 0, "lsb_init() received: %d %s", result,
+            lsb_get_error(sb));
+  lsb_add_function(sb, &write_output, "write");
+
+  for (int i = 0; tests[i]; ++i) {
+    result = process(sb, i);
+    mu_assert(result == 0, "process() received: %d %s", result, lsb_get_error(sb));
+    mu_assert(strcmp(tests[i], written_data) == 0, "test: %d received: %s", i, written_data);
+  }
+
+  e = lsb_destroy(sb, NULL);
+  mu_assert(!e, "lsb_destroy() received: %s", e);
+
+  return NULL;
+}
+
+
 static char* test_serialize()
 {
   const char* output_file = "serialize.preserve";
-  lua_sandbox* sb = lsb_create(NULL, "lua/serialize.lua", 64000, 1000,
+  lua_sandbox* sb = lsb_create(NULL, "lua/serialize.lua", "../../modules", 64000, 1000,
                                64000);
   mu_assert(sb, "lsb_create() received: NULL");
 
@@ -732,7 +788,7 @@ static char* test_serialize_failure()
   const char* output_file = "serialize_failure.preserve";
   const char* expected = "serialize_data cannot preserve type 'function'";
 
-  lua_sandbox* sb = lsb_create(NULL, "lua/serialize_failure.lua", 32767,
+  lua_sandbox* sb = lsb_create(NULL, "lua/serialize_failure.lua", "../../modules", 32767,
                                1000, 1024);
   mu_assert(sb, "lsb_create() received: NULL");
 
@@ -754,7 +810,7 @@ static char* test_serialize_noglobal()
   const char* output_file = "serialize_noglobal.preserve";
   const char* expected = "preserve_global_data cannot access the global table";
 
-  lua_sandbox* sb = lsb_create(NULL, "lua/serialize_noglobal.lua",
+  lua_sandbox* sb = lsb_create(NULL, "lua/serialize_noglobal.lua", "../../modules",
                                32767, 1000, 1024);
   mu_assert(sb, "lsb_create() received: NULL");
 
@@ -775,7 +831,7 @@ static char* benchmark_counter()
 {
   int iter = 10000000;
 
-  lua_sandbox* sb = lsb_create(NULL, "lua/counter.lua", 32000, 10, 0);
+  lua_sandbox* sb = lsb_create(NULL, "lua/counter.lua", "../../modules", 32000, 10, 0);
   mu_assert(sb, "lsb_create() received: NULL");
   int result = lsb_init(sb, NULL);
   mu_assert(result == 0, "lsb_init() received: %d %s", result,
@@ -795,12 +851,12 @@ static char* benchmark_counter()
 
 static char* benchmark_serialize()
 {
-  int iter = 10000;
+  int iter = 1000;
   const char* output_file = "serialize.preserve";
 
   clock_t t = clock();
   for (int x = 0; x < iter; ++x) {
-    lua_sandbox* sb = lsb_create(NULL, "lua/serialize.lua", 32767, 1000,
+    lua_sandbox* sb = lsb_create(NULL, "lua/serialize.lua", "../../modules", 32767, 1000,
                                  1024);
     mu_assert(sb, "lsb_create() received: NULL");
 
@@ -819,11 +875,11 @@ static char* benchmark_serialize()
 
 static char* benchmark_deserialize()
 {
-  int iter = 10000;
+  int iter = 1000;
 
   clock_t t = clock();
   for (int x = 0; x < iter; ++x) {
-    lua_sandbox* sb = lsb_create(NULL, "lua/serialize.lua", 32767, 1000,
+    lua_sandbox* sb = lsb_create(NULL, "lua/serialize.lua", "../../modules", 32767, 1000,
                                  1024);
     mu_assert(sb, "lsb_create() received: NULL");
 
@@ -842,9 +898,9 @@ static char* benchmark_deserialize()
 
 static char* benchmark_lpeg_decoder()
 {
-  int iter = 100000;
+  int iter = 10000;
 
-  lua_sandbox* sb = lsb_create(NULL, "lua/decoder.lua", 8 * 1024 * 1024, 1000000,
+  lua_sandbox* sb = lsb_create(NULL, "lua/decoder.lua", "../../modules", 8 * 1024 * 1024, 1000000,
                                1024 * 63);
   mu_assert(sb, "lsb_create() received: NULL");
   int result = lsb_init(sb, NULL);
@@ -867,9 +923,9 @@ static char* benchmark_lpeg_decoder()
 
 static char* benchmark_lua_types_output()
 {
-  int iter = 100000;
+  int iter = 10000;
 
-  lua_sandbox* sb = lsb_create(NULL, "lua/output.lua", 100000, 1000,
+  lua_sandbox* sb = lsb_create(NULL, "lua/output.lua", "../../modules", 100000, 1000,
                                1024 * 63);
   mu_assert(sb, "lsb_create() received: NULL");
   int result = lsb_init(sb, NULL);
@@ -892,9 +948,9 @@ static char* benchmark_lua_types_output()
 
 static char* benchmark_cbuf_output()
 {
-  int iter = 100000;
+  int iter = 10000;
 
-  lua_sandbox* sb = lsb_create(NULL, "lua/output.lua", 100000, 1000,
+  lua_sandbox* sb = lsb_create(NULL, "lua/output.lua", "../../modules", 100000, 1000,
                                1024 * 63);
   mu_assert(sb, "lsb_create() received: NULL");
   int result = lsb_init(sb, NULL);
@@ -917,9 +973,9 @@ static char* benchmark_cbuf_output()
 
 static char* benchmark_table_output()
 {
-  int iter = 100000;
+  int iter = 10000;
 
-  lua_sandbox* sb = lsb_create(NULL, "lua/output.lua", 100000, 1000,
+  lua_sandbox* sb = lsb_create(NULL, "lua/output.lua", "../../modules", 100000, 1000,
                                1024 * 63);
   mu_assert(sb, "lsb_create() received: NULL");
   int result = lsb_init(sb, NULL);
@@ -955,6 +1011,7 @@ static char* all_tests()
   mu_run_test(test_cjson);
   mu_run_test(test_errors);
   mu_run_test(test_lpeg);
+  mu_run_test(test_lpeg_grammar);
   mu_run_test(test_serialize);
   mu_run_test(test_serialize_failure);
   mu_run_test(test_serialize_noglobal);

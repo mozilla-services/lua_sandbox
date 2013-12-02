@@ -29,14 +29,17 @@ typedef struct
 struct lua_sandbox {
   lua_State*      lua;
   void*           parent;
-  lsb_state      state;
+  lsb_state       state;
   output_data     output;
   char*           lua_file;
+  char*           require_path;
   unsigned        usage[LSB_UT_MAX][LSB_US_MAX];
   char            error_message[LSB_ERROR_SIZE];
 };
 
 extern const char* disable_none[];
+extern const char* package_table;
+extern const char* loaded_table;
 
 ////////////////////////////////////////////////////////////////////////////////
 /// Sandbox management functions.
@@ -156,7 +159,8 @@ int output(lua_State* lua);
  *
  * @param lua Pointer to the Lua state.
  *
- * @return int Returns zero values on the stack.
+ * @return int Returns 1 value on the stack (for the standard modules a table 
+ *         for the LPEG grammars, userdata).
  */
 int require_library(lua_State* lua);
 

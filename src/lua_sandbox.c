@@ -19,14 +19,14 @@
 #include "lua_circular_buffer.h"
 
 static const char* disable_base_functions[] = { "collectgarbage", "coroutine",
-  "dofile", "getfenv", "getmetatable", "load", "loadfile", "loadstring",
-  "module", "print", "rawequal", "require", "setfenv", NULL };
+  "dofile", "load", "loadfile", "loadstring", "module", "print", "require", NULL };
 
 static jmp_buf g_jbuf;
 
 
 lua_sandbox* lsb_create(void* parent,
                         const char* lua_file,
+                        const char* require_path,
                         unsigned memory_limit,
                         unsigned instruction_limit,
                         unsigned output_limit)
@@ -43,6 +43,14 @@ lua_sandbox* lsb_create(void* parent,
   if (output_limit < OUTPUT_SIZE) {
     output_limit = OUTPUT_SIZE;
   }
+
+#ifdef _WIN32
+  _putenv_s("TZ", "UTC");
+#else
+  if (setenv("TZ", "UTC", 1) != 0) {
+    return NULL;
+  }
+#endif
 
   lua_sandbox* lsb = malloc(sizeof(lua_sandbox));
   memset(lsb->usage, 0, sizeof(lsb->usage));
@@ -72,13 +80,24 @@ lua_sandbox* lsb_create(void* parent,
   lsb->output.data = malloc(lsb->output.size);
   size_t len = strlen(lua_file);
   lsb->lua_file = malloc(len + 1);
-  if (!lsb->output.data || !lsb->lua_file) {
+  lsb->require_path = NULL;
+  if (require_path) {
+    len = strlen(require_path);
+    lsb->require_path = malloc(len + 1);
+  }
+  if (!lsb->output.data || !lsb->lua_file
+      || (require_path && !lsb->require_path)) {
     free(lsb);
+    free(lsb->lua_file);
+    free(lsb->require_path);
     lua_close(lsb->lua);
     lsb->lua = NULL;
     return NULL;
   }
   strcpy(lsb->lua_file, lua_file);
+  if (lsb->require_path) {
+    strcpy(lsb->require_path, require_path);
+  }
   srand((unsigned int)time(NULL));
   return lsb;
 }
@@ -105,7 +124,20 @@ int lsb_init(lua_sandbox* lsb, const char* data_file)
   load_library(lsb->lua, "", luaopen_base, disable_base_functions);
   lua_pop(lsb->lua, 1);
 
-  lua_pushcfunction(lsb->lua, &require_library);
+  // Create a simple package cache
+  lua_createtable(lsb->lua, 0, 1);
+  lua_pushvalue(lsb->lua, -1);
+  lua_setglobal(lsb->lua, package_table);
+  // Add empty metatable to prevent serialization
+  lua_newtable(lsb->lua);
+  lua_setmetatable(lsb->lua, -2);
+  // add the loaded table
+  lua_newtable(lsb->lua);
+  lua_setfield(lsb->lua, -2, loaded_table);
+  lua_pop(lsb->lua, 1); // remove the package table
+
+  lua_pushlightuserdata(lsb->lua, (void*)lsb);
+  lua_pushcclosure(lsb->lua, &require_library, 1);
   lua_setglobal(lsb->lua, "require");
 
   lua_pushlightuserdata(lsb->lua, (void*)lsb);
@@ -168,6 +200,7 @@ char* lsb_destroy(lua_sandbox* lsb, const char* data_file)
   sandbox_terminate(lsb);
   free(lsb->output.data);
   free(lsb->lua_file);
+  free(lsb->require_path);
   free(lsb);
   return err;
 }
