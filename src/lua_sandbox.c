@@ -18,7 +18,7 @@
 #include "lua_serialize_protobuf.h"
 #include "lua_circular_buffer.h"
 
-static const char* disable_base_functions[] = { "collectgarbage", "coroutine", 
+static const char* disable_base_functions[] = { "collectgarbage", "coroutine",
   "dofile", "load", "loadfile", "loadstring", "module", "print", "require", NULL };
 
 static jmp_buf g_jbuf;
@@ -43,6 +43,14 @@ lua_sandbox* lsb_create(void* parent,
   if (output_limit < OUTPUT_SIZE) {
     output_limit = OUTPUT_SIZE;
   }
+
+#ifdef _WIN32
+  _putenv_s("TZ", "UTC");
+#else
+  if (setenv("TZ", "UTC", 1) != 0) {
+    return NULL;
+  }
+#endif
 
   lua_sandbox* lsb = malloc(sizeof(lua_sandbox));
   memset(lsb->usage, 0, sizeof(lsb->usage));
@@ -74,10 +82,10 @@ lua_sandbox* lsb_create(void* parent,
   lsb->lua_file = malloc(len + 1);
   lsb->require_path = NULL;
   if (require_path) {
-    len = strlen(require_path); 
+    len = strlen(require_path);
     lsb->require_path = malloc(len + 1);
   }
-  if (!lsb->output.data || !lsb->lua_file 
+  if (!lsb->output.data || !lsb->lua_file
       || (require_path && !lsb->require_path)) {
     free(lsb);
     free(lsb->lua_file);
@@ -88,7 +96,7 @@ lua_sandbox* lsb_create(void* parent,
   }
   strcpy(lsb->lua_file, lua_file);
   if (lsb->require_path) {
-    strcpy(lsb->require_path, require_path); 
+    strcpy(lsb->require_path, require_path);
   }
   srand((unsigned int)time(NULL));
   return lsb;

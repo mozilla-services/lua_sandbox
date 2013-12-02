@@ -1029,8 +1029,6 @@ static char* all_tests()
 
 int main()
 {
-  setenv("TZ", "UTC", 1);
-  tzset();
   char* result = all_tests();
   if (result) {
     printf("%s\n", result);
