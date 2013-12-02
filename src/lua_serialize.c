@@ -231,9 +231,9 @@ const char* userdata_type(lua_State* lua, void* ud, int index)
   if (ud == NULL) return table;
 
   if (lua_getmetatable(lua, index)) {
-    lua_getfield(lua, LUA_REGISTRYINDEX, heka_circular_buffer);
+    lua_getfield(lua, LUA_REGISTRYINDEX, lsb_circular_buffer);
     if (lua_rawequal(lua, -1, -2)) {
-      table = heka_circular_buffer;
+      table = lsb_circular_buffer;
     }
   }
   lua_pop(lua, 2); // metatable and field
@@ -279,7 +279,7 @@ int serialize_kvp(lua_sandbox* lsb, serialization_data* data, size_t parent)
     }
   } else if (lua_type(lsb->lua, vindex) == LUA_TUSERDATA) {
     void* ud = lua_touserdata(lsb->lua, vindex);
-    if (heka_circular_buffer == userdata_type(lsb->lua, ud, vindex)) {
+    if (lsb_circular_buffer == userdata_type(lsb->lua, ud, vindex)) {
       table_ref* seen = find_table_ref(&data->tables, ud);
       if (seen == NULL) {
         seen = add_table_ref(&data->tables, ud, pos);
@@ -372,7 +372,7 @@ int ignore_value_type(lua_sandbox* lsb, serialization_data* data, int index)
     break;
   case LUA_TUSERDATA:
     ud = lua_touserdata(lsb->lua, index);
-    if ((heka_circular_buffer != userdata_type(lsb->lua, ud, index))) {
+    if ((lsb_circular_buffer != userdata_type(lsb->lua, ud, index))) {
       return 1;
     }
     break;

@@ -11,8 +11,8 @@
 #include <lua.h>
 #include "lua_sandbox_private.h"
 
-extern const char* heka_circular_buffer;
-extern const char* heka_circular_buffer_table;
+extern const char* lsb_circular_buffer;
+extern const char* lsb_circular_buffer_table;
 typedef struct circular_buffer circular_buffer;
 
 /**

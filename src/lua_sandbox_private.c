@@ -284,7 +284,7 @@ int output(lua_State* lua)
       break;
     case LUA_TUSERDATA:
       ud = lua_touserdata(lua, i);
-      if (heka_circular_buffer == userdata_type(lua, ud, i)) {
+      if (lsb_circular_buffer == userdata_type(lua, ud, i)) {
         if (output_circular_buffer(lua, (circular_buffer*)ud,
                                    &lsb->output)) {
           result = 1;
@@ -336,7 +336,7 @@ int require_library(lua_State* lua)
     const char* disable[] = { "execute", "exit", "remove", "rename",
       "setlocale",  "tmpname", NULL };
     load_library(lua, name, luaopen_os, disable);
-  } else if (strcmp(name, heka_circular_buffer_table) == 0) {
+  } else if (strcmp(name, lsb_circular_buffer_table) == 0) {
     load_library(lua, name, luaopen_circular_buffer, disable_none);
   } else if (strcmp(name, "lpeg") == 0) {
     load_library(lua, name, luaopen_lpeg, disable_none);

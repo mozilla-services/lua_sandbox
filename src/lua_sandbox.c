@@ -288,7 +288,7 @@ const char* lsb_output_userdata(lua_sandbox* lsb, int index, int append)
   }
 
   void* ud = lua_touserdata(lsb->lua, index);
-  if (heka_circular_buffer == userdata_type(lsb->lua, ud, index)) {
+  if (lsb_circular_buffer == userdata_type(lsb->lua, ud, index)) {
     circular_buffer* cb = (circular_buffer*)ud;
     size_t last_pos = lsb->output.pos;
     if (output_circular_buffer(lsb->lua, cb, &lsb->output)) {

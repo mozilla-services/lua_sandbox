@@ -19,8 +19,8 @@
 #include <string.h>
 #include <time.h>
 
-const char* heka_circular_buffer = "Heka.circular_buffer";
-const char* heka_circular_buffer_table = "circular_buffer";
+const char* lsb_circular_buffer = "lsb.circular_buffer";
+const char* lsb_circular_buffer_table = "circular_buffer";
 
 #define COLUMN_NAME_SIZE 16
 #define UNIT_LABEL_SIZE 8
@@ -127,7 +127,7 @@ static int circular_buffer_new(lua_State* lua)
   cb->headers = (header_info*)&cb->bytes[0];
   cb->values = (double*)&cb->bytes[header_bytes];
 
-  luaL_getmetatable(lua, heka_circular_buffer);
+  luaL_getmetatable(lua, lsb_circular_buffer);
   lua_setmetatable(lua, -2);
 
   cb->current_time = seconds_per_row * (rows - 1);
@@ -148,7 +148,7 @@ static int circular_buffer_new(lua_State* lua)
 
 static circular_buffer* check_circular_buffer(lua_State* lua, int min_args)
 {
-  void* ud = luaL_checkudata(lua, 1, heka_circular_buffer);
+  void* ud = luaL_checkudata(lua, 1, lsb_circular_buffer);
   luaL_argcheck(lua, ud != NULL, 1, "invalid userdata type");
   luaL_argcheck(lua, min_args <= lua_gettop(lua), 0,
                 "incorrect number of arguments");
@@ -198,7 +198,7 @@ static void circular_buffer_add_delta(lua_State* lua, circular_buffer* cb,
   // memory usage back to the sandbox
   time_t t = (time_t)(ns / 1e9);
   t = t - (t % cb->seconds_per_row);
-  lua_getglobal(lua, heka_circular_buffer_table);
+  lua_getglobal(lua, lsb_circular_buffer_table);
   if (lua_istable(lua, -1)) {
     if (cb->ref == LUA_NOREF) {
       lua_newtable(lua);
@@ -231,7 +231,7 @@ static void circular_buffer_add_delta(lua_State* lua, circular_buffer* cb,
 
     lua_pop(lua, 2); // remove ref table, timestamped row
   } else {
-    luaL_error(lua, "Could not find table %s", heka_circular_buffer_table);
+    luaL_error(lua, "Could not find table %s", lsb_circular_buffer_table);
   }
   lua_pop(lua, 1); // remove the circular buffer table or failed nil
   return;
@@ -593,7 +593,7 @@ int output_circular_buffer_full(circular_buffer* cb, output_data* output)
 int output_circular_buffer_cbufd(lua_State* lua, circular_buffer* cb,
                                  output_data* output)
 {
-  lua_getglobal(lua, heka_circular_buffer_table);
+  lua_getglobal(lua, lsb_circular_buffer_table);
   if (lua_istable(lua, -1)) {
     // get the delta table for this cbuf
     lua_rawgeti(lua, -1, cb->ref);
@@ -623,7 +623,7 @@ int output_circular_buffer_cbufd(lua_State* lua, circular_buffer* cb,
     luaL_unref(lua, -1, cb->ref);
     cb->ref = LUA_NOREF;
   } else {
-    luaL_error(lua, "Could not find table %s", heka_circular_buffer_table);
+    luaL_error(lua, "Could not find table %s", lsb_circular_buffer_table);
   }
   lua_pop(lua, 1); // remove the circular buffer table or failed nil
   return 0;
@@ -671,7 +671,7 @@ int serialize_circular_buffer_delta(lua_State* lua, circular_buffer* cb,
                                     output_data* output)
 {
   if (cb->ref == LUA_NOREF) return 0;
-  lua_getglobal(lua, heka_circular_buffer_table);
+  lua_getglobal(lua, lsb_circular_buffer_table);
   if (lua_istable(lua, -1)) {
     // get the delta table for this cbuf
     lua_rawgeti(lua, -1, cb->ref);
@@ -702,7 +702,7 @@ int serialize_circular_buffer_delta(lua_State* lua, circular_buffer* cb,
     lua_rawseti(lua, -2, cb->ref);
     cb->ref = LUA_NOREF;
   } else {
-    luaL_error(lua, "Could not find table %s", heka_circular_buffer_table);
+    luaL_error(lua, "Could not find table %s", lsb_circular_buffer_table);
   }
   lua_pop(lua, 1); // remove the circular buffer table or failed nil
   return 0;
@@ -787,10 +787,10 @@ static const struct luaL_reg circular_bufferlib_m[] =
 
 int luaopen_circular_buffer(lua_State* lua)
 {
-  luaL_newmetatable(lua, heka_circular_buffer);
+  luaL_newmetatable(lua, lsb_circular_buffer);
   lua_pushvalue(lua, -1);
   lua_setfield(lua, -2, "__index");
   luaL_register(lua, NULL, circular_bufferlib_m);
-  luaL_register(lua, heka_circular_buffer_table, circular_bufferlib_f);
+  luaL_register(lua, lsb_circular_buffer_table, circular_bufferlib_f);
   return 1;
 }
