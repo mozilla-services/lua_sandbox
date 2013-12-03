@@ -44,8 +44,10 @@ lua_sandbox* lsb_create(void* parent,
     output_limit = OUTPUT_SIZE;
   }
 
-#ifdef _WIN32
-  _putenv_s("TZ", "UTC");
+#if _WIN32
+  if (_putenv("TZ=UTC") != 0) {
+    return NULL;
+  }
 #else
   if (setenv("TZ", "UTC", 1) != 0) {
     return NULL;

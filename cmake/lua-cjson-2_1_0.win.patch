@@ -73,7 +73,7 @@ diff -Naur lua-cjson-2.1.0/CMakeLists.txt lua-cjson-2_1_0.new/CMakeLists.txt
 +# Windows sprintf()/strtod() handle NaN/inf differently. Not supported.
 +add_definitions(-DDISABLE_INVALID_NUMBERS -DLUA_BUILD_AS_DLL -DLUA_CORE -D_CRT_SECURE_NO_WARNINGS)
 +add_library(cjson SHARED lua_cjson.c strbuf.c ${FPCONV_SOURCES})
-+target_link_libraries(cjson "${EP_BASE}/lib/lua51.lib")
++target_link_libraries(cjson "${EP_BASE}/lib/lua.lib")
  
 -# vi:ai et sw=4 ts=4:
 +install(TARGETS cjson DESTINATION lib)

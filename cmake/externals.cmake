@@ -27,8 +27,8 @@ if (LUA_JIT)
             PATCH_COMMAND ${PATCH_EXECUTABLE} -p1 < ${CMAKE_CURRENT_LIST_DIR}/luajit-2_0_2.patch
             CONFIGURE_COMMAND ""
             BUILD_COMMAND cmake -E chdir src msvcbuild.bat
-            INSTALL_COMMAND cmake -E copy src/lua51.dll ${EP_BASE}/lib/lua51.dll
-            COMMAND cmake -E copy src/lua51.lib ${EP_BASE}/lib/lua51.lib
+            INSTALL_COMMAND cmake -E copy src/lua.dll ${EP_BASE}/lib/lua.dll
+            COMMAND cmake -E copy src/lua.lib ${EP_BASE}/lib/lua.lib
             COMMAND cmake -E copy src/lauxlib.h "${LUA_INCLUDE_DIR}/lauxlib.h"
             COMMAND cmake -E copy src/luaconf.h "${LUA_INCLUDE_DIR}/luaconf.h"
             COMMAND cmake -E copy src/lua.h "${LUA_INCLUDE_DIR}/lua.h"

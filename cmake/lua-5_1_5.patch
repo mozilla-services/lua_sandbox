@@ -1,7 +1,7 @@
 diff -Naur lua-5.1.5.orig/CMakeLists.txt lua-5_1_5/CMakeLists.txt
 --- lua-5.1.5.orig/CMakeLists.txt	Wed Dec 31 16:00:00 1969
 +++ lua-5_1_5/CMakeLists.txt	Fri Aug  2 09:26:42 2013
-@@ -0,0 +1,60 @@
+@@ -0,0 +1,62 @@
 +# This Source Code Form is subject to the terms of the Mozilla Public
 +# License, v. 2.0. If a copy of the MPL was not distributed with this
 +# file, You can obtain one at http://mozilla.org/MPL/2.0/.
@@ -42,14 +42,16 @@ diff -Naur lua-5.1.5.orig/CMakeLists.txt lua-5_1_5/CMakeLists.txt
 +)
 +
 +set(CMAKE_INSTALL_PREFIX ${EP_BASE})
-+if (MINGW)
++if (WIN32)
 +    add_library(lua SHARED ${LUA_SOURCE})
-+    set_target_properties(lua PROPERTIES LINK_FLAGS -s)
-+    if (ADDRESS_MODEL EQUAL 32)
-+        set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -m32")
-+        set_target_properties(lua PROPERTIES LINK_FLAGS "-s -m32")
-+    endif()
 +    add_definitions(-DLUA_BUILD_AS_DLL)
++    if (MINGW)
++        set_target_properties(lua PROPERTIES LINK_FLAGS -s)
++        if (ADDRESS_MODEL EQUAL 32)
++            set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -m32")
++            set_target_properties(lua PROPERTIES LINK_FLAGS "-s -m32")
++        endif()
++    endif()
 +elseif(APPLE)
 +    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fPIC")
 +    add_library(lua STATIC ${LUA_SOURCE})

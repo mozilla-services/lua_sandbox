@@ -34,7 +34,7 @@ diff -Naur lpeg-0.12.orig/CMakeLists.txt lpeg-0.12/CMakeLists.txt
 +    add_library(lpeg SHARED ${LPEG_SOURCE})
 +    add_definitions(-DLUA_BUILD_AS_DLL -DLUA_CORE)
 +    if(MSVC)
-+       target_link_libraries(lpeg "${EP_BASE}/lib/lua51.lib")
++       target_link_libraries(lpeg "${EP_BASE}/lib/lua.lib")
 +    else(MINGW)
 +       set_target_properties(lpeg PROPERTIES LINK_FLAGS -s)
 +       if (ADDRESS_MODEL EQUAL 32)

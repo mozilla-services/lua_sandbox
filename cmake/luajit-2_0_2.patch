@@ -124,3 +124,16 @@ diff -Naur LuaJIT-2.0.2/src/lua.h luajit-2_0_2/src/lua.h
  
  /* From Lua 5.2. */
  LUA_API void *lua_upvalueid (lua_State *L, int idx, int n);
+--- LuaJIT-2.0.2/src/msvcbuild.bat      Mon Jun  3 12:00:00 2013
++++ luajit-2_0_2/src/msvcbuild.bat      Tue Dec  3 12:43:39 2013
+@@ -20,8 +20,8 @@
+ @set LJLIB=lib /nologo
+ @set DASMDIR=..\dynasm
+ @set DASM=%DASMDIR%\dynasm.lua
+-@set LJDLLNAME=lua51.dll
+-@set LJLIBNAME=lua51.lib
++@set LJDLLNAME=lua.dll
++@set LJLIBNAME=lua.lib
+ @set ALL_LIB=lib_base.c lib_math.c lib_bit.c lib_string.c lib_table.c lib_io.c lib_os.c lib_package.c lib_debug.c lib_jit.c lib_ffi.c
+
+ %LJCOMPILE% host\minilua.c

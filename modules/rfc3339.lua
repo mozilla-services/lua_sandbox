@@ -7,8 +7,9 @@ local tonumber = tonumber
 
 -- Verify TZ
 local offset = "([+-])(%d%d)(%d%d)"
-local sign, hour, min  = os.date("%z"):match(offset)
-if not sign or tonumber(hour) ~= 0 or tonumber(min) ~= 0 then 
+local tz = os.date("%z")
+local sign, hour, min  = tz:match(offset)
+if not(tz == "UTC" or (sign and tonumber(hour) == 0 and tonumber(min) == 0)) then
     error("TZ must be set to UTC") 
 end
 

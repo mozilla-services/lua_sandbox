@@ -261,7 +261,7 @@ static char* test_init_error()
   mu_assert(result == 2, "lsb_init() received: %d %s", result,
             lsb_get_error(sb));
   const char *expected = "lua/lpeg_grammar.lua:9: require_library() external modules are disabled";
-  mu_assert(strcmp(lsb_get_error(sb), expected) == 0, 
+  mu_assert(strcmp(lsb_get_error(sb), expected) == 0,
             "lsb_get_error() received: %s", lsb_get_error(sb));
 
   e = lsb_destroy(sb, NULL);
@@ -654,7 +654,11 @@ static char* test_cjson()
 static char* test_errors()
 {
   const char* tests[] = {
+#ifdef _WIN32
+    "process() lua/errors.lua:9: cannot open lua\\unknown.lua: No such file or directory"
+#else
     "process() lua/errors.lua:9: cannot open lua/unknown.lua: No such file or directory"
+#endif
     , "process() lua/errors.lua:11: output() must have at least one argument"
     , "process() not enough memory"
     , "process() instruction_limit exceeded"
@@ -662,7 +666,11 @@ static char* test_errors()
     , "process() must return a single numeric value"
     , "process() must return a single numeric value"
     , "process() lua/errors.lua:27: output_limit exceeded"
+#ifdef _WIN32
+    , "process() lua/errors.lua:30: lua\\bad_module.lua:1: attempt to perform arithmetic on global 'nilvalue' (a nil value)"
+#else
     , "process() lua/errors.lua:30: lua/bad_module.lua:1: attempt to perform arithmetic on global 'nilvalue' (a nil value)"
+#endif
     , "process() lua/errors.lua:32: invalid module name '../invalid'"
     , "process() lua/errors.lua:34: require_path exceeded 255"
     , "process() lua/errors.lua:37: package table is missing"
@@ -720,12 +728,17 @@ static char* test_lpeg()
 }
 
 
+#ifdef LUA_JIT
 static char* test_lpeg_grammar()
 {
   const char* tests[] = {
     "{\"offset_min\":0,\"offset_sign\":\"-\",\"offset_hour\":7,\"sec\":\"59\",\"min\":\"23\",\"day\":\"05\",\"sec_frac\":0.217,\"hour\":\"23\",\"month\":\"05\",\"year\":\"1999\"}\n"
     ,"7 6 5 4 4 3 3 2 1 0 0"
+#ifdef _WIN32
+    ,"9.25971839e+017"
+    #else
     ,"9.25971839e+17"
+#endif
     ,"{\"day\":\"12\",\"min\":\"20\",\"sec\":\"50\",\"sec_frac\":0.52,\"year\":\"1985\",\"month\":\"04\",\"hour\":\"23\"}\n"
     ,"{\"offset_min\":0,\"offset_sign\":\"-\",\"offset_hour\":8,\"sec\":\"57\",\"min\":\"39\",\"day\":\"19\",\"hour\":\"16\",\"month\":\"12\",\"year\":\"1996\"}\n"
     ,"{\"day\":\"31\",\"sec\":\"60\",\"min\":\"59\",\"year\":\"1990\",\"month\":\"12\",\"hour\":\"23\"}\n"
@@ -755,12 +768,52 @@ static char* test_lpeg_grammar()
   return NULL;
 }
 
+#else
+
+static char* test_lpeg_grammar()
+{
+  const char* tests[] = {
+    "{\"offset_sign\":\"-\",\"offset_min\":0,\"hour\":\"23\",\"min\":\"23\",\"day\":\"05\",\"month\":\"05\",\"offset_hour\":7,\"sec\":\"59\",\"year\":\"1999\",\"sec_frac\":0.217}\n"
+    ,"7 6 5 4 4 3 3 2 1 0 0"
+#ifdef _WIN32
+    ,"9.25971839e+017"
+    #else
+    ,"9.25971839e+17"
+#endif
+    ,"{\"min\":\"20\",\"year\":\"1985\",\"month\":\"04\",\"sec_frac\":0.52,\"sec\":\"50\",\"hour\":\"23\",\"day\":\"12\"}\n"
+    ,"{\"offset_sign\":\"-\",\"offset_min\":0,\"hour\":\"16\",\"min\":\"39\",\"day\":\"19\",\"month\":\"12\",\"sec\":\"57\",\"year\":\"1996\",\"offset_hour\":8}\n"
+    ,"{\"min\":\"59\",\"year\":\"1990\",\"month\":\"12\",\"sec\":\"60\",\"hour\":\"23\",\"day\":\"31\"}\n"
+    ,"{\"offset_sign\":\"-\",\"offset_min\":0,\"hour\":\"15\",\"min\":\"59\",\"day\":\"31\",\"month\":\"12\",\"sec\":\"60\",\"year\":\"1990\",\"offset_hour\":8}\n"
+    ,"{\"offset_sign\":\"+\",\"offset_min\":20,\"hour\":\"12\",\"min\":\"00\",\"day\":\"01\",\"month\":\"01\",\"offset_hour\":0,\"sec\":\"27\",\"year\":\"1937\",\"sec_frac\":0.87}\n"
+    , NULL
+    };
+
+  lua_sandbox* sb = lsb_create(NULL, "lua/lpeg_grammar.lua", "../../modules", 100000, 1000, 8000);
+  mu_assert(sb, "lsb_create() received: NULL");
+
+  int result = lsb_init(sb, NULL);
+  mu_assert(result == 0, "lsb_init() received: %d %s", result,
+            lsb_get_error(sb));
+  lsb_add_function(sb, &write_output, "write");
+
+  for (int i = 0; tests[i]; ++i) {
+    result = process(sb, i);
+    mu_assert(result == 0, "process() received: %d %s", result, lsb_get_error(sb));
+    mu_assert(strcmp(tests[i], written_data) == 0, "test: %d received: %s", i, written_data);
+  }
+
+  e = lsb_destroy(sb, NULL);
+  mu_assert(!e, "lsb_destroy() received: %s", e);
+
+  return NULL;
+}
+#endif
+
 
 static char* test_serialize()
 {
   const char* output_file = "serialize.preserve";
-  lua_sandbox* sb = lsb_create(NULL, "lua/serialize.lua", "../../modules", 64000, 1000,
-                               64000);
+  lua_sandbox* sb = lsb_create(NULL, "lua/serialize.lua", "../../modules", 64000, 1000, 64000);
   mu_assert(sb, "lsb_create() received: NULL");
 
   int result = lsb_init(sb, NULL);

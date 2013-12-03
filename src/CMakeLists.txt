@@ -14,7 +14,7 @@ lua_circular_buffer.c
 if(MSVC)
     add_definitions(-D_CRT_SECURE_NO_WARNINGS)
     set(LUA_SANDBOX_LIBS
-    "${EP_BASE}/lib/lua51.lib"
+    "${EP_BASE}/lib/lua.lib"
     "${EP_BASE}/lib/lpeg.lib"
     "${EP_BASE}/lib/cjson.lib"
     )

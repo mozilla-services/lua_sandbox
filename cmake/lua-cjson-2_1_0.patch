@@ -46,7 +46,7 @@ diff -Naur lua-cjson-2.1.0.orig/CMakeLists.txt lua-cjson-2_1_0/CMakeLists.txt
 +    add_library(cjson SHARED ${CJSON_SOURCE})
 +    add_definitions(-DLUA_BUILD_AS_DLL -DLUA_CORE)
 +    if(MSVC)
-+       target_link_libraries(cjson "${EP_BASE}/lib/lua51.lib")
++       target_link_libraries(cjson "${EP_BASE}/lib/lua.lib")
 +    else(MINGW)
 +       set_target_properties(cjson PROPERTIES LINK_FLAGS -s)
 +       if (ADDRESS_MODEL EQUAL 32)
