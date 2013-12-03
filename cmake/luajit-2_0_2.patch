@@ -1,6 +1,6 @@
 diff -Naur LuaJIT-2.0.2/src/lj_api.c luajit-2_0_2/src/lj_api.c
---- LuaJIT-2.0.2/src/lj_api.c	2013-06-03 12:00:00.000000000 -0700
-+++ luajit-2_0_2/src/lj_api.c	2013-11-03 17:10:37.331653677 -0800
+--- LuaJIT-2.0.2/src/lj_api.c	2013-06-03 19:00:00.000000000 +0000
++++ luajit-2_0_2/src/lj_api.c	2013-12-03 21:17:05.042524855 +0000
 @@ -1178,6 +1178,18 @@
      res = (int)(g->gc.stepmul);
      g->gc.stepmul = (MSize)data;
@@ -21,8 +21,8 @@ diff -Naur LuaJIT-2.0.2/src/lj_api.c luajit-2_0_2/src/lj_api.c
      res = -1;  /* Invalid option. */
    }
 diff -Naur LuaJIT-2.0.2/src/lj_dispatch.c luajit-2_0_2/src/lj_dispatch.c
---- LuaJIT-2.0.2/src/lj_dispatch.c	2013-06-03 12:00:00.000000000 -0700
-+++ luajit-2_0_2/src/lj_dispatch.c	2013-11-03 17:10:37.331653677 -0800
+--- LuaJIT-2.0.2/src/lj_dispatch.c	2013-06-03 19:00:00.000000000 +0000
++++ luajit-2_0_2/src/lj_dispatch.c	2013-12-03 21:17:05.042524855 +0000
 @@ -339,6 +339,11 @@
    return (int)G(L)->hookcstart;
  }
@@ -36,8 +36,8 @@ diff -Naur LuaJIT-2.0.2/src/lj_dispatch.c luajit-2_0_2/src/lj_dispatch.c
  static void callhook(lua_State *L, int event, BCLine line)
  {
 diff -Naur LuaJIT-2.0.2/src/lj_gc.c luajit-2_0_2/src/lj_gc.c
---- LuaJIT-2.0.2/src/lj_gc.c	2013-06-03 12:00:00.000000000 -0700
-+++ luajit-2_0_2/src/lj_gc.c	2013-11-04 08:32:35.423616628 -0800
+--- LuaJIT-2.0.2/src/lj_gc.c	2013-06-03 19:00:00.000000000 +0000
++++ luajit-2_0_2/src/lj_gc.c	2013-12-03 21:17:05.042524855 +0000
 @@ -800,24 +800,37 @@
  {
    global_State *g = G(L);
@@ -80,8 +80,8 @@ diff -Naur LuaJIT-2.0.2/src/lj_gc.c luajit-2_0_2/src/lj_gc.c
    setgcref(g->gc.root, o);
    newwhite(g, o);
 diff -Naur LuaJIT-2.0.2/src/lj_obj.h luajit-2_0_2/src/lj_obj.h
---- LuaJIT-2.0.2/src/lj_obj.h	2013-06-03 12:00:00.000000000 -0700
-+++ luajit-2_0_2/src/lj_obj.h	2013-11-03 17:10:37.331653677 -0800
+--- LuaJIT-2.0.2/src/lj_obj.h	2013-06-03 19:00:00.000000000 +0000
++++ luajit-2_0_2/src/lj_obj.h	2013-12-03 21:17:05.042524855 +0000
 @@ -490,6 +490,8 @@
  
  typedef struct GCState {
@@ -92,8 +92,8 @@ diff -Naur LuaJIT-2.0.2/src/lj_obj.h luajit-2_0_2/src/lj_obj.h
    uint8_t currentwhite;	/* Current white color. */
    uint8_t state;	/* GC state. */
 diff -Naur LuaJIT-2.0.2/src/lj_state.c luajit-2_0_2/src/lj_state.c
---- LuaJIT-2.0.2/src/lj_state.c	2013-06-03 12:00:00.000000000 -0700
-+++ luajit-2_0_2/src/lj_state.c	2013-11-03 17:10:37.331653677 -0800
+--- LuaJIT-2.0.2/src/lj_state.c	2013-06-03 19:00:00.000000000 +0000
++++ luajit-2_0_2/src/lj_state.c	2013-12-03 21:17:05.042524855 +0000
 @@ -208,6 +208,8 @@
    setgcref(g->gc.root, obj2gco(L));
    setmref(g->gc.sweep, &g->gc.root);
@@ -104,8 +104,8 @@ diff -Naur LuaJIT-2.0.2/src/lj_state.c luajit-2_0_2/src/lj_state.c
    g->gc.stepmul = LUAI_GCMUL;
    lj_dispatch_init((GG_State *)L);
 diff -Naur LuaJIT-2.0.2/src/lua.h luajit-2_0_2/src/lua.h
---- LuaJIT-2.0.2/src/lua.h	2013-06-03 12:00:00.000000000 -0700
-+++ luajit-2_0_2/src/lua.h	2013-11-03 17:10:37.331653677 -0800
+--- LuaJIT-2.0.2/src/lua.h	2013-06-03 19:00:00.000000000 +0000
++++ luajit-2_0_2/src/lua.h	2013-12-03 21:17:05.042524855 +0000
 @@ -226,6 +226,9 @@
  #define LUA_GCSTEP		5
  #define LUA_GCSETPAUSE		6
@@ -124,8 +124,9 @@ diff -Naur LuaJIT-2.0.2/src/lua.h luajit-2_0_2/src/lua.h
  
  /* From Lua 5.2. */
  LUA_API void *lua_upvalueid (lua_State *L, int idx, int n);
---- LuaJIT-2.0.2/src/msvcbuild.bat      Mon Jun  3 12:00:00 2013
-+++ luajit-2_0_2/src/msvcbuild.bat      Tue Dec  3 12:43:39 2013
+diff -Naur LuaJIT-2.0.2/src/msvcbuild.bat luajit-2_0_2/src/msvcbuild.bat
+--- LuaJIT-2.0.2/src/msvcbuild.bat	2013-06-03 19:00:00.000000000 +0000
++++ luajit-2_0_2/src/msvcbuild.bat	2013-12-03 21:24:09.434507458 +0000
 @@ -20,8 +20,8 @@
  @set LJLIB=lib /nologo
  @set DASMDIR=..\dynasm
@@ -135,5 +136,5 @@ diff -Naur LuaJIT-2.0.2/src/lua.h luajit-2_0_2/src/lua.h
 +@set LJDLLNAME=lua.dll
 +@set LJLIBNAME=lua.lib
  @set ALL_LIB=lib_base.c lib_math.c lib_bit.c lib_string.c lib_table.c lib_io.c lib_os.c lib_package.c lib_debug.c lib_jit.c lib_ffi.c
-
+ 
  %LJCOMPILE% host\minilua.c
