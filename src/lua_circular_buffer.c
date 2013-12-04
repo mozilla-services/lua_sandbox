@@ -29,7 +29,7 @@ static const time_t seconds_in_minute = 60;
 static const time_t seconds_in_hour = 60 * 60;
 static const time_t seconds_in_day = 60 * 60 * 24;
 
-static const char* column_aggregation_methods[] = { "sum", "min", "max", "avg",
+static const char* column_aggregation_methods[] = { "sum", "min", "max", "none",
   "none", NULL };
 static const char* default_unit = "count";
 
@@ -37,7 +37,7 @@ typedef enum {
   AGGREGATION_SUM     = 0,
   AGGREGATION_MIN     = 1,
   AGGREGATION_MAX     = 2,
-  AGGREGATION_AVG     = 3,
+  AGGREGATION_UNUSED  = 3,
   AGGREGATION_NONE    = 4,
 
   MAX_AGGREGATION

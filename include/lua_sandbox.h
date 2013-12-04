@@ -199,7 +199,7 @@ LSB_EXPORT int lsb_output_protobuf(lua_sandbox* lsb, int index, int append);
 LSB_EXPORT int lsb_pcall_setup(lua_sandbox* lsb, const char* func_name);
 
 /**
- * Helper function to updata the statistics after the call
+ * Helper function to update the statistics after the call
  *
  * @param lsb Pointer to the sandbox.
  */

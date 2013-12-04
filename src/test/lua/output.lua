@@ -13,14 +13,14 @@ StatisticValues={{Maximum=0,Minimum=0,SampleCount=0,Sum= 0},{Maximum=0,Minimum=0
 function process(tc)
     if tc == 0 then -- lua types
         output(simple_table, 1.2, " string ", nil, " ", true, " ", false)
-        write("txt")
+        write()
     elseif tc == 1 then -- cbuf
         output("annotation\n")
         output(cbuf)
-        write("acbuf", "stats")
+        write()
     elseif tc == 2 then -- table
         output(metric)
-        write("json", "stat metrics")
+        write()
     elseif tc == 3 then -- external reference
         local a = {x = 1, y = 2}
         local b = {a = a}

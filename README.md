@@ -11,6 +11,7 @@ Optional (used for documentation)
 
 lua_sandbox  - UNIX Build Instructions
 ----
+
     git clone https://github.com/mozilla-services/lua_sandbox.git
     cd lua_sandbox 
     mkdir release
@@ -21,6 +22,7 @@ lua_sandbox  - UNIX Build Instructions
 
 lua_sandbox  - Windows Build Instructions
 ----
+
     # in a VS2013 command prompt window
 
     git clone https://github.com/mozilla-services/lua_sandbox.git

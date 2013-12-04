@@ -158,46 +158,33 @@ int report(lua_sandbox* lsb, double tc)
 
 int write_output(lua_State* lua)
 {
-  static const char* default_type = "txt";
-//    static const char* default_name = "";
   void* luserdata = lua_touserdata(lua, lua_upvalueindex(1));
   if (NULL == luserdata) {
     luaL_error(lua, "write() invalid lightuserdata");
   }
   lua_sandbox* lsb = (lua_sandbox*)luserdata;
 
-//    void* ud = NULL;
-  const char* type = default_type;
-//    const char* name = default_name;
   switch (lua_gettop(lua)) {
   case 0:
     break;
-  case 2:
-//        name = luaL_checkstring(lua, 2);
-// fallthru
   case 1:
     switch (lua_type(lua, 1)) {
-    case LUA_TSTRING:
-      type = lua_tostring(lua, 1);
-      if (strlen(type) == 0) type = default_type;
-      break;
     case LUA_TTABLE:
-      type = "";
       if (lsb_output_protobuf(lsb, 1, 0) != 0) {
         luaL_error(lua, "write() cound not encode protobuf - %s",
                    lsb_get_error(lsb));
       }
       break;
     case LUA_TUSERDATA:
-      type = lsb_output_userdata(lsb, 1, 0);
+      lsb_output_userdata(lsb, 1, 0);
       break;
     default:
-      luaL_typerror(lua, 1, "string, table, or circular_buffer");
+      luaL_typerror(lua, 1, "table, or circular_buffer");
       break;
     }
     break;
   default:
-    luaL_error(lua, "write() takes a maximum of 2 arguments");
+    luaL_error(lua, "write() takes a maximum of 1 argument");
     break;
   }
   written_data = lsb_get_output(lsb, &written_data_len);
