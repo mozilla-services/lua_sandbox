@@ -22,6 +22,7 @@ if(MSVC)
     install(DIRECTORY "${EP_BASE}/lib/"  DESTINATION lib FILES_MATCHING PATTERN "*.dll")
     install(DIRECTORY "${EP_BASE}/lib/"  DESTINATION lib FILES_MATCHING PATTERN "*.lib")
 elseif(MINGW)
+    add_definitions(-D_MINGW)
     set(LUA_SANDBOX_LIBS
     "${EP_BASE}/lib/liblua.dll"
     "${EP_BASE}/lib/liblpeg.dll"

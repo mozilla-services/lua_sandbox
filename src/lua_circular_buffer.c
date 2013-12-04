@@ -535,7 +535,7 @@ static int circular_buffer_fromstring(lua_State* lua)
 
   int n = 0;
   double value;
-#ifdef WIN32
+#ifdef _MINGW
   long t; // mingw doesn't like the C99 %lld specifier in sscanf
   if (!sscanf(values, "%ld %u%n", &t, &cb->current_row, &n)) {
 #else
