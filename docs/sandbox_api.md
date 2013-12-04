@@ -25,18 +25,20 @@ Functions exposed to Lua by the core sandbox
 By default only the base library is loaded additional libraries must be explicitly specified.
 
 *Arguments*
-    - libraryName (string)
-        - [circular_buffer](md_circular_buffer.html) 
-        - **cjson** loaded the cjson.safe module in a global cjson table, exposing the decoding functions only. http://www.kyne.com.au/~mark/software/lua-cjson-manual.html.
-        - **lpeg** loads the Lua Parsing Expression Grammar Library http://www.inf.puc-rio.br/~roberto/lpeg/lpeg.html
-        - **math**
-        - **os**
-        - **string**
-        - **table**
-        - _user provided_
+
+- libraryName (string)
+
+  - [circular_buffer](circular_buffer.md) 
+  - **cjson** loads the cjson.safe module in a global cjson table, exposing the decoding functions only. http://www.kyne.com.au/~mark/software/lua-cjson-manual.html.
+  - **lpeg** loads the Lua Parsing Expression Grammar Library http://www.inf.puc-rio.br/~roberto/lpeg/lpeg.html
+  - **math**
+  - **os**
+  - **string**
+  - **table**
+  - _user provided_
 
 *Return*
-    - a table - For non user provided libraries the table is also globally registered 
+- a table - For non user provided libraries the table is also globally registered 
     with the library name.  User provided libraries may implement there own semantics 
     i.e. the grammar libraries return a table but do not globally register the table name
     (see the individual module documentation for the correct usage).
@@ -48,11 +50,10 @@ ____
     host application.
 
 *Arguments*
-    - arg (number, string, bool, nil, table, circular_buffer) Lua variable 
-    or literal to be appended the output buffer
+- arg (number, string, bool, nil, table, circular_buffer) Lua variable or literal to be appended the output buffer
 
 *Return*
-    - none
+- none
 
 *Notes*
 - Outputting a Lua table will serialize it to JSON according to the following 
