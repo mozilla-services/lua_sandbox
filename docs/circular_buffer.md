@@ -5,17 +5,18 @@ The library is a sliding window time series data store and is implemented in the
 
 Constructor
 -----------
-circular_buffer. **new** (rows, columns, seconds_per_row, enable_delta)
+**circular_buffer.new** (rows, columns, seconds_per_row, enable_delta)
 
 *Arguments*
-    - rows (unsigned) The number of rows in the buffer (must be > 1)
-    - columns (unsigned)The number of columns in the buffer (must be > 0)
-    - seconds_per_row (unsigned) The number of seconds each row represents (must be > 0).
-    - enable_delta (**optional, default false** bool) When true the changes made to the 
+- rows (unsigned) The number of rows in the buffer (must be > 1)
+- columns (unsigned)The number of columns in the buffer (must be > 0)
+- seconds_per_row (unsigned) The number of seconds each row represents (must be > 0).
+- enable_delta (**optional, default false** bool) When true the changes made to the 
     circular buffer between delta outputs are tracked.
 
 *Return*
-    A circular buffer object.
+
+A circular buffer object.
 
 Methods
 -------
@@ -24,83 +25,89 @@ Methods
 double **add** (nanoseconds, column, value)
 
 *Arguments*
-    - nanosecond (unsigned) The number of nanosecond since the UNIX epoch. The value is 
+- nanosecond (unsigned) The number of nanosecond since the UNIX epoch. The value is 
     used to determine which row is being operated on.
-    - column (unsigned) The column within the specified row to perform an add operation on.
-    - value (double) The value to be added to the specified row/column.
+- column (unsigned) The column within the specified row to perform an add operation on.
+- value (double) The value to be added to the specified row/column.
 
 *Return*
-    The value of the updated row/column or nil if the time was outside the range of the buffer.
+
+The value of the updated row/column or nil if the time was outside the range of the buffer.
 
 ____
 double **set** (nanoseconds, column, value)
 
 *Arguments*
-    - nanosecond (unsigned) The number of nanosecond since the UNIX epoch. The value is
+- nanosecond (unsigned) The number of nanosecond since the UNIX epoch. The value is
     used to determine which row is being operated on.
-    - column (unsigned) The column within the specified row to perform a set operation on.
-    - value (double) The value to be overwritten at the specified row/column.
+- column (unsigned) The column within the specified row to perform a set operation on.
+- value (double) The value to be overwritten at the specified row/column.
 
 *Return*
-    The value passed in or nil if the time was outside the range of the buffer.
+
+The value passed in or nil if the time was outside the range of the buffer.
 
 ____
 double **get** (nanoseconds, column)
 
 *Arguments*
-    - nanosecond (unsigned) The number of nanosecond since the UNIX epoch. The value is used
+- nanosecond (unsigned) The number of nanosecond since the UNIX epoch. The value is used
     to determine which row is being operated on.
-    - column (unsigned) The column within the specified row to retrieve the data from.
+- column (unsigned) The column within the specified row to retrieve the data from.
 
 *Return*
-    The value at the specifed row/column or nil if the time was outside the range of the buffer.
+
+The value at the specifed row/column or nil if the time was outside the range of the buffer.
 
 ____
 int **set_header** (column, name, unit, aggregation_method)
 
 *Arguments*
-    - column (unsigned) The column number where the header information is applied.
-    - name (string) Descriptive name of the column (maximum 15 characters). Any non alpha
+- column (unsigned) The column number where the header information is applied.
+- name (string) Descriptive name of the column (maximum 15 characters). Any non alpha
     numeric characters will be converted to underscores. (default: Column_N)
-    - unit (string - optional) The unit of measure (maximum 7 characters). Alpha numeric,
+- unit (string - optional) The unit of measure (maximum 7 characters). Alpha numeric,
     '/', and '*' characters are allowed everything else will be converted to underscores.
     i.e. KiB, Hz, m/s (default: count)
-    - aggregation_method (string - optional) Controls how the column data is aggregated
+- aggregation_method (string - optional) Controls how the column data is aggregated
     when combining multiple circular buffers.
-        - **sum** The total is computed for the time/column (default).
-        - **min** The smallest value is retained for the time/column.
-        - **max** The largest value is retained for the time/column.
-        - **none** No aggregation will be performed the column.
+    - **sum** The total is computed for the time/column (default).
+    - **min** The smallest value is retained for the time/column.
+    - **max** The largest value is retained for the time/column.
+    - **none** No aggregation will be performed the column.
 
 *Return*
-    The column number passed into the function.
+
+The column number passed into the function.
 
 ____
 double **compute** (function, column, start, end)
 
 *Arguments*
-    - function (string) The name of the compute function (sum|avg|sd|min|max).
-    - column (unsigned) The column that the computation is performed against.
-    - start (optional - unsigned) The number of nanosecond since the UNIX epoch. Sets the
+- function (string) The name of the compute function (sum|avg|sd|min|max).
+- column (unsigned) The column that the computation is performed against.
+- start (optional - unsigned) The number of nanosecond since the UNIX epoch. Sets the
     start time of the computation range; if nil the buffer's start time is used.
-    - end (optional- unsigned) The number of nanosecond since the UNIX epoch. Sets the 
+- end (optional- unsigned) The number of nanosecond since the UNIX epoch. Sets the 
     end time of the computation range (inclusive); if nil the buffer's end time is used.
     The end time must be greater than or equal to the start time.
 
 *Return*
-    The result of the computation for the specifed column over the given range or nil if the range fell outside of the buffer.
+
+The result of the computation for the specifed column over the given range or nil if the range fell outside of the buffer.
 
 ____
 cbuf **format** (format)
     Sets an internal flag to control the output format of the circular buffer data structure; if deltas are not enabled or there haven't been any modifications, nothing is output.
 
 *Arguments*
-    - format (string)
-        - **cbuf** The circular buffer full data set format.
-        - **cbufd** The circular buffer delta data set format.
+- format (string)
+    - **cbuf** The circular buffer full data set format.
+    - **cbufd** The circular buffer delta data set format.
 
 *Return*
-    The circular buffer object.
+
+The circular buffer object.
 
 Output
 ------
