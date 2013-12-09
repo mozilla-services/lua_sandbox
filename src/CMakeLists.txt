@@ -36,11 +36,17 @@ elseif(MINGW)
     endif()
     install(DIRECTORY "${EP_BASE}/lib/"  DESTINATION lib FILES_MATCHING PATTERN "*.dll")
 else()
+	if (LUA_JIT)
+		if(NOT CMAKE_SYSTEM_NAME MATCHES "FreeBSD")
+			set(LINK_DL "-ldl")
+		endif()
+	endif()
+
     set(LUA_SANDBOX_LIBS
     "${EP_BASE}/lib/liblua.a"
     "${EP_BASE}/lib/liblpeg.a"
     "${EP_BASE}/lib/libcjson.a"
-    -ldl -lm
+    ${LINK_DL} -lm
     )
     add_library(luasandbox STATIC ${LUA_SANDBOX_SRC})
     install(DIRECTORY "${EP_BASE}/lib/"  DESTINATION lib FILES_MATCHING PATTERN "*.a")
