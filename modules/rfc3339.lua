@@ -1,3 +1,7 @@
+-- This Source Code Form is subject to the terms of the Mozilla Public
+-- License, v. 2.0. If a copy of the MPL was not distributed with this
+-- file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
 -- Imports
 local l = require "lpeg"
 l.locale(l)
@@ -10,7 +14,7 @@ local offset = "([+-])(%d%d)(%d%d)"
 local tz = os.date("%z")
 local sign, hour, min  = tz:match(offset)
 if not(tz == "UTC" or (sign and tonumber(hour) == 0 and tonumber(min) == 0)) then
-    error("TZ must be set to UTC") 
+    error("TZ must be set to UTC")
 end
 
 local M = {}
@@ -43,11 +47,11 @@ local date_mday = l.Cg(l.P"0" * l.R"19"
 local time_hour = l.Cg(l.R"01" * l.digit
                           + "2" * l.R"03", "hour")
 local time_minute = l.Cg(l.R"05" * l.digit, "min")
-local time_second = l.Cg(l.R"05" * l.digit 
+local time_second = l.Cg(l.R"05" * l.digit
                             + "60", "sec")
 local time_secfrac = l.Cg(l.P"." * l.digit^1 / tonumber, "sec_frac")
-local time_numoffset = l.Cg(l.S"+-", "offset_sign") * 
-l.Cg(time_hour / tonumber, "offset_hour") * ":" * 
+local time_numoffset = l.Cg(l.S"+-", "offset_sign") *
+l.Cg(time_hour / tonumber, "offset_hour") * ":" *
 l.Cg(time_minute / tonumber, "offset_min")
 local time_offset = l.S"Zz" + time_numoffset
 

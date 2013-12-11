@@ -297,6 +297,7 @@ const char* lsb_output_userdata(lua_sandbox* lsb, int index, int append)
       lsb->output.pos = last_pos;
       return NULL;
     }
+    update_output_stats(lsb);
     return get_output_format(cb);
   } else {
     return NULL;
@@ -318,6 +319,7 @@ int lsb_output_protobuf(lua_sandbox* lsb, int index, int append)
     return 1;
   }
 
+  update_output_stats(lsb);
   return 0;
 }
 
