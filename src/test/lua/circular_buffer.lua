@@ -42,15 +42,15 @@ function report(tc)
             error(string.format("no range sum = %G", t))
         end
         t = stats:compute("avg", 1)
-        if 2 ~= t then
+        if 2.5 ~= t then
             error(string.format("no range avg = %G", t))
         end
         t = stats:compute("sd", 1)
-        if math.abs(math.sqrt(2)-t) > 0.00001 then
+        if math.abs(math.sqrt(1.25)) ~= t then
             error(string.format("no range sd = %G", t))
         end
         t = stats:compute("min", 1)
-        if 0 ~= t then
+        if 1 ~= t then
             error(string.format("no range min = %G", t))
         end
         t = stats:compute("max", 1)
@@ -86,6 +86,29 @@ function report(tc)
         t = stats:compute("sum", 1, 11e9, 14e9)
         if nil ~= t then
             error(string.format("out of range = %G", t))
+        end
+    elseif tc == 4 then
+        local stats = circular_buffer.new(4, 1, 1)
+        stats:set(1e9, 1, 0/0)
+        stats:set(2e9, 1, 8)
+        stats:set(3e9, 1, 8)
+        local t = stats:compute("avg", 1)
+        if 8 ~= t then
+            error(string.format("no range avg = %G", t))
+        end
+    elseif tc == 5 then
+        local stats = circular_buffer.new(2, 1, 1)
+        local nan = stats:get(0, 1)
+        if nan == nan then
+            error(string.format("initial value is a number", nan))
+        end
+        local v = stats:set(0, 1, 1)
+        if v == 1 then
+            error(string.format("set failed = %G", v))
+        end
+        local v = stats:add(0, 1, 0/0)
+        if v == v then
+            error(string.format("adding nan returned a number", nan))
         end
     end
 end

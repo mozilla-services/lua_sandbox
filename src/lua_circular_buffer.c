@@ -57,7 +57,8 @@ typedef struct
   COLUMN_AGGREGATION  aggregation;
 } header_info;
 
-struct circular_buffer {
+struct circular_buffer
+{
   time_t          current_time;
   unsigned        seconds_per_row;
   unsigned        current_row;
@@ -78,20 +79,15 @@ static time_t get_start_time(circular_buffer* cb)
 }
 
 
-static void clear_rows(circular_buffer* cb, unsigned nurows)
+static void clear_rows(circular_buffer* cb, unsigned num_rows)
 {
-  if (nurows >= cb->rows) { // clear all
-    memset(cb->values, 0, sizeof(double) * cb->rows * cb->columns);
-    return;
-  }
-
   unsigned row = cb->current_row;
-  for (unsigned x = 0; x < nurows; ++x) {
+  for (unsigned x = 0; x < num_rows; ++x) {
     ++row;
     if (row >= cb->rows) {row = 0;}
-    memset(&cb->values[row * cb->columns], 0,
-           sizeof(double) * cb->columns);
-    // TODO optimize by clearing more than one row at a time
+    for (unsigned c = 0; c < cb->columns; ++c) {
+      cb->values[(row * cb->columns) + c] = NAN;
+    }
   }
 }
 
@@ -135,13 +131,14 @@ static int circular_buffer_new(lua_State* lua)
   cb->rows = rows;
   cb->columns = columns;
   cb->seconds_per_row = seconds_per_row;
-  memset(cb->bytes, 0, header_bytes + buffer_bytes);
+  memset(cb->bytes, 0, header_bytes);
   for (unsigned column_idx = 0; column_idx < cb->columns; ++column_idx) {
     snprintf(cb->headers[column_idx].name, COLUMN_NAME_SIZE,
              "Column_%d", column_idx + 1);
     strncpy(cb->headers[column_idx].unit, default_unit,
             UNIT_LABEL_SIZE - 1);
   }
+  clear_rows(cb, rows);
   return 1;
 }
 
@@ -155,7 +152,7 @@ static circular_buffer* check_circular_buffer(lua_State* lua, int min_args)
   return (circular_buffer*)ud;
 }
 
-///////////////////////////////////////////////////////////////////////////////
+
 static int check_row(circular_buffer* cb, double ns, int advance)
 {
   time_t t = (time_t)(ns / 1e9);
@@ -248,12 +245,18 @@ static int circular_buffer_add(lua_State* lua)
                                       // necessary
   int column          = check_column(lua, cb, 3);
   double value        = luaL_checknumber(lua, 4);
-
   if (row != -1) {
     int i = (row * cb->columns) + column;
-    cb->values[i] += value;
+    if (isnan(cb->values[i])) {
+      cb->values[i] = value;
+    } else {
+      cb->values[i] += value;
+    }
     lua_pushnumber(lua, cb->values[i]);
     if (cb->delta) {
+      if (cb->headers[column].aggregation != AGGREGATION_SUM) {
+        value = cb->values[i];
+      }
       circular_buffer_add_delta(lua, cb, ns, column, value);
     }
   } else {
@@ -261,7 +264,6 @@ static int circular_buffer_add(lua_State* lua)
   }
   return 1;
 }
-
 
 
 static int circular_buffer_get(lua_State* lua)
@@ -298,7 +300,10 @@ static int circular_buffer_set(lua_State* lua)
     cb->values[i] = value;
     lua_pushnumber(lua, value);
     if (cb->delta) {
-      circular_buffer_add_delta(lua, cb, ns, column, value - old);
+      if (!isnan(old) && cb->headers[column].aggregation == AGGREGATION_SUM) {
+        value -= old;
+      }
+      circular_buffer_add_delta(lua, cb, ns, column, value);
     }
   } else {
     lua_pushnil(lua);
@@ -339,13 +344,18 @@ static int circular_buffer_set_header(lua_State* lua)
 static double compute_sum(circular_buffer* cb, unsigned column,
                           unsigned start_row, unsigned end_row)
 {
+  double value = 0;
   double result = 0;
   unsigned row = start_row;
   do {
     if (row == cb->rows) {
       row = 0;
     }
-    result += cb->values[(row * cb->columns) + column];
+    value = cb->values[(row * cb->columns) + column];
+    if (isnan(value)) {
+      continue;
+    }
+    result += value;
   }
   while (row++ != end_row);
   return result;
@@ -355,6 +365,7 @@ static double compute_sum(circular_buffer* cb, unsigned column,
 static double compute_avg(circular_buffer* cb, unsigned column,
                           unsigned start_row, unsigned end_row)
 {
+  double value = 0;
   double result = 0;
   unsigned row = start_row;
   unsigned row_count = 0;
@@ -363,7 +374,11 @@ static double compute_avg(circular_buffer* cb, unsigned column,
     if (row == cb->rows) {
       row = 0;
     }
-    result += cb->values[(row * cb->columns) + column];
+    value = cb->values[(row * cb->columns) + column];
+    if (isnan(value)) {
+      continue;
+    }
+    result += value;
     ++row_count;
   }
   while (row++ != end_row);
@@ -383,7 +398,11 @@ static double compute_sd(circular_buffer* cb, unsigned column,
     if (row == cb->rows) {
       row = 0;
     }
-    value = cb->values[(row * cb->columns) + column] - avg;
+    value = cb->values[(row * cb->columns) + column];
+    if (isnan(value)) {
+      continue;
+    }
+    value -= avg;
     susquares += value * value;
     ++row_count;
   }
@@ -403,7 +422,7 @@ static double compute_min(circular_buffer* cb, unsigned column,
       row = 0;
     }
     value = cb->values[(row * cb->columns) + column];
-    if (value < result) {
+    if (!isnan(value) && value < result) {
       result = value;
     }
   }
@@ -423,7 +442,7 @@ static double compute_max(circular_buffer* cb, unsigned column,
       row = 0;
     }
     value = cb->values[(row * cb->columns) + column];
-    if (value > result) {
+    if (!isnan(value) && value > result) {
       result = value;
     }
   }
@@ -686,6 +705,7 @@ int serialize_circular_buffer_delta(lua_State* lua, circular_buffer* cb,
       }
       if (appendc(output, ' ')) return 1;
       if (serialize_double(output, lua_tonumber(lua, -2))) return 1;
+
       for (unsigned column_idx = 0; column_idx < cb->columns;
            ++column_idx) {
         if (appends(output, " ")) return 1;
@@ -767,21 +787,20 @@ int serialize_circular_buffer(lua_State* lua, const char* key,
 
 static const struct luaL_reg circular_bufferlib_f[] =
 {
-  { "new", circular_buffer_new },
-  { NULL, NULL }
+  { "new", circular_buffer_new }
+  , { NULL, NULL }
 };
 
 static const struct luaL_reg circular_bufferlib_m[] =
 {
-  { "add", circular_buffer_add },
-  { "get", circular_buffer_get },
-  { "set", circular_buffer_set },
-  { "set_header", circular_buffer_set_header },
-  { "compute", circular_buffer_compute },
-  { "format", circular_buffer_format },
-
-  { "fromstring", circular_buffer_fromstring }, // used for data restoration
-  { NULL, NULL }
+  { "add", circular_buffer_add }
+  , { "get", circular_buffer_get }
+  , { "set", circular_buffer_set }
+  , { "set_header", circular_buffer_set_header }
+  , { "compute", circular_buffer_compute }
+  , { "format", circular_buffer_format }
+  , { "fromstring", circular_buffer_fromstring } // used for data restoration
+  , { NULL, NULL }
 };
 
 

@@ -239,15 +239,14 @@ static char* test_init_error()
   e = lsb_destroy(sb, NULL);
   mu_assert(!e, "lsb_destroy() received: %s\n", e);
 
-  sb = lsb_create(NULL, "lua/lpeg_grammar.lua", NULL, 100000, 1000,
-                               8000);
+  sb = lsb_create(NULL, "lua/lpeg_grammar.lua", NULL, 100000, 1000, 8000);
   mu_assert(sb, "lsb_create() received: NULL");
 
   // disabled external modules
   result = lsb_init(sb, NULL);
   mu_assert(result == 2, "lsb_init() received: %d %s", result,
             lsb_get_error(sb));
-  const char *expected = "lua/lpeg_grammar.lua:9: require_library() external modules are disabled";
+  const char* expected = "lua/lpeg_grammar.lua:9: require_library() external modules are disabled";
   mu_assert(strcmp(lsb_get_error(sb), expected) == 0,
             "lsb_get_error() received: %s", lsb_get_error(sb));
 
@@ -265,8 +264,7 @@ static char* test_destroy_error()
   e = lsb_destroy(NULL, NULL);
   mu_assert(!e, "lsb_destroy() received: %s", e);
 
-  lua_sandbox* sb = lsb_create(NULL, "lua/simple.lua", "../../modules", 65765, 1000,
-                               1024);
+  lua_sandbox* sb = lsb_create(NULL, "lua/simple.lua", "../../modules", 65765, 1000, 1024);
   mu_assert(sb, "lsb_create() received: NULL");
   int result = lsb_init(sb, NULL);
   mu_assert(result == 0, "lsb_init() received: %d %s", result,
@@ -502,10 +500,10 @@ static char* test_cbuf_errors()
 static char* test_cbuf()
 {
   const char* outputs[] = {
-    "{\"time\":0,\"rows\":3,\"columns\":3,\"seconds_per_row\":1,\"column_info\":[{\"name\":\"Add_column\",\"unit\":\"count\",\"aggregation\":\"sum\"},{\"name\":\"Set_column\",\"unit\":\"count\",\"aggregation\":\"sum\"},{\"name\":\"Get_column\",\"unit\":\"count\",\"aggregation\":\"sum\"}]}\n0\t0\t0\n0\t0\t0\n0\t0\t0\n"
+    "{\"time\":0,\"rows\":3,\"columns\":3,\"seconds_per_row\":1,\"column_info\":[{\"name\":\"Add_column\",\"unit\":\"count\",\"aggregation\":\"sum\"},{\"name\":\"Set_column\",\"unit\":\"count\",\"aggregation\":\"sum\"},{\"name\":\"Get_column\",\"unit\":\"count\",\"aggregation\":\"sum\"}]}\nnan\tnan\tnan\nnan\tnan\tnan\nnan\tnan\tnan\n"
     , "{\"time\":0,\"rows\":3,\"columns\":3,\"seconds_per_row\":1,\"column_info\":[{\"name\":\"Add_column\",\"unit\":\"count\",\"aggregation\":\"sum\"},{\"name\":\"Set_column\",\"unit\":\"count\",\"aggregation\":\"sum\"},{\"name\":\"Get_column\",\"unit\":\"count\",\"aggregation\":\"sum\"}]}\n1\t1\t1\n2\t1\t2\n3\t1\t3\n"
-    , "{\"time\":2,\"rows\":3,\"columns\":3,\"seconds_per_row\":1,\"column_info\":[{\"name\":\"Add_column\",\"unit\":\"count\",\"aggregation\":\"sum\"},{\"name\":\"Set_column\",\"unit\":\"count\",\"aggregation\":\"sum\"},{\"name\":\"Get_column\",\"unit\":\"count\",\"aggregation\":\"sum\"}]}\n3\t1\t3\n0\t0\t0\n1\t1\t1\n"
-    , "{\"time\":8,\"rows\":3,\"columns\":3,\"seconds_per_row\":1,\"column_info\":[{\"name\":\"Add_column\",\"unit\":\"count\",\"aggregation\":\"sum\"},{\"name\":\"Set_column\",\"unit\":\"count\",\"aggregation\":\"sum\"},{\"name\":\"Get_column\",\"unit\":\"count\",\"aggregation\":\"sum\"}]}\n0\t0\t0\n0\t0\t0\n1\t1\t1\n"
+    , "{\"time\":2,\"rows\":3,\"columns\":3,\"seconds_per_row\":1,\"column_info\":[{\"name\":\"Add_column\",\"unit\":\"count\",\"aggregation\":\"sum\"},{\"name\":\"Set_column\",\"unit\":\"count\",\"aggregation\":\"sum\"},{\"name\":\"Get_column\",\"unit\":\"count\",\"aggregation\":\"sum\"}]}\n3\t1\t3\nnan\tnan\tnan\n1\t1\t1\n"
+    , "{\"time\":8,\"rows\":3,\"columns\":3,\"seconds_per_row\":1,\"column_info\":[{\"name\":\"Add_column\",\"unit\":\"count\",\"aggregation\":\"sum\"},{\"name\":\"Set_column\",\"unit\":\"count\",\"aggregation\":\"sum\"},{\"name\":\"Get_column\",\"unit\":\"count\",\"aggregation\":\"sum\"}]}\nnan\tnan\tnan\nnan\tnan\tnan\n1\t1\t1\n"
     , NULL
   };
 
@@ -547,11 +545,10 @@ static char* test_cbuf()
   mu_assert(strcmp(outputs[3], written_data) == 0, "received: %s",
             written_data);
 
-  result = report(sb, 1);
-  mu_assert(result == 0, "report() received: %d", result);
-
-  result = report(sb, 3);
-  mu_assert(result == 0, "report() received: %d", result);
+  for (int i = 1; i < 5; ++i) {
+    result = report(sb, i);
+    mu_assert(result == 0, "report() test: %d received: %d error: %s", i, result, lsb_get_error(sb));
+  }
 
   e = lsb_destroy(sb, "circular_buffer.preserve");
   mu_assert(!e, "lsb_destroy() received: %s", e);
@@ -571,6 +568,9 @@ static char* test_cbuf_delta()
 #endif
     , "{\"time\":0,\"rows\":3,\"columns\":3,\"seconds_per_row\":1,\"column_info\":[{\"name\":\"Add_column\",\"unit\":\"count\",\"aggregation\":\"sum\"},{\"name\":\"Set_column\",\"unit\":\"count\",\"aggregation\":\"sum\"},{\"name\":\"Get_column\",\"unit\":\"count\",\"aggregation\":\"sum\"}]}\n1\t1\t1\n2\t1\t2\n3\t1\t3\n"
     , ""
+    , "{\"time\":0,\"rows\":3,\"columns\":3,\"seconds_per_row\":1,\"column_info\":[{\"name\":\"Add_column\",\"unit\":\"count\",\"aggregation\":\"sum\"},{\"name\":\"Set_column\",\"unit\":\"count\",\"aggregation\":\"sum\"},{\"name\":\"Get_column\",\"unit\":\"count\",\"aggregation\":\"sum\"}]}\n2\tnan\t0\tnan\n"
+    , "{\"time\":0,\"rows\":2,\"columns\":2,\"seconds_per_row\":1,\"column_info\":[{\"name\":\"Sum_column\",\"unit\":\"count\",\"aggregation\":\"sum\"},{\"name\":\"Min\",\"unit\":\"count\",\"aggregation\":\"min\"}]}\n0\t2\t5\n"
+    , "{\"time\":0,\"rows\":2,\"columns\":2,\"seconds_per_row\":1,\"column_info\":[{\"name\":\"Sum_column\",\"unit\":\"count\",\"aggregation\":\"sum\"},{\"name\":\"Min\",\"unit\":\"count\",\"aggregation\":\"min\"}]}\n0\t3\t8\n"
     , NULL
   };
 
@@ -599,15 +599,12 @@ static char* test_cbuf_delta()
   mu_assert(strcmp(outputs[1], written_data) == 0, "received: %s",
             written_data);
 
-  result = report(sb, 0);
-  mu_assert(result == 0, "report() received: %d", result);
-  mu_assert(strcmp(outputs[2], written_data) == 0, "received: %s",
-            written_data);
-
-  result = report(sb, 1);
-  mu_assert(result == 0, "report() received: %d", result);
-  mu_assert(strcmp(outputs[3], written_data) == 0, "received: %s",
-            written_data);
+  for (int i = 2; outputs[i] != NULL; ++i) {
+    result = report(sb, i - 2);
+    mu_assert(result == 0, "report() received: %d error: %s", result, lsb_get_error(sb));
+    mu_assert(strcmp(outputs[i], written_data) == 0, "received: %s",
+              written_data);
+  }
 
   e = lsb_destroy(sb, "circular_buffer_delta.preserve");
   mu_assert(!e, "lsb_destroy() received: %s", e);
@@ -720,22 +717,21 @@ static char* test_lpeg_grammar()
 {
   const char* tests[] = {
     "{\"offset_min\":0,\"offset_sign\":\"-\",\"offset_hour\":7,\"sec\":\"59\",\"min\":\"23\",\"day\":\"05\",\"sec_frac\":0.217,\"hour\":\"23\",\"month\":\"05\",\"year\":\"1999\"}\n"
-    ,"7 6 5 4 4 3 3 2 1 0 0"
+    , "7 6 5 4 4 3 3 2 1 0 0"
 #ifdef _WIN32
-    ,"9.25971839e+017"
-    #else
-    ,"9.25971839e+17"
+    , "9.25971839e+017"
+#else
+    , "9.25971839e+17"
 #endif
-    ,"{\"day\":\"12\",\"min\":\"20\",\"sec\":\"50\",\"sec_frac\":0.52,\"year\":\"1985\",\"month\":\"04\",\"hour\":\"23\"}\n"
-    ,"{\"offset_min\":0,\"offset_sign\":\"-\",\"offset_hour\":8,\"sec\":\"57\",\"min\":\"39\",\"day\":\"19\",\"hour\":\"16\",\"month\":\"12\",\"year\":\"1996\"}\n"
-    ,"{\"day\":\"31\",\"sec\":\"60\",\"min\":\"59\",\"year\":\"1990\",\"month\":\"12\",\"hour\":\"23\"}\n"
-    ,"{\"offset_min\":0,\"offset_sign\":\"-\",\"offset_hour\":8,\"sec\":\"60\",\"min\":\"59\",\"day\":\"31\",\"hour\":\"15\",\"month\":\"12\",\"year\":\"1990\"}\n"
-    ,"{\"offset_min\":20,\"offset_sign\":\"+\",\"offset_hour\":0,\"sec\":\"27\",\"min\":\"00\",\"day\":\"01\",\"sec_frac\":0.87,\"hour\":\"12\",\"month\":\"01\",\"year\":\"1937\"}\n"
+    , "{\"day\":\"12\",\"min\":\"20\",\"sec\":\"50\",\"sec_frac\":0.52,\"year\":\"1985\",\"month\":\"04\",\"hour\":\"23\"}\n"
+    , "{\"offset_min\":0,\"offset_sign\":\"-\",\"offset_hour\":8,\"sec\":\"57\",\"min\":\"39\",\"day\":\"19\",\"hour\":\"16\",\"month\":\"12\",\"year\":\"1996\"}\n"
+    , "{\"day\":\"31\",\"sec\":\"60\",\"min\":\"59\",\"year\":\"1990\",\"month\":\"12\",\"hour\":\"23\"}\n"
+    , "{\"offset_min\":0,\"offset_sign\":\"-\",\"offset_hour\":8,\"sec\":\"60\",\"min\":\"59\",\"day\":\"31\",\"hour\":\"15\",\"month\":\"12\",\"year\":\"1990\"}\n"
+    , "{\"offset_min\":20,\"offset_sign\":\"+\",\"offset_hour\":0,\"sec\":\"27\",\"min\":\"00\",\"day\":\"01\",\"sec_frac\":0.87,\"hour\":\"12\",\"month\":\"01\",\"year\":\"1937\"}\n"
     , NULL
-    };
+  };
 
-  lua_sandbox* sb = lsb_create(NULL, "lua/lpeg_grammar.lua", "../../modules", 100000, 1000,
-                               8000);
+  lua_sandbox* sb = lsb_create(NULL, "lua/lpeg_grammar.lua", "../../modules", 100000, 1000, 8000);
   mu_assert(sb, "lsb_create() received: NULL");
 
   int result = lsb_init(sb, NULL);
@@ -761,19 +757,19 @@ static char* test_lpeg_grammar()
 {
   const char* tests[] = {
     "{\"offset_sign\":\"-\",\"offset_min\":0,\"hour\":\"23\",\"min\":\"23\",\"day\":\"05\",\"month\":\"05\",\"offset_hour\":7,\"sec\":\"59\",\"year\":\"1999\",\"sec_frac\":0.217}\n"
-    ,"7 6 5 4 4 3 3 2 1 0 0"
+    , "7 6 5 4 4 3 3 2 1 0 0"
 #ifdef _WIN32
-    ,"9.25971839e+017"
-    #else
-    ,"9.25971839e+17"
+    , "9.25971839e+017"
+#else
+    , "9.25971839e+17"
 #endif
-    ,"{\"min\":\"20\",\"year\":\"1985\",\"month\":\"04\",\"sec_frac\":0.52,\"sec\":\"50\",\"hour\":\"23\",\"day\":\"12\"}\n"
-    ,"{\"offset_sign\":\"-\",\"offset_min\":0,\"hour\":\"16\",\"min\":\"39\",\"day\":\"19\",\"month\":\"12\",\"sec\":\"57\",\"year\":\"1996\",\"offset_hour\":8}\n"
-    ,"{\"min\":\"59\",\"year\":\"1990\",\"month\":\"12\",\"sec\":\"60\",\"hour\":\"23\",\"day\":\"31\"}\n"
-    ,"{\"offset_sign\":\"-\",\"offset_min\":0,\"hour\":\"15\",\"min\":\"59\",\"day\":\"31\",\"month\":\"12\",\"sec\":\"60\",\"year\":\"1990\",\"offset_hour\":8}\n"
-    ,"{\"offset_sign\":\"+\",\"offset_min\":20,\"hour\":\"12\",\"min\":\"00\",\"day\":\"01\",\"month\":\"01\",\"offset_hour\":0,\"sec\":\"27\",\"year\":\"1937\",\"sec_frac\":0.87}\n"
+    , "{\"min\":\"20\",\"year\":\"1985\",\"month\":\"04\",\"sec_frac\":0.52,\"sec\":\"50\",\"hour\":\"23\",\"day\":\"12\"}\n"
+    , "{\"offset_sign\":\"-\",\"offset_min\":0,\"hour\":\"16\",\"min\":\"39\",\"day\":\"19\",\"month\":\"12\",\"sec\":\"57\",\"year\":\"1996\",\"offset_hour\":8}\n"
+    , "{\"min\":\"59\",\"year\":\"1990\",\"month\":\"12\",\"sec\":\"60\",\"hour\":\"23\",\"day\":\"31\"}\n"
+    , "{\"offset_sign\":\"-\",\"offset_min\":0,\"hour\":\"15\",\"min\":\"59\",\"day\":\"31\",\"month\":\"12\",\"sec\":\"60\",\"year\":\"1990\",\"offset_hour\":8}\n"
+    , "{\"offset_sign\":\"+\",\"offset_min\":20,\"hour\":\"12\",\"min\":\"00\",\"day\":\"01\",\"month\":\"01\",\"offset_hour\":0,\"sec\":\"27\",\"year\":\"1937\",\"sec_frac\":0.87}\n"
     , NULL
-    };
+  };
 
   lua_sandbox* sb = lsb_create(NULL, "lua/lpeg_grammar.lua", "../../modules", 100000, 1000, 8000);
   mu_assert(sb, "lsb_create() received: NULL");
@@ -795,6 +791,24 @@ static char* test_lpeg_grammar()
   return NULL;
 }
 #endif
+
+
+static char* test_cbufd_grammar()
+{
+  lua_sandbox* sb = lsb_create(NULL, "lua/cbufd_grammar_test.lua", "../../modules", 100000, 1000, 8000);
+  mu_assert(sb, "lsb_create() received: NULL");
+
+  int result = lsb_init(sb, NULL);
+  mu_assert(result == 0, "lsb_init() received: %d %s", result, lsb_get_error(sb));
+
+  result = process(sb, 0);
+  mu_assert(result == 0, "process() received: %d %s", result, lsb_get_error(sb));
+
+  e = lsb_destroy(sb, NULL);
+  mu_assert(!e, "lsb_destroy() received: %s", e);
+
+  return NULL;
+}
 
 
 static char* test_serialize()
@@ -821,7 +835,6 @@ static char* test_serialize()
 
   return NULL;
 }
-
 
 static char* test_serialize_failure()
 {
@@ -1052,6 +1065,7 @@ static char* all_tests()
   mu_run_test(test_errors);
   mu_run_test(test_lpeg);
   mu_run_test(test_lpeg_grammar);
+  mu_run_test(test_cbufd_grammar);
   mu_run_test(test_serialize);
   mu_run_test(test_serialize_failure);
   mu_run_test(test_serialize_noglobal);

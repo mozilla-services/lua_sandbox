@@ -30,12 +30,18 @@ output table:
 header={"time":1379574900,"rows":1440,"columns":2,"seconds_per_row":60,"column_info":[{"name":"Requests","unit":"count","aggregation":"sum"},{"name":"Total_Size","unit":"KiB","aggregation":"sum"}]}
 --]]
 
+local function not_a_number()
+    return 0/0
+end
+
 local eol = l.P"\n"
 local header = l.Cg((1 - eol)^1, "header") * eol
 local timestamp = l.digit^1 / "%0000000000" / tonumber
 local sign = l.P"-"
 local float = l.digit^1 * "." * l.digit^1
-local number = l.C(sign^-1 * (float + l.digit^1)) / tonumber
+local nan = l.P"nan" / not_a_number
+local number = (sign^-1 * (float + l.digit^1)) / tonumber
++ nan
 local row = l.Ct(l.Cg(timestamp, "time") * ("\t" * number)^1 * eol)
 
 grammar = l.Ct(header * row^1) * -1

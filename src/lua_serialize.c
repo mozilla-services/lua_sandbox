@@ -8,11 +8,13 @@
 
 #include <lualib.h>
 #include <lauxlib.h>
+#include <math.h>
 #include <stdlib.h>
 #include <string.h>
 #include "lua_serialize.h"
 #include "lua_circular_buffer.h"
 
+static const char* not_a_number = "nan";
 
 int preserve_global_data(lua_sandbox* lsb, const char* data_file)
 {
@@ -75,6 +77,9 @@ int preserve_global_data(lua_sandbox* lsb, const char* data_file)
 
 int serialize_double(output_data* output, double d)
 {
+  if (isnan(d)) {
+    return appends(output, not_a_number);
+  }
   if (d > INT_MAX) {
     return appendf(output, "%0.9g", d);
   }

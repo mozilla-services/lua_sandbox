@@ -3,7 +3,7 @@ if _G["data"] == nil then _G["data"] = circular_buffer.new(3, 3, 1) end
 _G["data"]:set_header(1, "Column_1", "count", "sum")
 _G["data"]:set_header(2, "Column_2", "count", "sum")
 _G["data"]:set_header(3, "Column_3", "count", "sum")
-_G["data"]:fromstring("2 2 0 0 0 0 0 0 0 0 0")
+_G["data"]:fromstring("2 2 nan nan nan nan nan nan nan nan nan")
 _G["_VERSION"] = "Lua 5.1"
 _G["large_key"] = {}
 _G["large_key"]["aaaaaaaaaaaaaaaaaaa"] = {}
@@ -49,7 +49,7 @@ _G["nested"]["cb"]:set_header(3, "Column_3", "count", "sum")
 _G["nested"]["cb"]:set_header(4, "Column_4", "count", "sum")
 _G["nested"]["cb"]:set_header(5, "Column_5", "count", "sum")
 _G["nested"]["cb"]:set_header(6, "Column_6", "count", "sum")
-_G["nested"]["cb"]:fromstring("1 1 0 0 0 0 0 0 0 0 0 0 0 0")
+_G["nested"]["cb"]:fromstring("1 1 nan nan nan nan nan nan nan nan nan nan nan nan")
 _G["nested"]["arg1"] = 1
 _G["rates"] = {}
 _G["rates"][1] = 99.1
