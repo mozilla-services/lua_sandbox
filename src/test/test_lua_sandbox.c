@@ -470,6 +470,9 @@ static char* test_cbuf_errors()
     , "process() lua/circular_buffer_errors.lua:68: bad argument #1 to 'format' (invalid option 'invalid')"
     , "process() lua/circular_buffer_errors.lua:71: bad argument #-1 to 'format' (incorrect number of arguments)"
     , "process() lua/circular_buffer_errors.lua:74: bad argument #-1 to 'format' (incorrect number of arguments)"
+    , "process() lua/circular_buffer_errors.lua:77: fromstring() too few values: 0, expected 2"
+    , "process() lua/circular_buffer_errors.lua:80: fromstring() too few values: 0, expected 2"
+    , "process() lua/circular_buffer_errors.lua:83: fromstring() too many values, more than: 2"
     , NULL
   };
 
@@ -545,7 +548,7 @@ static char* test_cbuf()
   mu_assert(strcmp(outputs[3], written_data) == 0, "received: %s",
             written_data);
 
-  for (int i = 1; i < 5; ++i) {
+  for (int i = 1; i < 6; ++i) {
     result = report(sb, i);
     mu_assert(result == 0, "report() test: %d received: %d error: %s", i, result, lsb_get_error(sb));
   }

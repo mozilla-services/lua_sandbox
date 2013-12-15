@@ -20,17 +20,17 @@ function process(tc)
     elseif tc == 6 then
         local cb = circular_buffer.new(2, 1, 0) -- new() zero seconds_per_row
     elseif tc == 7 then
-        local cb = circular_buffer.new(2, 1, 3601) -- new() > hour seconds_per_row 
+        local cb = circular_buffer.new(2, 1, 3601) -- new() > hour seconds_per_row
     elseif tc == 8  then
         local cb = circular_buffer.new(1000, 10, 1) -- new() too much memory
     elseif tc == 9 then
-        local cb = circular_buffer.new(2, 1, 1) -- set() out of range column 
+        local cb = circular_buffer.new(2, 1, 1) -- set() out of range column
         cb:set(0, 2, 1.0)
     elseif tc == 10  then
         local cb = circular_buffer.new(2, 1, 1) -- set() zero column
         cb:set(0, 0, 1.0)
     elseif tc == 11 then
-        local cb = circular_buffer.new(2, 1, 1) -- set() non numeric column 
+        local cb = circular_buffer.new(2, 1, 1) -- set() non numeric column
         cb:set(0, nil, 1.0)
     elseif tc == 12 then
         local cb = circular_buffer.new(2, 1, 1) -- set() non numeric time
@@ -72,6 +72,15 @@ function process(tc)
     elseif tc == 24 then
         local cb = circular_buffer.new(2, 1, 1) -- format() missing
         cb:format()
+    elseif tc == 25 then
+        local cb = circular_buffer.new(2, 1, 1) -- too few
+        cb:fromstring("")
+    elseif tc == 26 then
+        local cb = circular_buffer.new(2, 1, 1) -- too few invalid
+        cb:fromstring("0 0 na 1")
+    elseif tc == 27 then
+        local cb = circular_buffer.new(2, 1, 1) -- too many
+        cb:fromstring("0 0 1 2 3")
     end
 return 0
 end

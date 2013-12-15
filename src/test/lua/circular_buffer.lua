@@ -100,15 +100,30 @@ function report(tc)
         local stats = circular_buffer.new(2, 1, 1)
         local nan = stats:get(0, 1)
         if nan == nan then
-            error(string.format("initial value is a number", nan))
+            error(string.format("initial value is a number %G", nan))
         end
         local v = stats:set(0, 1, 1)
-        if v == 1 then
+        if v ~= 1 then
             error(string.format("set failed = %G", v))
         end
-        local v = stats:add(0, 1, 0/0)
+        v = stats:add(0, 1, 0/0)
         if v == v then
-            error(string.format("adding nan returned a number", nan))
+            error(string.format("adding nan returned a number %G", v))
+        end
+    elseif tc == 6 then
+        local stats = circular_buffer.new(2, 1, 1)
+        local v = stats:set(0, 1, 1)
+        if stats:get(0, 1) ~= 1 then
+            error(string.format("set failed = %G", v))
+        end
+        stats:fromstring("0 0 nan 99")
+        local nan = stats:get(0, 1)
+        if nan == nan then
+            error(string.format("restored value value is a number %G", nan))
+        end
+        v = stats:get(1, 1)
+        if v ~= 99 then
+            error(string.format("restored value is %G", v))
         end
     end
 end

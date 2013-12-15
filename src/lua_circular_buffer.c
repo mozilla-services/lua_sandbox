@@ -533,15 +533,43 @@ const char* get_output_format(circular_buffer* cb)
 }
 
 
+static void read_time_row(char** p, circular_buffer* cb)
+{
+  cb->current_time = (time_t)strtoll(*p, &*p, 10);
+  cb->current_row = strtoul(*p, &*p, 10);
+}
+
+
+static int read_double(char** p, double* value)
+{
+  while (**p != 0 && isspace(**p)) {
+    ++*p;
+  }
+  if (0 == **p)  return 0;
+
+  if (**p == not_a_number[0]) {
+    ++*p;
+    if (0 == **p || **p != not_a_number[1]) return 0;
+
+    ++*p;
+    if (0 == **p || **p != not_a_number[2]) return 0;
+
+    ++*p;
+    *value = NAN;
+  } else {
+    *value = strtod(*p, &*p);
+  }
+  return 1;
+}
+
+
 static void circular_buffer_delta_fromstring(lua_State* lua,
                                              circular_buffer* cb,
-                                             const char* values,
-                                             size_t offset)
+                                             char** p)
 {
-  int n  = 0;
   double value, ns = 0;
   size_t pos = 0;
-  while (sscanf(&values[offset], "%lg%n", &value, &n) == 1) {
+  while (read_double(&*p, &value)) {
     if (pos == 0) { // new row, starts with a time_t
       ns = value * 1e9;
     } else {
@@ -552,7 +580,6 @@ static void circular_buffer_delta_fromstring(lua_State* lua,
     } else {
       ++pos;
     }
-    offset += n;
   }
   if (pos != 0) {
     lua_pushstring(lua, "fromstring() invalid delta");
@@ -567,37 +594,25 @@ static int circular_buffer_fromstring(lua_State* lua)
   circular_buffer* cb = check_circular_buffer(lua, 2);
   const char* values  = luaL_checkstring(lua, 2);
 
-  int n = 0;
-  double value;
-#ifdef _MINGW
-  long t; // mingw doesn't like the C99 %lld specifier in sscanf
-  if (!sscanf(values, "%ld %u%n", &t, &cb->current_row, &n)) {
-#else
-  long long t;
-  if (!sscanf(values, "%lld %u%n", &t, &cb->current_row, &n)) {
-#endif
-    lua_pushstring(lua, "fromstring() invalid time/row");
-    lua_error(lua);
-  }
-  cb->current_time = t;
-  size_t offset = n, pos = 0;
+  char* p = (char*)values;
+  read_time_row(&p, cb);
+
+  size_t pos = 0;
   size_t len = cb->rows * cb->columns;
-  while (sscanf(&values[offset], "%lg%n", &value, &n) == 1) {
+  double value;
+  while (read_double(&p, &value)) {
     if (pos == len) {
       if (cb->delta) {
-        circular_buffer_delta_fromstring(lua, cb, values, offset);
+        circular_buffer_delta_fromstring(lua, cb, &p);
         return 0;
       } else {
-        lua_pushstring(lua, "fromstring() too many values");
-        lua_error(lua);
+        luaL_error(lua, "fromstring() too many values, more than: %d", len);
       }
     }
-    offset += n;
     cb->values[pos++] = value;
   }
   if (pos != len) {
-    lua_pushstring(lua, "fromstring() too few values");
-    lua_error(lua);
+    luaL_error(lua, "fromstring() too few values: %d, expected %d", pos, len);
   }
   return 0;
 }
