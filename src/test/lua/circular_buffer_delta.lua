@@ -36,7 +36,7 @@ function report(tc)
         -- the sum delta should reflect the difference
         -- the min delta should reflect the current value
         cb:set(0, SUM_COL, 3)
-        cb:set(0, MIN_COL, 3)
+        cb:set(0, MIN_COL, 6)
         write(cb:format("cbufd"))
         cb:set(0, SUM_COL, 5)
         cb:set(0, MIN_COL, 5)
@@ -44,6 +44,33 @@ function report(tc)
     elseif tc == 4 then
         cb:add(0, SUM_COL, 3)
         cb:add(0, MIN_COL, 3)
+        write(cb:format("cbufd"))
+    elseif tc == 5 then
+        cb:add(0, SUM_COL, 1)
+        cb:set(0, SUM_COL, 0/0)
+        cb:add(0, MIN_COL, 1)
+        write(cb:format("cbufd"))
+    elseif tc == 6 then
+        cb:add(0, SUM_COL, 1)
+        cb:add(0, SUM_COL, 0/0)
+        cb:add(0, MIN_COL, 1)
+        write(cb:format("cbufd"))
+    elseif tc == 7 then
+        cb:add(0, SUM_COL, 1)
+        cb:set(0, MIN_COL, 0/0)
+        write(cb:format("cbufd"))
+    elseif tc == 8 then
+        cb:add(0, SUM_COL, 1)
+        cb:set(0, MIN_COL, 9)
+        cb:add(0, MIN_COL, 0/0)
+        write(cb:format("cbufd"))
+    elseif tc == 9 then
+        cb:set(0, SUM_COL, 0)
+        cb:set(0, MIN_COL, 0)
+        write(cb:format("cbufd"))
+    elseif tc == 10 then
+        cb:add(0, SUM_COL, 0)
+        cb:add(0, MIN_COL, 0)
         write(cb:format("cbufd"))
     end
 end

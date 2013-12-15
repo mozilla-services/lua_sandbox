@@ -11,6 +11,8 @@
 #include <stdio.h>
 #include "lua_sandbox_private.h"
 
+extern const char* not_a_number;
+
 typedef struct
 {
   const void*     ptr;

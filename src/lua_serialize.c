@@ -14,7 +14,7 @@
 #include "lua_serialize.h"
 #include "lua_circular_buffer.h"
 
-static const char* not_a_number = "nan";
+const char* not_a_number = "nan";
 
 int preserve_global_data(lua_sandbox* lsb, const char* data_file)
 {

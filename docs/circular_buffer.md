@@ -41,11 +41,12 @@ double **set** (nanoseconds, column, value)
 - nanosecond (unsigned) The number of nanosecond since the UNIX epoch. The value is
     used to determine which row is being operated on.
 - column (unsigned) The column within the specified row to perform a set operation on.
-- value (double) The value to be overwritten at the specified row/column.
+- value (double) The value to be overwritten at the specified row/column. 
+  For aggregation methods "min" and "max" the value is only overwritten if it is smaller/larger than the current value.
 
 *Return*
 
-The value passed in or nil if the time was outside the range of the buffer.
+The resulting value of the row/column or nil if the time was outside the range of the buffer.
 
 ____
 double **get** (nanoseconds, column)

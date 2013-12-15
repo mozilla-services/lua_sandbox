@@ -187,9 +187,6 @@ static int check_column(lua_State* lua, circular_buffer* cb, int arg)
 static void circular_buffer_add_delta(lua_State* lua, circular_buffer* cb,
                                       double ns, int column, double value)
 {
-  if (0 == value) {
-    return;
-  }
   // Storing the deltas in a Lua table allows the sandbox to account for the
   // memory usage. todo: if too inefficient use a C data struct and report
   // memory usage back to the sandbox
@@ -253,7 +250,7 @@ static int circular_buffer_add(lua_State* lua)
       cb->values[i] += value;
     }
     lua_pushnumber(lua, cb->values[i]);
-    if (cb->delta) {
+    if (cb->delta && value != 0) {
       if (cb->headers[column].aggregation != AGGREGATION_SUM) {
         value = cb->values[i];
       }
@@ -287,24 +284,42 @@ static int circular_buffer_set(lua_State* lua)
 {
   circular_buffer* cb = check_circular_buffer(lua, 4);
   double ns = luaL_checknumber(lua, 2);
-  int row             = check_row(cb,
-                                  ns,
-                                  1); // advance the buffer forward if
-                                      //necessary
+  int row             = check_row(cb, ns, 1); // advance the buffer forward if
+                                              // necessary
   int column          = check_column(lua, cb, 3);
   double value        = luaL_checknumber(lua, 4);
 
   if (row != -1) {
     int i = (row * cb->columns) + column;
     double old = cb->values[i];
-    cb->values[i] = value;
-    lua_pushnumber(lua, value);
-    if (cb->delta) {
-      if (!isnan(old) && cb->headers[column].aggregation == AGGREGATION_SUM) {
-        value -= old;
+    switch (cb->headers[column].aggregation) {
+    case AGGREGATION_MIN:
+      if (isnan(cb->values[i]) || value < cb->values[i]) {
+        cb->values[i] = value;
+        if (cb->delta) {
+          circular_buffer_add_delta(lua, cb, ns, column, value);
+        }
       }
-      circular_buffer_add_delta(lua, cb, ns, column, value);
+      break;
+    case AGGREGATION_MAX:
+      if (isnan(cb->values[i]) || value > cb->values[i]) {
+        cb->values[i] = value;
+        if (cb->delta) {
+          circular_buffer_add_delta(lua, cb, ns, column, value);
+        }
+      }
+      break;
+    default:
+      cb->values[i] = value;
+      if (cb->delta) {
+        if (!isnan(old)) {
+          value -= old;
+        }
+        circular_buffer_add_delta(lua, cb, ns, column, value);
+      }
+      break;
     }
+    lua_pushnumber(lua, cb->values[i]);
   } else {
     lua_pushnil(lua);
   }
@@ -630,7 +645,11 @@ int output_circular_buffer_cbufd(lua_State* lua, circular_buffer* cb,
            ++column_idx) {
         if (appendc(output, '\t')) return 1;
         lua_rawgeti(lua, -1, column_idx);
-        if (serialize_double(output, lua_tonumber(lua, -1))) return 1;
+        if (LUA_TNIL == lua_type(lua, -1)) {
+          if (appends(output, not_a_number)) return 1;
+        } else {
+          if (serialize_double(output, lua_tonumber(lua, -1))) return 1;
+        }
         lua_pop(lua, 1); // remove the number
       }
       if (appendc(output, '\n')) return 1;
