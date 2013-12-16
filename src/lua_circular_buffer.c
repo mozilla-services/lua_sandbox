@@ -79,15 +79,42 @@ static time_t get_start_time(circular_buffer* cb)
 }
 
 
-static void clear_rows(circular_buffer* cb, unsigned num_rows)
-{
-  unsigned row = cb->current_row;
-  for (unsigned x = 0; x < num_rows; ++x) {
-    ++row;
-    if (row >= cb->rows) {row = 0;}
-    for (unsigned c = 0; c < cb->columns; ++c) {
-      cb->values[(row * cb->columns) + c] = NAN;
+static void copy_cleared_row(circular_buffer* cb, double* cleared, size_t rows) {
+  size_t pool = 1;
+  size_t ask;
+
+  while (rows > 0) {
+    if (rows >= pool) {
+      ask = pool;
+    } else {
+      ask = rows;
     }
+    memcpy(cleared + (pool * cb->columns), cleared, sizeof(double) * cb->columns * ask);
+    rows -= ask;
+    pool += ask;
+  }
+}
+
+
+static void clear_rows(circular_buffer* cb, unsigned num_rows) {
+  if (num_rows >= cb->rows) {
+    num_rows = cb->rows;
+  }
+  unsigned row = cb->current_row;
+  ++row;
+  if (row >= cb->rows) {row = 0;}
+  for (unsigned c = 0; c < cb->columns; ++c) {
+    cb->values[(row * cb->columns) + c] = NAN;
+  }
+  double* cleared = &cb->values[row * cb->columns];
+  if (row + num_rows - 1 >= cb->rows) {
+    copy_cleared_row(cb, cleared, cb->rows - row - 1);
+    for (unsigned c = 0; c < cb->columns; ++c) {
+      cb->values[c] = NAN;
+    }
+    copy_cleared_row(cb, cb->values, row + num_rows - 1 - cb->rows);
+  } else {
+    copy_cleared_row(cb, cleared, num_rows - 1);
   }
 }
 
@@ -600,19 +627,18 @@ static int circular_buffer_fromstring(lua_State* lua)
   size_t pos = 0;
   size_t len = cb->rows * cb->columns;
   double value;
-  while (read_double(&p, &value)) {
-    if (pos == len) {
-      if (cb->delta) {
-        circular_buffer_delta_fromstring(lua, cb, &p);
-        return 0;
-      } else {
-        luaL_error(lua, "fromstring() too many values, more than: %d", len);
-      }
-    }
+  while (pos < len && read_double(&p, &value)) {
     cb->values[pos++] = value;
   }
-  if (pos != len) {
+  if (pos == len) {
+    if (cb->delta) {
+      circular_buffer_delta_fromstring(lua, cb, &p);
+    }
+  } else {
     luaL_error(lua, "fromstring() too few values: %d, expected %d", pos, len);
+  }
+  if (read_double(&p, &value)) {
+    luaL_error(lua, "fromstring() too many values, more than: %d", len);
   }
   return 0;
 }

@@ -37,6 +37,9 @@ cycleb["a"] = cyclea
 
 data = circular_buffer.new(3,3,1)
 
+delta = circular_buffer.new(2,1,1, true)
+delta:add(0, 1, 2)
+
 dataRef = data
 
 function process_message ()

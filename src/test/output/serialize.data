@@ -1,4 +1,7 @@
 _G["rate"] = 0.12345678
+if _G["delta"] == nil then _G["delta"] = circular_buffer.new(2, 1, 1, true) end
+_G["delta"]:set_header(1, "Column_1", "count", "sum")
+_G["delta"]:fromstring("1 1 2 nan 0 2")
 if _G["data"] == nil then _G["data"] = circular_buffer.new(3, 3, 1) end
 _G["data"]:set_header(1, "Column_1", "count", "sum")
 _G["data"]:set_header(2, "Column_2", "count", "sum")

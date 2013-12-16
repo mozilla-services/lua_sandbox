@@ -26,6 +26,9 @@ _G["cycleb"]["a"] = {}
 _G["cycleb"]["a"]["b"] = _G["cycleb"]
 _G["cycleb"]["a"]["type"] = "cycle a"
 _G["cycleb"]["type"] = "cycle b"
+if _G["delta"] == nil then _G["delta"] = circular_buffer.new(2, 1, 1, true) end
+_G["delta"]:set_header(1, "Column_1", "count", "sum")
+_G["delta"]:fromstring("1 1 2 nan 0 2")
 _G["data"] = _G["dataRef"]
 _G["cyclea"] = _G["cycleb"]["a"]
 _G["large_key"] = {}

@@ -72,5 +72,7 @@ function report(tc)
         cb:add(0, SUM_COL, 0)
         cb:add(0, MIN_COL, 0)
         write(cb:format("cbufd"))
+    elseif tc == 11 then
+        cb:fromstring(0, 0, 1, 2, 3, 4, 0, 3, 4)
     end
 end

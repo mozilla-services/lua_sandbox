@@ -1056,6 +1056,32 @@ static char* benchmark_table_output()
   return NULL;
 }
 
+static char* benchmark_cbuf_add()
+{
+  int iter = 1000000;
+
+  lua_sandbox* sb = lsb_create(NULL, "lua/circular_buffer_add.lua", "../../modules", 8000000, 1000,
+                               1024 * 63);
+  mu_assert(sb, "lsb_create() received: NULL");
+  int result = lsb_init(sb, NULL);
+  mu_assert(result == 0, "lsb_init() received: %d %s", result,
+            lsb_get_error(sb));
+
+  double ts = 0;
+  clock_t t = clock();
+  for (int x = 0; x < iter; ++x) {
+    process(sb, ts);
+    ts += 1e9;
+  }
+  t = clock() - t;
+  mu_assert(lsb_get_state(sb) == LSB_RUNNING, "benchmark_cbuf_add() failed %s", lsb_get_error(sb));
+  e = lsb_destroy(sb, NULL);
+  mu_assert(!e, "lsb_destroy() received: %s", e);
+  printf("benchmark_cbuf_add() %g seconds\n", ((float)t) / CLOCKS_PER_SEC / iter);
+
+  return NULL;
+}
+
 
 static char* all_tests()
 {
@@ -1085,6 +1111,7 @@ static char* all_tests()
   mu_run_test(benchmark_lua_types_output);
   mu_run_test(benchmark_cbuf_output);
   mu_run_test(benchmark_table_output);
+  mu_run_test(benchmark_cbuf_add);
   return NULL;
 }
 
