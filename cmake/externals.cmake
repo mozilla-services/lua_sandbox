@@ -62,7 +62,7 @@ else()
         URL_MD5 2e115fe26e435e33b0d5c022e4490567
         PATCH_COMMAND ${PATCH_EXECUTABLE} -p1 < ${CMAKE_CURRENT_LIST_DIR}/lua-5_1_5.patch
         CMAKE_ARGS ${SANDBOX_CMAKE_ARGS}
-        INSTALL_DIRECTORY ${EP_BASE}
+        INSTALL_DIR ${EP_BASE}
     )
 endif()
 include_directories(${LUA_INCLUDE_DIR})
