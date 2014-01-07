@@ -171,12 +171,15 @@ int write_output(lua_State* lua)
     switch (lua_type(lua, 1)) {
     case LUA_TTABLE:
       if (lsb_output_protobuf(lsb, 1, 0) != 0) {
-        luaL_error(lua, "write() cound not encode protobuf - %s",
+        luaL_error(lua, "write() could not encode protobuf - %s",
                    lsb_get_error(lsb));
       }
       break;
     case LUA_TUSERDATA:
-      lsb_output_userdata(lsb, 1, 0);
+      if (!lsb_output_userdata(lsb, 1, 0)) {
+        luaL_error(lua, "write() could not output userdata - %s",
+                   lsb_get_error(lsb));
+      }
       break;
     default:
       luaL_typerror(lua, 1, "table, or circular_buffer");
@@ -436,6 +439,44 @@ static char* test_output()
 
   e = lsb_destroy(sb, "circular_buffer.preserve");
   mu_assert(!e, "lsb_destroy() received: %s", e);
+
+  return NULL;
+}
+
+static char* test_output_errors()
+{
+  const char* tests[] =
+  {
+    "process() lua/output_errors.lua:12: table contains an internal or circular reference"
+    , "process() lua/output_errors.lua:16: table contains an internal or circular reference"
+    , "process() lua/output_errors.lua:22: output_limit exceeded"
+    , "process() lua/output_errors.lua:25: write() could not encode protobuf - array has mixed types"
+    , "process() lua/output_errors.lua:28: write() could not encode protobuf - unsupported type 0"
+    , "process() lua/output_errors.lua:30: write() could not output userdata - unknown userdata type"
+    , "process() lua/output_errors.lua:33: write() could not output userdata - output_limit exceeded"
+    , NULL
+  };
+
+  for (int i = 0; tests[i]; ++i) {
+    lua_sandbox* sb = lsb_create(NULL, "lua/output_errors.lua", "../../modules",
+                                 256000, 1000, 128);
+    mu_assert(sb, "lsb_create() received: NULL");
+
+    int result = lsb_init(sb, NULL);
+    mu_assert(result == 0, "lsb_init() received: %d %s", result,
+              lsb_get_error(sb));
+    lsb_add_function(sb, &write_output, "write");
+
+    result = process(sb, i);
+    mu_assert(result == 1, "test: %d received: %d", i, result);
+
+    const char* le = lsb_get_error(sb);
+    mu_assert(le, "test: %d received NULL", i);
+    mu_assert(strcmp(tests[i], le) == 0, "test: %d received: %s", i, le);
+
+    e = lsb_destroy(sb, NULL);
+    mu_assert(!e, "lsb_destroy() received: %s", e);
+  }
 
   return NULL;
 }
@@ -1092,6 +1133,7 @@ static char* all_tests()
   mu_run_test(test_misc);
   mu_run_test(test_simple);
   mu_run_test(test_output);
+  mu_run_test(test_output_errors);
   mu_run_test(test_cbuf_errors);
   mu_run_test(test_cbuf);
   mu_run_test(test_cbuf_delta);

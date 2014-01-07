@@ -295,14 +295,14 @@ const char* lsb_output_userdata(lua_sandbox* lsb, int index, int append)
     size_t last_pos = lsb->output.pos;
     if (output_circular_buffer(lsb->lua, cb, &lsb->output)) {
       lsb->output.pos = last_pos;
+      snprintf(lsb->error_message, LSB_ERROR_SIZE, "output_limit exceeded");
       return NULL;
     }
     update_output_stats(lsb);
     return get_output_format(cb);
-  } else {
-    return NULL;
   }
 
+  snprintf(lsb->error_message, LSB_ERROR_SIZE, "unknown userdata type");
   return NULL;
 }
 
