@@ -82,7 +82,7 @@ int **set_header** (column, name, unit, aggregation_method)
 The column number passed into the function.
 
 ____
-double **compute** (function, column, start, end)
+double, int **compute** (function, column, start, end)
 
 *Arguments*
 - function (string) The name of the compute function (sum|avg|sd|min|max).
@@ -93,9 +93,20 @@ double **compute** (function, column, start, end)
     end time of the computation range (inclusive); if nil the buffer's end time is used.
     The end time must be greater than or equal to the start time.
 
+*Returns*
+
+- The result of the computation for the specifed column over the given range or nil if the range fell outside of the buffer.
+- The number of rows that contained a valid numeric value.
+
+____
+cbuf **current_time** ()
+
+*Arguments*
+- none
+
 *Return*
 
-The result of the computation for the specifed column over the given range or nil if the range fell outside of the buffer.
+The time of the most current row in the circular buffer.
 
 ____
 cbuf **format** (format)

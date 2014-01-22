@@ -551,7 +551,7 @@ static char* test_cbuf()
     , NULL
   };
 
-  lua_sandbox* sb = lsb_create(NULL, "lua/circular_buffer.lua", "../../modules", 32767,
+  lua_sandbox* sb = lsb_create(NULL, "lua/circular_buffer.lua", "../../modules", 64000,
                                1000, 32767);
   mu_assert(sb, "lsb_create() received: NULL");
 
@@ -589,7 +589,7 @@ static char* test_cbuf()
   mu_assert(strcmp(outputs[3], written_data) == 0, "received: %s",
             written_data);
 
-  for (int i = 1; i < 6; ++i) {
+  for (int i = 1; i < 8; ++i) {
     result = report(sb, i);
     mu_assert(result == 0, "report() test: %d received: %d error: %s", i, result, lsb_get_error(sb));
   }

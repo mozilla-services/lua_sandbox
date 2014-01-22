@@ -79,7 +79,8 @@ static time_t get_start_time(circular_buffer* cb)
 }
 
 
-static void copy_cleared_row(circular_buffer* cb, double* cleared, size_t rows) {
+static void copy_cleared_row(circular_buffer* cb, double* cleared, size_t rows)
+{
   size_t pool = 1;
   size_t ask;
 
@@ -96,7 +97,8 @@ static void copy_cleared_row(circular_buffer* cb, double* cleared, size_t rows) 
 }
 
 
-static void clear_rows(circular_buffer* cb, unsigned num_rows) {
+static void clear_rows(circular_buffer* cb, unsigned num_rows)
+{
   if (num_rows >= cb->rows) {
     num_rows = cb->rows;
   }
@@ -384,7 +386,8 @@ static int circular_buffer_set_header(lua_State* lua)
 
 
 static double compute_sum(circular_buffer* cb, unsigned column,
-                          unsigned start_row, unsigned end_row)
+                          unsigned start_row, unsigned end_row,
+                          unsigned* active_rows)
 {
   double value = 0;
   double result = 0;
@@ -397,6 +400,7 @@ static double compute_sum(circular_buffer* cb, unsigned column,
     if (isnan(value)) {
       continue;
     }
+    ++(*active_rows);
     result += value;
   }
   while (row++ != end_row);
@@ -405,7 +409,8 @@ static double compute_sum(circular_buffer* cb, unsigned column,
 
 
 static double compute_avg(circular_buffer* cb, unsigned column,
-                          unsigned start_row, unsigned end_row)
+                          unsigned start_row, unsigned end_row,
+                          unsigned* active_rows)
 {
   double value = 0;
   double result = 0;
@@ -417,22 +422,25 @@ static double compute_avg(circular_buffer* cb, unsigned column,
       row = 0;
     }
     value = cb->values[(row * cb->columns) + column];
-    if (isnan(value)) {
-      continue;
+    if (!isnan(value)) {
+      result += value;
+      ++row_count;
     }
-    result += value;
-    ++row_count;
   }
   while (row++ != end_row);
+  *active_rows = row_count;
   return result / row_count;
 }
 
 
 static double compute_sd(circular_buffer* cb, unsigned column,
-                         unsigned start_row, unsigned end_row)
+                         unsigned start_row, unsigned end_row,
+                         unsigned* active_rows)
 {
-  double avg = compute_avg(cb, column, start_row, end_row);
-  double susquares = 0;
+  double avg = compute_avg(cb, column, start_row, end_row, active_rows);
+  if (isnan(avg)) return avg;
+
+  double sum_squares = 0;
   double value = 0;
   unsigned row = start_row;
   unsigned row_count = 0;
@@ -441,20 +449,20 @@ static double compute_sd(circular_buffer* cb, unsigned column,
       row = 0;
     }
     value = cb->values[(row * cb->columns) + column];
-    if (isnan(value)) {
-      continue;
+    if (!isnan(value)) {
+      value -= avg;
+      sum_squares += value * value;
+      ++row_count;
     }
-    value -= avg;
-    susquares += value * value;
-    ++row_count;
   }
   while (row++ != end_row);
-  return sqrt(susquares / row_count);
+  return sqrt(sum_squares / row_count);
 }
 
 
 static double compute_min(circular_buffer* cb, unsigned column,
-                          unsigned start_row, unsigned end_row)
+                          unsigned start_row, unsigned end_row,
+                          unsigned* active_rows)
 {
   double result = DBL_MAX;
   double value = 0;
@@ -464,17 +472,24 @@ static double compute_min(circular_buffer* cb, unsigned column,
       row = 0;
     }
     value = cb->values[(row * cb->columns) + column];
-    if (!isnan(value) && value < result) {
-      result = value;
+    if (!isnan(value)) {
+      ++(*active_rows);
+      if (value < result) {
+        result = value;
+      }
     }
   }
   while (row++ != end_row);
+  if (result == DBL_MAX) {
+    result = NAN;
+  }
   return result;
 }
 
 
 static double compute_max(circular_buffer* cb, unsigned column,
-                          unsigned start_row, unsigned end_row)
+                          unsigned start_row, unsigned end_row,
+                          unsigned* active_rows)
 {
   double result = DBL_MIN;
   double value = 0;
@@ -484,11 +499,17 @@ static double compute_max(circular_buffer* cb, unsigned column,
       row = 0;
     }
     value = cb->values[(row * cb->columns) + column];
-    if (!isnan(value) && value > result) {
-      result = value;
+    if (!isnan(value)) {
+      ++(*active_rows);
+      if (value > result) {
+        result = value;
+      }
     }
   }
   while (row++ != end_row);
+  if (result == DBL_MIN) {
+    result = NAN;
+  }
   return result;
 }
 
@@ -505,36 +526,45 @@ static int circular_buffer_compute(lua_State* lua)
   double end_ns   = luaL_optnumber(lua, 5, cb->current_time * 1e9);
   luaL_argcheck(lua, end_ns >= start_ns, 5, "end must be >= start");
 
+  unsigned active_rows = 0;
   int start_row = check_row(cb, start_ns, 0);
   int end_row   = check_row(cb, end_ns, 0);
   if (-1 == start_row  || -1 == end_row) {
     lua_pushnil(lua);
-    return 1;
+    lua_pushinteger(lua, active_rows);
+    return 2;
   }
 
   double result = 0;
   switch (function) {
   case 0:
-    result = compute_sum(cb, column, start_row, end_row);
+    result = compute_sum(cb, column, start_row, end_row, &active_rows);
     break;
   case 1:
-    result = compute_avg(cb, column, start_row, end_row);
+    result = compute_avg(cb, column, start_row, end_row, &active_rows);
     break;
   case 2:
-    result = compute_sd(cb, column, start_row, end_row);
+    result = compute_sd(cb, column, start_row, end_row, &active_rows);
     break;
   case 3:
-    result = compute_min(cb, column, start_row, end_row);
+    result = compute_min(cb, column, start_row, end_row, &active_rows);
     break;
   case 4:
-    result = compute_max(cb, column, start_row, end_row);
+    result = compute_max(cb, column, start_row, end_row, &active_rows);
     break;
   }
 
   lua_pushnumber(lua, result);
-  return 1;
+  lua_pushinteger(lua, active_rows);
+  return 2;
 }
 
+static int circular_buffer_current_time(lua_State* lua)
+{
+  circular_buffer* cb = check_circular_buffer(lua, 0);
+  lua_pushnumber(lua, cb->current_time * 1e9);
+  return 1; // return the current time
+}
 
 static int circular_buffer_format(lua_State* lua)
 {
@@ -858,6 +888,7 @@ static const struct luaL_reg circular_bufferlib_m[] =
   , { "set", circular_buffer_set }
   , { "set_header", circular_buffer_set_header }
   , { "compute", circular_buffer_compute }
+  , { "current_time", circular_buffer_current_time }
   , { "format", circular_buffer_format }
   , { "fromstring", circular_buffer_fromstring } // used for data restoration
   , { NULL, NULL }
