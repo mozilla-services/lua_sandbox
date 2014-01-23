@@ -81,7 +81,7 @@ int serialize_double(output_data* output, double d)
     return appends(output, not_a_number);
   }
   if (d > INT_MAX) {
-    return appendf(output, "%0.9g", d);
+    return appendf(output, "%0.17g", d);
   }
 
   const int precision = 8;
