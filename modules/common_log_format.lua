@@ -50,7 +50,7 @@ local nginx_format_variables = {
     request_length = l.Cg(l.Ct(l.Cg(l.digit^1 / tonumber, "value") * l.Cg(l.Cc"B", "representation")), "request_length"),
     request_time =  l.Cg(l.Ct(l.Cg((l.digit^1 * "." * l.digit^1) / tonumber, "value") * l.Cg(l.Cc"s", "representation")), "request_time"),
     status = l.Cg(l.digit^1 / tonumber, "status"),
-    time_iso8601 = rfc3339.grammar,
+    time_iso8601 = l.Cg(rfc3339.grammar / rfc3339.time_ns, "time"),
     time_local = clf_time
 }
 
