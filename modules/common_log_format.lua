@@ -41,6 +41,12 @@ local time_offset = l.Cg(l.S"+-", "offset_sign") * l.Cg(time_hour / tonumber, "o
 
 local clf_time = l.Cg(l.Ct(date_mday * "/" * date_mabbr * "/" * date_fullyear * ":" * time_hour * ":" * time_minute * ":" * time_second * " " * time_offset) / rfc3339.time_ns, "time")
 
+local function time_ns(sec)
+    return tonumber(sec) * 1e9
+end
+
+local msec_time = l.Cg((l.digit^1 * "." * l.digit^1) / time_ns, "time")
+
 local nginx_format_variables = {
     body_bytes_sent = l.Cg(l.Ct(l.Cg(l.digit^1 / tonumber, "value") * l.Cg(l.Cc"B", "representation")), "body_bytes_sent"),
     bytes_sent = l.Cg(l.Ct(l.Cg(l.digit^1 / tonumber, "value") * l.Cg(l.Cc"B", "representation")), "bytes_sent"),
@@ -51,7 +57,8 @@ local nginx_format_variables = {
     request_time =  l.Cg(l.Ct(l.Cg((l.digit^1 * "." * l.digit^1) / tonumber, "value") * l.Cg(l.Cc"s", "representation")), "request_time"),
     status = l.Cg(l.digit^1 / tonumber, "status"),
     time_iso8601 = l.Cg(rfc3339.grammar / rfc3339.time_ns, "time"),
-    time_local = clf_time
+    time_local = clf_time,
+    msec = msec_time
 }
 
 local last_literal = l.space
