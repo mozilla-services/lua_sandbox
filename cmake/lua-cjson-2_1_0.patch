@@ -20,7 +20,7 @@ diff -Naur lua-cjson-2.1.0.orig/CMakeLists.txt lua-cjson-2_1_0/CMakeLists.txt
  
  if(NOT USE_INTERNAL_FPCONV)
      # Use libc number conversion routines (strtod(), sprintf())
-@@ -50,27 +44,32 @@
+@@ -50,27 +44,33 @@
      add_definitions(-DUSE_INTERNAL_ISINF)
  endif()
  
