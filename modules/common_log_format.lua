@@ -5,7 +5,7 @@
 -- Imports
 local l = require "lpeg"
 l.locale(l)
-
+local string = require "string"
 local rfc3339 = require "rfc3339"
 local tonumber = tonumber
 local ipairs = ipairs
@@ -78,7 +78,7 @@ local function space_grammar()
 end
 
 local function literal_grammar(var)
-    last_literal = var
+    last_literal = string.sub(var, -1)
     return l.P(var)
 end
 

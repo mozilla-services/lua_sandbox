@@ -817,10 +817,17 @@ static char* test_lpeg_grammar()
     , "{\"min\":\"59\",\"year\":\"1990\",\"month\":\"12\",\"sec\":\"60\",\"hour\":\"23\",\"day\":\"31\"}\n"
     , "{\"offset_sign\":\"-\",\"offset_min\":0,\"hour\":\"15\",\"min\":\"59\",\"day\":\"31\",\"month\":\"12\",\"sec\":\"60\",\"year\":\"1990\",\"offset_hour\":8}\n"
     , "{\"offset_sign\":\"+\",\"offset_min\":20,\"hour\":\"12\",\"min\":\"00\",\"day\":\"01\",\"month\":\"01\",\"offset_hour\":0,\"sec\":\"27\",\"year\":\"1937\",\"sec_frac\":0.87}\n"
+    , "{\"body_bytes_sent\":{\"value\":0,\"representation\":\"B\"},\"remote_addr\":\"127.0.0.1\",\"time\":1.392050801e+18,\"http_user_agent\":\"Mozilla\\/5.0 (X11; Ubuntu; Linux x86_64; rv:26.0) Gecko\\/20100101 Firefox\\/26.0\",\"request\":\"GET \\/ HTTP\\/1.1\",\"remote_user\":\"-\",\"status\":304,\"http_referer\":\"-\"}\n"
+    , "{\"body_bytes_sent\":{\"value\":0,\"representation\":\"B\"},\"remote_addr\":\"127.0.0.1\",\"time\":1.3917948317550001e+18,\"status\":304,\"http_user_agent\":\"Mozilla\\/5.0 (X11; Ubuntu; Linux x86_64; rv:26.0) Gecko\\/20100101 Firefox\\/26.0\",\"request\":\"GET \\/ HTTP\\/1.1\",\"http_referer\":\"-\"}\n"
+    , "{\"msg\":\"(root) CMD (   cd \\/ && run-parts --report \\/etc\\/cron.hourly)\",\"timestamp\":1.391955421e+18,\"syslogtag\":\"CRON[20758]:\",\"hostname\":\"trink-x230\"}\n"
+    , "{\"msg\":\"Kernel logging (proc) stopped.\",\"timestamp\":1.3920493191115369e+18,\"syslogtag\":\"kernel:\",\"hostname\":\"trink-x230\"}\n"
+    , "{\"hostname\":\"trink-x230\",\"msg\":\"imklog 5.8.6, log source = \\/proc\\/kmsg started.\",\"timestamp\":1.392049995407935e+18,\"syslogtag\":\"kernel:\",\"pri\":{\"severity\":6,\"facility\":0}}\n"
+    , "{\"hostname\":\"trink-x230\",\"msg\":\"imklog 5.8.6, log source = \\/proc\\/kmsg started.\",\"timestamp\":1.392021527e+18,\"syslogtag\":\"kernel:\",\"pri\":{\"severity\":6,\"facility\":0}}\n"
+    , "{\"syslogfacility\":0,\"$year\":\"2014\",\"source\":\"trink-x230\",\"syslogpriority-text\":6,\"syslogfacility-text\":0,\"msg\":\"imklog 5.8.6, log source = \\/proc\\/kmsg started.\",\"procid\":\"-\",\"structured-data\":\"-\",\"hostname\":\"trink-x230\",\"app-name\":\"kernel\",\"programname\":\"kernel\",\"$minute\":\"20\",\"$qhour\":\"01\",\"msgid\":\"imklog\",\"$hhour\":\"00\",\"pri-text\":0,\"fromhost-ip\":\"127.0.0.1\",\"$hour\":\"09\",\"pri\":{\"severity\":6,\"facility\":0},\"$day\":\"10\",\"$month\":\"02\",\"$now\":\"2014-02-10\",\"protocol-version\":\"0\",\"timegenerated\":1.392024053e+18,\"timestamp\":1.392052853559934e+18,\"syslogpriority\":6,\"iut\":\"1\",\"syslogtag\":\"kernel:\",\"fromhost\":\"trink-x230\"}\n"
     , NULL
   };
 
-  lua_sandbox* sb = lsb_create(NULL, "lua/lpeg_grammar.lua", "../../modules", 100000, 1000, 8000);
+  lua_sandbox* sb = lsb_create(NULL, "lua/lpeg_grammar.lua", "../../modules", 8e6, 1e6, 63*1024);
   mu_assert(sb, "lsb_create() received: NULL");
 
   int result = lsb_init(sb, NULL);

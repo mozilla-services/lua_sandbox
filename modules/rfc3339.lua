@@ -37,27 +37,27 @@ offset_hour=7 (number)
 offset_min=0 (number)
 --]]
 
-local date_fullyear = l.Cg(l.digit * l.digit * l.digit * l.digit, "year")
-local date_month = l.Cg(l.P"0" * l.R"19"
-                           + "1" * l.R"02", "month")
-local date_mday = l.Cg(l.P"0" * l.R"19"
-                          + l.R"12" * l.R"09"
-                          + "3" * l.R"01", "day")
+date_fullyear = l.Cg(l.digit * l.digit * l.digit * l.digit, "year")
+date_month = l.Cg(l.P"0" * l.R"19"
+                     + "1" * l.R"02", "month")
+date_mday = l.Cg(l.P"0" * l.R"19"
+                    + l.R"12" * l.R"09"
+                    + "3" * l.R"01", "day")
 
-local time_hour = l.Cg(l.R"01" * l.digit
-                          + "2" * l.R"03", "hour")
-local time_minute = l.Cg(l.R"05" * l.digit, "min")
-local time_second = l.Cg(l.R"05" * l.digit
-                            + "60", "sec")
-local time_secfrac = l.Cg(l.P"." * l.digit^1 / tonumber, "sec_frac")
-local time_numoffset = l.Cg(l.S"+-", "offset_sign") *
+time_hour = l.Cg(l.R"01" * l.digit
+                    + "2" * l.R"03", "hour")
+time_minute = l.Cg(l.R"05" * l.digit, "min")
+time_second = l.Cg(l.R"05" * l.digit
+                      + "60", "sec")
+time_secfrac = l.Cg(l.P"." * l.digit^1 / tonumber, "sec_frac")
+time_numoffset = l.Cg(l.S"+-", "offset_sign") *
 l.Cg(time_hour / tonumber, "offset_hour") * ":" *
 l.Cg(time_minute / tonumber, "offset_min")
-local time_offset = l.S"Zz" + time_numoffset
+time_offset = l.S"Zz" + time_numoffset
 
-local partial_time = time_hour * ":" * time_minute * ":" * time_second * time_secfrac^-1
-local full_date = date_fullyear * "-"  * date_month * "-" * date_mday
-local full_time = partial_time * time_offset
+partial_time = time_hour * ":" * time_minute * ":" * time_second * time_secfrac^-1
+full_date = date_fullyear * "-"  * date_month * "-" * date_mday
+full_time = partial_time * time_offset
 
 grammar =  l.Ct(full_date * l.S"Tt " * full_time)
 
