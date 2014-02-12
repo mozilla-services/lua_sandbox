@@ -6,9 +6,9 @@
 local l = require "lpeg"
 l.locale(l)
 local math = require "math"
-local os = require "os"
 local string = require "string"
-local rfc3339 = require "rfc3339"
+local dt = require "date_time"
+local ip = require "ip_address"
 local tonumber = tonumber
 local error = error
 local type = type
@@ -38,12 +38,6 @@ local sd_id           = sd_name
 local sd_element      = l.P"[" * sd_id * (sp * sd_param)^0 * "]"
 local syslog_facility = digit^-3 / tonumber
 local syslog_severity = digit / tonumber
-local d8              = "1" * digit * digit
-                        + "2" * l.R"04" * digit
-                        + "25" * l.R"05"
-                        + nonzero_digit * digit
-                        + digit
-local ipv4            = d8 * "." * d8 * "." * d8 * "." * d8
 
 local function convert_pri(pri)
     pri = tonumber(pri)
@@ -97,30 +91,12 @@ local syslog_facility_text = (
 + (l.P"local7"          + "LOCAL7")         / "23"
 ) / tonumber
 
--- https://github.com/rsyslog/rsyslog/blob/448a474f5ba43109d062978de5249fb790357a79/runtime/datetime.c#L651
-local date_mabbr = l.Cg(
-l.P"Jan" / "1"
-+ l.P"Feb" / "2"
-+ l.P"Mar" / "3"
-+ l.P"Apr" / "4"
-+ l.P"May" / "5"
-+ l.P"Jun" / "6"
-+ l.P"Jul" / "7"
-+ l.P"Aug" / "8"
-+ l.P"Sep" / "9"
-+ l.P"Oct" / "10"
-+ l.P"Nov" / "11"
-+ l.P"Dec" / "12"
-, "month")
-
-local rfc3164_date = l.Ct(date_mabbr * sp^1 * l.Cg(digit^-2, "day") * sp^1 * rfc3339.time_hour * ":" * rfc3339.time_minute * ":" * rfc3339.time_second * l.Cg(l.Cc("") / function() return os.date("%Y") end, "year"))
-
 local time_formats = {
-["date-rfc3164"]            = rfc3164_date,
-["date-rfc3164-buggyday"]   = rfc3164_date,
-["date-mysql"]              = l.Ct(rfc3339.date_fullyear * rfc3339.date_month * rfc3339.date_mday * rfc3339.time_hour * rfc3339.time_minute * rfc3339.time_second),
-["date-pqsql"]              = l.Ct(rfc3339.full_date * sp * rfc3339.time_hour * ":" * rfc3339.time_minute * ":" * rfc3339.time_second),
-["date-rfc3339"]            = rfc3339.grammar,
+["date-rfc3164"]            = dt.rfc3164_timestamp,
+["date-rfc3164-buggyday"]   = dt.rfc3164_timestamp,
+["date-mysql"]              = dt.mysql_timestamp,
+["date-pqsql"]              = dt.pqsql_timestamp,
+["date-rfc3339"]            = dt.rfc3339,
 ["date-unixtimestamp"]      = digit^1,
 ["date-subseconds"]         = digit^1
 }
@@ -140,11 +116,11 @@ local function lookup_time_format(property)
     end
 
     if format == "date-unixtimestamp" then
-        f = f / function(sec) return tonumber(sec) * 1e9 end
+        f = f / dt.seconds_to_ns
     elseif format == "date-subseconds" then
         f = f / tonumber
     else
-        f = f / rfc3339.time_ns
+        f = f / dt.time_to_ns
     end
 
     return f
@@ -157,7 +133,7 @@ local rsyslog_properties = {
    hostname                = hostname,
    source                  = hostname,
    fromhost                = hostname,
-   ["fromhost-ip"]         = ipv4, -- todo add ipv6 support
+   ["fromhost-ip"]         = ip.v4 + ip.v6,
    syslogtag               = printusascii^-32,
    programname             = printusascii^-32,
    pri                     = pri, -- pri table with facility and severity keys
@@ -179,14 +155,14 @@ local rsyslog_properties = {
    msgid                   = nilvalue + printusascii^-32,
    inputname               = printusascii^0, -- doesn't appear to generate output (don't use it)
    ["$bom"]                = bom,
-   ["$now"]                = rfc3339.date_fullyear * "-" * rfc3339.date_month * "-" * rfc3339.date_mday,
-   ["$year"]               = rfc3339.date_fullyear,
-   ["$month"]              = rfc3339.date_month,
-   ["$day"]                = rfc3339.date_mday,
-   ["$hour"]               = rfc3339.time_hour,
+   ["$now"]                = dt.rfc3339_full_date,
+   ["$year"]               = dt.date_fullyear,
+   ["$month"]              = dt.date_month,
+   ["$day"]                = dt.date_mday,
+   ["$hour"]               = dt.time_hour,
    ["$hhour"]              = l.P"0" * l.S"01",
    ["$qhour"]              = l.P"0" * l.R"03",
-   ["$minute"]             = rfc3339.time_minute
+   ["$minute"]             = dt.time_minute
 }
 
 local function space_grammar()
