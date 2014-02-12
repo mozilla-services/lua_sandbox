@@ -242,14 +242,14 @@ static char* test_init_error()
   e = lsb_destroy(sb, NULL);
   mu_assert(!e, "lsb_destroy() received: %s\n", e);
 
-  sb = lsb_create(NULL, "lua/lpeg_grammar.lua", NULL, 100000, 1000, 8000);
+  sb = lsb_create(NULL, "lua/lpeg_date_time.lua", NULL, 100000, 1000, 8000);
   mu_assert(sb, "lsb_create() received: NULL");
 
   // disabled external modules
   result = lsb_init(sb, NULL);
   mu_assert(result == 2, "lsb_init() received: %d %s", result,
             lsb_get_error(sb));
-  const char* expected = "lua/lpeg_grammar.lua:9: require_library() external modules are disabled";
+  const char* expected = "lua/lpeg_date_time.lua:7: require_library() external modules are disabled";
   mu_assert(strcmp(lsb_get_error(sb), expected) == 0,
             "lsb_get_error() received: %s", lsb_get_error(sb));
 
@@ -740,18 +740,16 @@ static char* test_lpeg()
   const char* expected = "[\"1\",\"string with spaces\","
     "\"quoted string, with comma and \\\"quoted\\\" text\"]\n";
 
-  lua_sandbox* sb = lsb_create(NULL, "lua/lpeg_csv.lua", "../../modules", 100000, 1000,
+  lua_sandbox* sb = lsb_create(NULL, "lua/lpeg.lua", "../../modules", 100000, 1000,
                                8000);
   mu_assert(sb, "lsb_create() received: NULL");
 
   int result = lsb_init(sb, NULL);
-  mu_assert(result == 0, "lsb_init() received: %d %s", result,
-            lsb_get_error(sb));
+  mu_assert(result == 0, "lsb_init() received: %d %s", result, lsb_get_error(sb));
   lsb_add_function(sb, &write_output, "write");
 
   result = process(sb, 0);
-  mu_assert(result == 0, "process() received: %d %s", result,
-            lsb_get_error(sb));
+  mu_assert(result == 0, "process() received: %d %s", result, lsb_get_error(sb));
   mu_assert(strcmp(expected, written_data) == 0, "received: %s", written_data);
 
   e = lsb_destroy(sb, NULL);
@@ -761,31 +759,19 @@ static char* test_lpeg()
 }
 
 
-#ifdef LUA_JIT
-static char* test_lpeg_grammar()
+static char* test_lpeg_clf()
 {
   const char* tests[] = {
-    "{\"offset_min\":0,\"offset_sign\":\"-\",\"offset_hour\":7,\"sec\":\"59\",\"min\":\"23\",\"day\":\"05\",\"sec_frac\":0.217,\"hour\":\"23\",\"month\":\"05\",\"year\":\"1999\"}\n"
-    , "7 6 5 4 4 3 3 2 1 0 0"
-#ifdef _WIN32
-    , "9.25971839e+017"
-#else
-    , "9.25971839e+17"
-#endif
-    , "{\"day\":\"12\",\"min\":\"20\",\"sec\":\"50\",\"sec_frac\":0.52,\"year\":\"1985\",\"month\":\"04\",\"hour\":\"23\"}\n"
-    , "{\"offset_min\":0,\"offset_sign\":\"-\",\"offset_hour\":8,\"sec\":\"57\",\"min\":\"39\",\"day\":\"19\",\"hour\":\"16\",\"month\":\"12\",\"year\":\"1996\"}\n"
-    , "{\"day\":\"31\",\"sec\":\"60\",\"min\":\"59\",\"year\":\"1990\",\"month\":\"12\",\"hour\":\"23\"}\n"
-    , "{\"offset_min\":0,\"offset_sign\":\"-\",\"offset_hour\":8,\"sec\":\"60\",\"min\":\"59\",\"day\":\"31\",\"hour\":\"15\",\"month\":\"12\",\"year\":\"1990\"}\n"
-    , "{\"offset_min\":20,\"offset_sign\":\"+\",\"offset_hour\":0,\"sec\":\"27\",\"min\":\"00\",\"day\":\"01\",\"sec_frac\":0.87,\"hour\":\"12\",\"month\":\"01\",\"year\":\"1937\"}\n"
+    "{\"body_bytes_sent\":{\"value\":0,\"representation\":\"B\"},\"remote_addr\":\"127.0.0.1\",\"time\":1392050801000,\"http_user_agent\":\"Mozilla\\/5.0 (X11; Ubuntu; Linux x86_64; rv:26.0) Gecko\\/20100101 Firefox\\/26.0\",\"request\":\"GET \\/ HTTP\\/1.1\",\"remote_user\":\"-\",\"status\":304,\"http_referer\":\"-\"}\n"
+    , "{\"body_bytes_sent\":{\"value\":0,\"representation\":\"B\"},\"remote_addr\":\"127.0.0.1\",\"time\":1391794831755,\"status\":304,\"http_user_agent\":\"Mozilla\\/5.0 (X11; Ubuntu; Linux x86_64; rv:26.0) Gecko\\/20100101 Firefox\\/26.0\",\"request\":\"GET \\/ HTTP\\/1.1\",\"http_referer\":\"-\"}\n"
     , NULL
   };
 
-  lua_sandbox* sb = lsb_create(NULL, "lua/lpeg_grammar.lua", "../../modules", 100000, 1000, 8000);
+  lua_sandbox* sb = lsb_create(NULL, "lua/lpeg_clf.lua", "../../modules", 8e6, 1e6, 63 * 1024);
   mu_assert(sb, "lsb_create() received: NULL");
 
   int result = lsb_init(sb, NULL);
-  mu_assert(result == 0, "lsb_init() received: %d %s", result,
-            lsb_get_error(sb));
+  mu_assert(result == 0, "lsb_init() received: %d %s", result, lsb_get_error(sb));
   lsb_add_function(sb, &write_output, "write");
 
   for (int i = 0; tests[i]; ++i) {
@@ -800,51 +786,10 @@ static char* test_lpeg_grammar()
   return NULL;
 }
 
-#else
 
-static char* test_lpeg_grammar()
+static char* test_lpeg_cbufd()
 {
-  const char* tests[] = {
-    "{\"offset_sign\":\"-\",\"offset_min\":0,\"hour\":\"23\",\"min\":\"23\",\"day\":\"05\",\"month\":\"05\",\"offset_hour\":7,\"sec\":\"59\",\"year\":\"1999\",\"sec_frac\":0.217}\n"
-    , "7 6 5 4 4 3 3 2 1 0 0"
-#ifdef _WIN32
-    , "9.2597183921700006e+017"
-#else
-    , "9.2597183921700006e+17"
-#endif
-    , "{\"min\":\"20\",\"year\":\"1985\",\"month\":\"04\",\"sec_frac\":0.52,\"sec\":\"50\",\"hour\":\"23\",\"day\":\"12\"}\n"
-    , "{\"offset_sign\":\"-\",\"offset_min\":0,\"hour\":\"16\",\"min\":\"39\",\"day\":\"19\",\"month\":\"12\",\"sec\":\"57\",\"year\":\"1996\",\"offset_hour\":8}\n"
-    , "{\"min\":\"59\",\"year\":\"1990\",\"month\":\"12\",\"sec\":\"60\",\"hour\":\"23\",\"day\":\"31\"}\n"
-    , "{\"offset_sign\":\"-\",\"offset_min\":0,\"hour\":\"15\",\"min\":\"59\",\"day\":\"31\",\"month\":\"12\",\"sec\":\"60\",\"year\":\"1990\",\"offset_hour\":8}\n"
-    , "{\"offset_sign\":\"+\",\"offset_min\":20,\"hour\":\"12\",\"min\":\"00\",\"day\":\"01\",\"month\":\"01\",\"offset_hour\":0,\"sec\":\"27\",\"year\":\"1937\",\"sec_frac\":0.87}\n"
-    , NULL
-  };
-
-  lua_sandbox* sb = lsb_create(NULL, "lua/lpeg_grammar.lua", "../../modules", 100000, 1000, 8000);
-  mu_assert(sb, "lsb_create() received: NULL");
-
-  int result = lsb_init(sb, NULL);
-  mu_assert(result == 0, "lsb_init() received: %d %s", result,
-            lsb_get_error(sb));
-  lsb_add_function(sb, &write_output, "write");
-
-  for (int i = 0; tests[i]; ++i) {
-    result = process(sb, i);
-    mu_assert(result == 0, "process() received: %d %s", result, lsb_get_error(sb));
-    mu_assert(strcmp(tests[i], written_data) == 0, "test: %d received: %s", i, written_data);
-  }
-
-  e = lsb_destroy(sb, NULL);
-  mu_assert(!e, "lsb_destroy() received: %s", e);
-
-  return NULL;
-}
-#endif
-
-
-static char* test_cbufd_grammar()
-{
-  lua_sandbox* sb = lsb_create(NULL, "lua/cbufd_grammar_test.lua", "../../modules", 100000, 1000, 8000);
+  lua_sandbox* sb = lsb_create(NULL, "lua/lpeg_cbufd.lua", "../../modules", 100000, 1000, 8000);
   mu_assert(sb, "lsb_create() received: NULL");
 
   int result = lsb_init(sb, NULL);
@@ -852,6 +797,103 @@ static char* test_cbufd_grammar()
 
   result = process(sb, 0);
   mu_assert(result == 0, "process() received: %d %s", result, lsb_get_error(sb));
+
+  e = lsb_destroy(sb, NULL);
+  mu_assert(!e, "lsb_destroy() received: %s", e);
+
+  return NULL;
+}
+
+
+static char* test_lpeg_date_time()
+{
+  lua_sandbox* sb = lsb_create(NULL, "lua/lpeg_date_time.lua", "../../modules", 8e6, 1e6, 63 * 1024);
+  mu_assert(sb, "lsb_create() received: NULL");
+
+  int result = lsb_init(sb, NULL);
+  mu_assert(result == 0, "lsb_init() received: %d %s", result, lsb_get_error(sb));
+
+  for (int i = 0; i < 6; ++i) {
+    result = process(sb, i);
+    mu_assert(result == 0, "process() received: %d %s", result, lsb_get_error(sb));
+  }
+
+  e = lsb_destroy(sb, NULL);
+  mu_assert(!e, "lsb_destroy() received: %s", e);
+
+  return NULL;
+}
+
+static char* test_lpeg_ip_address()
+{
+  lua_sandbox* sb = lsb_create(NULL, "lua/lpeg_ip_address.lua", "../../modules", 8e6, 1e6, 63 * 1024);
+  mu_assert(sb, "lsb_create() received: NULL");
+
+  int result = lsb_init(sb, NULL);
+  mu_assert(result == 0, "lsb_init() received: %d %s", result, lsb_get_error(sb));
+
+  for (int i = 0; i < 4; ++i) {
+    result = process(sb, i);
+    mu_assert(result == 0, "process() received: %d %s", result, lsb_get_error(sb));
+  }
+
+  e = lsb_destroy(sb, NULL);
+  mu_assert(!e, "lsb_destroy() received: %s", e);
+
+  return NULL;
+}
+
+
+static char* test_lpeg_syslog()
+{
+  const char* tests[] = {
+    "{\"msg\":\"(root) CMD (   cd \\/ && run-parts --report \\/etc\\/cron.hourly)\",\"timestamp\":1391955421000,\"syslogtag\":\"CRON[20758]:\",\"hostname\":\"trink-x230\"}\n"
+    , "{\"msg\":\"Kernel logging (proc) stopped.\",\"timestamp\":1392049319111.5369,\"syslogtag\":\"kernel:\",\"hostname\":\"trink-x230\"}\n"
+    , "{\"hostname\":\"trink-x230\",\"msg\":\"imklog 5.8.6, log source = \\/proc\\/kmsg started.\",\"timestamp\":1392049995407.9351,\"syslogtag\":\"kernel:\",\"pri\":{\"severity\":6,\"facility\":0}}\n"
+    , "{\"hostname\":\"trink-x230\",\"msg\":\"imklog 5.8.6, log source = \\/proc\\/kmsg started.\",\"timestamp\":1392021527000,\"syslogtag\":\"kernel:\",\"pri\":{\"severity\":6,\"facility\":0}}\n"
+    , "{\"syslogfacility\":0,\"$year\":\"2014\",\"source\":\"trink-x230\",\"syslogpriority-text\":6,\"syslogfacility-text\":0,\"msg\":\"imklog 5.8.6, log source = \\/proc\\/kmsg started.\",\"procid\":\"-\",\"structured-data\":\"-\",\"hostname\":\"trink-x230\",\"app-name\":\"kernel\",\"programname\":\"kernel\",\"$minute\":\"20\",\"$qhour\":\"01\",\"msgid\":\"imklog\",\"$hhour\":\"00\",\"pri-text\":0,\"fromhost-ip\":\"127.0.0.1\",\"$hour\":\"09\",\"pri\":{\"severity\":6,\"facility\":0},\"$day\":\"10\",\"$month\":\"02\",\"$now\":\"2014-02-10\",\"protocol-version\":\"0\",\"timegenerated\":1.392024053e+18,\"timestamp\":1392052853559.9338,\"syslogpriority\":6,\"iut\":\"1\",\"syslogtag\":\"kernel:\",\"fromhost\":\"trink-x230\"}\n"
+    , NULL
+  };
+
+  lua_sandbox* sb = lsb_create(NULL, "lua/lpeg_syslog.lua", "../../modules", 8e6, 1e6, 63 * 1024);
+  mu_assert(sb, "lsb_create() received: NULL");
+
+  int result = lsb_init(sb, NULL);
+  mu_assert(result == 0, "lsb_init() received: %d %s", result, lsb_get_error(sb));
+  lsb_add_function(sb, &write_output, "write");
+
+  for (int i = 0; tests[i]; ++i) {
+    result = process(sb, i);
+    mu_assert(result == 0, "process() received: %d %s", result, lsb_get_error(sb));
+    mu_assert(strcmp(tests[i], written_data) == 0, "test: %d received: %s", i, written_data);
+  }
+
+  e = lsb_destroy(sb, NULL);
+  mu_assert(!e, "lsb_destroy() received: %s", e);
+
+  return NULL;
+}
+
+
+static char* test_util()
+{
+  const char* tests[] = {
+    "{\"toplevel\":0,\"struct.item1\":1,\"struct.item0\":0,\"struct.item2.nested\":\"n1\"}\n"
+    , NULL
+  };
+
+  lua_sandbox* sb = lsb_create(NULL, "lua/util_test.lua", "../../modules", 8e6, 1e6, 63 * 1024);
+  mu_assert(sb, "lsb_create() received: NULL");
+
+  int result = lsb_init(sb, NULL);
+  mu_assert(result == 0, "lsb_init() received: %d %s", result, lsb_get_error(sb));
+  lsb_add_function(sb, &write_output, "write");
+
+  for (int i = 0; tests[i]; ++i) {
+    result = process(sb, i);
+    mu_assert(result == 0, "process() received: %d %s", result, lsb_get_error(sb));
+    mu_assert(strcmp(tests[i], written_data) == 0, "test: %d received: %s", i, written_data);
+  }
 
   e = lsb_destroy(sb, NULL);
   mu_assert(!e, "lsb_destroy() received: %s", e);
@@ -1140,8 +1182,12 @@ static char* all_tests()
   mu_run_test(test_cjson);
   mu_run_test(test_errors);
   mu_run_test(test_lpeg);
-  mu_run_test(test_lpeg_grammar);
-  mu_run_test(test_cbufd_grammar);
+  mu_run_test(test_lpeg_cbufd);
+  mu_run_test(test_lpeg_clf);
+  mu_run_test(test_lpeg_date_time);
+  mu_run_test(test_lpeg_ip_address);
+  mu_run_test(test_lpeg_syslog);
+  mu_run_test(test_util);
   mu_run_test(test_serialize);
   mu_run_test(test_serialize_failure);
   mu_run_test(test_serialize_noglobal);

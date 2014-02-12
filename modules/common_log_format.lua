@@ -5,47 +5,15 @@
 -- Imports
 local l = require "lpeg"
 l.locale(l)
-
-local rfc3339 = require "rfc3339"
+local string = require "string"
+local dt = require "date_time"
 local tonumber = tonumber
 local ipairs = ipairs
 
 local M = {}
 setfenv(1, M) -- Remove external access to contain everything in the module
 
-local date_mday = l.Cg(l.P"0" * l.R"19"
-                       + l.R"12" * l.R"09"
-                       + "3" * l.R"01", "day")
-local date_mabbr = l.Cg(
-    l.P"Jan"   /"1"
-    + l.P"Feb" /"2"
-    + l.P"Mar" /"3"
-    + l.P"Apr" /"4"
-    + l.P"May" /"5"
-    + l.P"Jun" /"6"
-    + l.P"Jul" /"7"
-    + l.P"Aug" /"8"
-    + l.P"Sep" /"9"
-    + l.P"Oct" /"10"
-    + l.P"Nov" /"11"
-    + l.P"Dec" /"12"
-    , "month")
-local date_fullyear = l.Cg(l.digit * l.digit * l.digit * l.digit, "year")
-local time_hour = l.Cg(l.R"01" * l.digit
-                       + "2" * l.R"03", "hour")
-local time_minute = l.Cg(l.R"05" * l.digit, "min")
-local time_second = l.Cg(l.R"05" * l.digit
-                         + "60", "sec")
-
-local time_offset = l.Cg(l.S"+-", "offset_sign") * l.Cg(time_hour / tonumber, "offset_hour") * l.Cg(time_minute / tonumber, "offset_min")
-
-local clf_time = l.Cg(l.Ct(date_mday * "/" * date_mabbr * "/" * date_fullyear * ":" * time_hour * ":" * time_minute * ":" * time_second * " " * time_offset) / rfc3339.time_ns, "time")
-
-local function time_ns(sec)
-    return tonumber(sec) * 1e9
-end
-
-local msec_time = l.Cg((l.digit^1 * "." * l.digit^1) / time_ns, "time")
+local msec_time = l.Cg((l.digit^1 * "." * l.digit^1) / dt.seconds_to_ns, "time")
 
 local nginx_format_variables = {
     body_bytes_sent = l.Cg(l.Ct(l.Cg(l.digit^1 / tonumber, "value") * l.Cg(l.Cc"B", "representation")), "body_bytes_sent"),
@@ -56,8 +24,8 @@ local nginx_format_variables = {
     request_length = l.Cg(l.Ct(l.Cg(l.digit^1 / tonumber, "value") * l.Cg(l.Cc"B", "representation")), "request_length"),
     request_time =  l.Cg(l.Ct(l.Cg((l.digit^1 * "." * l.digit^1) / tonumber, "value") * l.Cg(l.Cc"s", "representation")), "request_time"),
     status = l.Cg(l.digit^1 / tonumber, "status"),
-    time_iso8601 = l.Cg(rfc3339.grammar / rfc3339.time_ns, "time"),
-    time_local = clf_time,
+    time_iso8601 = l.Cg(dt.rfc3339 / dt.time_to_ns, "time"),
+    time_local = l.Cg(dt.clf_timestamp / dt.time_to_ns, "time"),
     msec = msec_time
 }
 
@@ -78,7 +46,7 @@ local function space_grammar()
 end
 
 local function literal_grammar(var)
-    last_literal = var
+    last_literal = string.sub(var, -1)
     return l.P(var)
 end
 
