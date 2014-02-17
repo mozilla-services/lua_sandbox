@@ -13,19 +13,20 @@ local ipairs = ipairs
 local M = {}
 setfenv(1, M) -- Remove external access to contain everything in the module
 
-local msec_time = l.Cg((l.digit^1 * "." * l.digit^1) / dt.seconds_to_ns, "time")
+local double = l.digit^1 * "." * l.digit^1
+local msec_time = double / dt.seconds_to_ns
 
 local nginx_format_variables = {
-    body_bytes_sent = l.Cg(l.Ct(l.Cg(l.digit^1 / tonumber, "value") * l.Cg(l.Cc"B", "representation")), "body_bytes_sent"),
-    bytes_sent = l.Cg(l.Ct(l.Cg(l.digit^1 / tonumber, "value") * l.Cg(l.Cc"B", "representation")), "bytes_sent"),
-    connection_requests = l.Cg(l.digit^1 / tonumber, "connection_requests"),
-    content_length = l.Cg(l.Ct(l.Cg(l.digit^1 / tonumber, "value") * l.Cg(l.Cc"B", "representation")), "content_length"),
-    pid = l.Cg(l.digit^1 / tonumber, "pid"),
-    request_length = l.Cg(l.Ct(l.Cg(l.digit^1 / tonumber, "value") * l.Cg(l.Cc"B", "representation")), "request_length"),
-    request_time =  l.Cg(l.Ct(l.Cg((l.digit^1 * "." * l.digit^1) / tonumber, "value") * l.Cg(l.Cc"s", "representation")), "request_time"),
-    status = l.Cg(l.digit^1 / tonumber, "status"),
-    time_iso8601 = l.Cg(dt.rfc3339 / dt.time_to_ns, "time"),
-    time_local = l.Cg(dt.clf_timestamp / dt.time_to_ns, "time"),
+    body_bytes_sent = l.Ct(l.Cg(l.digit^1 / tonumber, "value") * l.Cg(l.Cc"B", "representation")),
+    bytes_sent = l.Ct(l.Cg(l.digit^1 / tonumber, "value") * l.Cg(l.Cc"B", "representation")),
+    connection_requests = l.digit^1 / tonumber,
+    content_length = l.Ct(l.Cg(l.digit^1 / tonumber, "value") * l.Cg(l.Cc"B", "representation")),
+    pid = l.digit^1 / tonumber,
+    request_length = l.Ct(l.Cg(l.digit^1 / tonumber, "value") * l.Cg(l.Cc"B", "representation")),
+    request_time =  l.Ct(l.Cg(double / tonumber, "value") * l.Cg(l.Cc"s", "representation")),
+    status = l.digit^1 / tonumber,
+    time_iso8601 = dt.rfc3339 / dt.time_to_ns,
+    time_local = dt.clf_timestamp / dt.time_to_ns,
     msec = msec_time
 }
 
@@ -35,6 +36,10 @@ local function nginx_lookup_grammar(var)
     local g = nginx_format_variables[var]
     if not g then
         g = l.Cg((l.P(1) - last_literal)^0, var)
+    elseif var == "time_local" or var == "time_iso8601" or var == "msec" then
+        g = l.Cg(g, "time")
+    else
+        g = l.Cg(g, var)
     end
 
    return g
