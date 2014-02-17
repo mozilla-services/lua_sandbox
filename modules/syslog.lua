@@ -172,7 +172,7 @@ end
 local last_literal = l.P"\n"
 local function rsyslog_lookup(property)
    if property.options and property.options == "sp-if-no-1st-sp" then
-       return space_grammar()
+       return sp^1
    end
 
    property.name = string.lower(property.name)
