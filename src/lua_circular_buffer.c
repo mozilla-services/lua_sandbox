@@ -26,7 +26,6 @@ const char* lsb_circular_buffer_table = "circular_buffer";
 #define UNIT_LABEL_SIZE 8
 
 static const time_t seconds_in_minute = 60;
-static const time_t seconds_in_hour = 60 * 60;
 static const time_t seconds_in_day = 60 * 60 * 24;
 
 static const char* column_aggregation_methods[] = { "sum", "min", "max", "none",
@@ -131,7 +130,7 @@ static int circular_buffer_new(lua_State* lua)
   luaL_argcheck(lua, 0 < columns, 2, "columns must be > 0");
   int seconds_per_row = luaL_checkint(lua, 3);
   luaL_argcheck(lua, 0 < seconds_per_row
-                && seconds_per_row <= seconds_in_hour, 3,
+                && seconds_per_row <= seconds_in_day, 3,
                 "seconds_per_row is out of range");
   int delta = 0;
   if (4 == n) {
