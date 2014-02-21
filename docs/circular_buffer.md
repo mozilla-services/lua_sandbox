@@ -99,7 +99,7 @@ double, int **compute** (function, column, start, end)
 - The number of rows that contained a valid numeric value.
 
 ____
-cbuf **current_time** ()
+double **current_time** ()
 
 *Arguments*
 - none
