@@ -561,6 +561,7 @@ static char* test_cbuf()
   lsb_add_function(sb, &write_output, "write");
 
   result = report(sb, 0);
+  mu_assert(result == 0, "report() received: %d", result);
   mu_assert(lsb_get_state(sb) == LSB_RUNNING, "error %s",
             lsb_get_error(sb));
   mu_assert(strcmp(outputs[0], written_data) == 0, "received: %s",
