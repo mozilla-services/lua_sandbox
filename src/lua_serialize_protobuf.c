@@ -18,7 +18,7 @@ int serialize_table_as_pb(lua_sandbox* lsb, int index)
   output_data* d = &lsb->output;
   d->pos = 0;
   size_t needed = 18;
-  if (needed > d->size - d->pos) {
+  if (needed > d->size) {
     if (realloc_output(d, needed)) return 1;
   }
 

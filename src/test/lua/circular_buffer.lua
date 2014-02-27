@@ -37,25 +37,40 @@ function report(tc)
         stats:set(2e9, 1, 2)
         stats:set(3e9, 1, 3)
         stats:set(4e9, 1, 4)
-        local t = stats:compute("sum", 1)
+        local t, c = stats:compute("sum", 1)
         if 10 ~= t then
             error(string.format("no range sum = %G", t))
         end
-        t = stats:compute("avg", 1)
+        if 4 ~= c then
+            error(sting.format("active_rows = %d", c))
+        end
+        t, c = stats:compute("avg", 1)
         if 2.5 ~= t then
             error(string.format("no range avg = %G", t))
         end
-        t = stats:compute("sd", 1)
+        if 4 ~= c then
+            error(sting.format("active_rows = %d", c))
+        end
+        t, c = stats:compute("sd", 1)
         if math.abs(math.sqrt(1.25)) ~= t then
             error(string.format("no range sd = %G", t))
         end
-        t = stats:compute("min", 1)
+        if 4 ~= c then
+            error(sting.format("active_rows = %d", c))
+        end
+        t, c = stats:compute("min", 1)
         if 1 ~= t then
             error(string.format("no range min = %G", t))
         end
-        t = stats:compute("max", 1)
+        if 4 ~= c then
+            error(sting.format("active_rows = %d", c))
+        end
+        t, c = stats:compute("max", 1)
         if 4 ~= t then
             error(string.format("no range max = %G", t))
+        end
+        if 4 ~= c then
+            error(sting.format("active_rows = %d", c))
         end
 
         t = stats:compute("sum", 1, 3e9, 4e9)
@@ -112,18 +127,41 @@ function report(tc)
         end
     elseif tc == 6 then
         local stats = circular_buffer.new(2, 1, 1)
+        local cbuf_time = stats:current_time()
+        if cbuf_time ~= 1e9 then
+            error(string.format("current_time = %G", cbuf_time))
+        end
         local v = stats:set(0, 1, 1)
         if stats:get(0, 1) ~= 1 then
             error(string.format("set failed = %G", v))
         end
-        stats:fromstring("0 0 nan 99")
+        stats:fromstring("1 1 nan 99")
         local nan = stats:get(0, 1)
         if nan == nan then
-            error(string.format("restored value value is a number %G", nan))
+            error(string.format("restored value is a number %G", nan))
         end
-        v = stats:get(1, 1)
+        v = stats:get(1e9, 1)
         if v ~= 99 then
             error(string.format("restored value is %G", v))
         end
+    elseif tc == 7 then
+        local empty = circular_buffer.new(4,1,1)
+        local nan = empty:compute("avg", 1)
+        if nan == nan then
+            error(string.format("avg is a number %G", nan))
+        end
+        nan = empty:compute("sd", 1)
+        if nan == nan then
+            error(string.format("std is a number %G", nan))
+        end
+        nan = empty:compute("max", 1)
+        if nan == nan then
+            error(string.format("max is a number %G", m))
+        end
+        nan = empty:compute("min", 1)
+        if nan == nan then
+            error(string.format("min is a number %G", m))
+        end
+
     end
 end
