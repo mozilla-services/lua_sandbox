@@ -20,7 +20,7 @@ diff -Naur lua-cjson-2.1.0.orig/CMakeLists.txt lua-cjson-2_1_0/CMakeLists.txt
  
  if(NOT USE_INTERNAL_FPCONV)
      # Use libc number conversion routines (strtod(), sprintf())
-@@ -50,27 +44,32 @@
+@@ -50,27 +44,33 @@
      add_definitions(-DUSE_INTERNAL_ISINF)
  endif()
  
@@ -60,6 +60,7 @@ diff -Naur lua-cjson-2.1.0.orig/CMakeLists.txt lua-cjson-2_1_0/CMakeLists.txt
  else()
 -    set(_lua_module_dir "${_lua_lib_dir}/lua/5.1")
 +    add_library(cjson STATIC ${CJSON_SOURCE})
++    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O2 -Wall -fPIC")
 +    target_link_libraries(cjson "${EP_BASE}/lib/libluajit-5.1.a" "${CMAKE_THREAD_LIBS_INIT}")
  endif()
  
