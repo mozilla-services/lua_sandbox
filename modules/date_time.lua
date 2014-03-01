@@ -123,6 +123,6 @@ rfc3164_timestamp = l.Ct(date_mabbr * sp^1 * l.Cg(l.digit^-2, "day") * sp^1 * ti
 --[[ Database Grammars --]]
 mysql_timestamp = l.Ct(date_fullyear * date_month * date_mday * time_hour * time_minute * time_second)
 
-pqsql_timestamp = l.Ct(rfc3339_full_date * sp * time_hour * ":" * time_minute * ":" * time_second)
+pgsql_timestamp = l.Ct(rfc3339_full_date * sp * time_hour * ":" * time_minute * ":" * time_second)
 
 return M

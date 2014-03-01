@@ -60,7 +60,7 @@ function process(tc)
     elseif tc == 5 then
         local tests = {"2014-02-10 16:46:36"}
         local results = {1392050796000000000}
-        test_valid(tc, dt.pqsql_timestamp, tests, results)
+        test_valid(tc, dt.pgsql_timestamp, tests, results)
     end
     return 0
 end
