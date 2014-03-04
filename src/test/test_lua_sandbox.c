@@ -765,6 +765,7 @@ static char* test_lpeg_clf()
   const char* tests[] = {
     "{\"body_bytes_sent\":{\"value\":0,\"representation\":\"B\"},\"remote_addr\":\"127.0.0.1\",\"time\":1392050801000,\"http_user_agent\":\"Mozilla\\/5.0 (X11; Ubuntu; Linux x86_64; rv:26.0) Gecko\\/20100101 Firefox\\/26.0\",\"request\":\"GET \\/ HTTP\\/1.1\",\"remote_user\":\"-\",\"status\":304,\"http_referer\":\"-\"}\n"
     , "{\"body_bytes_sent\":{\"value\":0,\"representation\":\"B\"},\"remote_addr\":\"127.0.0.1\",\"time\":1391794831755,\"status\":304,\"http_user_agent\":\"Mozilla\\/5.0 (X11; Ubuntu; Linux x86_64; rv:26.0) Gecko\\/20100101 Firefox\\/26.0\",\"request\":\"GET \\/ HTTP\\/1.1\",\"http_referer\":\"-\"}\n"
+    , "ok"
     , NULL
   };
 
