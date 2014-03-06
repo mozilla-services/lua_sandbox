@@ -51,8 +51,12 @@ function report(tc)
         if 4 ~= c then
             error(sting.format("active_rows = %d", c))
         end
+        t, c = stats:compute("variance", 1)
+        if 1.25 ~= t then
+            error(string.format("no range variance = %G", t))
+        end
         t, c = stats:compute("sd", 1)
-        if math.abs(math.sqrt(1.25)) ~= t then
+        if math.sqrt(1.25) ~= t then
             error(string.format("no range sd = %G", t))
         end
         if 4 ~= c then
