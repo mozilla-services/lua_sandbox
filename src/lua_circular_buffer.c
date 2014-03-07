@@ -432,9 +432,9 @@ static double compute_avg(circular_buffer* cb, unsigned column,
 }
 
 
-static double compute_sd(circular_buffer* cb, unsigned column,
-                         unsigned start_row, unsigned end_row,
-                         unsigned* active_rows)
+static double compute_variance(circular_buffer* cb, unsigned column,
+                               unsigned start_row, unsigned end_row,
+                               unsigned* active_rows)
 {
   double avg = compute_avg(cb, column, start_row, end_row, active_rows);
   if (isnan(avg)) return avg;
@@ -455,7 +455,15 @@ static double compute_sd(circular_buffer* cb, unsigned column,
     }
   }
   while (row++ != end_row);
-  return sqrt(sum_squares / row_count);
+  return sum_squares / row_count;
+}
+
+
+static double compute_sd(circular_buffer* cb, unsigned column,
+                         unsigned start_row, unsigned end_row,
+                         unsigned* active_rows)
+{
+  return sqrt(compute_variance(cb, column, start_row, end_row, active_rows));
 }
 
 
@@ -515,7 +523,8 @@ static double compute_max(circular_buffer* cb, unsigned column,
 
 static int circular_buffer_compute(lua_State* lua)
 {
-  static const char* functions[] = { "sum", "avg", "sd", "min", "max", NULL };
+  static const char* functions[] = { "sum", "avg", "sd", "min", "max",
+    "variance", NULL };
   circular_buffer* cb  = check_circular_buffer(lua, 3);
   int function         = luaL_checkoption(lua, 2, NULL, functions);
   int column           = check_column(lua, cb, 3);
@@ -550,6 +559,9 @@ static int circular_buffer_compute(lua_State* lua)
     break;
   case 4:
     result = compute_max(cb, column, start_row, end_row, &active_rows);
+    break;
+  case 5:
+    result = compute_variance(cb, column, start_row, end_row, &active_rows);
     break;
   }
 
