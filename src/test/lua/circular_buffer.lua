@@ -11,6 +11,7 @@ local ADD_COL = data:set_header(1, "Add column")
 local SET_COL = data:set_header(2, "Set column", "count")
 local GET_COL = data:set_header(3, "Get column", "count", "sum")
 
+
 function process(ts)
     if data:add(ts, ADD_COL, 1) then
         data:set(ts, GET_COL, data:get(ts, ADD_COL))
@@ -162,6 +163,57 @@ function report(tc)
         if nan == nan then
             error(string.format("min is a number %G", m))
         end
-
+    elseif tc == 8 then
+        local cb = circular_buffer.new(20,1,1)
+        u, p = cb:mannwhitneyu(1, 1e9, 10e9, 11e9, 20e9)
+        if u ~= 0 or math.floor(p * 100000) ~=  9 then
+            error(string.format("u is %g p is %g", u, p))
+        end
+    elseif tc == 9 then -- default
+        local cb = circular_buffer.new(40,1,1)
+        local data = {15309,14092,13661,13412,14205,15042,14142,13820,14917,13953,14320,14472,15133,13790,14539,14129,14363,14202,13841,13610,13759,14428,14851,13838,13819,14468,14989,15557,14380,13500,14818,14632,13631,14663,14532,14188,14537,14109,13925,15022}
+        for i,v in ipairs(data) do
+            cb:set(i*1e9, 1, v)
+        end
+        u, p = cb:mannwhitneyu(1, 1e9, 20e9, 21e9, 40e9)
+        if u ~= 171 or math.floor(p * 100000) ~=  22037 then
+            error(string.format("u is %g p is %g", u, p))
+        end
+    elseif tc == 10 then -- no continuity correction
+        local cb = circular_buffer.new(40,1,1)
+        local data = {15309,14092,13661,13412,14205,15042,14142,13820,14917,13953,14320,14472,15133,13790,14539,14129,14363,14202,13841,13610,13759,14428,14851,13838,13819,14468,14989,15557,14380,13500,14818,14632,13631,14663,14532,14188,14537,14109,13925,15022}
+        for i,v in ipairs(data) do
+            cb:set(i*1e9, 1, v)
+        end
+        u, p = cb:mannwhitneyu(1, 1e9, 20e9, 21e9, 40e9, false)
+        if u ~= 171 or math.floor(p * 100000) ~=  21638 then
+            error(string.format("u is %g p is %g", u, p))
+        end
+    elseif tc == 11 then -- tie correction
+        local cb = circular_buffer.new(40,1,1)
+        local data = {15309,14092,13661,13412,14205,15042,14142,13820,14917,13953,14320,14472,15133,13790,14539,14129,14363,14202,13841,13610,13759,14428,14851,13838,13819,14468,14989,15557,14380,13500,14818,14632,13631,14663,14532,14188,14537,14109,13925,15309}
+        for i,v in ipairs(data) do
+            cb:set(i*1e9, 1, v)
+        end
+        u, p = cb:mannwhitneyu(1, 1e9, 20e9, 21e9, 40e9)
+        if u ~= 168.5 or math.floor(p * 100000) ~=  20084 then
+            error(string.format("u is %g p is %g", u, p))
+        end
+    elseif tc == 12 then
+        local cb = circular_buffer.new(40,1,1)
+        u, p = cb:mannwhitneyu(1, 41e9, 60e9, 61e9, 80e9)
+        if u or p then
+            error("times outside of buffer should return nil results")
+        end
+    elseif tc == 13 then
+        local cb = circular_buffer.new(10,1,1)
+        local data = {0,1,2,3,4,0,1,2,3,4}
+        for i,v in ipairs(data) do
+            cb:set(i*1e9, 1, v)
+        end
+        u, p = cb:mannwhitneyu(1, 1.9, 5e9, 6e9, 10e9)
+        if u or p then
+            error("duplicate data sets should return nil results")
+        end
     end
 end

@@ -99,6 +99,30 @@ double, int **compute** (function, column, start, end)
 - The number of rows that contained a valid numeric value.
 
 ____
+double, double **mannwhitneyu** (column, start_x, end_x, start_y, end_y, use_continuity)
+
+Computes the Mann-Whitney rank test on samples x and y.
+
+*Arguments*
+- column (unsigned) The column that the computation is performed against.
+- start_x (unsigned) The number of nanosecond since the UNIX epoch.
+- end_x (unsigned) The number of nanosecond since the UNIX epoch. The end time must be greater than or equal to the start time.
+- start_y (unsigned).
+- end_y (unsigned).
+- use_continuity (optional - bool) Whether a continuity correction (1/2) should be taken into account (default: true).
+
+*Returns* (nil if the range fell outside the buffer)
+
+- The Mann-Whitney statistics.
+- One-sided p-value assuming a asymptotic normal distribution.
+
+**Note:** Use only when the number of observation in each sample is > 20 and you have 2 independent samples of ranks. 
+Mann-Whitney U is significant if the u-obtained is LESS THAN or equal to the critical value of U.
+
+This test corrects for ties and by default uses a continuity correction. The reported p-value is for a one-sided
+hypothesis, to get the two-sided p-value multiply the returned p-value by 2.
+
+____
 double **current_time** ()
 
 *Arguments*

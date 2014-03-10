@@ -81,6 +81,30 @@ function process(tc)
     elseif tc == 27 then
         local cb = circular_buffer.new(2, 1, 1) -- too many
         cb:fromstring("0 0 1 2 3")
+    elseif tc == 28 then
+        local cb = circular_buffer.new(2, 1, 1)
+        cb:mannwhitneyu() -- incorrect # args
+    elseif tc == 29 then
+        local cb = circular_buffer.new(2, 1, 1)
+        cb:mannwhitneyu(nil, 0, 0, 0, 0) -- non numeric column
+    elseif tc == 30 then
+        local cb = circular_buffer.new(2, 1, 1)
+        cb:mannwhitneyu(0, 0, 0, 0, 0) -- invalid column
+    elseif tc == 31 then
+        local cb = circular_buffer.new(2, 1, 1)
+        cb:mannwhitneyu(1, 0, 5, 2, 7) -- overlapping x,y
+    elseif tc == 32 then
+        local cb = circular_buffer.new(2, 1, 1)
+        cb:mannwhitneyu(1, 5, 0, 2, 7) -- inverted x
+    elseif tc == 33 then
+        local cb = circular_buffer.new(2, 1, 1)
+        cb:mannwhitneyu(1, 0, 5, 10, 6) -- inverted y
+    elseif tc == 34 then
+        local cb = circular_buffer.new(2, 1, 1)
+        cb:mannwhitneyu(1, 0, 1, 2, 3, true, 5) -- incorrect # args
+    elseif tc == 35 then
+        local cb = circular_buffer.new(10, 1, 1)
+        cb:mannwhitneyu(1, 0, 5, 6, 10, "a") -- invalid use_continuity flag
     end
 return 0
 end
