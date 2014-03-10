@@ -85,7 +85,7 @@ ____
 double, int **compute** (function, column, start, end)
 
 *Arguments*
-- function (string) The name of the compute function (sum|avg|sd|min|max).
+- function (string) The name of the compute function (sum|avg|sd|min|max|variance).
 - column (unsigned) The column that the computation is performed against.
 - start (optional - unsigned) The number of nanosecond since the UNIX epoch. Sets the
     start time of the computation range; if nil the buffer's start time is used.
