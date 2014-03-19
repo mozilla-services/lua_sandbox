@@ -121,9 +121,9 @@ local ua_browser_matchers = {
 
 -- Returns an LPeg grammar based on the Nginx log_format configuration string.
 function build_nginx_grammar(log_format)
-    local ws = l.C(l.space^1) / space_grammar
-    local variable = l.P"$" * l.C((l.alnum + "_")^1) / nginx_lookup_grammar
-    local literal =  l.C((1 - (ws + variable))^1) / literal_grammar
+    local ws = l.space^1 / space_grammar
+    local variable = l.P"$" * ((l.alnum + "_")^1 / nginx_lookup_grammar)
+    local literal =  (l.P(1) - (ws + variable))^1 / literal_grammar
     local item = ws + variable + literal
 
     local p = l.Ct(item * (item)^0)
