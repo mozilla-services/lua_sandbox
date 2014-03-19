@@ -4,6 +4,8 @@ l.locale(l)
 local os = require "os"
 local string = require "string"
 local tonumber = tonumber
+local ipairs = ipairs
+local error = error
 
 -- Verify TZ
 local offset = "([+-])(%d%d)(%d%d)"
@@ -27,6 +29,19 @@ function time_to_ns(t)
         if t.offset_sign == "+" then offset = offset * -1 end
     end
 
+    if t.period then
+        t.hour = tonumber(t.hour)
+        if t.period == "AM" then
+            if t.hour == 12 then
+                t.hour = 0
+            end
+        elseif t.period == "PM" then
+            if t.hour < 12 then
+                t.hour = t.hour + 12
+            end
+        end
+    end
+
     local frac = 0
     if t.sec_frac then
         frac = t.sec_frac
@@ -46,7 +61,7 @@ date_fullyear = l.Cg(l.digit * l.digit * l.digit * l.digit, "year")
 date_month = l.Cg(l.P"0" * l.R"19"
                      + "1" * l.R"02", "month")
 date_mabbr = l.Cg(
-    l.P"Jan"   /"1"
+      l.P"Jan" /"1"
     + l.P"Feb" /"2"
     + l.P"Mar" /"3"
     + l.P"Apr" /"4"
@@ -58,6 +73,21 @@ date_mabbr = l.Cg(
     + l.P"Oct" /"10"
     + l.P"Nov" /"11"
     + l.P"Dec" /"12"
+    , "month")
+
+date_mfull = l.Cg(
+      l.P"January"      /"1"
+    + l.P"February"     /"2"
+    + l.P"March"        /"3"
+    + l.P"April"        /"4"
+    + l.P"May"          /"5"
+    + l.P"June"         /"6"
+    + l.P"July"         /"7"
+    + l.P"August"       /"8"
+    + l.P"September"    /"9"
+    + l.P"October"      /"10"
+    + l.P"November"     /"11"
+    + l.P"December"     /"12"
     , "month")
 
 date_mday = l.Cg(l.P"0" * l.R"19"
@@ -104,25 +134,101 @@ rfc3339                 = l.Ct(rfc3339_full_date * "T" * rfc3339_full_time)
 
 
 --[[ strftime Grammars --]]
-strftime_numoffset = l.Cg(l.S"+-", "offset_sign")
-* l.Cg(time_hour / tonumber, "offset_hour")
-* l.Cg(time_minute / tonumber, "offset_min")
+local strftime_specifiers = {}
+strftime_specifiers["a"] = l.P"Mon" + "Tue" + "Wed" + "Thu" + "Fri" + "Sat" + "Sun"
+strftime_specifiers["A"] = l.P"Monday"  + "Tuesday"  + "Wednesday" + "Thursday"  + "Friday" + "Saturday"  + "Sunday"
+strftime_specifiers["b"] = date_mabbr
+strftime_specifiers["B"] = date_mfull
+strftime_specifiers["c"] = strftime_specifiers["a"] * " " * date_mabbr * " " * date_mday * " " * time_hour * ":" * time_minute * ":" * time_second * " " * date_fullyear
+strftime_specifiers["C"] = l.digit * l.digit
+strftime_specifiers["y"] = l.Cg((l.digit * l.digit) / function (yy) return os.date("%C") .. yy end, "year")
+strftime_specifiers["d"] = date_mday
+strftime_specifiers["D"] = date_month * "/" * date_mday * "/" * strftime_specifiers["y"]
+strftime_specifiers["e"] = l.Cg(l.P" " * l.R"19"
+                                + l.S"12" * l.digit
+                                + "3" * l.S"01", "day")
+strftime_specifiers["F"] = date_fullyear * "-" * date_mday * "-" * date_mday
+strftime_specifiers["g"] = strftime_specifiers["y"]
+strftime_specifiers["G"] = date_fullyear
+strftime_specifiers["h"] = date_mabbr
+strftime_specifiers["H"] = time_hour
+strftime_specifiers["I"] = l.Cg(l.P"0" * l.digit
+                                + "1" * l.R"02", "hour")
+strftime_specifiers["j"] = l.P"00" * l.R"19"
+                                + "0" * l.digit * l.digit
+                                + l.S"12" * l.digit * l.digit
+                                + "3" * l.R"05" * l.digit
+                                + "36" * l.R"06"
+strftime_specifiers["m"] = date_mday
+strftime_specifiers["M"] = time_minute
+strftime_specifiers["n"] = l.P"\n"
+strftime_specifiers["p"] = l.Cg(l.P"AM" + "PM", "period")
+strftime_specifiers["r"] = strftime_specifiers["I"] * ":" * time_minute * ":" * time_second * " " * strftime_specifiers["p"]
+strftime_specifiers["R"] = time_hour * ":" * time_minute
+strftime_specifiers["S"] = l.Cg(l.R"05" * l.digit
+                           + "6" * l.S"01", "sec")
+strftime_specifiers["t"] = l.P"\t"
+strftime_specifiers["T"] = time_hour * ":" * time_minute * ":" * time_second
+strftime_specifiers["u"] = l.R"17"
+strftime_specifiers["U"] = l.R"04" * l.digit
+                            + l.P"5" * l.R"03"
+strftime_specifiers["V"] = strftime_specifiers["U"]
+strftime_specifiers["w"] = l.R"06"
+strftime_specifiers["W"] = strftime_specifiers["U"]
+strftime_specifiers["x"] = strftime_specifiers["D"]
+strftime_specifiers["X"] = strftime_specifiers["T"]
+strftime_specifiers["Y"] = date_fullyear
+strftime_specifiers["z"] = l.Cg(l.S"+-", "offset_sign") * l.Cg(time_hour / tonumber, "offset_hour") * l.Cg(time_minute / tonumber, "offset_min")
+strftime_specifiers["Z"] = l.alpha^-5
+strftime_specifiers["%"] = l.P"%"
+
+local function strftime_lookup_grammar(var)
+    local g = strftime_specifiers[var]
+    if not g then
+        error("unknown strftime specifier: " .. var)
+    end
+   return g
+end
+
+-- Returns an LPeg grammar based on the strftime format.
+function build_strftime_grammar(format)
+    local ws = l.space / function () return l.space end
+    local variable = l.P"%" * l.C(l.alnum + "%") / strftime_lookup_grammar
+    local literal =  l.C((1 - (ws + variable))^1) / function (lit) return l.P(lit) end
+    local item = ws + variable + literal
+
+    local p = l.Ct(item * (item)^0)
+    local t = p:match(format)
+    if not t then
+        error("could not parse the strftime format")
+    end
+
+    local grammar = nil
+    for i,v in ipairs(t) do
+        if not grammar then
+            grammar = v
+        else
+            grammar = grammar * v
+        end
+    end
+    return l.Ct(grammar)
+end
 
 
 --[[ Common Log Format Grammars --]]
 -- strftime format %d/%b/%Y:%H:%M:%S %z.
-clf_timestamp = l.Ct(date_mday * "/" * date_mabbr * "/" * date_fullyear * ":" * time_hour * ":" * time_minute * ":" * time_second * " " * strftime_numoffset)
+clf_timestamp = l.Ct(date_mday * "/" * date_mabbr * "/" * date_fullyear * ":" * strftime_specifiers["T"] * " " * strftime_specifiers["z"])
 
 
 --[[ RFC3164 Grammars --]]
 local sp = l.P" "
 -- since we consume multiple spaces this will also handle date-rfc3164-buggyday
-rfc3164_timestamp = l.Ct(date_mabbr * sp^1 * l.Cg(l.digit^-2, "day") * sp^1 * time_hour * ":" * time_minute * ":" * time_second * l.Cg(l.Cc("") / function() return os.date("%Y") end, "year"))
+rfc3164_timestamp = l.Ct(date_mabbr * sp^1 * l.Cg(l.digit^-2, "day") * sp^1 * strftime_specifiers["T"] * l.Cg(l.Cc("") / function() return os.date("%Y") end, "year"))
 
 
 --[[ Database Grammars --]]
 mysql_timestamp = l.Ct(date_fullyear * date_month * date_mday * time_hour * time_minute * time_second)
 
-pgsql_timestamp = l.Ct(rfc3339_full_date * sp * time_hour * ":" * time_minute * ":" * time_second)
+pgsql_timestamp = l.Ct(rfc3339_full_date * sp * strftime_specifiers["T"] )
 
 return M

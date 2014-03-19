@@ -815,7 +815,7 @@ static char* test_lpeg_date_time()
   int result = lsb_init(sb, NULL);
   mu_assert(result == 0, "lsb_init() received: %d %s", result, lsb_get_error(sb));
 
-  for (int i = 0; i < 6; ++i) {
+  for (int i = 0; i < 9; ++i) {
     result = process(sb, i);
     mu_assert(result == 0, "process() received: %d %s", result, lsb_get_error(sb));
   }

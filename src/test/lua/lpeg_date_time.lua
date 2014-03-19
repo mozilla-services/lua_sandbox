@@ -61,6 +61,37 @@ function process(tc)
         local tests = {"2014-02-10 16:46:36"}
         local results = {1392050796000000000}
         test_valid(tc, dt.pgsql_timestamp, tests, results)
+    elseif tc == 6 then
+        local formats = {"%a", "%A", "%b", "%B","%c","%C", "%d", "%D", "%e",
+             "%F", "%g", "%G", "%h", "%H", "%I", "%j", "%m", "%M", "%n", "%p",
+             "%r", "%R", "%S", "%t", "%T", "%u", "%U", "%V", "%w", "%W", "%x",
+             "%X", "%y", "%Y", "%z", "%Z", "%%", "test string"}
+        for i,v in ipairs(formats) do
+            local test = os.date(v)
+            local g = dt.build_strftime_grammar(v)
+            if not g:match(test) then
+                error("failed parsing: " .. v)
+            end
+        end
+    elseif tc == 7 then
+        local formats = {"%c","%D %T","%D %r","%d/%b/%Y:%H:%M:%S %z"}
+        local inputs = {"Mon Feb 10 16:46:36 2014", "02/10/14 16:46:36", "02/10/14 04:46:36 PM", "10/Feb/2014:16:46:36 +0000"}
+        local result = 1392050796000000000
+        for i,v in ipairs(formats) do
+            local g = dt.build_strftime_grammar(v)
+            local t = g:match(inputs[i])
+            if not t then
+                error(string.format("failed parsing: %s %s", v, inputs[i]))
+            end
+            if result ~=  dt.time_to_ns(t) then
+                error(string.format("time conversion failed %s", inputs[i]))
+            end
+        end
+    elseif tc == 8 then
+        local r, g = pcall(dt.build_strftime_grammar, "%E")
+        if r then
+            error("allowed to build a grammar with an invalid specifier")
+        end
     end
     return 0
 end

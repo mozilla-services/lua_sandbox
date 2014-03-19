@@ -10,6 +10,7 @@ local dt = require "date_time"
 local tonumber = tonumber
 local ipairs = ipairs
 local pairs = pairs
+local error = error
 
 local M = {}
 setfenv(1, M) -- Remove external access to contain everything in the module
@@ -127,7 +128,9 @@ function build_nginx_grammar(log_format)
 
     local p = l.Ct(item * (item)^0)
     local t = p:match(log_format)
-    if not t then return nil end
+    if not t then
+        error("could not parse the log_format configuration")
+    end
 
     local grammar = nil
     for i,v in ipairs(t) do

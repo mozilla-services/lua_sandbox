@@ -229,7 +229,9 @@ function build_rsyslog_grammar(template)
 
     local p = l.Ct(item * (item)^0)
     local t = p:match(template)
-    if not t then return nil end
+    if not t then
+        error("could not parse the rsyslog template")
+    end
 
     local grammar = nil
     for i,v in ipairs(t) do
