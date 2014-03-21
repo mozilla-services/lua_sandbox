@@ -217,14 +217,14 @@ end
 
 -- http://rsyslog-5-8-6-doc.neocities.org/rsyslog_conf_templates.html
 function build_rsyslog_grammar(template)
-    local ws = l.C(l.space^1) / space_grammar
+    local ws = l.space^1 / space_grammar
     local options = l.P":" * l.Cg((1 - l.P"%")^0, "options") -- todo support multiple options
     local tochar = l.Cg((1 - l.S":%")^0, "tochar")
     local fromchar = l.Cg((1 - l.P":")^0, "fromchar")
     local substr = l.P":" * fromchar * ":" * tochar
     local propname = l.Cg((l.alnum + l.S"-$")^1, "name")
     local property = l.P"%" * l.Ct(propname * substr^-1 * options^-1) / rsyslog_lookup * l.P"%"
-    local literal =  l.C((1 - (ws + property))^1) / literal_grammar
+    local literal =  (l.P(1) - (ws + property))^1 / literal_grammar
     local item = ws + property + literal
 
     local p = l.Ct(item * (item)^0)

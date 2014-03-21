@@ -193,8 +193,8 @@ end
 -- Returns an LPeg grammar based on the strftime format.
 function build_strftime_grammar(format)
     local ws = l.space / function () return l.space end
-    local variable = l.P"%" * l.C(l.alnum + "%") / strftime_lookup_grammar
-    local literal =  l.C((1 - (ws + variable))^1) / function (lit) return l.P(lit) end
+    local variable = l.P"%" * ((l.alnum + "%") / strftime_lookup_grammar)
+    local literal = (l.P(1) - (ws + variable))^1 / function (lit) return l.P(lit) end
     local item = ws + variable + literal
 
     local p = l.Ct(item * (item)^0)

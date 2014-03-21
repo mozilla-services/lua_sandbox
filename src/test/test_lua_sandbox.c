@@ -764,9 +764,16 @@ static char* test_lpeg()
 static char* test_lpeg_clf()
 {
   const char* tests[] = {
-    "{\"body_bytes_sent\":{\"value\":0,\"representation\":\"B\"},\"remote_addr\":\"127.0.0.1\",\"time\":1392050801000,\"http_user_agent\":\"Mozilla\\/5.0 (X11; Ubuntu; Linux x86_64; rv:26.0) Gecko\\/20100101 Firefox\\/26.0\",\"request\":\"GET \\/ HTTP\\/1.1\",\"remote_user\":\"-\",\"status\":304,\"http_referer\":\"-\"}\n"
-    , "{\"body_bytes_sent\":{\"value\":0,\"representation\":\"B\"},\"remote_addr\":\"127.0.0.1\",\"time\":1391794831755,\"status\":304,\"http_user_agent\":\"Mozilla\\/5.0 (X11; Ubuntu; Linux x86_64; rv:26.0) Gecko\\/20100101 Firefox\\/26.0\",\"request\":\"GET \\/ HTTP\\/1.1\",\"http_referer\":\"-\"}\n"
+    "ok"
+    , "{\"body_bytes_sent\":{\"value\":0,\"representation\":\"B\"},\"remote_addr\":{\"value\":\"127.0.0.1\",\"representation\":\"ipv4\"},\"time\":1392050801000,\"http_user_agent\":\"Mozilla\\/5.0 (X11; Ubuntu; Linux x86_64; rv:26.0) Gecko\\/20100101 Firefox\\/26.0\",\"request\":\"GET \\/ HTTP\\/1.1\",\"remote_user\":\"-\",\"status\":304,\"http_referer\":\"-\"}\n"
+    , "{\"body_bytes_sent\":{\"value\":0,\"representation\":\"B\"},\"remote_addr\":{\"value\":\"127.0.0.1\",\"representation\":\"ipv4\"},\"time\":1391794831755,\"status\":304,\"http_user_agent\":\"Mozilla\\/5.0 (X11; Ubuntu; Linux x86_64; rv:26.0) Gecko\\/20100101 Firefox\\/26.0\",\"request\":\"GET \\/ HTTP\\/1.1\",\"http_referer\":\"-\"}\n"
     , "ok"
+    , "ok"
+    , "{\"server_addr\":{\"value\":\"::1\",\"representation\":\"ipv6\"},\"pid\":1234,\"total_length\":{\"value\":809,\"representation\":\"B\"},\"server_port\":80,\"request_length\":{\"value\":311,\"representation\":\"B\"},\"connection_requests\":2,\"connection_status\":\"+\",\"body_bytes_sent\":{\"value\":235,\"representation\":\"B\"},\"remote_addr\":{\"value\":\"127.0.0.1\",\"representation\":\"ipv4\"},\"time\":1395330986000,\"response_length\":{\"value\":498,\"representation\":\"B\"},\"request_time\":{\"value\":0,\"representation\":\"s\"},\"request_filename\":\"test.txt\",\"status\":404,\"server_name\":{\"value\":\"example.com\",\"representation\":\"hostname\"}}\n"
+    , "{\"remote_addr\":{\"value\":\"127.0.0.1\",\"representation\":\"ipv4\"},\"time\":1392050801000,\"response_length\":{\"value\":0,\"representation\":\"B\"},\"request\":\"GET \\/ HTTP\\/1.1\",\"remote_user\":\"-\",\"status\":304}\n"
+    , "{\"remote_user\":\"-\",\"server_port\":80,\"http_referer\":\"-\",\"remote_addr\":{\"value\":\"127.0.0.1\",\"representation\":\"ipv4\"},\"time\":1395344314000,\"response_length\":{\"value\":492,\"representation\":\"B\"},\"request\":\"GET \\/ HTTP\\/1.1\",\"http_user_agent\":\"Mozilla\\/5.0 (X11; Ubuntu; Linux x86_64; rv:27.0) Gecko\\/20100101 Firefox\\/27.0\",\"status\":404,\"server_name\":{\"value\":\"127.0.1.1\",\"representation\":\"ipv4\"}}\n"
+    , "{\"http_user_agent\":\"Mozilla\\/5.0 (X11; Ubuntu; Linux x86_64; rv:27.0) Gecko\\/20100101 Firefox\\/27.0\",\"remote_addr\":{\"value\":\"127.0.0.1\",\"representation\":\"ipv4\"},\"time\":1395344397000,\"response_length\":{\"value\":492,\"representation\":\"B\"},\"request\":\"GET \\/ HTTP\\/1.1\",\"remote_user\":\"-\",\"status\":404,\"http_referer\":\"-\"}\n"
+    , "{\"uri\":\"\\/\",\"http_referer\":\"-\"}\n"
     , NULL
   };
 
