@@ -58,15 +58,17 @@ int serialize_data_as_json(lua_sandbox* lsb, int index, output_data* output)
   case LUA_TSTRING:
     s = lua_tolstring(lsb->lua, index, &len);
     escaped_len = len + 3; // account for the quotes and terminator
+    if (output->pos + escaped_len > output->size) {
+      if (realloc_output(output, escaped_len)) return 1;
+    }
+    output->data[output->pos++] = '"';
+
     for (size_t i = 0; i < len; ++i) {
-      // buffer needs at least enough room for quotes, terminator, and an
-      // escaped character
-      if (output->pos + 5 > output->size) {
+      // buffer needs at least enough room for an escaped character, an end
+      // quote and a null terminator
+      if (output->pos + 4 > output->size) {
         size_t needed = escaped_len - (output->pos - start_pos);
         if (realloc_output(output, needed)) return 1;
-      }
-      if (i == 0) {
-        output->data[output->pos++] = '"';
       }
       switch (s[i]) {
       case '"':
