@@ -6,7 +6,7 @@ require "circular_buffer"
 
 local cbuf = circular_buffer.new(1440, 3, 60)
 local simple_table = {value=1}
-local metric = {MetricName="example",Timestamp=0,Unit="s",Value=0, 
+local metric = {MetricName="example",Timestamp=0,Unit="s",Value=0,
 Dimensions={{Name="d1",Value="v1"}, {Name="d2",Value="v2"}},
 StatisticValues={{Maximum=0,Minimum=0,SampleCount=0,Sum= 0},{Maximum=0,Minimum=0,SampleCount=0,Sum=0}}}
 
@@ -65,6 +65,10 @@ function process(tc)
     elseif tc == 15 then -- heka message force memmove
         local hm = {Timestamp = 1e9, Fields = {string="0123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789"}}
         write(hm)
+    elseif tc == 16 then -- empty string
+        local t = {string=""}
+        output(t)
+        write()
     end
     return 0
 end
