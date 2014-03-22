@@ -171,6 +171,7 @@ function process(tc)
             ,{"%{Test-item}e"           ,"env_Test-item"        ,"item"                         ,"item"}
             ,{'"%{User-agent}i"'        ,"http_user_agent"      ,'"Mozilla/5.0 (comment)"'      ,"Mozilla/5.0 (comment)"}
             ,{'"%400,501{User-agent}i"' ,"http_user_agent"      ,'"Mozilla/5.0 (comment)"'      ,"Mozilla/5.0 (comment)"}
+            ,{'"%!400,501{User-agent}i"',"http_user_agent"      ,'"Mozilla/5.0 (comment)"'      ,"Mozilla/5.0 (comment)"}
             ,{"%{Test-item}n"           ,"module_Test-item"     ,"item"                         ,"item"}
             ,{"%{Test-item}o"           ,"sent_http_test_item"  ,"item"                         ,"item"}
             ,{"%{canonical}p"           ,"server_port"          ,"99"                           ,99}
