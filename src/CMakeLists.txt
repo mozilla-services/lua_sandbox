@@ -9,6 +9,7 @@ lua_serialize.c
 lua_serialize_json.c
 lua_serialize_protobuf.c
 lua_circular_buffer.c
+cephes.c
 )
 
 if(MSVC)
