@@ -1018,7 +1018,7 @@ static char* benchmark_serialize()
 
   clock_t t = clock();
   for (int x = 0; x < iter; ++x) {
-    lua_sandbox* sb = lsb_create(NULL, "lua/serialize.lua", "../../modules", 32767, 1000,
+    lua_sandbox* sb = lsb_create(NULL, "lua/serialize.lua", "../../modules", 64000, 1000,
                                  1024);
     mu_assert(sb, "lsb_create() received: NULL");
 
@@ -1041,7 +1041,7 @@ static char* benchmark_deserialize()
 
   clock_t t = clock();
   for (int x = 0; x < iter; ++x) {
-    lua_sandbox* sb = lsb_create(NULL, "lua/serialize.lua", "../../modules", 32767, 1000,
+    lua_sandbox* sb = lsb_create(NULL, "lua/serialize.lua", "../../modules", 64000, 1000,
                                  1024);
     mu_assert(sb, "lsb_create() received: NULL");
 
