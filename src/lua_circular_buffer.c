@@ -309,6 +309,17 @@ static int circular_buffer_get(lua_State* lua)
 }
 
 
+static int circular_buffer_get_configuration(lua_State* lua)
+{
+  circular_buffer* cb = check_circular_buffer(lua, 1);
+
+  lua_pushnumber(lua, cb->rows);
+  lua_pushnumber(lua, cb->columns);
+  lua_pushnumber(lua, cb->seconds_per_row);
+  return 3;
+}
+
+
 static int circular_buffer_set(lua_State* lua)
 {
   circular_buffer* cb = check_circular_buffer(lua, 4);
@@ -358,10 +369,10 @@ static int circular_buffer_set(lua_State* lua)
 
 static int circular_buffer_set_header(lua_State* lua)
 {
-  circular_buffer* cb                 = check_circular_buffer(lua, 3);
-  int column                          = check_column(lua, cb, 2);
-  const char* name                    = luaL_checkstring(lua, 3);
-  const char* unit                    = luaL_optstring(lua, 4, default_unit);
+  circular_buffer* cb             = check_circular_buffer(lua, 3);
+  int column                      = check_column(lua, cb, 2);
+  const char* name                = luaL_checkstring(lua, 3);
+  const char* unit                = luaL_optstring(lua, 4, default_unit);
   cb->headers[column].aggregation = luaL_checkoption(lua, 5, "sum",
                                                      column_aggregation_methods);
 
@@ -382,6 +393,19 @@ static int circular_buffer_set_header(lua_State* lua)
 
   lua_pushinteger(lua, column + 1); // return the 1 based Lua column
   return 1;
+}
+
+
+static int circular_buffer_get_header(lua_State* lua)
+{
+  circular_buffer* cb = check_circular_buffer(lua, 2);
+  int column          = check_column(lua, cb, 2);
+
+  lua_pushstring(lua, cb->headers[column].name);
+  lua_pushstring(lua, cb->headers[column].unit);
+  lua_pushstring(lua,
+                 column_aggregation_methods[cb->headers[column].aggregation]);
+  return 3;
 }
 
 
@@ -1042,8 +1066,10 @@ static const struct luaL_reg circular_bufferlib_m[] =
 {
   { "add", circular_buffer_add }
   , { "get", circular_buffer_get }
+  , { "get_configuration", circular_buffer_get_configuration }
   , { "set", circular_buffer_set }
   , { "set_header", circular_buffer_set_header }
+  , { "get_header", circular_buffer_get_header }
   , { "compute", circular_buffer_compute }
   , { "mannwhitneyu", circular_buffer_mannwhitneyu }
   , { "current_time", circular_buffer_current_time }

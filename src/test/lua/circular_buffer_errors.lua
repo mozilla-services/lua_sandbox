@@ -105,6 +105,12 @@ function process(tc)
     elseif tc == 35 then
         local cb = circular_buffer.new(10, 1, 1)
         cb:mannwhitneyu(1, 0, 5, 6, 10, "a") -- invalid use_continuity flag
+    elseif tc == 36 then
+        local cb = circular_buffer.new(10, 1, 1)
+        cb:get_header() -- incorrect # args
+    elseif tc == 37 then
+        local cb = circular_buffer.new(10, 1, 1)
+        cb:get_header(99) -- out of range column
     end
 return 0
 end
