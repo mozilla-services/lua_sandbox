@@ -375,6 +375,9 @@ int require_library(lua_State* lua)
     if (luaL_dofile(lua, fn) != 0) {
       luaL_error(lua, "%s", lua_tostring(lua, -1));
     }
+    // Add an empty metatable to identify the library during preservation.
+    lua_newtable(lua);
+    lua_setmetatable(lua, -2);
   }
   lua_pushvalue(lua, -1);
   lua_setfield(lua, pos, name);
