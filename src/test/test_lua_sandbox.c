@@ -523,6 +523,8 @@ static char* test_cbuf_errors()
     , "process() lua/circular_buffer_errors.lua:101: bad argument #5 to 'mannwhitneyu' (end_y must be >= start_y)"
     , "process() lua/circular_buffer_errors.lua:104: bad argument #-1 to 'mannwhitneyu' (too many arguments)"
     , "process() lua/circular_buffer_errors.lua:107: bad argument #6 to 'mannwhitneyu' (use_continuity must be a boolean)"
+    , "process() lua/circular_buffer_errors.lua:110: bad argument #-1 to 'get_header' (incorrect number of arguments)"
+    , "process() lua/circular_buffer_errors.lua:113: bad argument #1 to 'get_header' (column out of range)"
     , NULL
   };
 
@@ -599,7 +601,7 @@ static char* test_cbuf()
   mu_assert(strcmp(outputs[3], written_data) == 0, "received: %s",
             written_data);
 
-  for (int i = 1; i < 14; ++i) {
+  for (int i = 1; i < 16; ++i) {
     result = report(sb, i);
     mu_assert(result == 0, "report() test: %d received: %d error: %s", i, result, lsb_get_error(sb));
   }

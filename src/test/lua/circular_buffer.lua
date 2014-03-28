@@ -219,5 +219,20 @@ function report(tc)
         if u or p then
             error("duplicate data sets should return nil results")
         end
+    elseif tc == 14 then
+        local cb = circular_buffer.new(10,1,1)
+        local rows, cols, spr = cb:get_configuration()
+        assert(rows == 10, "invalid rows")
+        assert(cols == 1 , "invalid columns")
+        assert(spr  == 1 , "invalid seconds_per_row")
+    elseif tc == 15 then
+        local cb = circular_buffer.new(10,1,1)
+        local args = {"widget", "count", "max"}
+        local col = cb:set_header(1, args[1], args[2], args[3])
+        assert(col == 1, "invalid column")
+        local n, u, m = cb:get_header(col)
+        assert(n == args[1], "invalid name")
+        assert(u == args[2], "invalid unit")
+        assert(m == args[3], "invalid aggregation_method")
     end
 end
