@@ -26,7 +26,6 @@ const char* lsb_circular_buffer_table = "circular_buffer";
 #define COLUMN_NAME_SIZE 16
 #define UNIT_LABEL_SIZE 8
 
-static const time_t seconds_in_minute = 60;
 static const time_t seconds_in_day = 60 * 60 * 24;
 
 static const char* column_aggregation_methods[] = { "sum", "min", "max", "none",
