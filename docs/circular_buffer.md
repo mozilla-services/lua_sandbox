@@ -61,6 +61,19 @@ double **get** (nanoseconds, column)
 The value at the specifed row/column or nil if the time was outside the range of the buffer.
 
 ____
+double, double, double **get_configuration** ()
+
+*Arguments*
+- none
+
+*Return*
+
+The circular buffer dimension values specified in the constructor.
+- rows
+- columns
+- seconds_per_row
+
+____
 int **set_header** (column, name, unit, aggregation_method)
 
 *Arguments*
@@ -80,6 +93,19 @@ int **set_header** (column, name, unit, aggregation_method)
 *Return*
 
 The column number passed into the function.
+
+____
+string, string, string **get_header** (column)
+
+*Arguments*
+- column (unsigned) The column number of the header information to be retrieved.
+
+*Return*
+
+The current values of specified header column.
+- name
+- unit
+- aggregation_method
 
 ____
 double, int **compute** (function, column, start, end)
