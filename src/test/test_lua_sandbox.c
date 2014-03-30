@@ -867,11 +867,11 @@ static char* test_lpeg_ip_address()
 static char* test_lpeg_syslog()
 {
   const char* tests[] = {
-    "{\"msg\":\"(root) CMD (   cd \\/ && run-parts --report \\/etc\\/cron.hourly)\",\"timestamp\":1391955421000,\"syslogtag\":\"CRON[20758]:\",\"hostname\":\"trink-x230\"}\n"
-    , "{\"msg\":\"Kernel logging (proc) stopped.\",\"timestamp\":1392049319111.5369,\"syslogtag\":\"kernel:\",\"hostname\":\"trink-x230\"}\n"
-    , "{\"hostname\":\"trink-x230\",\"msg\":\"imklog 5.8.6, log source = \\/proc\\/kmsg started.\",\"timestamp\":1392049995407.9351,\"syslogtag\":\"kernel:\",\"pri\":{\"severity\":6,\"facility\":0}}\n"
-    , "{\"hostname\":\"trink-x230\",\"msg\":\"imklog 5.8.6, log source = \\/proc\\/kmsg started.\",\"timestamp\":1392021527000,\"syslogtag\":\"kernel:\",\"pri\":{\"severity\":6,\"facility\":0}}\n"
-    , "{\"syslogfacility\":0,\"$year\":\"2014\",\"source\":\"trink-x230\",\"syslogpriority-text\":6,\"syslogfacility-text\":0,\"msg\":\"imklog 5.8.6, log source = \\/proc\\/kmsg started.\",\"procid\":\"-\",\"structured-data\":\"-\",\"hostname\":\"trink-x230\",\"app-name\":\"kernel\",\"programname\":\"kernel\",\"$minute\":\"20\",\"$qhour\":\"01\",\"msgid\":\"imklog\",\"$hhour\":\"00\",\"pri-text\":0,\"fromhost-ip\":\"127.0.0.1\",\"$hour\":\"09\",\"pri\":{\"severity\":6,\"facility\":0},\"$day\":\"10\",\"$month\":\"02\",\"$now\":\"2014-02-10\",\"protocol-version\":\"0\",\"timegenerated\":1.392024053e+18,\"timestamp\":1392052853559.9338,\"syslogpriority\":6,\"iut\":\"1\",\"syslogtag\":\"kernel:\",\"fromhost\":\"trink-x230\"}\n"
+    "{\"msg\":\"(root) CMD (   cd \\/ && run-parts --report \\/etc\\/cron.hourly)\",\"timestamp\":1391955421000,\"syslogtag\":{\"pid\":20758,\"programname\":\"CRON\"},\"hostname\":\"trink-x230\"}\n"
+    , "{\"msg\":\"Kernel logging (proc) stopped.\",\"timestamp\":1392049319111.5369,\"syslogtag\":{\"programname\":\"kernel\"},\"hostname\":\"trink-x230\"}\n"
+    , "{\"hostname\":\"trink-x230\",\"msg\":\"imklog 5.8.6, log source = \\/proc\\/kmsg started.\",\"timestamp\":1392049995407.9351,\"syslogtag\":{\"programname\":\"kernel\"},\"pri\":{\"severity\":6,\"facility\":0}}\n"
+    , "{\"hostname\":\"trink-x230\",\"msg\":\"imklog 5.8.6, log source = \\/proc\\/kmsg started.\",\"timestamp\":1392021527000,\"syslogtag\":{\"programname\":\"kernel\"},\"pri\":{\"severity\":6,\"facility\":0}}\n"
+    , "{\"syslogfacility\":0,\"$year\":\"2014\",\"source\":\"trink-x230\",\"syslogpriority-text\":6,\"syslogfacility-text\":0,\"msg\":\"imklog 5.8.6, log source = \\/proc\\/kmsg started.\",\"procid\":\"-\",\"structured-data\":\"-\",\"hostname\":\"trink-x230\",\"app-name\":\"kernel\",\"programname\":\"kernel\",\"$minute\":\"20\",\"$qhour\":\"01\",\"msgid\":\"imklog\",\"$hhour\":\"00\",\"pri-text\":0,\"fromhost-ip\":\"127.0.0.1\",\"$hour\":\"09\",\"pri\":{\"severity\":6,\"facility\":0},\"$day\":\"10\",\"$month\":\"02\",\"$now\":\"2014-02-10\",\"protocol-version\":\"0\",\"timegenerated\":1.392024053e+18,\"timestamp\":1392052853559.9338,\"syslogpriority\":6,\"iut\":\"1\",\"syslogtag\":{\"programname\":\"kernel\"},\"fromhost\":\"trink-x230\"}\n"
     , NULL
   };
 
