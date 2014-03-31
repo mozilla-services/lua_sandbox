@@ -601,7 +601,7 @@ static char* test_cbuf()
   mu_assert(strcmp(outputs[3], written_data) == 0, "received: %s",
             written_data);
 
-  for (int i = 1; i < 16; ++i) {
+  for (int i = 1; i < 17; ++i) {
     result = report(sb, i);
     mu_assert(result == 0, "report() test: %d received: %d error: %s", i, result, lsb_get_error(sb));
   }
