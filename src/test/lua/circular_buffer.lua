@@ -169,7 +169,7 @@ function report(tc)
         end
     elseif tc == 8 then
         local cb = circular_buffer.new(20,1,1)
-        u, p = cb:mannwhitneyu(1, 1e9, 10e9, 11e9, 20e9)
+        u, p = cb:mannwhitneyu(1, 0e9, 9e9, 10e9, 19e9)
         if u ~= 0 or math.floor(p * 100000) ~=  9 then
             error(string.format("u is %g p is %g", u, p))
         end
@@ -234,5 +234,10 @@ function report(tc)
         assert(n == args[1], "invalid name")
         assert(u == args[2], "invalid unit")
         assert(m == args[3], "invalid aggregation_method")
+    elseif tc == 16 then
+        local cb = circular_buffer.new(10,1,1)
+        assert(not cb:get(10*1e9, 1), "value found beyond the end of the buffer")
+        cb:set(20*1e9, 1, 1)
+        assert(not cb:get(10*1e9, 1), "value found beyond the start of the buffer")
     end
 end

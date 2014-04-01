@@ -195,7 +195,8 @@ static int check_row(circular_buffer* cb, double ns, int advance)
     clear_rows(cb, row_delta);
     cb->current_time = t;
     cb->current_row = row;
-  } else if (abs(row_delta) >= (int)cb->rows) {
+  } else if (requested_row > current_row
+             || abs(row_delta) >= (int)cb->rows) {
     return -1;
   }
   return row;
