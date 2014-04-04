@@ -70,7 +70,7 @@ function process(tc)
             local test = os.date(v)
             local g = dt.build_strftime_grammar(v)
             if not g:match(test) then
-                error("failed parsing: " .. v)
+                error(string.format("failed parsing: %s %s", v, test))
             end
         end
     elseif tc == 7 then

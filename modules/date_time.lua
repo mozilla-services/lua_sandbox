@@ -94,6 +94,10 @@ date_mday = l.Cg(l.P"0" * l.R"19"
                     + l.R"12" * l.R"09"
                     + "3" * l.R"01", "day")
 
+date_mday_sp = l.Cg(l.P" " * l.R"19"
+                    + l.S"12" * l.digit
+                    + "3" * l.S"01", "day")
+
 time_hour = l.Cg(l.R"01" * l.digit
                     + "2" * l.R"03", "hour")
 
@@ -139,14 +143,12 @@ strftime_specifiers["a"] = l.P"Mon" + "Tue" + "Wed" + "Thu" + "Fri" + "Sat" + "S
 strftime_specifiers["A"] = l.P"Monday"  + "Tuesday"  + "Wednesday" + "Thursday"  + "Friday" + "Saturday"  + "Sunday"
 strftime_specifiers["b"] = date_mabbr
 strftime_specifiers["B"] = date_mfull
-strftime_specifiers["c"] = strftime_specifiers["a"] * " " * date_mabbr * " " * date_mday * " " * time_hour * ":" * time_minute * ":" * time_second * " " * date_fullyear
+strftime_specifiers["c"] = strftime_specifiers["a"] * " " * date_mabbr * " " * date_mday_sp * " " * time_hour * ":" * time_minute * ":" * time_second * " " * date_fullyear
 strftime_specifiers["C"] = l.digit * l.digit
 strftime_specifiers["y"] = l.Cg((l.digit * l.digit) / function (yy) return os.date("%C") .. yy end, "year")
 strftime_specifiers["d"] = date_mday
 strftime_specifiers["D"] = date_month * "/" * date_mday * "/" * strftime_specifiers["y"]
-strftime_specifiers["e"] = l.Cg(l.P" " * l.R"19"
-                                + l.S"12" * l.digit
-                                + "3" * l.S"01", "day")
+strftime_specifiers["e"] = date_mday_sp
 strftime_specifiers["F"] = date_fullyear * "-" * date_mday * "-" * date_mday
 strftime_specifiers["g"] = strftime_specifiers["y"]
 strftime_specifiers["G"] = date_fullyear
