@@ -127,6 +127,7 @@ local function lookup_time_format(property)
 end
 
 -- http://rsyslog-5-8-6-doc.neocities.org/property_replacer.html
+local programname = (1 - l.S" :[/")^0
 local rsyslog_properties = {
    -- special case msg since the rsyslog template can break the rfc5424 msg rules
    rawmsg                  = octet^0,
@@ -134,8 +135,8 @@ local rsyslog_properties = {
    source                  = hostname,
    fromhost                = hostname,
    ["fromhost-ip"]         = ip.v4 + ip.v6,
-   syslogtag               = l.Ct(l.Cg(l.alnum^-32, "programname") * ("[" * l.Cg(l.digit^1 / tonumber, "pid") * "]")^-1 * ":"),
-   programname             = l.alnum^-32,
+   syslogtag               = l.Ct(l.Cg(programname, "programname") * ("[" * l.Cg(l.digit^1 / tonumber, "pid") * "]")^-1 * ":"),
+   programname             = programname,
    pri                     = pri, -- pri table with facility and severity keys
    ["pri-text"]            = syslog_facility_text * "." * syslog_severity_text * "<" * pri * ">",
    iut                     = l.digit^1,
