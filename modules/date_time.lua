@@ -54,6 +54,9 @@ function seconds_to_ns(sec)
     return tonumber(sec) * 1e9
 end
 
+function milliseconds_to_ns(msec)
+    return tonumber(msec) * 1e6
+end
 
 --[[ Generic Grammars --]]
 date_fullyear = l.Cg(l.digit * l.digit * l.digit * l.digit, "year")
