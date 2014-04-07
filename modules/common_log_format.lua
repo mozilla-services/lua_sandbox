@@ -4,6 +4,7 @@
 
 -- Imports
 local l = require "lpeg"
+local table = require "table"
 l.locale(l)
 local string = require "string"
 local dt = require "date_time"
@@ -207,7 +208,6 @@ local function apache_lookup_argument(t)
     return g
 end
 
-
 local function space_grammar()
     last_literal = l.space
     return l.space^1
@@ -217,7 +217,6 @@ local function literal_grammar(var)
     last_literal = string.sub(var, -1)
     return l.P(var)
 end
-
 
 local escape_chars = {t = "\9", n = "\10", ['"'] = '"', ["\\"] = "\\"}
 local function substitute_escape(seq)
@@ -372,6 +371,201 @@ function build_apache_grammar(log_format)
         end
     end
     return l.Ct(grammar)
+end
+
+local hap_wrap_string_token = l.P'"'
+local hap_wrap_string_token_last = nil
+local hap_wrap_string_token_global = nil
+
+local function set_token_mod(t)
+    local modify = string.sub(t, 1, 1)
+    local modtype = string.sub(t, -1)
+    if modtype == "Q" then
+        if modify == "-" then
+            hap_wrap_string_token_last = {false, hap_wrap_string_token}
+        elseif modify == "+" then
+            hap_wrap_string_token_last = {true, hap_wrap_string_token}
+
+        end
+    else 
+        error("modtype: "..modtype.." not supported yet")
+    end
+end
+
+local function capture_split(x)
+    local sep = l.P"|"
+    local elem = l.C((1 - sep)^0)
+    local m = l.Ct(elem * (sep * elem)^0)
+    local x = m:match(x)
+    if x == nil then x = {} end
+    return x
+end
+
+local proxyname = (1 - l.space - (l.S"()+!@#$%^&*+=/\{}[]<>,"))^1
+local hap_header_capture = l.P"{" * l.C((1  - l.P"}")^1) / capture_split * l.P"}"
+
+local hap_format_spec = (l.P"{" * ((l.S"-+" * l.S"QX") / set_token_mod) * l.P"}")
+
+local hap_generic_token = (1 - l.space)^1
+local hap_term_state_default = l.P"-"
+local hap_term_state_one = l.Cg(l.S"-CSPIRDLUKcs", 'sess_term1_cause')
+local hap_term_state_two = l.Cg(l.S"-DTHCRLQ", 'sess_term2_state')
+local hap_term_state_three = l.Cg(l.S"-NIDVEOU", 'sess_term3_cookie_client')
+local hap_term_state_four = l.Cg(l.S"-PDRNUI", 'sess_term4_cookie_serv_op')
+local hap_clf_msecs =  l.Ct(dt.date_mday * "/" * dt.date_mabbr * "/" * dt.date_fullyear * ":" * dt.rfc3339_partial_time)
+
+local hap_http_req_method =  l.Cg(nginx_format_variables["request_method"],  "req_method")
+local hap_url = l.Cg(l.P"/" * (1 - l.space)^0, "url")
+local hap_req_proto = l.Cg(l.alpha^1, "hap_req_proto") * l.P"/"
+local hap_http_version =  l.Cg(double, "http_version")
+local hap_proxy_connect =  l.Cg(l.P"http://" * (1 - l.P"/")^1, "proxy_connect")
+
+local timer_int = (l.P"-"^0 * l.digit^1) / tonumber
+
+local haproxy_format_variables = {
+
+    ["%"] = l.P"%"
+    , B = l.Cg(nginx_format_variables["bytes_sent"], "bytes_read")
+    , CC = l.Cg(hap_generic_token, "captured_request_cookie")
+    , CS = l.Cg(hap_generic_token, "captured_response_cookie")
+    , H =  l.Cg(host, "hostname")
+    , ID = l.Cg(hap_generic_token, "unique-id")
+    , ST = l.Cg(nginx_format_variables["status"], "status_code")
+    , T = l.Cg(dt.clf_timestamp / dt.time_to_ns, "gmt_date_time")
+    , Tl = l.Cg(dt.clf_timestamp / dt.time_to_ns, "local_date_time")
+    , t = l.Cg(hap_clf_msecs / dt.time_to_ns, "date_time")
+    , Tq = l.Cg(timer_int, "timer_Tq")
+    , Tw = l.Cg(timer_int, "timer_Tw")
+    , Tc = l.Cg(timer_int, "timer_Tc")
+    , Tr = l.Cg(timer_int, "timer_Tr")
+    , Tt = l.Cg(timer_int, "timer_Tt")
+    , ac = l.Cg(integer, "actconn")
+    , fc = l.Cg(integer, "feconn")
+    , bc = l.Cg(integer, "beconn")
+    , sc = l.Cg(integer, "srv_conn")
+    , rc = l.Cg(integer, "retries")
+    , sq = l.Cg(integer, "srv_queue")
+    , bq = l.Cg(integer, "backend_queue")
+    , Ts = l.Cg(integer / dt.seconds_to_ns, "timestamp_nanosecs")
+    , U = l.Cg(nginx_format_variables["request_length"], "bytes_uploaded")
+    , b = l.Cg(proxyname, "backend_name")
+    , bi = l.Cg(host, "backend_source_ip")
+    , bp = l.Cg(integer, "backend_source_port")
+    , ci = l.Cg(host, "client_ip")
+    , cp = l.Cg(integer, "client_port")
+    , f = l.Cg(proxyname, "frontend_name")
+    , fi = l.Cg(host, "frontend_ip")
+    , fp = l.Cg(integer, "frontend_port")
+    , ft = l.Cg(proxyname, "frontend_name_transport")
+    , hr = l.Cg(hap_header_capture, "captured_request_headers")
+    , hrl = l.Cg(hap_header_capture, "captured_request_headers")
+    , hs = l.Cg(hap_header_capture, "captured_response_headers")
+    , hsl = l.Cg(hap_header_capture, "captured_response_headers")
+    , ms = l.Cg(integer / dt.milliseconds_to_ns, "accept_nanosecs")
+    , pid = l.Cg(integer, "PID")
+    , r = hap_http_req_method * l.space * (hap_proxy_connect^0 * hap_url) * l.space * hap_req_proto * hap_http_version
+    , rt = l.Cg(integer, "request_counter")
+    , s = l.Cg(proxyname, "server_name")
+    , si = l.Cg(host, "server_IP")
+    , sp = l.Cg(integer, "server_port")
+    , sslc = l.Cg(hap_generic_token, "ssl_ciphers")
+    , sslv = l.Cg(hap_generic_token, "ssl_version")
+    , ts = hap_term_state_one * hap_term_state_two
+    , tsc = hap_term_state_one * hap_term_state_two * hap_term_state_three * hap_term_state_four
+}
+
+local function haproxy_lookup_grammar(var)
+    local no_unquote = { hsl = 1, hrl = 1}
+    local hap_string_fmt  = { 'CC', 'CS', 'H', 's', 'ID', 'ft', 'b', 'f', 'hr', 'hs', 'r', 'sslc', 'sslv' }
+    for i, v in ipairs(hap_string_fmt) do hap_string_fmt[v] = 1 end
+
+    local hap_hex_fmt = {
+        'fi', 'si', 'bi', 'ci', 'B', 'ST', 'Tc', 'bc', 'Tq', 'Tr', 'Ts', 'Tt',
+        'Tw', 'bp', 'bq', 'U', 'ac', 'cp', 'fc', 'fp', 'sc', 'rt', 'ms', 'pid',
+        'rc', 'sp', 'sq'
+    }
+    for i, v in ipairs(hap_hex_fmt) do hap_hex_fmt[v] = 1 end
+    if var == "o" then
+        -- almost working, but use turns some fields into "" vs - for empty vals
+        error("dont use '%o' directive")
+
+        if hap_wrap_string_token_last[1] then
+            hap_wrap_string_token_global = hap_wrap_string_token_last
+            hap_wrap_string_token_last = nil
+        else
+            hap_wrap_string_token_global = nil
+            hap_wrap_string_token_last = nil
+        end
+
+        return l.space^-1
+    end
+
+    local g = haproxy_format_variables[var]
+    if not g then
+        error("directive: %"..var" not recognized")
+    else
+        if hap_wrap_string_token_last then
+            if hap_wrap_string_token_last[1] and hap_string_fmt[var] then
+                g = hap_wrap_string_token_last[2] * g * hap_wrap_string_token_last[2]
+            elseif no_unquote[var] then
+                error("unquoted field: '"..var.."' unsupported")
+            end
+            hap_wrap_string_token_last = nil
+
+        elseif hap_wrap_string_token_global then
+
+            if hap_wrap_string_token_global[1] and hap_string_fmt[var] then
+                g = hap_wrap_string_token_global[2] * g * hap_wrap_string_token_global[2]
+
+            elseif no_unquote[var] then
+                error("unquoted field: '"..var.."' unsupported")
+            end
+
+        end
+    end
+    return g
+end
+
+-- Returns an LPeg grammar based on the Haproxy LogFormat configuration string.
+function build_haproxy_grammar(log_format)
+
+    local sorted_dirs = {}
+    local directives = l.P(false)
+    local consume_escapes = l.P"\\"
+    local global_modify = hap_format_spec^-1 * (l.P"o" / haproxy_lookup_grammar) * l.space^0
+
+    for k,v in pairs(haproxy_format_variables) do
+        table.insert(sorted_dirs, k)
+    end
+    table.sort(sorted_dirs, function(a, b) return #a > #b end )
+    for _,v in ipairs(sorted_dirs) do
+        directives = directives + (hap_format_spec^-1 * (l.P(v) / haproxy_lookup_grammar))
+    end
+    directives = directives + global_modify
+    local directive = l.P"%" * directives
+
+    local ws = l.space^1 / space_grammar
+    local literal = ((l.P(1) - directive)^1) / literal_grammar
+    local item = consume_escapes + directive + literal
+
+    local all = l.Ct(item * (item)^0)
+    local t = all:match(log_format)
+    if not t then
+        error("could not parse the log_format configuration")
+    end
+    local grammar = nil
+    for i,v in ipairs(t) do
+
+        if not grammar then
+            grammar = v
+        else
+            grammar = grammar * v
+        end
+
+    end
+
+    return l.Ct(grammar)
+
 end
 
 return M
