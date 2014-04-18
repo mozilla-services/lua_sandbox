@@ -664,7 +664,7 @@ static int circular_buffer_mannwhitneyu(lua_State* lua)
   double start_y = luaL_checknumber(lua, 5);
   double end_y   = luaL_checknumber(lua, 6);
   luaL_argcheck(lua, end_y >= start_y, 6, "end_y must be >= start_y");
-  luaL_argcheck(lua, end_x < start_y, 4, "end_x must be < start_y");
+  luaL_argcheck(lua, end_x < start_y || end_y < start_x, 4, "x-y ranges must not overlap");
 
   int use_continuity = 1; // optional argument
   if (7 == n) {

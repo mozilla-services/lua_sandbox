@@ -518,7 +518,7 @@ static char* test_cbuf_errors()
     , "process() lua/circular_buffer_errors.lua:86: bad argument #-1 to 'mannwhitneyu' (incorrect number of arguments)"
     , "process() lua/circular_buffer_errors.lua:89: bad argument #1 to 'mannwhitneyu' (number expected, got nil)"
     , "process() lua/circular_buffer_errors.lua:92: bad argument #1 to 'mannwhitneyu' (column out of range)"
-    , "process() lua/circular_buffer_errors.lua:95: bad argument #3 to 'mannwhitneyu' (end_x must be < start_y)"
+    , "process() lua/circular_buffer_errors.lua:95: bad argument #3 to 'mannwhitneyu' (x-y ranges must not overlap)"
     , "process() lua/circular_buffer_errors.lua:98: bad argument #3 to 'mannwhitneyu' (end_x must be >= start_x)"
     , "process() lua/circular_buffer_errors.lua:101: bad argument #5 to 'mannwhitneyu' (end_y must be >= start_y)"
     , "process() lua/circular_buffer_errors.lua:104: bad argument #-1 to 'mannwhitneyu' (too many arguments)"
