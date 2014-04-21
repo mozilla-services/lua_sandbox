@@ -518,9 +518,9 @@ static char* test_cbuf_errors()
     , "process() lua/circular_buffer_errors.lua:86: bad argument #-1 to 'mannwhitneyu' (incorrect number of arguments)"
     , "process() lua/circular_buffer_errors.lua:89: bad argument #1 to 'mannwhitneyu' (number expected, got nil)"
     , "process() lua/circular_buffer_errors.lua:92: bad argument #1 to 'mannwhitneyu' (column out of range)"
-    , "process() lua/circular_buffer_errors.lua:95: bad argument #3 to 'mannwhitneyu' (x-y ranges must not overlap)"
-    , "process() lua/circular_buffer_errors.lua:98: bad argument #3 to 'mannwhitneyu' (end_x must be >= start_x)"
-    , "process() lua/circular_buffer_errors.lua:101: bad argument #5 to 'mannwhitneyu' (end_y must be >= start_y)"
+    , "process() lua/circular_buffer_errors.lua:95: bad argument #3 to 'mannwhitneyu' (ranges must not overlap)"
+    , "process() lua/circular_buffer_errors.lua:98: bad argument #3 to 'mannwhitneyu' (end_1 must be >= start_1)"
+    , "process() lua/circular_buffer_errors.lua:101: bad argument #5 to 'mannwhitneyu' (end_2 must be >= start_2)"
     , "process() lua/circular_buffer_errors.lua:104: bad argument #-1 to 'mannwhitneyu' (too many arguments)"
     , "process() lua/circular_buffer_errors.lua:107: bad argument #6 to 'mannwhitneyu' (use_continuity must be a boolean)"
     , "process() lua/circular_buffer_errors.lua:110: bad argument #-1 to 'get_header' (incorrect number of arguments)"
@@ -601,7 +601,7 @@ static char* test_cbuf()
   mu_assert(strcmp(outputs[3], written_data) == 0, "received: %s",
             written_data);
 
-  for (int i = 1; i < 17; ++i) {
+  for (int i = 1; i < 18; ++i) {
     result = report(sb, i);
     mu_assert(result == 0, "report() test: %d received: %d error: %s", i, result, lsb_get_error(sb));
   }
