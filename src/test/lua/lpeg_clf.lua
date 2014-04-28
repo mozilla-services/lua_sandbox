@@ -246,6 +246,17 @@ function process(tc)
         local log = '- -> /'
         local fields = grammar:match(log)
         output(fields)
+    elseif tc == 10 then
+        local log = '2014/03/01 11:29:39 [notice] 16842#0: using inherited sockets from "6;"'
+        local fields = clf.nginx_error_grammar:match(log)
+        fields.time = fields.time/1e6
+        output(fields)
+    elseif tc == 11 then
+        -- optional connection
+        local log = '2014/03/01 11:29:39 [notice] 16842#0: 8878 using inherited sockets from "6;"'
+        local fields = clf.nginx_error_grammar:match(log)
+        fields.time = fields.time/1e6
+        output(fields)
     end
 
     write()
