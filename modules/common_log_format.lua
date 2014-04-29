@@ -27,6 +27,17 @@ local host = l.Ct(l.Cg(ip.v4, "value") * l.Cg(l.Cc"ipv4", "representation"))
            + l.Ct(l.Cg(ip.v6, "value") * l.Cg(l.Cc"ipv6", "representation"))
            + l.Ct(l.Cg((l.P(1) - l.S" :\n\t/?#[]@")^1, "value") * l.Cg(l.Cc"hostname", "representation"))
 
+local nginx_error_levels = l.Cg((
+  l.P"debug"   / "7"
++ l.P"info"    / "6"
++ l.P"notice"  / "5"
++ l.P"warn"    / "4"
++ l.P"error"   / "3"
++ l.P"crit"    / "2"
++ l.P"alert"   / "1"
++ l.P"emerg"   / "0")
+/ tonumber, "Severity")
+
 local nginx_format_variables = {
     --arg_*
     --args
@@ -373,5 +384,11 @@ function build_apache_grammar(log_format)
     end
     return l.Ct(grammar)
 end
+
+nginx_error_grammar = l.Ct(l.Cg(dt.build_strftime_grammar("%Y/%m/%d %T") / dt.time_to_ns, "time")
+                           * l.space * "[" * nginx_error_levels * "]"
+                           * l.space * l.Cg(l.digit^1 / tonumber, "Pid") * "#"
+                           * l.Cg(l.Ct(l.Cg(l.digit^1 / tonumber, "tid") * ": " * (l.Cg(l.digit^1 / tonumber, "connection") * " ")^-1), "Fields")
+                           * l.Cg(l.P(1)^0, "Payload"))
 
 return M

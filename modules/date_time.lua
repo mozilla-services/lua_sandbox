@@ -161,7 +161,7 @@ strftime_specifiers["j"] = l.P"00" * l.R"19"
                                 + l.S"12" * l.digit * l.digit
                                 + "3" * l.R"05" * l.digit
                                 + "36" * l.R"06"
-strftime_specifiers["m"] = date_mday
+strftime_specifiers["m"] = date_month
 strftime_specifiers["M"] = time_minute
 strftime_specifiers["n"] = l.P"\n"
 strftime_specifiers["p"] = l.Cg(l.P"AM" + "PM", "period")
