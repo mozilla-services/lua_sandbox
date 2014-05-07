@@ -786,6 +786,8 @@ static char* test_lpeg_clf()
     , "{\"uri\":\"\\/\",\"http_referer\":\"-\"}\n"
     , "{\"Fields\":{\"tid\":0},\"Pid\":16842,\"Payload\":\"using inherited sockets from \\\"6;\\\"\",\"Severity\":5,\"time\":1393673379000}\n"
     , "{\"Fields\":{\"tid\":0,\"connection\":8878},\"Pid\":16842,\"Payload\":\"using inherited sockets from \\\"6;\\\"\",\"Severity\":5,\"time\":1393673379000}\n"
+    , "tc12" // start to move away from the fragile string compare
+    , "tc13"
     , NULL
   };
 
