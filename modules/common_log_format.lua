@@ -102,11 +102,12 @@ local nginx_format_variables = {
 
     -- Upstream Module Grammars
     -- http://nginx.org/en/docs/http/ngx_http_upstream_module.html#variables
-    , upstream_addr             = l.Ct(nginx_upstream_addrs * (nginx_upstream_gsep * nginx_upstream_addrs)^0)
-    , upstream_cache_status     = l.P"HIT" + "MISS" + "EXPIRED" + "BYPASS" + "STALE" + "UPDATING" + "REVALIDATED"
-    , upstream_response_length  = l.Ct(l.Cg(l.Ct(nginx_upstream_lengths * (nginx_upstream_gsep * nginx_upstream_lengths)^0), "value") * l.Cg(l.Cc"B", "representation"))
-    , upstream_response_time    = l.Ct(l.Cg(l.Ct(nginx_upstream_times * (nginx_upstream_gsep * nginx_upstream_times)^0), "value") * l.Cg(l.Cc"s", "representation"))
-    , upstream_status           = l.Ct(nginx_upstream_statuses * (nginx_upstream_gsep * nginx_upstream_statuses)^0)
+    , upstream_addr                 = l.Ct(nginx_upstream_addrs * (nginx_upstream_gsep * nginx_upstream_addrs)^0) + "-"
+    , upstream_cache_status         = l.P"HIT" + "MISS" + "EXPIRED" + "BYPASS" + "STALE" + "UPDATING" + "REVALIDATED" + "-"
+    , upstream_cache_last_modified  = dt.build_strftime_grammar("%a, %d %b %Y %T GMT") / dt.time_to_ns  + "-"
+    , upstream_response_length      = l.Ct(l.Cg(l.Ct(nginx_upstream_lengths * (nginx_upstream_gsep * nginx_upstream_lengths)^0), "value") * l.Cg(l.Cc"B", "representation")) + "-"
+    , upstream_response_time        = l.Ct(l.Cg(l.Ct(nginx_upstream_times * (nginx_upstream_gsep * nginx_upstream_times)^0), "value") * l.Cg(l.Cc"s", "representation"))  + "-"
+    , upstream_status               = l.Ct(nginx_upstream_statuses * (nginx_upstream_gsep * nginx_upstream_statuses)^0) + "-"
     --upstream_http_* handled by the generic grammar
 }
 

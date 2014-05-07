@@ -265,8 +265,8 @@ function process(tc)
         local uscs = "HIT"
         local header = "header field"
 
-        local grammar = clf.build_nginx_grammar('$upstream_addr $upstream_cache_status $upstream_response_length $upstream_response_time $upstream_status "$upstream_http_test"')
-        local log = string.format('%s, %s, %s : %s, %s %s %d, %d, %d : %d, %d %g, %g, %g : %g, %g %d, %d, %d : %d, %d "%s"',
+        local grammar = clf.build_nginx_grammar('$upstream_addr $upstream_cache_status $upstream_response_length $upstream_response_time $upstream_status "$upstream_http_test" $upstream_cache_last_modified')
+        local log = string.format('%s, %s, %s : %s, %s %s %d, %d, %d : %d, %d %g, %g, %g : %g, %g %d, %d, %d : %d, %d "%s" Mon, 28 Sep 1970 06:00:00 GMT',
                                   addrs[1], addrs[2], addrs[3], addrs[4], addrs[5], uscs,
                                   lengths[1], lengths[2], lengths[3], lengths[4], lengths[5],
                                   times[1], times[2], times[3], times[4], times[5],
@@ -322,7 +322,17 @@ function process(tc)
         if fields.upstream_http_test ~= header then
             error(string.format("expected value: '%s' received: '%s'", header, fields.upstream_http_test))
         end
+        local usclm = 2.33496e16
+        if fields.upstream_cache_last_modified ~= usclm then
+            error(string.format("expected value: '%s' received: '%s'", usclm, fields.upstream_cache_last_modified))
+        end
         output("tc12")
+    elseif tc == 13 then
+        local grammar = clf.build_nginx_grammar('$upstream_addr $upstream_cache_status $upstream_response_length $upstream_response_time $upstream_status "$upstream_http_test" $upstream_cache_last_modified')
+        local log = '- - - - - "-" -'
+        local fields = grammar:match(log)
+        if not fields then error(string.format("failed match: %s", log)) end
+        output("tc13")
     end
 
     write()
