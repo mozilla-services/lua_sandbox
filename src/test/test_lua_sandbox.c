@@ -846,6 +846,7 @@ static char* test_lpeg_date_time()
   return NULL;
 }
 
+
 static char* test_lpeg_ip_address()
 {
   lua_sandbox* sb = lsb_create(NULL, "lua/lpeg_ip_address.lua", "../../modules", 8e6, 1e6, 63 * 1024);
@@ -855,6 +856,26 @@ static char* test_lpeg_ip_address()
   mu_assert(result == 0, "lsb_init() received: %d %s", result, lsb_get_error(sb));
 
   for (int i = 0; i < 4; ++i) {
+    result = process(sb, i);
+    mu_assert(result == 0, "process() received: %d %s", result, lsb_get_error(sb));
+  }
+
+  e = lsb_destroy(sb, NULL);
+  mu_assert(!e, "lsb_destroy() received: %s", e);
+
+  return NULL;
+}
+
+
+static char* test_lpeg_mysql()
+{
+  lua_sandbox* sb = lsb_create(NULL, "lua/lpeg_mysql.lua", "../../modules", 8e6, 1e6, 63 * 1024);
+  mu_assert(sb, "lsb_create() received: NULL");
+
+  int result = lsb_init(sb, NULL);
+  mu_assert(result == 0, "lsb_init() received: %d %s", result, lsb_get_error(sb));
+
+  for (int i = 0; i < 1; ++i) {
     result = process(sb, i);
     mu_assert(result == 0, "process() received: %d %s", result, lsb_get_error(sb));
   }
@@ -1208,6 +1229,7 @@ static char* all_tests()
   mu_run_test(test_lpeg_clf);
   mu_run_test(test_lpeg_date_time);
   mu_run_test(test_lpeg_ip_address);
+  mu_run_test(test_lpeg_mysql);
   mu_run_test(test_lpeg_syslog);
   mu_run_test(test_util);
   mu_run_test(test_serialize);
