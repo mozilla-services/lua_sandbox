@@ -40,7 +40,20 @@ int preserve_global_data(lua_sandbox* lsb, const char* data_file)
   serialization_data data;
   data.fh = fh;
   data.keys.maxsize = 0;
-  lsb->output.maxsize = 0; // clear output limit
+
+// Clear the sandbox limits during preservation.
+#ifdef LUA_JIT
+  lua_gc(lsb->lua, LUA_GCSETMEMLIMIT, 0);
+#else
+//  unsigned limit = lsb->usage[LSB_UT_MEMORY][LSB_US_LIMIT];
+  lsb->usage[LSB_UT_MEMORY][LSB_US_LIMIT] = 0;
+#endif
+  lua_sethook(lsb->lua, instruction_manager, 0, 0);
+//  size_t cur_output_size = lsb->output.size;
+//  size_t max_output_size = lsb->output.maxsize;
+  lsb->output.maxsize = 0;
+// end clear
+
   data.keys.size = OUTPUT_SIZE;
   data.keys.pos = 0;
   data.keys.data = malloc(data.keys.size);
@@ -71,6 +84,30 @@ int preserve_global_data(lua_sandbox* lsb, const char* data_file)
   if (result != 0) {
     remove(data_file);
   }
+
+// Uncomment if we start preserving state when not destroying the sandbox
+/*
+// Restore the sandbox limits after preservation
+#ifdef LUA_JIT
+  lua_gc(lsb->lua, LUA_GCSETMEMLIMIT,
+         lsb->usage[LSB_UT_MEMORY][LSB_US_LIMIT]);
+#else
+  lua_gc(lsb->lua, LUA_GCCOLLECT, 0);
+  lsb->usage[LSB_UT_MEMORY][LSB_US_LIMIT] = limit;
+  lsb->usage[LSB_UT_MEMORY][LSB_US_MAXIMUM] =
+    lsb->usage[LSB_UT_MEMORY][LSB_US_CURRENT];
+#endif
+  lsb->output.maxsize = max_output_size;
+  lsb->output.pos = 0;
+  if (lsb->output.size > cur_output_size) {
+    void* ptr = realloc(lsb->output.data, cur_output_size);
+    if (!ptr) return 1;
+    lsb->output.data = ptr;
+    lsb->output.size = cur_output_size;
+  }
+// end restore
+*/
+
   return result;
 }
 

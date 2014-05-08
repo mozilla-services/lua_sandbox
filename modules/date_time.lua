@@ -152,7 +152,7 @@ strftime_specifiers["y"] = l.Cg((l.digit * l.digit) / function (yy) return os.da
 strftime_specifiers["d"] = date_mday
 strftime_specifiers["D"] = date_month * "/" * date_mday * "/" * strftime_specifiers["y"]
 strftime_specifiers["e"] = date_mday_sp
-strftime_specifiers["F"] = date_fullyear * "-" * date_mday * "-" * date_mday
+strftime_specifiers["F"] = date_fullyear * "-" * date_month * "-" * date_mday
 strftime_specifiers["g"] = strftime_specifiers["y"]
 strftime_specifiers["G"] = date_fullyear
 strftime_specifiers["h"] = date_mabbr
@@ -164,7 +164,7 @@ strftime_specifiers["j"] = l.P"00" * l.R"19"
                                 + l.S"12" * l.digit * l.digit
                                 + "3" * l.R"05" * l.digit
                                 + "36" * l.R"06"
-strftime_specifiers["m"] = date_mday
+strftime_specifiers["m"] = date_month
 strftime_specifiers["M"] = time_minute
 strftime_specifiers["n"] = l.P"\n"
 strftime_specifiers["p"] = l.Cg(l.P"AM" + "PM", "period")

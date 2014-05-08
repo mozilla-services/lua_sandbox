@@ -618,7 +618,8 @@ static double rank_data(double* sorted[], size_t ranked_size)
   double tie_correction = 0;
   for (size_t i = 0; i < ranked_size; ++i) {
     next = i + 1;
-    if (i == ranked_size - 1 || *sorted[i] != *sorted[next]) {
+    if (i == ranked_size - 1 || (!(isnan(*sorted[i]) && isnan(*sorted[next]))
+                                 && *sorted[i] != *sorted[next]))  {
       if (dupe_count) {
         double tie_rank = next - 0.5 * dupe_count;
         for (size_t j = i - dupe_count; j < next; ++j) {
@@ -644,6 +645,10 @@ static int double_pp_compare(const void* a, const void* b)
   double* d1 = *(double**)a;
   double* d2 = *(double**)b;
 
+  if (isnan(*d1) && isnan(*d2)) return 0;
+  if (isnan(*d1)) return -1;
+  if (isnan(*d2)) return 1;
+
   if (*d1 < *d2) return -1;
   if (*d1 == *d2) return 0;
   return 1;
@@ -657,14 +662,14 @@ static int circular_buffer_mannwhitneyu(lua_State* lua)
   luaL_argcheck(lua, n <= 7, 0, "too many arguments");
   int column           = check_column(lua, cb, 2);
 
-  double start_x = luaL_checknumber(lua, 3);
-  double end_x  = luaL_checknumber(lua, 4);
-  luaL_argcheck(lua, end_x >= start_x, 4, "end_x must be >= start_x");
+  double start_1 = luaL_checknumber(lua, 3);
+  double end_1  = luaL_checknumber(lua, 4);
+  luaL_argcheck(lua, end_1 >= start_1, 4, "end_1 must be >= start_1");
 
-  double start_y = luaL_checknumber(lua, 5);
-  double end_y   = luaL_checknumber(lua, 6);
-  luaL_argcheck(lua, end_y >= start_y, 6, "end_y must be >= start_y");
-  luaL_argcheck(lua, end_x < start_y, 4, "end_x must be < start_y");
+  double start_2 = luaL_checknumber(lua, 5);
+  double end_2   = luaL_checknumber(lua, 6);
+  luaL_argcheck(lua, end_2 >= start_2, 6, "end_2 must be >= start_2");
+  luaL_argcheck(lua, end_1 < start_2 || end_2 < start_1, 4, "ranges must not overlap");
 
   int use_continuity = 1; // optional argument
   if (7 == n) {
@@ -672,19 +677,19 @@ static int circular_buffer_mannwhitneyu(lua_State* lua)
     use_continuity = lua_toboolean(lua, n);
   }
 
-  int start_x_row = check_row(cb, start_x, 0);
-  int end_x_row   = check_row(cb, end_x, 0);
-  if (-1 == start_x_row  || -1 == end_x_row) {
+  int start_1_row = check_row(cb, start_1, 0);
+  int end_1_row   = check_row(cb, end_1, 0);
+  if (-1 == start_1_row  || -1 == end_1_row) {
     return 0;
   }
-  int start_y_row = check_row(cb, start_y, 0);
-  int end_y_row   = check_row(cb, end_y, 0);
-  if (-1 == start_y_row  || -1 == end_y_row) {
+  int start_2_row = check_row(cb, start_2, 0);
+  int end_2_row   = check_row(cb, end_2, 0);
+  if (-1 == start_2_row  || -1 == end_2_row) {
     return 0;
   }
 
-  size_t n1 = ((end_x - start_x) / 1e9 / cb->seconds_per_row) + 1;
-  size_t n2 = ((end_y - start_y) / 1e9 / cb->seconds_per_row) + 1;
+  size_t n1 = ((end_1 - start_1) / 1e9 / cb->seconds_per_row) + 1;
+  size_t n2 = ((end_2 - start_2) / 1e9 / cb->seconds_per_row) + 1;
   size_t ranked_size = n1 + n2;
   // note: user could temporarily exceed the sandbox memory limit here without
   // detection
@@ -692,8 +697,8 @@ static int circular_buffer_mannwhitneyu(lua_State* lua)
   if (!ranked) {
     return 0;
   }
-  append_values(cb, column, start_x_row, end_x_row, ranked);
-  append_values(cb, column, start_y_row, end_y_row, ranked + n1);
+  append_values(cb, column, start_1_row, end_1_row, ranked);
+  append_values(cb, column, start_2_row, end_2_row, ranked + n1);
 
   double** sorted = (double**)malloc(sizeof(double*) * ranked_size);
   if (!sorted) {
@@ -707,34 +712,34 @@ static int circular_buffer_mannwhitneyu(lua_State* lua)
   qsort(sorted, ranked_size, sizeof(double*), double_pp_compare);
   double tie_correction = rank_data(sorted, ranked_size);
   free(sorted);
-  if (!tie_correction) { // data sets are identical
+  if (!tie_correction) { // data set values are all identical
     free(ranked);
     return 0;
   }
 
   double sum = 0;
   for (size_t i = 0; i < n1; ++i) {
-    sum += ranked[i];
+    if (!isnan(ranked[i])) {
+      sum += ranked[i];
+    }
   }
   free(ranked);
 
   double u1 = sum - (n1 * (n1 + 1)) / 2.0;
   double u2 = n1 * n2 - u1;
-  double u = u1 < u2 ? u1 : u2; // take the smaller value
+  double lu = u1 > u2 ? u1 : u2;
 
   double z = 0;
   double sd = sqrt(tie_correction * n1 * n2 * (n1 + n2 + 1) / 12.0);
   if (use_continuity) {
-    // normal approximation for prob calc with continuity correction uses the
-    // larger U
-    double lu = u1 > u2 ? u1 : u2;
+    // normal approximation for prob calc with continuity correction
     z = fabs((lu - 0.5 - n1 * n2 / 2.0) / sd);
   } else {
     // normal approximation for prob calc
-    z = fabs((u - n1 * n2 / 2.0) / sd);
+    z = fabs((lu - n1 * n2 / 2.0) / sd);
   }
 
-  lua_pushnumber(lua, u);
+  lua_pushnumber(lua, u1);
   lua_pushnumber(lua, ndtr(-z));
   return 2;
 }
