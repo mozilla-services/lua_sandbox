@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-/// @brief Lua sandbox unit tests @file
+/** @brief Lua sandbox unit tests @file */
 
 #include "lua_sandbox.h"
 
@@ -1016,6 +1016,111 @@ static char* test_serialize_noglobal()
 }
 
 
+static char* test_bloom_filter_errors()
+{
+  const char* tests[] =
+  {
+    "process() lua/bloom_filter_errors.lua:9: bad argument #0 to 'new' (incorrect number of arguments)"
+    , "process() lua/bloom_filter_errors.lua:11: bad argument #1 to 'new' (number expected, got nil)"
+    , "process() lua/bloom_filter_errors.lua:13: bad argument #1 to 'new' (items must be > 1)"
+    , "process() lua/bloom_filter_errors.lua:15: bad argument #2 to 'new' (number expected, got nil)"
+    , "process() lua/bloom_filter_errors.lua:17: bad argument #2 to 'new' (probability must be between 0 and 1)"
+    , "process() lua/bloom_filter_errors.lua:19: bad argument #2 to 'new' (probability must be between 0 and 1)"
+    , "process() lua/bloom_filter_errors.lua:22: bad argument #-1 to 'add' (incorrect number of arguments)"
+    , "process() lua/bloom_filter_errors.lua:25: bad argument #1 to 'add' (must be a string or number)"
+    , "process() lua/bloom_filter_errors.lua:28: bad argument #-1 to 'query' (incorrect number of arguments)"
+    , "process() lua/bloom_filter_errors.lua:31: bad argument #1 to 'query' (must be a string or number)"
+    , "process() lua/bloom_filter_errors.lua:34: bad argument #-1 to 'clear' (incorrect number of arguments)"
+    , "process() lua/bloom_filter_errors.lua:37: bad argument #1 to 'fromstring' (string expected, got table)"
+    , "process() lua/bloom_filter_errors.lua:40: fromstring() bytes found: 23, expected 24"
+    , NULL
+  };
+
+  for (int i = 0; tests[i]; ++i) {
+    lua_sandbox* sb = lsb_create(NULL, "lua/bloom_filter_errors.lua", "../../modules",
+                                 32767, 1000, 128);
+    mu_assert(sb, "lsb_create() received: NULL");
+
+    int result = lsb_init(sb, NULL);
+    mu_assert(result == 0, "lsb_init() received: %d %s", result,
+              lsb_get_error(sb));
+
+    result = process(sb, i);
+    mu_assert(result == 1, "test: %d received: %d", i, result);
+
+    const char* le = lsb_get_error(sb);
+    mu_assert(le, "test: %d received NULL", i);
+    mu_assert(strcmp(tests[i], le) == 0, "test: %d received: %s", i, le);
+
+    e = lsb_destroy(sb, NULL);
+    mu_assert(!e, "lsb_destroy() received: %s", e);
+  }
+
+  return NULL;
+}
+
+
+static char* test_bloom_filter()
+{
+  const char* output_file = "bloom_filter.preserve";
+  const char* tests[] = {
+    "1"
+    , "2"
+    , "3"
+    , NULL
+  };
+
+  lua_sandbox* sb = lsb_create(NULL, "lua/bloom_filter.lua", "../../modules", 8e6, 1e6, 63 * 1024);
+  mu_assert(sb, "lsb_create() received: NULL");
+
+  int result = lsb_init(sb, NULL);
+  mu_assert(result == 0, "lsb_init() received: %d %s", result, lsb_get_error(sb));
+  lsb_add_function(sb, &write_output, "write");
+
+  int i = 0;
+  for (; tests[i]; ++i) {
+    result = process(sb, i);
+    mu_assert(result == 0, "process() received: %d %s", result, lsb_get_error(sb));
+    result = report(sb, 0);
+    mu_assert(result == 0, "report() received: %d", result);
+    mu_assert(strcmp(tests[i], written_data) == 0, "test: %d received: %s", i, written_data);
+  }
+
+  result = process(sb, 0);
+  mu_assert(result == 0, "process() received: %d %s", result, lsb_get_error(sb));
+  result = report(sb, 0);
+  mu_assert(result == 0, "report() received: %d", result);
+  mu_assert(strcmp(tests[i - 1], written_data) == 0, "test: %d received: %s", i, written_data); // count should remain the same
+
+  e = lsb_destroy(sb, output_file);
+  mu_assert(!e, "lsb_destroy() received: %s", e);
+
+  // re-load to test the preserved data
+  sb = lsb_create(NULL, "lua/bloom_filter.lua", "../../modules", 8e6, 1e6, 63 * 1024);
+  mu_assert(sb, "lsb_create() received: NULL");
+
+  result = lsb_init(sb, NULL);
+  mu_assert(result == 0, "lsb_init() received: %d %s", result, lsb_get_error(sb));
+  lsb_add_function(sb, &write_output, "write");
+
+  for (int i = 0; tests[i]; ++i) {
+    result = process(sb, i);
+    mu_assert(result == 0, "process() received: %d %s", result, lsb_get_error(sb));
+  }
+  result = report(sb, 0);
+  mu_assert(result == 0, "report() received: %d", result);
+  mu_assert(strcmp(tests[i - 1], written_data) == 0, "test: %d received: %s", i, written_data); // count should remain the same
+
+  // test clear
+  report(sb, 99);
+  process(sb, 0);
+  report(sb, 0);
+  mu_assert(strcmp("1", written_data) == 0, "test: clear received: %s", written_data);
+
+  return NULL;
+}
+
+
 static char* benchmark_counter()
 {
   int iter = 10000000;
@@ -1210,9 +1315,37 @@ static char* benchmark_cbuf_add()
   return NULL;
 }
 
+static char* benchmark_bloom_filter_add()
+{
+  int iter = 1000000;
+
+  lua_sandbox* sb = lsb_create(NULL, "lua/bloom_filter_benchmark.lua", "../../modules", 1024 * 1024 * 8, 1000,
+                               1024 * 63);
+  mu_assert(sb, "lsb_create() received: NULL");
+  int result = lsb_init(sb, NULL);
+  mu_assert(result == 0, "lsb_init() received: %d %s", result,
+            lsb_get_error(sb));
+  lsb_add_function(sb, &write_output, "write");
+
+  clock_t t = clock();
+  for (int x = 0; x < iter; ++x) {
+    process(sb, x); // don't care about the false positives, just testing add speed
+  }
+  t = clock() - t;
+  report(sb, 0);
+  mu_assert(strcmp("1000000", written_data) == 0, "received: %s", written_data);
+  mu_assert(lsb_get_state(sb) == LSB_RUNNING, "benchmark_bloom_filter_add() failed %s", lsb_get_error(sb));
+  e = lsb_destroy(sb, NULL);
+  mu_assert(!e, "lsb_destroy() received: %s", e);
+  printf("benchmark_bloom_filter_add() %g seconds\n", ((float)t) / CLOCKS_PER_SEC / iter);
+
+  return NULL;
+}
+
 
 static char* all_tests()
 {
+
   mu_run_test(test_create_error);
   mu_run_test(test_init_error);
   mu_run_test(test_destroy_error);
@@ -1237,6 +1370,8 @@ static char* all_tests()
   mu_run_test(test_serialize);
   mu_run_test(test_serialize_failure);
   mu_run_test(test_serialize_noglobal);
+  mu_run_test(test_bloom_filter_errors);
+  mu_run_test(test_bloom_filter);
 
   mu_run_test(benchmark_counter);
   mu_run_test(benchmark_serialize);
@@ -1246,6 +1381,8 @@ static char* all_tests()
   mu_run_test(benchmark_cbuf_output);
   mu_run_test(benchmark_table_output);
   mu_run_test(benchmark_cbuf_add);
+  mu_run_test(benchmark_bloom_filter_add);
+
   return NULL;
 }
 

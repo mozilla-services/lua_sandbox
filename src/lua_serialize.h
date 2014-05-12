@@ -4,7 +4,8 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-/// Lua sandbox serialization @file
+/** Lua sandbox serialization @file */
+
 #ifndef lua_serialize_h_
 #define lua_serialize_h_
 
@@ -80,12 +81,12 @@ int serialize_data(lua_sandbox* lsb, int index, output_data* output);
  * Determines the name of the userdata type
  *
  * @param lua Lua State
- * @param ud Userdata pointer
  * @param index Index on the stack where the userdata pointer resides
+ * @param tname userdata table name
  *
  * @return const char* NULL if not found
  */
-const char* userdata_type(lua_State* lua, void* ud, int index);
+void *userdata_type(lua_State* lua, int index, const char *tname);
 
 /**
  * Serializes a table key value pair.
