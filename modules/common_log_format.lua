@@ -289,9 +289,12 @@ end
 -- find the version of the product identified by the keyword
 local function ua_keyword(kw)
     return function(ua)
-        local s = ua:find(kw) + kw:len()
-        if s then
-            return tonumber(ua:match("^(%d+)", s))
+        local i = ua:find(kw)
+        if i then
+            local s = i + kw:len()
+            if s then
+                return tonumber(ua:match("^(%d+)", s))
+            end
         end
     end
 end
@@ -317,11 +320,11 @@ local ua_os_matchers = {
 local ua_browser_matchers = {
       {"Chrome"        , ua_keyword("Chrome/")}
     , {"Opera Mini"    , ua_basic}
-    , {"Opera Mobile"  , ua_basic}
+    , {"Opera Mobi"    , ua_basic}
     , {"Opera"         , ua_basic}
     , {"MSIE"          , ua_keyword("MSIE ")}
     , {"Safari"        , ua_basic}
-    , {"Firefox"       , ua_basic}
+    , {"Firefox"       , ua_keyword("Firefox/")}
 }
 
 --[[ Public Interface --]]
