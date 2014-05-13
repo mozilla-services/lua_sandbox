@@ -9,7 +9,9 @@ lua_serialize.c
 lua_serialize_json.c
 lua_serialize_protobuf.c
 lua_circular_buffer.c
+lua_bloom_filter.c
 cephes.c
+xxhash.c
 )
 
 if(MSVC)

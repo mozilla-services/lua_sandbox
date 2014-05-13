@@ -4,7 +4,8 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-/// @brief Lua sandboxed implementation @file
+/** @brief Lua sandboxed implementation @file */
+
 #include <setjmp.h>
 #include <stdlib.h>
 #include <stdio.h>
@@ -289,8 +290,8 @@ const char* lsb_output_userdata(lua_sandbox* lsb, int index, int append)
     lsb->output.pos = 0;
   }
 
-  void* ud = lua_touserdata(lsb->lua, index);
-  if (lsb_circular_buffer == userdata_type(lsb->lua, ud, index)) {
+  void* ud = userdata_type(lsb->lua, index, lsb_circular_buffer);
+  if (ud) {
     circular_buffer* cb = (circular_buffer*)ud;
     size_t last_pos = lsb->output.pos;
     if (output_circular_buffer(lsb->lua, cb, &lsb->output)) {

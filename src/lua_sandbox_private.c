@@ -4,21 +4,23 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-/// @brief Lua sandbox private implementation @file
-#include <stdlib.h>
-#include <stdio.h>
+/** @brief Lua sandbox private implementation @file */
+
 #include <ctype.h>
-#include <string.h>
-#include <lua.h>
 #include <lauxlib.h>
+#include <lua.h>
 #include <lualib.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #include <time.h>
+
+#include "lua_bloom_filter.h"
+#include "lua_circular_buffer.h"
 #include "lua_sandbox_private.h"
 #include "lua_serialize.h"
 #include "lua_serialize_json.h"
 #include "lua_serialize_protobuf.h"
-#include "lua_circular_buffer.h"
-
 
 #ifdef _WIN32
 #define PATH_DELIMITER '\\'
@@ -283,8 +285,8 @@ int output(lua_State* lua)
       }
       break;
     case LUA_TUSERDATA:
-      ud = lua_touserdata(lua, i);
-      if (lsb_circular_buffer == userdata_type(lua, ud, i)) {
+      ud = userdata_type(lua, i, lsb_circular_buffer);
+      if (ud) {
         if (output_circular_buffer(lua, (circular_buffer*)ud,
                                    &lsb->output)) {
           result = 1;
@@ -338,6 +340,8 @@ int require_library(lua_State* lua)
     load_library(lua, name, luaopen_os, disable);
   } else if (strcmp(name, lsb_circular_buffer_table) == 0) {
     load_library(lua, name, luaopen_circular_buffer, disable_none);
+  } else if (strcmp(name, lsb_bloom_filter_table) == 0) {
+    load_library(lua, name, luaopen_bloom_filter, disable_none);
   } else if (strcmp(name, "lpeg") == 0) {
     load_library(lua, name, luaopen_lpeg, disable_none);
   } else if (strcmp(name, "cjson") == 0) {
