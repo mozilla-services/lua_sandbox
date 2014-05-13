@@ -184,6 +184,9 @@ int serialize_bloom_filter(const char* key, bloom_filter* bf, output_data* outpu
     case '"':
       appends(output, "\\\"");
       break;
+    case '\\':
+      appends(output, "\\\\");
+      break;
     default:
       appendc(output, bf->data[i]);
       break;
