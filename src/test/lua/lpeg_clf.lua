@@ -108,19 +108,31 @@ function process(tc)
             ,"Googlebot/2.1 (+http://www.google.com/bot.html)"
             ,""
             ,"-"
+            ,"Mozilla/5.0 (Windows NT 6.1; WOW64; Trident/7.0; rv:11.0; MSIE; )" -- https://bugzilla.mozilla.org/show_bug.cgi?id=1009280
+            ,"Firefox/29.0 FxSync/1.31.0.20140327113732.desktop" -- https://github.com/mozilla-services/puppet-config/issues/312
+            ,"Mozilla/5.0 (iPad; CPU OS 6_0 like Mac OS X) AppleWebKit/536.26 (KHTML, like Gecko) Version/6.0 Mobile/10A5355d Safari/8536.25"
+            ,"Opera/9.80 (J2ME/MIDP; Opera Mini/9.80 (S60; SymbOS; Opera Mobi/23.348; U; en) Presto/2.5.25 Version/10.54"
+            ,"Opera/12.02 (Android 4.1; Linux; Opera Mobi/ADR-1111101157; U; en-US) Presto/2.9.201 Version/12.02"
+            ,"Opera/9.80 (Windows NT 6.0) Presto/2.12.388 Version/12.14"
         }
         local results = {
-             {"Chrome"  , 32    , "Windows 8"}
-            ,{"MSIE"    , 10    , "Windows 7"}
-            ,{"Firefox" , 29    , "Windows 7"}
-            ,{"Firefox" , 29    , "Macintosh"}
-            ,{"Firefox" , 29    , "FirefoxOS"}
-            ,{nil       , nil   , nil}
-            ,{nil       , nil   , nil}
-            ,{nil       , nil   , "iPad"}
-            ,{nil       , nil   , nil}
-            ,{nil       , nil   , nil}
-            ,{nil       , nil   , nil}
+             {"Chrome"      , 32    , "Windows 8"}
+            ,{"MSIE"        , 10    , "Windows 7"}
+            ,{"Firefox"     , 29    , "Windows 7"}
+            ,{"Firefox"     , 29    , "Macintosh"}
+            ,{"Firefox"     , 29    , "FirefoxOS"}
+            ,{nil           , nil   , nil}
+            ,{nil           , nil   , nil}
+            ,{nil           , nil   , "iPad"}
+            ,{nil           , nil   , nil}
+            ,{nil           , nil   , nil}
+            ,{nil           , nil   , nil}
+            ,{"MSIE"        , nil   , "Windows 7"}
+            ,{"Firefox"     , 29    , nil}
+            ,{"Safari"      , 8536  , "iPad"}
+            ,{"Opera Mini"  , 10    , nil}
+            ,{"Opera Mobi"  , 12    , "Android"}
+            ,{"Opera"       , 12    , "Windows Vista"}
         }
 
         for i, v in ipairs(user_agents) do
