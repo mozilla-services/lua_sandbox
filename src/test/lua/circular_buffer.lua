@@ -250,5 +250,25 @@ function report(tc)
         if u1 + u2 ~= 3600 then
             error(string.format("u1 is %g u2 is %g %g", u1, u2, maxu))
         end
+    elseif tc == 14 then
+        local cb = circular_buffer.new(10,1,1)
+        local rows, cols, spr = cb:get_configuration()
+        assert(rows == 10, "invalid rows")
+        assert(cols == 1 , "invalid columns")
+        assert(spr  == 1 , "invalid seconds_per_row")
+    elseif tc == 15 then
+        local cb = circular_buffer.new(10,1,1)
+        local args = {"widget", "count", "max"}
+        local col = cb:set_header(1, args[1], args[2], args[3])
+        assert(col == 1, "invalid column")
+        local n, u, m = cb:get_header(col)
+        assert(n == args[1], "invalid name")
+        assert(u == args[2], "invalid unit")
+        assert(m == args[3], "invalid aggregation_method")
+    elseif tc == 16 then
+        local cb = circular_buffer.new(10,1,1)
+        assert(not cb:get(10*1e9, 1), "value found beyond the end of the buffer")
+        cb:set(20*1e9, 1, 1)
+        assert(not cb:get(10*1e9, 1), "value found beyond the start of the buffer")
     end
 end
