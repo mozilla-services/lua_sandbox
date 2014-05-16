@@ -518,9 +518,9 @@ static char* test_cbuf_errors()
     , "process() lua/circular_buffer_errors.lua:86: bad argument #-1 to 'mannwhitneyu' (incorrect number of arguments)"
     , "process() lua/circular_buffer_errors.lua:89: bad argument #1 to 'mannwhitneyu' (number expected, got nil)"
     , "process() lua/circular_buffer_errors.lua:92: bad argument #1 to 'mannwhitneyu' (column out of range)"
-    , "process() lua/circular_buffer_errors.lua:95: bad argument #3 to 'mannwhitneyu' (end_x must be < start_y)"
-    , "process() lua/circular_buffer_errors.lua:98: bad argument #3 to 'mannwhitneyu' (end_x must be >= start_x)"
-    , "process() lua/circular_buffer_errors.lua:101: bad argument #5 to 'mannwhitneyu' (end_y must be >= start_y)"
+    , "process() lua/circular_buffer_errors.lua:95: bad argument #3 to 'mannwhitneyu' (ranges must not overlap)"
+    , "process() lua/circular_buffer_errors.lua:98: bad argument #3 to 'mannwhitneyu' (end_1 must be >= start_1)"
+    , "process() lua/circular_buffer_errors.lua:101: bad argument #5 to 'mannwhitneyu' (end_2 must be >= start_2)"
     , "process() lua/circular_buffer_errors.lua:104: bad argument #-1 to 'mannwhitneyu' (too many arguments)"
     , "process() lua/circular_buffer_errors.lua:107: bad argument #6 to 'mannwhitneyu' (use_continuity must be a boolean)"
     , "process() lua/circular_buffer_errors.lua:110: bad argument #-1 to 'get_header' (incorrect number of arguments)"
@@ -601,7 +601,7 @@ static char* test_cbuf()
   mu_assert(strcmp(outputs[3], written_data) == 0, "received: %s",
             written_data);
 
-  for (int i = 1; i < 17; ++i) {
+  for (int i = 1; i < 18; ++i) {
     result = report(sb, i);
     mu_assert(result == 0, "report() test: %d received: %d error: %s", i, result, lsb_get_error(sb));
   }
@@ -784,6 +784,10 @@ static char* test_lpeg_clf()
     , "{\"remote_user\":\"-\",\"server_port\":80,\"http_referer\":\"-\",\"remote_addr\":{\"value\":\"127.0.0.1\",\"representation\":\"ipv4\"},\"time\":1395344314000,\"response_length\":{\"value\":492,\"representation\":\"B\"},\"request\":\"GET \\/ HTTP\\/1.1\",\"http_user_agent\":\"Mozilla\\/5.0 (X11; Ubuntu; Linux x86_64; rv:27.0) Gecko\\/20100101 Firefox\\/27.0\",\"status\":404,\"server_name\":{\"value\":\"127.0.1.1\",\"representation\":\"ipv4\"}}\n"
     , "{\"http_user_agent\":\"Mozilla\\/5.0 (X11; Ubuntu; Linux x86_64; rv:27.0) Gecko\\/20100101 Firefox\\/27.0\",\"remote_addr\":{\"value\":\"127.0.0.1\",\"representation\":\"ipv4\"},\"time\":1395344397000,\"response_length\":{\"value\":492,\"representation\":\"B\"},\"request\":\"GET \\/ HTTP\\/1.1\",\"remote_user\":\"-\",\"status\":404,\"http_referer\":\"-\"}\n"
     , "{\"uri\":\"\\/\",\"http_referer\":\"-\"}\n"
+    , "{\"Fields\":{\"tid\":0},\"Pid\":16842,\"Payload\":\"using inherited sockets from \\\"6;\\\"\",\"Severity\":5,\"time\":1393673379000}\n"
+    , "{\"Fields\":{\"tid\":0,\"connection\":8878},\"Pid\":16842,\"Payload\":\"using inherited sockets from \\\"6;\\\"\",\"Severity\":5,\"time\":1393673379000}\n"
+    , "tc12" // start to move away from the fragile string compare
+    , "tc13"
     , NULL
   };
 
@@ -844,6 +848,7 @@ static char* test_lpeg_date_time()
   return NULL;
 }
 
+
 static char* test_lpeg_ip_address()
 {
   lua_sandbox* sb = lsb_create(NULL, "lua/lpeg_ip_address.lua", "../../modules", 8e6, 1e6, 63 * 1024);
@@ -853,6 +858,26 @@ static char* test_lpeg_ip_address()
   mu_assert(result == 0, "lsb_init() received: %d %s", result, lsb_get_error(sb));
 
   for (int i = 0; i < 4; ++i) {
+    result = process(sb, i);
+    mu_assert(result == 0, "process() received: %d %s", result, lsb_get_error(sb));
+  }
+
+  e = lsb_destroy(sb, NULL);
+  mu_assert(!e, "lsb_destroy() received: %s", e);
+
+  return NULL;
+}
+
+
+static char* test_lpeg_mysql()
+{
+  lua_sandbox* sb = lsb_create(NULL, "lua/lpeg_mysql.lua", "../../modules", 8e6, 1e6, 63 * 1024);
+  mu_assert(sb, "lsb_create() received: NULL");
+
+  int result = lsb_init(sb, NULL);
+  mu_assert(result == 0, "lsb_init() received: %d %s", result, lsb_get_error(sb));
+
+  for (int i = 0; i < 1; ++i) {
     result = process(sb, i);
     mu_assert(result == 0, "process() received: %d %s", result, lsb_get_error(sb));
   }
@@ -1206,6 +1231,7 @@ static char* all_tests()
   mu_run_test(test_lpeg_clf);
   mu_run_test(test_lpeg_date_time);
   mu_run_test(test_lpeg_ip_address);
+  mu_run_test(test_lpeg_mysql);
   mu_run_test(test_lpeg_syslog);
   mu_run_test(test_util);
   mu_run_test(test_serialize);

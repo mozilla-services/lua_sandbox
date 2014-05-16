@@ -20,13 +20,33 @@ setfenv(1, M) -- Remove external access to contain everything in the module
 
 --[[ Nginx access log grammar generation and parsing --]]
 
-local last_literal = l.space
-local integer = l.digit^1 / tonumber
-local double = l.digit^1 * "." * l.digit^1 / tonumber
-local msec_time = double / dt.seconds_to_ns
-local host = l.Ct(l.Cg(ip.v4, "value") * l.Cg(l.Cc"ipv4", "representation"))
-           + l.Ct(l.Cg(ip.v6, "value") * l.Cg(l.Cc"ipv6", "representation"))
-           + l.Ct(l.Cg((l.P(1) - l.S" :\n\t/?#[]@")^1, "value") * l.Cg(l.Cc"hostname", "representation"))
+local last_literal  = l.space
+local integer       = l.digit^1 / tonumber
+local double        = l.digit^1 * "." * l.digit^1 / tonumber
+local msec_time     = double / dt.seconds_to_ns
+local host          = l.Ct(l.Cg(ip.v4, "value") * l.Cg(l.Cc"ipv4", "representation"))
+                    + l.Ct(l.Cg(ip.v6, "value") * l.Cg(l.Cc"ipv6", "representation"))
+                    + l.Ct(l.Cg((l.P(1) - l.S" :\n\t/?#[]@")^1, "value") * l.Cg(l.Cc"hostname", "representation"))
+local http_status   = l.digit * l.digit * l.digit / tonumber
+
+local nginx_error_levels = l.Cg((
+  l.P"debug"   / "7"
++ l.P"info"    / "6"
++ l.P"notice"  / "5"
++ l.P"warn"    / "4"
++ l.P"error"   / "3"
++ l.P"crit"    / "2"
++ l.P"alert"   / "1"
++ l.P"emerg"   / "0")
+/ tonumber, "Severity")
+
+local nginx_upstream_sep        = ", "
+local nginx_upstream_gsep       = " : "
+local nginx_upstream_addr       = l.C((1 - l.S(nginx_upstream_sep))^1)
+local nginx_upstream_addrs      = nginx_upstream_addr * (nginx_upstream_sep * nginx_upstream_addr)^0
+local nginx_upstream_times      = double * (nginx_upstream_sep * double)^0
+local nginx_upstream_lengths    = integer * (nginx_upstream_sep * integer)^0
+local nginx_upstream_statuses   = http_status * (nginx_upstream_sep * http_status)^0
 
 local nginx_format_variables = {
     --arg_*
@@ -72,7 +92,7 @@ local nginx_format_variables = {
     , server_name           = host
     , server_port           = integer
     , server_protocol       = l.P"HTTP/" * l.digit^1 * "." * l.digit^1
-    , status                = l.digit * l.digit * l.digit / tonumber
+    , status                = http_status
     , tcpinfo_rtt           = integer
     , tcpinfo_rttvar        = integer
     , tcpinfo_snd_cwnd      = integer
@@ -80,6 +100,16 @@ local nginx_format_variables = {
     , time_iso8601          = dt.rfc3339 / dt.time_to_ns
     , time_local            = dt.clf_timestamp / dt.time_to_ns
     --uri
+
+    -- Upstream Module Grammars
+    -- http://nginx.org/en/docs/http/ngx_http_upstream_module.html#variables
+    , upstream_addr                 = l.Ct(nginx_upstream_addrs * (nginx_upstream_gsep * nginx_upstream_addrs)^0) + "-"
+    , upstream_cache_status         = l.P"HIT" + "MISS" + "EXPIRED" + "BYPASS" + "STALE" + "UPDATING" + "REVALIDATED" + "-"
+    , upstream_cache_last_modified  = dt.build_strftime_grammar("%a, %d %b %Y %T GMT") / dt.time_to_ns  + "-"
+    , upstream_response_length      = l.Ct(l.Cg(l.Ct(nginx_upstream_lengths * (nginx_upstream_gsep * nginx_upstream_lengths)^0), "value") * l.Cg(l.Cc"B", "representation")) + "-"
+    , upstream_response_time        = l.Ct(l.Cg(l.Ct(nginx_upstream_times * (nginx_upstream_gsep * nginx_upstream_times)^0), "value") * l.Cg(l.Cc"s", "representation"))  + "-"
+    , upstream_status               = l.Ct(nginx_upstream_statuses * (nginx_upstream_gsep * nginx_upstream_statuses)^0) + "-"
+    --upstream_http_* handled by the generic grammar
 }
 
 local function nginx_lookup_grammar(var)
@@ -401,7 +431,7 @@ local function capture_split(x)
     return x
 end
 
-local proxyname = (1 - l.space - (l.S"()+-!@#$%^&*+=/\{}[]<>,"))^1
+local proxyname = (1 - l.space - (l.S"()+!@#$%^&*+=/\{}[]<>,"))^1
 local hap_header_capture = l.P"{" * l.C((1  - l.P"}")^1) / capture_split * l.P"}"
 
 local hap_format_spec = (l.P"{" * ((l.S"-+" * l.S"QX") / set_token_mod) * l.P"}")
@@ -568,4 +598,9 @@ function build_haproxy_grammar(log_format)
 
 end
 
+nginx_error_grammar = l.Ct(l.Cg(dt.build_strftime_grammar("%Y/%m/%d %T") / dt.time_to_ns, "time")
+                           * l.space * "[" * nginx_error_levels * "]"
+                           * l.space * l.Cg(l.digit^1 / tonumber, "Pid") * "#"
+                           * l.Cg(l.Ct(l.Cg(l.digit^1 / tonumber, "tid") * ": " * (l.Cg(l.digit^1 / tonumber, "connection") * " ")^-1), "Fields")
+                           * l.Cg(l.P(1)^0, "Payload"))
 return M
