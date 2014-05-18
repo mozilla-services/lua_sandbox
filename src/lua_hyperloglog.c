@@ -72,11 +72,15 @@ static int hyperloglog_add(lua_State* lua)
     luaL_argerror(lua, 2, "must be a string or number");
     break;
   }
-  if (key && hll) {}
+
+  int altered = 0;
   if (1 == hllDenseAdd(hll->registers, (unsigned char*)key, len)) {
     HLL_INVALIDATE_CACHE(hll);
+    altered = 1;
   }
-  return 0;
+
+  lua_pushboolean(lua, altered);
+  return 1;
 }
 
 

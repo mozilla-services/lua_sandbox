@@ -17,14 +17,14 @@ A HyperLogLog object.
 
 Methods
 -------
-void **add** (key)
+bool **add** (key)
 
 *Arguments*
 - key (string/number) The key to add to the HyperLogLog.
 
 *Return*
 
-none
+True if add altered the estimate, false if it has not.
 
 ____
 bool **count** ()
