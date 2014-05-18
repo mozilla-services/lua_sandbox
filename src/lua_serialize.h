@@ -154,4 +154,15 @@ int ignore_value_type(lua_sandbox* lsb, serialization_data* data, int index);
  */
 int restore_global_data(lua_sandbox* lsb, const char* data_file);
 
+/**
+ * Serializes a binary data to a Lua string.
+ *
+ * @param src Pointer to the binary data.
+ * @param len Length in bytes of the data to output.
+ * @param output Pointer the output collector.
+ *
+ * @return int Zero on success, non-zero on failure.
+ */
+int serialize_binary(const void *src, size_t len, output_data* output);
+
 #endif

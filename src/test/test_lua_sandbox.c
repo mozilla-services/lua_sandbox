@@ -444,6 +444,7 @@ static char* test_output()
   return NULL;
 }
 
+
 static char* test_output_errors()
 {
   const char* tests[] =
@@ -972,6 +973,7 @@ static char* test_serialize()
   return NULL;
 }
 
+
 static char* test_serialize_failure()
 {
   const char* output_file = "serialize_failure.preserve";
@@ -988,6 +990,7 @@ static char* test_serialize_failure()
   mu_assert(e, "lsb_destroy() received: no error");
   mu_assert(strcmp(e, expected) == 0, "lsb_destroy() received: %s", e);
   free(e);
+  e = NULL;
   mu_assert(file_exists(output_file) == 0, "output file was not cleaned up");
 
   return NULL;
@@ -1010,6 +1013,7 @@ static char* test_serialize_noglobal()
   mu_assert(e, "lsb_destroy() received: no error");
   mu_assert(strcmp(e, expected) == 0, "lsb_destroy() received: %s", e);
   free(e);
+  e = NULL;
   mu_assert(file_exists(output_file) == 0, "output file was not cleaned up");
 
   return NULL;
@@ -1099,7 +1103,7 @@ static char* test_bloom_filter()
   sb = lsb_create(NULL, "lua/bloom_filter.lua", "../../modules", 8e6, 1e6, 63 * 1024);
   mu_assert(sb, "lsb_create() received: NULL");
 
-  result = lsb_init(sb, NULL);
+  result = lsb_init(sb, output_file);
   mu_assert(result == 0, "lsb_init() received: %d %s", result, lsb_get_error(sb));
   lsb_add_function(sb, &write_output, "write");
 
@@ -1116,6 +1120,107 @@ static char* test_bloom_filter()
   process(sb, 0);
   report(sb, 0);
   mu_assert(strcmp("1", written_data) == 0, "test: clear received: %s", written_data);
+
+  e = lsb_destroy(sb, NULL);
+  mu_assert(!e, "lsb_destroy() received: %s", e);
+
+  return NULL;
+}
+
+
+static char* test_hyperloglog_errors()
+{
+  const char* tests[] =
+  {
+    "process() lua/hyperloglog_errors.lua:9: bad argument #0 to 'new' (incorrect number of arguments)"
+    , "process() lua/hyperloglog_errors.lua:12: bad argument #1 to 'add' (must be a string or number)"
+    , "process() lua/hyperloglog_errors.lua:15: bad argument #-1 to 'add' (incorrect number of arguments)"
+    , "process() lua/hyperloglog_errors.lua:18: bad argument #-1 to 'count' (incorrect number of arguments)"
+    , "process() lua/hyperloglog_errors.lua:21: bad argument #-1 to 'clear' (incorrect number of arguments)"
+    , "process() lua/hyperloglog_errors.lua:24: bad argument #1 to 'fromstring' (string expected, got table)"
+    , "process() lua/hyperloglog_errors.lua:27: fromstring() bytes found: 23, expected 12304"
+    , NULL
+  };
+
+  for (int i = 0; tests[i]; ++i) {
+    lua_sandbox* sb = lsb_create(NULL, "lua/hyperloglog_errors.lua", "../../modules",
+                                 32767, 1000, 128);
+    mu_assert(sb, "lsb_create() received: NULL");
+
+    int result = lsb_init(sb, NULL);
+    mu_assert(result == 0, "lsb_init() received: %d %s", result,
+              lsb_get_error(sb));
+
+    result = process(sb, i);
+    mu_assert(result == 1, "test: %d received: %d", i, result);
+
+    const char* le = lsb_get_error(sb);
+    mu_assert(le, "test: %d received NULL", i);
+    mu_assert(strcmp(tests[i], le) == 0, "test: %d received: %s", i, le);
+
+    e = lsb_destroy(sb, NULL);
+    mu_assert(!e, "lsb_destroy() received: %s", e);
+  }
+
+  return NULL;
+}
+
+
+static char* test_hyperloglog()
+{
+  const char* output_file = "hyperloglog.preserve";
+
+  lua_sandbox* sb = lsb_create(NULL, "lua/hyperloglog.lua", "../../modules", 8e6, 1e6, 63 * 1024);
+  mu_assert(sb, "lsb_create() received: NULL");
+
+  int result = lsb_init(sb, NULL);
+  mu_assert(result == 0, "lsb_init() received: %d %s", result, lsb_get_error(sb));
+  lsb_add_function(sb, &write_output, "write");
+
+
+  for (int i = 0; i < 100000; ++i) {
+    result = process(sb, i);
+    mu_assert(result == 0, "process() received: %d %s", result, lsb_get_error(sb));
+  }
+
+  result = report(sb, 0);
+  mu_assert(result == 0, "report() received: %d", result);
+  mu_assert(strcmp("100070", written_data) == 0, "test: initial received: %s", written_data); // count should remain the same
+
+  result = report(sb, 0);
+  mu_assert(result == 0, "report() received: %d", result);
+  mu_assert(strcmp("100070", written_data) == 0, "test: cache received: %s", written_data); // count should remain the same
+
+  e = lsb_destroy(sb, output_file);
+  mu_assert(!e, "lsb_destroy() received: %s", e);
+
+  // re-load to test the preserved data
+  sb = lsb_create(NULL, "lua/hyperloglog.lua", "../../modules", 8e6, 1e6, 63 * 1024);
+  mu_assert(sb, "lsb_create() received: NULL");
+
+  result = lsb_init(sb, output_file);
+  mu_assert(result == 0, "lsb_init() received: %d %s", result, lsb_get_error(sb));
+  lsb_add_function(sb, &write_output, "write");
+
+  result = report(sb, 0);
+  mu_assert(result == 0, "report() received: %d", result);
+  mu_assert(strcmp("100070", written_data) == 0, "test: reload received: %s", written_data); // count should remain the same
+
+  for (int i = 0; i < 100000; ++i) {
+    result = process(sb, i);
+    mu_assert(result == 0, "process() received: %d %s", result, lsb_get_error(sb));
+  }
+  result = report(sb, 0);
+  mu_assert(result == 0, "report() received: %d", result);
+  mu_assert(strcmp("100070", written_data) == 0, "test: data replay received: %s", written_data); // count should remain the same
+
+  // test clear
+  report(sb, 99);
+  report(sb, 0);
+  mu_assert(strcmp("0", written_data) == 0, "test: clear received: %s", written_data);
+
+  e = lsb_destroy(sb, NULL);
+  mu_assert(!e, "lsb_destroy() received: %s", e);
 
   return NULL;
 }
@@ -1289,6 +1394,7 @@ static char* benchmark_table_output()
   return NULL;
 }
 
+
 static char* benchmark_cbuf_add()
 {
   int iter = 1000000;
@@ -1315,6 +1421,7 @@ static char* benchmark_cbuf_add()
   return NULL;
 }
 
+
 static char* benchmark_bloom_filter_add()
 {
   int iter = 1000000;
@@ -1329,7 +1436,7 @@ static char* benchmark_bloom_filter_add()
 
   clock_t t = clock();
   for (int x = 0; x < iter; ++x) {
-    process(sb, x); // don't care about the false positives, just testing add speed
+    process(sb, x); // just testing add speed
   }
   t = clock() - t;
   report(sb, 0);
@@ -1338,6 +1445,34 @@ static char* benchmark_bloom_filter_add()
   e = lsb_destroy(sb, NULL);
   mu_assert(!e, "lsb_destroy() received: %s", e);
   printf("benchmark_bloom_filter_add() %g seconds\n", ((float)t) / CLOCKS_PER_SEC / iter);
+
+  return NULL;
+}
+
+
+static char* benchmark_hyperloglog_add()
+{
+  int iter = 1000000;
+
+  lua_sandbox* sb = lsb_create(NULL, "lua/hyperloglog.lua", "../../modules", 1024 * 1024 * 8, 1000,
+                               1024 * 63);
+  mu_assert(sb, "lsb_create() received: NULL");
+  int result = lsb_init(sb, NULL);
+  mu_assert(result == 0, "lsb_init() received: %d %s", result,
+            lsb_get_error(sb));
+  lsb_add_function(sb, &write_output, "write");
+
+  clock_t t = clock();
+  for (int x = 0; x < iter; ++x) {
+    process(sb, x); // just testing add speed
+  }
+  t = clock() - t;
+  report(sb, 0);
+  mu_assert(strcmp("1006268", written_data) == 0, "received: %s", written_data);
+  mu_assert(lsb_get_state(sb) == LSB_RUNNING, "benchmark_hyperloglog_add() failed %s", lsb_get_error(sb));
+  e = lsb_destroy(sb, NULL);
+  mu_assert(!e, "lsb_destroy() received: %s", e);
+  printf("benchmark_hyperloglog_add() %g seconds\n", ((float)t) / CLOCKS_PER_SEC / iter);
 
   return NULL;
 }
@@ -1372,6 +1507,8 @@ static char* all_tests()
   mu_run_test(test_serialize_noglobal);
   mu_run_test(test_bloom_filter_errors);
   mu_run_test(test_bloom_filter);
+  mu_run_test(test_hyperloglog_errors);
+  mu_run_test(test_hyperloglog);
 
   mu_run_test(benchmark_counter);
   mu_run_test(benchmark_serialize);
@@ -1382,6 +1519,7 @@ static char* all_tests()
   mu_run_test(benchmark_table_output);
   mu_run_test(benchmark_cbuf_add);
   mu_run_test(benchmark_bloom_filter_add);
+  mu_run_test(benchmark_hyperloglog_add);
 
   return NULL;
 }
