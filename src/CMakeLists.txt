@@ -10,8 +10,10 @@ lua_serialize_json.c
 lua_serialize_protobuf.c
 lua_circular_buffer.c
 lua_bloom_filter.c
+lua_hyperloglog.c
 cephes.c
 xxhash.c
+redis_hyperloglog.c
 )
 
 if(MSVC)

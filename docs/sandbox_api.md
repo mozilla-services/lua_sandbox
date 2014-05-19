@@ -28,8 +28,10 @@ By default only the base library is loaded additional libraries must be explicit
 
 - libraryName (string)
 
+  - [bloom_filter](bloom_filter.md) 
   - [circular_buffer](circular_buffer.md) 
   - **cjson** loads the cjson.safe module in a global cjson table, exposing the decoding functions only. http://www.kyne.com.au/~mark/software/lua-cjson-manual.html.
+  - [hyperloglog](hyperloglog.md) 
   - **lpeg** loads the Lua Parsing Expression Grammar Library http://www.inf.puc-rio.br/~roberto/lpeg/lpeg.html
   - **math**
   - **os**
