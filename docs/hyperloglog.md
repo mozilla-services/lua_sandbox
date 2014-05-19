@@ -27,7 +27,7 @@ bool **add** (key)
 True if add altered the estimate, false if it has not.
 
 ____
-bool **count** ()
+double **count** ()
 
 *Arguments*
 
