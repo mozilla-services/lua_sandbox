@@ -30,7 +30,9 @@ By default only the base library is loaded additional libraries must be explicit
 
   - [bloom_filter](bloom_filter.md) 
   - [circular_buffer](circular_buffer.md) 
-  - **cjson** loads the cjson.safe module in a global cjson table, exposing the decoding functions only. http://www.kyne.com.au/~mark/software/lua-cjson-manual.html.
+  - **cjson** loads the cjson module in a global cjson table. The encode/decode 
+  buffers are limited to the maximum sandbox output_limit. 
+  http://www.kyne.com.au/~mark/software/lua-cjson-manual.html.
   - [hyperloglog](hyperloglog.md) 
   - **lpeg** loads the Lua Parsing Expression Grammar Library http://www.inf.puc-rio.br/~roberto/lpeg/lpeg.html
   - **math**
@@ -52,23 +54,10 @@ ____
     host application.
 
 *Arguments*
-- arg (number, string, bool, nil, table, circular_buffer) Lua variable or literal to be appended the output buffer
+- arg (number, string, bool, nil, circular_buffer) Lua variable or literal to be appended the output buffer
 
 *Return*
 - none
-
-*Notes*
-- Outputting a Lua table will serialize it to JSON according to the following 
-guidelines/restrictions:
-    - Tables cannot contain internal of circular references.
-    - Keys starting with an underscore are considered private and will not
-    be serialized.
-    - Arrays only use contiguous numeric keys starting with an index of 1.
-    Private keys are the exception i.e. local a = {1,2,3,_hidden="private"}
-    will be serialized as: ``[1,2,3]\n``
-    - Hashes only use string keys (numeric keys will not be quoted and the
-    JSON output will be invalid). Note: the hash keys are output in an arbitrary
-    order i.e. local a = {x = 1, y = 2} will be serialized as: `{"y":2,"x":1}\n`.
 
 **Note:** To extend the function set exposed to Lua see lsb_add_function()
 
@@ -93,11 +82,10 @@ Lua Functions Exposed to C
 
 C Functions Exposed to Lua
 --------------------------
-- void **write** ()
-    - captures whatever is in the output buffer for use by the host application.
-- void **write** (circular_buffer)
-    - serializes the circular buffer and captures the output.
-- void **write** (table)
+- void **write_output** (optionalArg1, optionalArg2, optionalArgN)
+    - captures whatever is in the output buffer for use by the host application, appending any optional arguments
+    (optional arguments have the same restriction as output).
+- void **write_message** (table)
     - serializes the Lua table into a Heka protobuf message and captures the output.
 
 [Unit Test Source Code](https://github.com/mozilla-services/lua_sandbox/blob/master/src/test/test_lua_sandbox.c)

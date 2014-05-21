@@ -16,6 +16,7 @@ endif()
 
 find_package(Git REQUIRED)
 
+set(LUA_OUTPUT 64512)
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
 include(mozsvc)
 include(externals)

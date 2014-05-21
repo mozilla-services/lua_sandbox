@@ -34,7 +34,9 @@ typedef enum {
 
 #define LSB_MEMORY 1024 * 1024 * 8
 #define LSB_INSTRUCTION 1000000
+#ifndef LSB_OUTPUT
 #define LSB_OUTPUT 1024 * 63
+#endif
 #define LSB_ERROR_SIZE 256
 
 #ifdef _WIN32
@@ -51,7 +53,7 @@ typedef struct lua_sandbox lua_sandbox;
 
 /**
  * Allocates and initializes the structure around the Lua sandbox.
- * 
+ *
  * @param parent Pointer to associate the owner to this sandbox.
  * @param lua_file Filename of the Lua script to run in this sandbox.
  * @param require_path Location of the common sandbox modules
@@ -73,11 +75,11 @@ LSB_EXPORT lua_sandbox* lsb_create(void* parent,
 /**
  * Initializes the Lua sandbox and loads/runs the Lua script that was specified
  * in lua_create_sandbox.
- * 
+ *
  * @param lsb Pointer to the sandbox.
  * @param state_file Filename where the global data is read. Use a NULL or empty
  *                   string no data restoration.
- * 
+ *
  * @return int Zero on success, non-zero on failure.
  */
 LSB_EXPORT int lsb_init(lua_sandbox* lsb, const char* state_file);
@@ -165,17 +167,16 @@ LSB_EXPORT void lsb_add_function(lua_sandbox* lsb, lua_CFunction func,
 LSB_EXPORT const char* lsb_get_output(lua_sandbox* lsb, size_t* len);
 
 /**
- * Write a userdata structure to the output buffer.
+ * Write an array of variables on the Lua stack to the output buffer.
  *
  * @param lsb Pointer to the sandbox.
- * @param index Lua stack index of the userdata.
+ * @param start Lua stack index of first variable.
+ * @param end Lua stack index of the last variable.
  * @param append 0 to overwrite the output buffer, 1 to append the output to it
  *
- * @return Type of userdata (i.e., "cbuf", "cbufd") or NULL if the data could
- *         not be converted.
+ *
  */
-LSB_EXPORT const char*
-lsb_output_userdata(lua_sandbox* lsb, int index, int append);
+LSB_EXPORT void lsb_output(lua_sandbox* lsb, int start, int end, int append);
 
 /**
  * Write a Lua table (in a Heka protobuf structure) to the output buffer.

@@ -6,7 +6,6 @@ set(LUA_SANDBOX_SRC
 lua_sandbox.c
 lua_sandbox_private.c
 lua_serialize.c
-lua_serialize_json.c
 lua_serialize_protobuf.c
 lua_circular_buffer.c
 lua_bloom_filter.c
@@ -15,6 +14,8 @@ cephes.c
 xxhash.c
 redis_hyperloglog.c
 )
+
+add_definitions(-DLUA_OUTPUT=${LUA_OUTPUT})
 
 if(MSVC)
     add_definitions(-D_CRT_SECURE_NO_WARNINGS)

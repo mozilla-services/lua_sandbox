@@ -3,6 +3,7 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 local clf = require "common_log_format"
+require "cjson"
 require "string"
 
 function process(tc)
@@ -87,14 +88,14 @@ function process(tc)
         local log = '127.0.0.1 - - [10/Feb/2014:08:46:41 -0800] "GET / HTTP/1.1" 304 0 "-" "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:26.0) Gecko/20100101 Firefox/26.0"'
         local fields = grammar:match(log)
         fields.time = fields.time/1e6
-        output(fields)
+        output(cjson.encode(fields))
     elseif tc == 2 then
         -- custom format to test the msec changes
         local grammar = clf.build_nginx_grammar('$msec $remote_addr "$request" $status $body_bytes_sent "$http_referer" "$http_user_agent"')
         local log = '1391794831.755 127.0.0.1 "GET / HTTP/1.1" 304 0 "-" "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:26.0) Gecko/20100101 Firefox/26.0" "-" 0.000'
         local fields = grammar:match(log)
         fields.time = fields.time/1e6
-        output(fields)
+        output(cjson.encode(fields))
     elseif tc == 3 then
         local user_agents = {
              "Mozilla/5.0 (Windows NT 6.2; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/32.0.1667.0 Safari/537.36"
@@ -230,45 +231,45 @@ function process(tc)
         local log = '% 127.0.0.1 235 235 204 test.txt 2 80 1234 404 [20/Mar/2014:08:56:26 -0700] 0 example.com + 311 498 809 ::1'
         local fields = grammar:match(log)
         fields.time = fields.time/1e6
-        output(fields)
+        output(cjson.encode(fields))
     elseif tc == 6 then
         -- common log format
         local grammar = clf.build_apache_grammar('%h %l %u %t \"%r\" %>s %O')
         local log = '127.0.0.1 - - [10/Feb/2014:08:46:41 -0800] "GET / HTTP/1.1" 304 0'
         local fields = grammar:match(log)
         fields.time = fields.time/1e6
-        output(fields)
+        output(cjson.encode(fields))
     elseif tc == 7 then
         -- vhost_combined log format
         local grammar = clf.build_apache_grammar('%v:%p %h %l %u %t \"%r\" %>s %O \"%{Referer}i\" \"%{User-Agent}i\"')
         local log = '127.0.1.1:80 127.0.0.1 - - [20/Mar/2014:12:38:34 -0700] "GET / HTTP/1.1" 404 492 "-" "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:27.0) Gecko/20100101 Firefox/27.0"'
         local fields = grammar:match(log)
         fields.time = fields.time/1e6
-        output(fields)
+        output(cjson.encode(fields))
     elseif tc == 8 then
         -- combined log format
         local grammar = clf.build_apache_grammar('%h %l %u %t \"%r\" %>s %O \"%{Referer}i\" \"%{User-Agent}i\"')
         local log = '127.0.0.1 - - [20/Mar/2014:12:39:57 -0700] "GET / HTTP/1.1" 404 492 "-" "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:27.0) Gecko/20100101 Firefox/27.0"'
         local fields = grammar:match(log)
         fields.time = fields.time/1e6
-        output(fields)
+        output(cjson.encode(fields))
     elseif tc == 9 then
         -- referer log format
         local grammar = clf.build_apache_grammar('%{Referer}i -> %U')
         local log = '- -> /'
         local fields = grammar:match(log)
-        output(fields)
+        output(cjson.encode(fields))
     elseif tc == 10 then
         local log = '2014/03/01 11:29:39 [notice] 16842#0: using inherited sockets from "6;"'
         local fields = clf.nginx_error_grammar:match(log)
         fields.time = fields.time/1e6
-        output(fields)
+        output(cjson.encode(fields))
     elseif tc == 11 then
         -- optional connection
         local log = '2014/03/01 11:29:39 [notice] 16842#0: 8878 using inherited sockets from "6;"'
         local fields = clf.nginx_error_grammar:match(log)
         fields.time = fields.time/1e6
-        output(fields)
+        output(cjson.encode(fields))
     elseif tc == 12 then
         local addrs = {"192.168.1.1:80", "192.168.1.2:80", "unix:/tmp/sock", "192.168.10.1:80", "192.168.10.2:80"}
         local lengths = {1, 2, 3, 4, 5}
@@ -347,6 +348,6 @@ function process(tc)
         output("tc13")
     end
 
-    write()
+    write_output()
     return 0
 end

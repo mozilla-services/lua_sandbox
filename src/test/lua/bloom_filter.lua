@@ -24,8 +24,7 @@ function report(tc)
         bf:clear()
         count = 0
     else
-        output(count)
-        write()
+        write_output(count)
     end
 end
 

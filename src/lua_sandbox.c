@@ -284,27 +284,61 @@ const char* lsb_get_output(lua_sandbox* lsb, size_t* len)
 }
 
 
-const char* lsb_output_userdata(lua_sandbox* lsb, int index, int append)
+void lsb_output(lua_sandbox* lsb, int start, int end, int append)
 {
   if (!append) {
     lsb->output.pos = 0;
   }
 
-  void* ud = userdata_type(lsb->lua, index, lsb_circular_buffer);
-  if (ud) {
-    circular_buffer* cb = (circular_buffer*)ud;
-    size_t last_pos = lsb->output.pos;
-    if (output_circular_buffer(lsb->lua, cb, &lsb->output)) {
-      lsb->output.pos = last_pos;
-      snprintf(lsb->error_message, LSB_ERROR_SIZE, "output_limit exceeded");
-      return NULL;
+  int result = 0;
+  void* ud = NULL;
+  for (int i = start; result == 0 && i <= end; ++i) {
+    switch (lua_type(lsb->lua, i)) {
+    case LUA_TNUMBER:
+      if (serialize_double(&lsb->output, lua_tonumber(lsb->lua, i))) {
+        result = 1;
+      }
+      break;
+    case LUA_TSTRING:
+      if (appendf(&lsb->output, "%s", lua_tostring(lsb->lua, i))) {
+        result = 1;
+      }
+      break;
+    case LUA_TNIL:
+      if (appends(&lsb->output, "nil")) {
+        result = 1;
+      }
+      break;
+    case LUA_TBOOLEAN:
+      if (appendf(&lsb->output, "%s",
+                  lua_toboolean(lsb->lua, i)
+                  ? "true" : "false")) {
+        result = 1;
+      }
+      break;
+    case LUA_TUSERDATA:
+      ud = userdata_type(lsb->lua, i, lsb_circular_buffer);
+      if (ud) {
+        if (output_circular_buffer(lsb->lua, (circular_buffer*)ud,
+                                   &lsb->output)) {
+          result = 1;
+        }
+      } else {
+        luaL_argerror(lsb->lua, i, "unknown userdata type");
+      }
+      break;
+    default:
+      luaL_argerror(lsb->lua, i, "unsuported type");
+      break;
     }
-    update_output_stats(lsb);
-    return get_output_format(cb);
   }
-
-  snprintf(lsb->error_message, LSB_ERROR_SIZE, "unknown userdata type");
-  return NULL;
+  update_output_stats(lsb);
+  if (result != 0) {
+    if (lsb->error_message[0] == 0) {
+      luaL_error(lsb->lua, "output_limit exceeded");
+    }
+    luaL_error(lsb->lua, lsb->error_message);
+  }
 }
 
 

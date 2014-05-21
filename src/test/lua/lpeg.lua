@@ -2,7 +2,8 @@
 -- License, v. 2.0. If a copy of the MPL was not distributed with this
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-require("lpeg")
+require "lpeg"
+require "cjson"
 
 -- csv grammar
 local field = '"' * lpeg.Cs(((lpeg.P(1) - '"') + lpeg.P'""' / '"')^0) * '"' +
@@ -10,7 +11,6 @@ local field = '"' * lpeg.Cs(((lpeg.P(1) - '"') + lpeg.P'""' / '"')^0) * '"' +
 local record = lpeg.Ct(field * (',' * field)^0) * (lpeg.P'\n' + -1)
 
 function process ()
-    output(lpeg.match(record, "1,string with spaces,\"quoted string, with comma and \"\"quoted\"\" text\""))
-    write()
+    write_output(cjson.encode(lpeg.match(record, "1,string with spaces,\"quoted string, with comma and \"\"quoted\"\" text\"")))
     return 0
 end
