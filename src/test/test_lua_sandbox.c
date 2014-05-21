@@ -792,7 +792,7 @@ static char* test_lpeg_clf()
     , NULL
   };
 
-  lua_sandbox* sb = lsb_create(NULL, "lua/lpeg_clf.lua", "../../modules", 8e6, 1e6, 63 * 1024);
+  lua_sandbox* sb = lsb_create(NULL, "lua/lpeg_clf.lua", "../../modules", 8000000, 1000000, 63 * 1024);
   mu_assert(sb, "lsb_create() received: NULL");
 
   int result = lsb_init(sb, NULL);
@@ -832,7 +832,7 @@ static char* test_lpeg_cbufd()
 
 static char* test_lpeg_date_time()
 {
-  lua_sandbox* sb = lsb_create(NULL, "lua/lpeg_date_time.lua", "../../modules", 8e6, 1e6, 63 * 1024);
+  lua_sandbox* sb = lsb_create(NULL, "lua/lpeg_date_time.lua", "../../modules", 8000000, 1000000, 63 * 1024);
   mu_assert(sb, "lsb_create() received: NULL");
 
   int result = lsb_init(sb, NULL);
@@ -840,7 +840,7 @@ static char* test_lpeg_date_time()
 
   for (int i = 0; i < 9; ++i) {
     result = process(sb, i);
-    mu_assert(result == 0, "process() received: %d %s", result, lsb_get_error(sb));
+    mu_assert(result == 0, "test: %d process() received: %d %s", i, result, lsb_get_error(sb));
   }
 
   e = lsb_destroy(sb, NULL);
@@ -852,7 +852,7 @@ static char* test_lpeg_date_time()
 
 static char* test_lpeg_ip_address()
 {
-  lua_sandbox* sb = lsb_create(NULL, "lua/lpeg_ip_address.lua", "../../modules", 8e6, 1e6, 63 * 1024);
+  lua_sandbox* sb = lsb_create(NULL, "lua/lpeg_ip_address.lua", "../../modules", 8000000, 1000000, 63 * 1024);
   mu_assert(sb, "lsb_create() received: NULL");
 
   int result = lsb_init(sb, NULL);
@@ -872,7 +872,7 @@ static char* test_lpeg_ip_address()
 
 static char* test_lpeg_mysql()
 {
-  lua_sandbox* sb = lsb_create(NULL, "lua/lpeg_mysql.lua", "../../modules", 8e6, 1e6, 63 * 1024);
+  lua_sandbox* sb = lsb_create(NULL, "lua/lpeg_mysql.lua", "../../modules", 8000000, 1000000, 63 * 1024);
   mu_assert(sb, "lsb_create() received: NULL");
 
   int result = lsb_init(sb, NULL);
@@ -897,11 +897,15 @@ static char* test_lpeg_syslog()
     , "{\"msg\":\"Kernel logging (proc) stopped.\",\"timestamp\":1392049319111.5369,\"syslogtag\":{\"programname\":\"kernel\"},\"hostname\":\"trink-x230\"}\n"
     , "{\"hostname\":\"trink-x230\",\"msg\":\"imklog 5.8.6, log source = \\/proc\\/kmsg started.\",\"timestamp\":1392049995407.9351,\"syslogtag\":{\"programname\":\"kernel\"},\"pri\":{\"severity\":6,\"facility\":0}}\n"
     , "{\"hostname\":\"trink-x230\",\"msg\":\"imklog 5.8.6, log source = \\/proc\\/kmsg started.\",\"timestamp\":1392021527000,\"syslogtag\":{\"programname\":\"kernel\"},\"pri\":{\"severity\":6,\"facility\":0}}\n"
+#ifdef _WIN32
+    , "{\"syslogfacility\":0,\"$year\":\"2014\",\"source\":\"trink-x230\",\"syslogpriority-text\":6,\"syslogfacility-text\":0,\"msg\":\"imklog 5.8.6, log source = \\/proc\\/kmsg started.\",\"procid\":\"-\",\"structured-data\":\"-\",\"hostname\":\"trink-x230\",\"app-name\":\"kernel\",\"programname\":\"kernel\",\"$minute\":\"20\",\"$qhour\":\"01\",\"msgid\":\"imklog\",\"$hhour\":\"00\",\"pri-text\":0,\"fromhost-ip\":\"127.0.0.1\",\"$hour\":\"09\",\"pri\":{\"severity\":6,\"facility\":0},\"$day\":\"10\",\"$month\":\"02\",\"$now\":\"2014-02-10\",\"protocol-version\":\"0\",\"timegenerated\":1.392024053e+018,\"timestamp\":1392052853559.9338,\"syslogpriority\":6,\"iut\":\"1\",\"syslogtag\":{\"programname\":\"kernel\"},\"fromhost\":\"trink-x230\"}\n"
+#else
     , "{\"syslogfacility\":0,\"$year\":\"2014\",\"source\":\"trink-x230\",\"syslogpriority-text\":6,\"syslogfacility-text\":0,\"msg\":\"imklog 5.8.6, log source = \\/proc\\/kmsg started.\",\"procid\":\"-\",\"structured-data\":\"-\",\"hostname\":\"trink-x230\",\"app-name\":\"kernel\",\"programname\":\"kernel\",\"$minute\":\"20\",\"$qhour\":\"01\",\"msgid\":\"imklog\",\"$hhour\":\"00\",\"pri-text\":0,\"fromhost-ip\":\"127.0.0.1\",\"$hour\":\"09\",\"pri\":{\"severity\":6,\"facility\":0},\"$day\":\"10\",\"$month\":\"02\",\"$now\":\"2014-02-10\",\"protocol-version\":\"0\",\"timegenerated\":1.392024053e+18,\"timestamp\":1392052853559.9338,\"syslogpriority\":6,\"iut\":\"1\",\"syslogtag\":{\"programname\":\"kernel\"},\"fromhost\":\"trink-x230\"}\n"
+#endif
     , NULL
   };
 
-  lua_sandbox* sb = lsb_create(NULL, "lua/lpeg_syslog.lua", "../../modules", 8e6, 1e6, 63 * 1024);
+  lua_sandbox* sb = lsb_create(NULL, "lua/lpeg_syslog.lua", "../../modules", 8000000, 1000000, 63 * 1024);
   mu_assert(sb, "lsb_create() received: NULL");
 
   int result = lsb_init(sb, NULL);
@@ -928,7 +932,7 @@ static char* test_util()
     , NULL
   };
 
-  lua_sandbox* sb = lsb_create(NULL, "lua/util_test.lua", "../../modules", 8e6, 1e6, 63 * 1024);
+  lua_sandbox* sb = lsb_create(NULL, "lua/util_test.lua", "../../modules", 8000000, 1000000, 63 * 1024);
   mu_assert(sb, "lsb_create() received: NULL");
 
   int result = lsb_init(sb, NULL);
@@ -1074,7 +1078,7 @@ static char* test_bloom_filter()
     , NULL
   };
 
-  lua_sandbox* sb = lsb_create(NULL, "lua/bloom_filter.lua", "../../modules", 8e6, 1e6, 63 * 1024);
+  lua_sandbox* sb = lsb_create(NULL, "lua/bloom_filter.lua", "../../modules", 8000000, 1000000, 63 * 1024);
   mu_assert(sb, "lsb_create() received: NULL");
 
   int result = lsb_init(sb, NULL);
@@ -1100,7 +1104,7 @@ static char* test_bloom_filter()
   mu_assert(!e, "lsb_destroy() received: %s", e);
 
   // re-load to test the preserved data
-  sb = lsb_create(NULL, "lua/bloom_filter.lua", "../../modules", 8e6, 1e6, 63 * 1024);
+  sb = lsb_create(NULL, "lua/bloom_filter.lua", "../../modules", 8000000, 1000000, 63 * 1024);
   mu_assert(sb, "lsb_create() received: NULL");
 
   result = lsb_init(sb, output_file);
@@ -1170,7 +1174,7 @@ static char* test_hyperloglog()
 {
   const char* output_file = "hyperloglog.preserve";
 
-  lua_sandbox* sb = lsb_create(NULL, "lua/hyperloglog.lua", "../../modules", 8e6, 1e6, 63 * 1024);
+  lua_sandbox* sb = lsb_create(NULL, "lua/hyperloglog.lua", "../../modules", 8000000, 1000000, 63 * 1024);
   mu_assert(sb, "lsb_create() received: NULL");
 
   int result = lsb_init(sb, NULL);
@@ -1195,7 +1199,7 @@ static char* test_hyperloglog()
   mu_assert(!e, "lsb_destroy() received: %s", e);
 
   // re-load to test the preserved data
-  sb = lsb_create(NULL, "lua/hyperloglog.lua", "../../modules", 8e6, 1e6, 63 * 1024);
+  sb = lsb_create(NULL, "lua/hyperloglog.lua", "../../modules", 8000000, 1000000, 63 * 1024);
   mu_assert(sb, "lsb_create() received: NULL");
 
   result = lsb_init(sb, output_file);
