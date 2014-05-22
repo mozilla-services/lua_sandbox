@@ -106,6 +106,19 @@ time_second = l.Cg(l.R"05" * l.digit
 
 time_secfrac = l.Cg(l.P"." * l.digit^1 / tonumber, "sec_frac")
 
+timezone = 
+      l.P"UTC" * l.Cg(l.Cc"+", "offset_sign") * l.Cg(l.Cc"00" / tonumber, "offset_hour") * l.Cg(l.Cc"00" / tonumber, "offset_min") 
+    + l.P"PST" * l.Cg(l.Cc"-", "offset_sign") * l.Cg(l.Cc"08" / tonumber, "offset_hour") * l.Cg(l.Cc"00" / tonumber, "offset_min")
+    + l.P"PDT" * l.Cg(l.Cc"-", "offset_sign") * l.Cg(l.Cc"07" / tonumber, "offset_hour") * l.Cg(l.Cc"00" / tonumber, "offset_min") 
+    + l.P"MST" * l.Cg(l.Cc"-", "offset_sign") * l.Cg(l.Cc"07" / tonumber, "offset_hour") * l.Cg(l.Cc"00" / tonumber, "offset_min") 
+    + l.P"MDT" * l.Cg(l.Cc"-", "offset_sign") * l.Cg(l.Cc"06" / tonumber, "offset_hour") * l.Cg(l.Cc"00" / tonumber, "offset_min") 
+    + l.P"CST" * l.Cg(l.Cc"-", "offset_sign") * l.Cg(l.Cc"06" / tonumber, "offset_hour") * l.Cg(l.Cc"00" / tonumber, "offset_min") 
+    + l.P"CDT" * l.Cg(l.Cc"-", "offset_sign") * l.Cg(l.Cc"05" / tonumber, "offset_hour") * l.Cg(l.Cc"00" / tonumber, "offset_min") 
+    + l.P"EST" * l.Cg(l.Cc"-", "offset_sign") * l.Cg(l.Cc"05" / tonumber, "offset_hour") * l.Cg(l.Cc"00" / tonumber, "offset_min") 
+    + l.P"EDT" * l.Cg(l.Cc"-", "offset_sign") * l.Cg(l.Cc"04" / tonumber, "offset_hour") * l.Cg(l.Cc"00" / tonumber, "offset_min") 
+    + l.alpha^-5 * l.Cg(l.Cc"+", "offset_sign") * l.Cg(l.Cc"00" / tonumber, "offset_hour") * l.Cg(l.Cc"00" / tonumber, "offset_min") 
+
+timezone_offset = l.Cg(l.S"+-", "offset_sign") * l.Cg(time_hour / tonumber, "offset_hour") * l.Cg(time_minute / tonumber, "offset_min")
 
 --[[ RFC3339 grammar
 sample input:  1999-05-05T23:23:59.217-07:00
@@ -177,11 +190,12 @@ strftime_specifiers["W"] = strftime_specifiers["U"]
 strftime_specifiers["x"] = strftime_specifiers["D"]
 strftime_specifiers["X"] = strftime_specifiers["T"]
 strftime_specifiers["Y"] = date_fullyear
-strftime_specifiers["z"] = l.Cg(l.S"+-", "offset_sign") * l.Cg(time_hour / tonumber, "offset_hour") * l.Cg(time_minute / tonumber, "offset_min")
-strftime_specifiers["Z"] = l.alpha^-5
+strftime_specifiers["z"] = timezone_offset
+strftime_specifiers["Z"] = timezone
 strftime_specifiers["%"] = l.P"%"
 if os.date("%c"):find("^%d") then -- windows
     strftime_specifiers["c"] = strftime_specifiers["D"] * " " * strftime_specifiers["T"]
+    strftime_specifiers["z"] = timezone -- todo depending on the registry this could be the full name and not the abbreviation
 else
     strftime_specifiers["c"] = strftime_specifiers["a"] * " " * date_mabbr * " " * date_mday_sp * " " * strftime_specifiers["T"] * " " * date_fullyear
 end
@@ -221,7 +235,7 @@ end
 
 --[[ Common Log Format Grammars --]]
 -- strftime format %d/%b/%Y:%H:%M:%S %z.
-clf_timestamp = l.Ct(date_mday * "/" * date_mabbr * "/" * date_fullyear * ":" * strftime_specifiers["T"] * " " * strftime_specifiers["z"])
+clf_timestamp = l.Ct(date_mday * "/" * date_mabbr * "/" * date_fullyear * ":" * strftime_specifiers["T"] * " " * timezone_offset)
 
 
 --[[ RFC3164 Grammars --]]

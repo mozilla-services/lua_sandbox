@@ -203,6 +203,10 @@ function process(tc)
             ,{"%{%d/%b/%Y:%H:%M:%S %z}t","time"                 ,"10/Feb/2014:08:46:41 -0800"   ,1392050801000000000}
             }
 
+            if os.date("%c"):find("^%d") then -- windows
+                tests[54][3] = "10/Feb/2014:08:46:41 PST" 
+            end
+
             for i, v in ipairs(tests) do
                 local grammar = clf.build_apache_grammar(v[1])
                 local fields = grammar:match(v[3])
