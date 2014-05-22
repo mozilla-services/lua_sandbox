@@ -7,14 +7,6 @@ local tonumber = tonumber
 local ipairs = ipairs
 local error = error
 
--- Verify TZ
-local offset = "([+-])(%d%d)(%d%d)"
-local tz = os.date("%z")
-local sign, hour, min  = tz:match(offset)
-if not(tz == "UTC" or (sign and tonumber(hour) == 0 and tonumber(min) == 0)) then
-    error("TZ must be set to UTC")
-end
-
 local M = {}
 setfenv(1, M) -- Remove external access to contain everything in the module
 
@@ -46,7 +38,13 @@ function time_to_ns(t)
     if t.sec_frac then
         frac = t.sec_frac
     end
-    return (os.time(t) + frac + offset) * 1e9
+
+    local ost = os.time(t)
+    if not ost then
+        return 0
+    end
+
+    return (ost + frac + offset) * 1e9
 end
 
 --Converts a second value into the number of nanoseconds since the UNIX epoch
@@ -139,16 +137,15 @@ rfc3339_full_date       = date_fullyear * "-"  * date_month * "-" * date_mday
 rfc3339_full_time       = rfc3339_partial_time * rfc3339_time_offset
 rfc3339                 = l.Ct(rfc3339_full_date * "T" * rfc3339_full_time)
 
-
 --[[ strftime Grammars --]]
+local century = os.date("%Y"):sub(1,2)
 local strftime_specifiers = {}
 strftime_specifiers["a"] = l.P"Mon" + "Tue" + "Wed" + "Thu" + "Fri" + "Sat" + "Sun"
 strftime_specifiers["A"] = l.P"Monday"  + "Tuesday"  + "Wednesday" + "Thursday"  + "Friday" + "Saturday"  + "Sunday"
 strftime_specifiers["b"] = date_mabbr
 strftime_specifiers["B"] = date_mfull
-strftime_specifiers["c"] = strftime_specifiers["a"] * " " * date_mabbr * " " * date_mday_sp * " " * time_hour * ":" * time_minute * ":" * time_second * " " * date_fullyear
 strftime_specifiers["C"] = l.digit * l.digit
-strftime_specifiers["y"] = l.Cg((l.digit * l.digit) / function (yy) return os.date("%C") .. yy end, "year")
+strftime_specifiers["y"] = l.Cg((l.digit * l.digit) / function (yy) return century .. yy end, "year")
 strftime_specifiers["d"] = date_mday
 strftime_specifiers["D"] = date_month * "/" * date_mday * "/" * strftime_specifiers["y"]
 strftime_specifiers["e"] = date_mday_sp
@@ -186,6 +183,11 @@ strftime_specifiers["Y"] = date_fullyear
 strftime_specifiers["z"] = l.Cg(l.S"+-", "offset_sign") * l.Cg(time_hour / tonumber, "offset_hour") * l.Cg(time_minute / tonumber, "offset_min")
 strftime_specifiers["Z"] = l.alpha^-5
 strftime_specifiers["%"] = l.P"%"
+if os.date("%c"):find("^%d") then -- windows
+    strftime_specifiers["c"] = strftime_specifiers["D"] * " " * strftime_specifiers["T"]
+else
+    strftime_specifiers["c"] = strftime_specifiers["a"] * " " * date_mabbr * " " * date_mday_sp * " " * strftime_specifiers["T"] * " " * date_fullyear
+end
 
 local function strftime_lookup_grammar(var)
     local g = strftime_specifiers[var]

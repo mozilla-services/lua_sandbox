@@ -17,6 +17,7 @@
 
 #include "lua_bloom_filter.h"
 #include "lua_circular_buffer.h"
+#include "lua_hyperloglog.h"
 #include "lua_sandbox_private.h"
 #include "lua_serialize.h"
 #include "lua_serialize_json.h"
@@ -342,6 +343,8 @@ int require_library(lua_State* lua)
     load_library(lua, name, luaopen_circular_buffer, disable_none);
   } else if (strcmp(name, lsb_bloom_filter_table) == 0) {
     load_library(lua, name, luaopen_bloom_filter, disable_none);
+  } else if (strcmp(name, lsb_hyperloglog_table) == 0) {
+    load_library(lua, name, luaopen_hyperloglog, disable_none);
   } else if (strcmp(name, "lpeg") == 0) {
     load_library(lua, name, luaopen_lpeg, disable_none);
   } else if (strcmp(name, "cjson") == 0) {

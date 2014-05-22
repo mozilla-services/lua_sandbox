@@ -14,7 +14,7 @@ local function test_valid(tc, grammar, tests, results)
         else
             ns = dt.time_to_ns(t)
             if ns ~= results[i] then
-                error(string.format("tc: %d %s expected: %d received: %d", tc, v, results[i], ns))
+                error(string.format("tc: %d %s expected: %g received: %g", tc, v, results[i], ns))
             end
         end
     end
@@ -34,6 +34,9 @@ function process(tc)
             662688000000000000,
             662688000000000000,
             -1041337172130000000}
+        if os.date("%c"):find("^%d") then
+            results[6] = 0 -- windows will fail to convert this time
+        end
         test_valid(tc, dt.rfc3339, tests, results)
     elseif tc == 1 then
         local tests = {"1985-04-12t23:20:50.52Z",
@@ -62,10 +65,19 @@ function process(tc)
         local results = {1392050796000000000}
         test_valid(tc, dt.pgsql_timestamp, tests, results)
     elseif tc == 6 then
-        local formats = {"%a", "%A", "%b", "%B","%c","%C", "%d", "%D", "%e",
-             "%F", "%g", "%G", "%h", "%H", "%I", "%j", "%m", "%M", "%n", "%p",
-             "%r", "%R", "%S", "%t", "%T", "%u", "%U", "%V", "%w", "%W", "%x",
-             "%X", "%y", "%Y", "%z", "%Z", "%%", "test string"}
+        local formats
+        if os.date("%c"):find("^%d") then -- windows C89 support only
+            formats = {"%a", "%A", "%b", "%B","%c", "%d",
+                 "%H", "%I", "%j", "%m", "%M", "%p",
+                 "%S", "%U", "%w", "%W", "%x",
+                 "%X", "%y", "%Y", "%Z", "%%", "test string"}
+        else
+            formats = {"%a", "%A", "%b", "%B","%c","%C", "%d", "%D", "%e",
+                 "%F", "%g", "%G", "%h", "%H", "%I", "%j", "%m", "%M", "%n", "%p",
+                 "%r", "%R", "%S", "%t", "%T", "%u", "%U", "%V", "%w", "%W", "%x",
+                 "%X", "%y", "%Y", "%z", "%Z", "%%", "test string"}
+        end
+
         for i,v in ipairs(formats) do
             local test = os.date(v)
             local g = dt.build_strftime_grammar(v)
@@ -76,6 +88,9 @@ function process(tc)
     elseif tc == 7 then
         local formats = {"%c","%D %T","%D %r","%d/%b/%Y:%H:%M:%S %z"}
         local inputs = {"Mon Feb 10 16:46:36 2014", "02/10/14 16:46:36", "02/10/14 04:46:36 PM", "10/Feb/2014:16:46:36 +0000"}
+        if os.date("%c"):find("^%d") then -- windows %c is non-standard
+            inputs[1] = inputs[2]
+        end
         local result = 1392050796000000000
         for i,v in ipairs(formats) do
             local g = dt.build_strftime_grammar(v)
