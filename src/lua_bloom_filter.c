@@ -39,9 +39,9 @@ static int bloom_filter_new(lua_State* lua)
   double probability =  luaL_checknumber(lua, 2);
   luaL_argcheck(lua, 0 < probability && 1 > probability, 2, "probability must be between 0 and 1");
 
-  size_t bits = ceil(items * log(probability) / log(1 / pow(2, log(2))));
-  size_t bytes = ceil((double)bits / CHAR_BIT);
-  unsigned int hashes = round(log(2) * bits/items);
+  size_t bits = (size_t)ceil(items * log(probability) / log(1 / pow(2, log(2))));
+  size_t bytes = (size_t)ceil((double)bits / CHAR_BIT);
+  unsigned int hashes = (unsigned int)round(log(2) * bits/items);
 
   // subtract 1 for the byte already included in the struct
   size_t nbytes = sizeof(bloom_filter) + bytes;
