@@ -34,7 +34,7 @@ local grammar = l.Ct(timestamp * space * severity * fields)
 function process ()
     local t = grammar:match("1376389920 debug id=2321 url=example.com item=1")
     if t then
-        write(t)
+        write_message(t)
     else
         return -1
     end

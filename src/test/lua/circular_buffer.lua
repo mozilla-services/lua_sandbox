@@ -22,8 +22,7 @@ end
 
 function report(tc)
     if tc == 0 then
-        output(data)
-        write()
+        write_output(data)
     elseif tc == 1 then
         cbufs = {}
         for i=1,3,1 do
@@ -31,7 +30,7 @@ function report(tc)
             cbufs[i]:set_header(1, "Header_1", "count")
         end
     elseif tc == 2 then
-        write(cbufs[1])
+        write_output(cbufs[1])
     elseif tc == 3 then
         local stats = circular_buffer.new(5, 1, 1)
         stats:set(1e9, 1, 1)

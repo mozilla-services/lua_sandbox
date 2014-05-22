@@ -70,7 +70,7 @@ function process(tc)
             formats = {"%a", "%A", "%b", "%B","%c", "%d",
                  "%H", "%I", "%j", "%m", "%M", "%p",
                  "%S", "%U", "%w", "%W", "%x",
-                 "%X", "%y", "%Y", "%Z", "%%", "test string"}
+                 "%X", "%y", "%Y", "%z", "%Z", "%%", "test string"}
         else
             formats = {"%a", "%A", "%b", "%B","%c","%C", "%d", "%D", "%e",
                  "%F", "%g", "%G", "%h", "%H", "%I", "%j", "%m", "%M", "%n", "%p",

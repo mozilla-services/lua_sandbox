@@ -282,7 +282,8 @@ int encode_field_value(lua_sandbox* lsb, output_data* d, int first,
     }
     break;
   default:
-    snprintf(lsb->error_message, LSB_ERROR_SIZE, "unsupported type %d", t);
+    snprintf(lsb->error_message, LSB_ERROR_SIZE, "unsupported type: %s",
+             lua_typename(lsb->lua,t));
     result = 1;
   }
   return result;

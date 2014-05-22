@@ -160,35 +160,32 @@ int write_output(lua_State* lua)
 {
   void* luserdata = lua_touserdata(lua, lua_upvalueindex(1));
   if (NULL == luserdata) {
-    luaL_error(lua, "write() invalid lightuserdata");
+    luaL_error(lua, "write_output() invalid lightuserdata");
   }
   lua_sandbox* lsb = (lua_sandbox*)luserdata;
 
-  switch (lua_gettop(lua)) {
-  case 0:
-    break;
-  case 1:
-    switch (lua_type(lua, 1)) {
-    case LUA_TTABLE:
-      if (lsb_output_protobuf(lsb, 1, 0) != 0) {
-        luaL_error(lua, "write() could not encode protobuf - %s",
-                   lsb_get_error(lsb));
-      }
-      break;
-    case LUA_TUSERDATA:
-      if (!lsb_output_userdata(lsb, 1, 0)) {
-        luaL_error(lua, "write() could not output userdata - %s",
-                   lsb_get_error(lsb));
-      }
-      break;
-    default:
-      luaL_typerror(lua, 1, "table, or circular_buffer");
-      break;
-    }
-    break;
-  default:
-    luaL_error(lua, "write() takes a maximum of 1 argument");
-    break;
+  int n = lua_gettop(lua);
+  lsb_output(lsb, 1, n, 1);
+  written_data = lsb_get_output(lsb, &written_data_len);
+  return 0;
+}
+
+
+int write_message(lua_State* lua)
+{
+  void* luserdata = lua_touserdata(lua, lua_upvalueindex(1));
+  if (NULL == luserdata) {
+    luaL_error(lua, "write_message() invalid lightuserdata");
+  }
+  lua_sandbox* lsb = (lua_sandbox*)luserdata;
+
+  if (lua_gettop(lua) != 1 || lua_type(lua, 1) != LUA_TTABLE) {
+      luaL_error(lua, "write_message() takes a table argument");
+  }
+
+  if (lsb_output_protobuf(lsb, 1, 0) != 0) {
+    luaL_error(lua, "write_message() could not encode protobuf - %s",
+               lsb_get_error(lsb));
   }
   written_data = lsb_get_output(lsb, &written_data_len);
   return 0;
@@ -379,19 +376,8 @@ static char* test_simple()
 static char* test_output()
 {
   const char* outputs[] = {
-    "{\"value\":1}\n1.2 string nil true false"
+    "1.2 string nil true false"
     , ""
-#ifdef LUA_JIT
-    , "{\"Timestamp\":0,\"Value\":0,\"StatisticValues\":[{\"SampleCount\":0,\"Sum\":0,\"Maximum\":0,\"Minimum\":0},{\"SampleCount\":0,\"Sum\":0,\"Maximum\":0,\"Minimum\":0}],\"Unit\":\"s\",\"MetricName\":\"example\",\"Dimensions\":[{\"Name\":\"d1\",\"Value\":\"v1\"},{\"Name\":\"d2\",\"Value\":\"v2\"}]}\n"
-#else
-    , "{\"StatisticValues\":[{\"Minimum\":0,\"SampleCount\":0,\"Sum\":0,\"Maximum\":0},{\"Minimum\":0,\"SampleCount\":0,\"Sum\":0,\"Maximum\":0}],\"Dimensions\":[{\"Name\":\"d1\",\"Value\":\"v1\"},{\"Name\":\"d2\",\"Value\":\"v2\"}],\"MetricName\":\"example\",\"Timestamp\":0,\"Value\":0,\"Unit\":\"s\"}\n"
-#endif
-    , "{\"a\":{\"y\":2,\"x\":1}}\n"
-    , "[1,2,3]\n"
-    , "{\"x\":1}\n"
-    , "[1,2,3]\n"
-    , "{}\n"
-    , "{\"special\\tcharacters\":\"\\\"\\t\\r\\n\\b\\f\\\\\\/\"}\n"
     , "\x10\x80\x94\xeb\xdc\x03\x1a\x04\x74\x79\x70\x65\x22\x06\x6c\x6f\x67\x67\x65\x72\x28\x09\x32\x07\x70\x61\x79\x6c\x6f\x61\x64\x3a\x0b\x65\x6e\x76\x5f\x76\x65\x72\x73\x69\x6f\x6e\x4a\x08\x68\x6f\x73\x74\x6e\x61\x6d\x65"
     , "\x10\x80\x94\xeb\xdc\x03\x52\x12\x0a\x05\x63\x6f\x75\x6e\x74\x10\x03\x39\x00\x00\x00\x00\x00\x00\xf0\x3f"
     , "\x10\x80\x94\xeb\xdc\x03\x52\x25\x0a\x06\x63\x6f\x75\x6e\x74\x73\x10\x03\x39\x00\x00\x00\x00\x00\x00\x00\x40\x39\x00\x00\x00\x00\x00\x00\x08\x40\x39\x00\x00\x00\x00\x00\x00\x10\x40"
@@ -403,7 +389,6 @@ static char* test_output()
     , "\x10\x80\x94\xeb\xdc\x03\x52\x13\x0a\x06\x6e\x75\x6d\x62\x65\x72\x10\x03\x39\x00\x00\x00\x00\x00\x00\xf0\x3f\x52\x2d\x0a\x07\x6e\x75\x6d\x62\x65\x72\x73\x10\x03\x1a\x05\x63\x6f\x75\x6e\x74\x39\x00\x00\x00\x00\x00\x00\xf0\x3f\x39\x00\x00\x00\x00\x00\x00\x00\x40\x39\x00\x00\x00\x00\x00\x00\x08\x40\x52\x0f\x0a\x05\x62\x6f\x6f\x6c\x73\x10\x04\x40\x01\x40\x00\x40\x00\x52\x0a\x0a\x04\x62\x6f\x6f\x6c\x10\x04\x40\x01\x52\x10\x0a\x06\x73\x74\x72\x69\x6e\x67\x22\x06\x73\x74\x72\x69\x6e\x67\x52\x15\x0a\x07\x73\x74\x72\x69\x6e\x67\x73\x22\x02\x73\x31\x22\x02\x73\x32\x22\x02\x73\x33"
 #endif
     , "\x10\x80\x94\xeb\xdc\x03\x52\x8d\x01\x0a\x06\x73\x74\x72\x69\x6e\x67\x22\x82\x01\x30\x31\x32\x33\x34\x35\x36\x37\x38\x39\x30\x31\x32\x33\x34\x35\x36\x37\x38\x39\x30\x31\x32\x33\x34\x35\x36\x37\x38\x39\x30\x31\x32\x33\x34\x35\x36\x37\x38\x39\x30\x31\x32\x33\x34\x35\x36\x37\x38\x39\x30\x31\x32\x33\x34\x35\x36\x37\x38\x39\x30\x31\x32\x33\x34\x35\x36\x37\x38\x39\x30\x31\x32\x33\x34\x35\x36\x37\x38\x39\x30\x31\x32\x33\x34\x35\x36\x37\x38\x39\x30\x31\x32\x33\x34\x35\x36\x37\x38\x39\x30\x31\x32\x33\x34\x35\x36\x37\x38\x39\x30\x31\x32\x33\x34\x35\x36\x37\x38\x39\x30\x31\x32\x33\x34\x35\x36\x37\x38\x39"
-    , "{\"string\":\"\"}\n"
     , NULL
   };
 
@@ -414,7 +399,8 @@ static char* test_output()
   int result = lsb_init(sb, NULL);
   mu_assert(result == 0, "lsb_init() received: %d %s", result,
             lsb_get_error(sb));
-  lsb_add_function(sb, &write_output, "write");
+  lsb_add_function(sb, &write_output, "write_output");
+  lsb_add_function(sb, &write_message, "write_message");
 
   for (int x = 0; outputs[x]; ++x) {
     result = process(sb, x);
@@ -449,13 +435,12 @@ static char* test_output_errors()
 {
   const char* tests[] =
   {
-    "process() lua/output_errors.lua:12: table contains an internal or circular reference"
-    , "process() lua/output_errors.lua:16: table contains an internal or circular reference"
-    , "process() lua/output_errors.lua:22: output_limit exceeded"
-    , "process() lua/output_errors.lua:25: write() could not encode protobuf - array has mixed types"
-    , "process() lua/output_errors.lua:28: write() could not encode protobuf - unsupported type 0"
-    , "process() lua/output_errors.lua:30: write() could not output userdata - unknown userdata type"
-    , "process() lua/output_errors.lua:33: write() could not output userdata - output_limit exceeded"
+    "process() lua/output_errors.lua:10: bad argument #1 to 'output' (unsuported type)"
+    , "process() lua/output_errors.lua:16: output_limit exceeded"
+    , "process() lua/output_errors.lua:19: write_message() could not encode protobuf - array has mixed types"
+    , "process() lua/output_errors.lua:22: write_message() could not encode protobuf - unsupported type: nil"
+    , "process() lua/output_errors.lua:24: bad argument #1 to 'write_output' (unknown userdata type)"
+    , "process() lua/output_errors.lua:27: output_limit exceeded"
     , NULL
   };
 
@@ -467,7 +452,8 @@ static char* test_output_errors()
     int result = lsb_init(sb, NULL);
     mu_assert(result == 0, "lsb_init() received: %d %s", result,
               lsb_get_error(sb));
-    lsb_add_function(sb, &write_output, "write");
+    lsb_add_function(sb, &write_output, "write_output");
+    lsb_add_function(sb, &write_message, "write_message");
 
     result = process(sb, i);
     mu_assert(result == 1, "test: %d received: %d", i, result);
@@ -570,7 +556,7 @@ static char* test_cbuf()
   int result = lsb_init(sb, NULL);
   mu_assert(result == 0, "lsb_init() received: %d %s", result,
             lsb_get_error(sb));
-  lsb_add_function(sb, &write_output, "write");
+  lsb_add_function(sb, &write_output, "write_output");
 
   result = report(sb, 0);
   mu_assert(result == 0, "report() received: %d", result);
@@ -644,7 +630,7 @@ static char* test_cbuf_delta()
   int result = lsb_init(sb, NULL);
   mu_assert(result == 0, "lsb_init() received: %d %s", result,
             lsb_get_error(sb));
-  lsb_add_function(sb, &write_output, "write");
+  lsb_add_function(sb, &write_output, "write_output");
 
   process(sb, 0);
   process(sb, 1e9);
@@ -678,8 +664,8 @@ static char* test_cbuf_delta()
 static char* test_cjson()
 {
 
-  lua_sandbox* sb = lsb_create(NULL, "lua/cjson.lua", "../../modules", 32767, 1000,
-                               32767);
+  lua_sandbox* sb = lsb_create(NULL, "lua/cjson.lua", "../../modules", 128000, 10000,
+                               64512);
   mu_assert(sb, "lsb_create() received: NULL");
 
   int result = lsb_init(sb, NULL);
@@ -751,7 +737,7 @@ static char* test_errors()
 static char* test_lpeg()
 {
   const char* expected = "[\"1\",\"string with spaces\","
-    "\"quoted string, with comma and \\\"quoted\\\" text\"]\n";
+    "\"quoted string, with comma and \\\"quoted\\\" text\"]";
 
   lua_sandbox* sb = lsb_create(NULL, "lua/lpeg.lua", "../../modules", 100000, 1000,
                                8000);
@@ -759,7 +745,7 @@ static char* test_lpeg()
 
   int result = lsb_init(sb, NULL);
   mu_assert(result == 0, "lsb_init() received: %d %s", result, lsb_get_error(sb));
-  lsb_add_function(sb, &write_output, "write");
+  lsb_add_function(sb, &write_output, "write_output");
 
   result = process(sb, 0);
   mu_assert(result == 0, "process() received: %d %s", result, lsb_get_error(sb));
@@ -776,17 +762,17 @@ static char* test_lpeg_clf()
 {
   const char* tests[] = {
     "ok"
-    , "{\"body_bytes_sent\":{\"value\":0,\"representation\":\"B\"},\"remote_addr\":{\"value\":\"127.0.0.1\",\"representation\":\"ipv4\"},\"time\":1392050801000,\"http_user_agent\":\"Mozilla\\/5.0 (X11; Ubuntu; Linux x86_64; rv:26.0) Gecko\\/20100101 Firefox\\/26.0\",\"request\":\"GET \\/ HTTP\\/1.1\",\"remote_user\":\"-\",\"status\":304,\"http_referer\":\"-\"}\n"
-    , "{\"body_bytes_sent\":{\"value\":0,\"representation\":\"B\"},\"remote_addr\":{\"value\":\"127.0.0.1\",\"representation\":\"ipv4\"},\"time\":1391794831755,\"status\":304,\"http_user_agent\":\"Mozilla\\/5.0 (X11; Ubuntu; Linux x86_64; rv:26.0) Gecko\\/20100101 Firefox\\/26.0\",\"request\":\"GET \\/ HTTP\\/1.1\",\"http_referer\":\"-\"}\n"
+    , "{\"body_bytes_sent\":{\"value\":0,\"representation\":\"B\"},\"remote_addr\":{\"value\":\"127.0.0.1\",\"representation\":\"ipv4\"},\"time\":1392050801000,\"http_user_agent\":\"Mozilla\\/5.0 (X11; Ubuntu; Linux x86_64; rv:26.0) Gecko\\/20100101 Firefox\\/26.0\",\"request\":\"GET \\/ HTTP\\/1.1\",\"remote_user\":\"-\",\"status\":304,\"http_referer\":\"-\"}"
+    , "{\"body_bytes_sent\":{\"value\":0,\"representation\":\"B\"},\"remote_addr\":{\"value\":\"127.0.0.1\",\"representation\":\"ipv4\"},\"time\":1391794831755,\"status\":304,\"http_user_agent\":\"Mozilla\\/5.0 (X11; Ubuntu; Linux x86_64; rv:26.0) Gecko\\/20100101 Firefox\\/26.0\",\"request\":\"GET \\/ HTTP\\/1.1\",\"http_referer\":\"-\"}"
     , "ok"
     , "ok"
-    , "{\"server_addr\":{\"value\":\"::1\",\"representation\":\"ipv6\"},\"pid\":1234,\"total_length\":{\"value\":809,\"representation\":\"B\"},\"server_port\":80,\"request_length\":{\"value\":311,\"representation\":\"B\"},\"connection_requests\":2,\"connection_status\":\"+\",\"body_bytes_sent\":{\"value\":235,\"representation\":\"B\"},\"remote_addr\":{\"value\":\"127.0.0.1\",\"representation\":\"ipv4\"},\"time\":1395330986000,\"response_length\":{\"value\":498,\"representation\":\"B\"},\"request_time\":{\"value\":0,\"representation\":\"s\"},\"request_filename\":\"test.txt\",\"status\":404,\"server_name\":{\"value\":\"example.com\",\"representation\":\"hostname\"}}\n"
-    , "{\"remote_addr\":{\"value\":\"127.0.0.1\",\"representation\":\"ipv4\"},\"time\":1392050801000,\"response_length\":{\"value\":0,\"representation\":\"B\"},\"request\":\"GET \\/ HTTP\\/1.1\",\"remote_user\":\"-\",\"status\":304}\n"
-    , "{\"remote_user\":\"-\",\"server_port\":80,\"http_referer\":\"-\",\"remote_addr\":{\"value\":\"127.0.0.1\",\"representation\":\"ipv4\"},\"time\":1395344314000,\"response_length\":{\"value\":492,\"representation\":\"B\"},\"request\":\"GET \\/ HTTP\\/1.1\",\"http_user_agent\":\"Mozilla\\/5.0 (X11; Ubuntu; Linux x86_64; rv:27.0) Gecko\\/20100101 Firefox\\/27.0\",\"status\":404,\"server_name\":{\"value\":\"127.0.1.1\",\"representation\":\"ipv4\"}}\n"
-    , "{\"http_user_agent\":\"Mozilla\\/5.0 (X11; Ubuntu; Linux x86_64; rv:27.0) Gecko\\/20100101 Firefox\\/27.0\",\"remote_addr\":{\"value\":\"127.0.0.1\",\"representation\":\"ipv4\"},\"time\":1395344397000,\"response_length\":{\"value\":492,\"representation\":\"B\"},\"request\":\"GET \\/ HTTP\\/1.1\",\"remote_user\":\"-\",\"status\":404,\"http_referer\":\"-\"}\n"
-    , "{\"uri\":\"\\/\",\"http_referer\":\"-\"}\n"
-    , "{\"Fields\":{\"tid\":0},\"Pid\":16842,\"Payload\":\"using inherited sockets from \\\"6;\\\"\",\"Severity\":5,\"time\":1393673379000}\n"
-    , "{\"Fields\":{\"tid\":0,\"connection\":8878},\"Pid\":16842,\"Payload\":\"using inherited sockets from \\\"6;\\\"\",\"Severity\":5,\"time\":1393673379000}\n"
+    , "{\"server_addr\":{\"value\":\"::1\",\"representation\":\"ipv6\"},\"pid\":1234,\"total_length\":{\"value\":809,\"representation\":\"B\"},\"server_port\":80,\"request_length\":{\"value\":311,\"representation\":\"B\"},\"connection_requests\":2,\"connection_status\":\"+\",\"body_bytes_sent\":{\"value\":235,\"representation\":\"B\"},\"remote_addr\":{\"value\":\"127.0.0.1\",\"representation\":\"ipv4\"},\"time\":1395330986000,\"response_length\":{\"value\":498,\"representation\":\"B\"},\"request_time\":{\"value\":0,\"representation\":\"s\"},\"request_filename\":\"test.txt\",\"status\":404,\"server_name\":{\"value\":\"example.com\",\"representation\":\"hostname\"}}"
+    , "{\"remote_addr\":{\"value\":\"127.0.0.1\",\"representation\":\"ipv4\"},\"time\":1392050801000,\"response_length\":{\"value\":0,\"representation\":\"B\"},\"request\":\"GET \\/ HTTP\\/1.1\",\"remote_user\":\"-\",\"status\":304}"
+    , "{\"remote_user\":\"-\",\"server_port\":80,\"http_referer\":\"-\",\"remote_addr\":{\"value\":\"127.0.0.1\",\"representation\":\"ipv4\"},\"time\":1395344314000,\"response_length\":{\"value\":492,\"representation\":\"B\"},\"request\":\"GET \\/ HTTP\\/1.1\",\"http_user_agent\":\"Mozilla\\/5.0 (X11; Ubuntu; Linux x86_64; rv:27.0) Gecko\\/20100101 Firefox\\/27.0\",\"status\":404,\"server_name\":{\"value\":\"127.0.1.1\",\"representation\":\"ipv4\"}}"
+    , "{\"http_user_agent\":\"Mozilla\\/5.0 (X11; Ubuntu; Linux x86_64; rv:27.0) Gecko\\/20100101 Firefox\\/27.0\",\"remote_addr\":{\"value\":\"127.0.0.1\",\"representation\":\"ipv4\"},\"time\":1395344397000,\"response_length\":{\"value\":492,\"representation\":\"B\"},\"request\":\"GET \\/ HTTP\\/1.1\",\"remote_user\":\"-\",\"status\":404,\"http_referer\":\"-\"}"
+    , "{\"uri\":\"\\/\",\"http_referer\":\"-\"}"
+    , "{\"Fields\":{\"tid\":0},\"Pid\":16842,\"Payload\":\"using inherited sockets from \\\"6;\\\"\",\"Severity\":5,\"time\":1393673379000}"
+    , "{\"Fields\":{\"tid\":0,\"connection\":8878},\"Pid\":16842,\"Payload\":\"using inherited sockets from \\\"6;\\\"\",\"Severity\":5,\"time\":1393673379000}"
     , "tc12" // start to move away from the fragile string compare
     , "tc13"
     , NULL
@@ -797,7 +783,7 @@ static char* test_lpeg_clf()
 
   int result = lsb_init(sb, NULL);
   mu_assert(result == 0, "lsb_init() received: %d %s", result, lsb_get_error(sb));
-  lsb_add_function(sb, &write_output, "write");
+  lsb_add_function(sb, &write_output, "write_output");
 
   for (int i = 0; tests[i]; ++i) {
     result = process(sb, i);
@@ -893,14 +879,14 @@ static char* test_lpeg_mysql()
 static char* test_lpeg_syslog()
 {
   const char* tests[] = {
-    "{\"msg\":\"(root) CMD (   cd \\/ && run-parts --report \\/etc\\/cron.hourly)\",\"timestamp\":1391955421000,\"syslogtag\":{\"pid\":20758,\"programname\":\"CRON\"},\"hostname\":\"trink-x230\"}\n"
-    , "{\"msg\":\"Kernel logging (proc) stopped.\",\"timestamp\":1392049319111.5369,\"syslogtag\":{\"programname\":\"kernel\"},\"hostname\":\"trink-x230\"}\n"
-    , "{\"hostname\":\"trink-x230\",\"msg\":\"imklog 5.8.6, log source = \\/proc\\/kmsg started.\",\"timestamp\":1392049995407.9351,\"syslogtag\":{\"programname\":\"kernel\"},\"pri\":{\"severity\":6,\"facility\":0}}\n"
-    , "{\"hostname\":\"trink-x230\",\"msg\":\"imklog 5.8.6, log source = \\/proc\\/kmsg started.\",\"timestamp\":1392021527000,\"syslogtag\":{\"programname\":\"kernel\"},\"pri\":{\"severity\":6,\"facility\":0}}\n"
+    "{\"msg\":\"(root) CMD (   cd \\/ && run-parts --report \\/etc\\/cron.hourly)\",\"timestamp\":1391955421000,\"syslogtag\":{\"pid\":20758,\"programname\":\"CRON\"},\"hostname\":\"trink-x230\"}"
+    , "{\"msg\":\"Kernel logging (proc) stopped.\",\"timestamp\":1392049319111.5,\"syslogtag\":{\"programname\":\"kernel\"},\"hostname\":\"trink-x230\"}"
+    , "{\"hostname\":\"trink-x230\",\"msg\":\"imklog 5.8.6, log source = \\/proc\\/kmsg started.\",\"timestamp\":1392049995407.9,\"syslogtag\":{\"programname\":\"kernel\"},\"pri\":{\"severity\":6,\"facility\":0}}"
+    , "{\"hostname\":\"trink-x230\",\"msg\":\"imklog 5.8.6, log source = \\/proc\\/kmsg started.\",\"timestamp\":1392021527000,\"syslogtag\":{\"programname\":\"kernel\"},\"pri\":{\"severity\":6,\"facility\":0}}"
 #ifdef _WIN32
-    , "{\"syslogfacility\":0,\"$year\":\"2014\",\"source\":\"trink-x230\",\"syslogpriority-text\":6,\"syslogfacility-text\":0,\"msg\":\"imklog 5.8.6, log source = \\/proc\\/kmsg started.\",\"procid\":\"-\",\"structured-data\":\"-\",\"hostname\":\"trink-x230\",\"app-name\":\"kernel\",\"programname\":\"kernel\",\"$minute\":\"20\",\"$qhour\":\"01\",\"msgid\":\"imklog\",\"$hhour\":\"00\",\"pri-text\":0,\"fromhost-ip\":\"127.0.0.1\",\"$hour\":\"09\",\"pri\":{\"severity\":6,\"facility\":0},\"$day\":\"10\",\"$month\":\"02\",\"$now\":\"2014-02-10\",\"protocol-version\":\"0\",\"timegenerated\":1.392024053e+018,\"timestamp\":1392052853559.9338,\"syslogpriority\":6,\"iut\":\"1\",\"syslogtag\":{\"programname\":\"kernel\"},\"fromhost\":\"trink-x230\"}\n"
+    , "{\"syslogfacility\":0,\"$year\":\"2014\",\"source\":\"trink-x230\",\"syslogpriority-text\":6,\"syslogfacility-text\":0,\"msg\":\"imklog 5.8.6, log source = \\/proc\\/kmsg started.\",\"procid\":\"-\",\"structured-data\":\"-\",\"hostname\":\"trink-x230\",\"app-name\":\"kernel\",\"programname\":\"kernel\",\"$minute\":\"20\",\"$qhour\":\"01\",\"msgid\":\"imklog\",\"$hhour\":\"00\",\"pri-text\":0,\"fromhost-ip\":\"127.0.0.1\",\"$hour\":\"09\",\"pri\":{\"severity\":6,\"facility\":0},\"$day\":\"10\",\"$month\":\"02\",\"$now\":\"2014-02-10\",\"protocol-version\":\"0\",\"timegenerated\":1.392024053e+018,\"timestamp\":1392052853559.9,\"syslogpriority\":6,\"iut\":\"1\",\"syslogtag\":{\"programname\":\"kernel\"},\"fromhost\":\"trink-x230\"}"
 #else
-    , "{\"syslogfacility\":0,\"$year\":\"2014\",\"source\":\"trink-x230\",\"syslogpriority-text\":6,\"syslogfacility-text\":0,\"msg\":\"imklog 5.8.6, log source = \\/proc\\/kmsg started.\",\"procid\":\"-\",\"structured-data\":\"-\",\"hostname\":\"trink-x230\",\"app-name\":\"kernel\",\"programname\":\"kernel\",\"$minute\":\"20\",\"$qhour\":\"01\",\"msgid\":\"imklog\",\"$hhour\":\"00\",\"pri-text\":0,\"fromhost-ip\":\"127.0.0.1\",\"$hour\":\"09\",\"pri\":{\"severity\":6,\"facility\":0},\"$day\":\"10\",\"$month\":\"02\",\"$now\":\"2014-02-10\",\"protocol-version\":\"0\",\"timegenerated\":1.392024053e+18,\"timestamp\":1392052853559.9338,\"syslogpriority\":6,\"iut\":\"1\",\"syslogtag\":{\"programname\":\"kernel\"},\"fromhost\":\"trink-x230\"}\n"
+    , "{\"syslogfacility\":0,\"$year\":\"2014\",\"source\":\"trink-x230\",\"syslogpriority-text\":6,\"syslogfacility-text\":0,\"msg\":\"imklog 5.8.6, log source = \\/proc\\/kmsg started.\",\"procid\":\"-\",\"structured-data\":\"-\",\"hostname\":\"trink-x230\",\"app-name\":\"kernel\",\"programname\":\"kernel\",\"$minute\":\"20\",\"$qhour\":\"01\",\"msgid\":\"imklog\",\"$hhour\":\"00\",\"pri-text\":0,\"fromhost-ip\":\"127.0.0.1\",\"$hour\":\"09\",\"pri\":{\"severity\":6,\"facility\":0},\"$day\":\"10\",\"$month\":\"02\",\"$now\":\"2014-02-10\",\"protocol-version\":\"0\",\"timegenerated\":1.392024053e+18,\"timestamp\":1392052853559.9,\"syslogpriority\":6,\"iut\":\"1\",\"syslogtag\":{\"programname\":\"kernel\"},\"fromhost\":\"trink-x230\"}"
 #endif
     , NULL
   };
@@ -910,7 +896,7 @@ static char* test_lpeg_syslog()
 
   int result = lsb_init(sb, NULL);
   mu_assert(result == 0, "lsb_init() received: %d %s", result, lsb_get_error(sb));
-  lsb_add_function(sb, &write_output, "write");
+  lsb_add_function(sb, &write_output, "write_output");
 
   for (int i = 0; tests[i]; ++i) {
     result = process(sb, i);
@@ -928,7 +914,7 @@ static char* test_lpeg_syslog()
 static char* test_util()
 {
   const char* tests[] = {
-    "{\"toplevel\":0,\"struct.item1\":1,\"struct.item0\":0,\"struct.item2.nested\":\"n1\"}\n"
+    "{\"toplevel\":0,\"struct.item1\":1,\"struct.item0\":0,\"struct.item2.nested\":\"n1\"}"
     , NULL
   };
 
@@ -937,7 +923,7 @@ static char* test_util()
 
   int result = lsb_init(sb, NULL);
   mu_assert(result == 0, "lsb_init() received: %d %s", result, lsb_get_error(sb));
-  lsb_add_function(sb, &write_output, "write");
+  lsb_add_function(sb, &write_output, "write_output");
 
   for (int i = 0; tests[i]; ++i) {
     result = process(sb, i);
@@ -1083,7 +1069,7 @@ static char* test_bloom_filter()
 
   int result = lsb_init(sb, NULL);
   mu_assert(result == 0, "lsb_init() received: %d %s", result, lsb_get_error(sb));
-  lsb_add_function(sb, &write_output, "write");
+  lsb_add_function(sb, &write_output, "write_output");
 
   int i = 0;
   for (; tests[i]; ++i) {
@@ -1109,7 +1095,7 @@ static char* test_bloom_filter()
 
   result = lsb_init(sb, output_file);
   mu_assert(result == 0, "lsb_init() received: %d %s", result, lsb_get_error(sb));
-  lsb_add_function(sb, &write_output, "write");
+  lsb_add_function(sb, &write_output, "write_output");
 
   for (int i = 0; tests[i]; ++i) {
     result = process(sb, i);
@@ -1179,7 +1165,7 @@ static char* test_hyperloglog()
 
   int result = lsb_init(sb, NULL);
   mu_assert(result == 0, "lsb_init() received: %d %s", result, lsb_get_error(sb));
-  lsb_add_function(sb, &write_output, "write");
+  lsb_add_function(sb, &write_output, "write_output");
 
 
   for (int i = 0; i < 100000; ++i) {
@@ -1204,7 +1190,7 @@ static char* test_hyperloglog()
 
   result = lsb_init(sb, output_file);
   mu_assert(result == 0, "lsb_init() received: %d %s", result, lsb_get_error(sb));
-  lsb_add_function(sb, &write_output, "write");
+  lsb_add_function(sb, &write_output, "write_output");
 
   result = report(sb, 0);
   mu_assert(result == 0, "report() received: %d", result);
@@ -1309,7 +1295,8 @@ static char* benchmark_lpeg_decoder()
   int result = lsb_init(sb, NULL);
   mu_assert(result == 0, "lsb_init() received: %d %s", result,
             lsb_get_error(sb));
-  lsb_add_function(sb, &write_output, "write");
+  lsb_add_function(sb, &write_output, "write_output");
+  lsb_add_function(sb, &write_message, "write_message");
 
   clock_t t = clock();
   for (int x = 0; x < iter; ++x) {
@@ -1334,7 +1321,7 @@ static char* benchmark_lua_types_output()
   int result = lsb_init(sb, NULL);
   mu_assert(result == 0, "lsb_init() received: %d %s", result,
             lsb_get_error(sb));
-  lsb_add_function(sb, &write_output, "write");
+  lsb_add_function(sb, &write_output, "write_output");
 
   clock_t t = clock();
   for (int x = 0; x < iter; ++x) {
@@ -1359,7 +1346,7 @@ static char* benchmark_cbuf_output()
   int result = lsb_init(sb, NULL);
   mu_assert(result == 0, "lsb_init() received: %d %s", result,
             lsb_get_error(sb));
-  lsb_add_function(sb, &write_output, "write");
+  lsb_add_function(sb, &write_output, "write_output");
 
   clock_t t = clock();
   for (int x = 0; x < iter; ++x) {
@@ -1384,7 +1371,8 @@ static char* benchmark_table_output()
   int result = lsb_init(sb, NULL);
   mu_assert(result == 0, "lsb_init() received: %d %s", result,
             lsb_get_error(sb));
-  lsb_add_function(sb, &write_output, "write");
+  lsb_add_function(sb, &write_output, "write_output");
+  lsb_add_function(sb, &write_message, "write_message");
 
   clock_t t = clock();
   for (int x = 0; x < iter; ++x) {
@@ -1436,7 +1424,7 @@ static char* benchmark_bloom_filter_add()
   int result = lsb_init(sb, NULL);
   mu_assert(result == 0, "lsb_init() received: %d %s", result,
             lsb_get_error(sb));
-  lsb_add_function(sb, &write_output, "write");
+  lsb_add_function(sb, &write_output, "write_output");
 
   clock_t t = clock();
   for (int x = 0; x < iter; ++x) {
@@ -1464,7 +1452,7 @@ static char* benchmark_hyperloglog_add()
   int result = lsb_init(sb, NULL);
   mu_assert(result == 0, "lsb_init() received: %d %s", result,
             lsb_get_error(sb));
-  lsb_add_function(sb, &write_output, "write");
+  lsb_add_function(sb, &write_output, "write_output");
 
   clock_t t = clock();
   for (int x = 0; x < iter; ++x) {

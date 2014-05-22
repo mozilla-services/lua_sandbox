@@ -15,8 +15,7 @@ function report(tc)
     if tc == 99 then
         hll:clear()
     else
-        output(hll:count())
-        write()
+        write_output(hll:count())
     end
 end
 

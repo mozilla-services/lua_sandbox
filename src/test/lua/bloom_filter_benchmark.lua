@@ -16,7 +16,6 @@ function process(ts)
 end
 
 function report(tc)
-    output(count)
-    write()
+    write_output(count)
 end
 
