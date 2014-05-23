@@ -231,7 +231,7 @@ int output(lua_State* lua)
 
   int n = lua_gettop(lua);
   if (n == 0) {
-    return luaL_error(lua, "output() must have at least one argument");
+    return luaL_argerror(lsb->lua, 0, "must have at least one argument");
   }
   lsb_output(lsb, 1, n, 1);
   return 0;

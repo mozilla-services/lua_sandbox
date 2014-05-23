@@ -691,7 +691,7 @@ static char* test_errors()
 #else
     "process() lua/errors.lua:9: cannot open lua/unknown.lua: No such file or directory"
 #endif
-    , "process() lua/errors.lua:11: output() must have at least one argument"
+    , "process() lua/errors.lua:11: bad argument #0 to 'output' (must have at least one argument)"
     , "process() not enough memory"
     , "process() instruction_limit exceeded"
     , "process() lua/errors.lua:20: attempt to perform arithmetic on global 'x' (a nil value)"
