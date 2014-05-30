@@ -180,7 +180,7 @@ int write_message(lua_State* lua)
   lua_sandbox* lsb = (lua_sandbox*)luserdata;
 
   if (lua_gettop(lua) != 1 || lua_type(lua, 1) != LUA_TTABLE) {
-      luaL_error(lua, "write_message() takes a table argument");
+    luaL_error(lua, "write_message() takes a table argument");
   }
 
   if (lsb_output_protobuf(lsb, 1, 0) != 0) {
@@ -964,6 +964,51 @@ static char* test_serialize()
 }
 
 
+static char* test_restore()
+{
+  const char* output_file = "restore.preserve";
+
+  lua_sandbox* sb = lsb_create(NULL, "lua/restore.lua", "../../modules", 8000000, 1000000, 63 * 1024);
+  mu_assert(sb, "lsb_create() received: NULL");
+  int result = lsb_init(sb, NULL);
+  mu_assert(result == 0, "lsb_init() received: %d %s", result, lsb_get_error(sb));
+  lsb_add_function(sb, &write_output, "write_output");
+  result = process(sb, 0);
+  mu_assert(result == 0, "process() received: %d %s", result, lsb_get_error(sb));
+  mu_assert(strcmp("101", written_data) == 0, "test: initial load received: %s", written_data);
+  e = lsb_destroy(sb, output_file);
+  mu_assert(!e, "lsb_destroy() received: %s", e);
+
+  // re-load to test the preserved data
+  sb = lsb_create(NULL, "lua/restore.lua", "../../modules", 8000000, 1000000, 63 * 1024);
+  mu_assert(sb, "lsb_create() received: NULL");
+  result = lsb_init(sb, output_file);
+  mu_assert(result == 0, "lsb_init() received: %d %s", result, lsb_get_error(sb));
+  lsb_add_function(sb, &write_output, "write_output");
+  result = process(sb, 0);
+  mu_assert(result == 0, "process() received: %d %s", result, lsb_get_error(sb));
+  mu_assert(strcmp("102", written_data) == 0, "test: reload received: %s", written_data);
+  result = report(sb, 2); // change the preservation version
+  mu_assert(result == 0, "report() received: %d", result);
+  e = lsb_destroy(sb, output_file);
+  mu_assert(!e, "lsb_destroy() received: %s", e);
+
+  // re-load to test the preserved data with a version change
+  sb = lsb_create(NULL, "lua/restore.lua", "../../modules", 8000000, 1000000, 63 * 1024);
+  mu_assert(sb, "lsb_create() received: NULL");
+  result = lsb_init(sb, output_file);
+  mu_assert(result == 0, "lsb_init() received: %d %s", result, lsb_get_error(sb));
+  lsb_add_function(sb, &write_output, "write_output");
+  result = process(sb, 0);
+  mu_assert(result == 0, "process() received: %d %s", result, lsb_get_error(sb));
+  mu_assert(strcmp("101", written_data) == 0, "test: reload with version change received: %s", written_data);
+  e = lsb_destroy(sb, output_file);
+  mu_assert(!e, "lsb_destroy() received: %s", e);
+
+  return NULL;
+}
+
+
 static char* test_serialize_failure()
 {
   const char* output_file = "serialize_failure.preserve";
@@ -1495,6 +1540,7 @@ static char* all_tests()
   mu_run_test(test_lpeg_syslog);
   mu_run_test(test_util);
   mu_run_test(test_serialize);
+  mu_run_test(test_restore);
   mu_run_test(test_serialize_failure);
   mu_run_test(test_serialize_noglobal);
   mu_run_test(test_bloom_filter_errors);

@@ -17,6 +17,24 @@
 #include "lua_hyperloglog.h"
 
 const char* not_a_number = "nan";
+static const char* preservation_version = "_PRESERVATION_VERSION";
+
+static int get_preservation_version(lua_State* lua)
+{
+  int ver = 0;
+  lua_getglobal(lua, preservation_version);
+  int t = lua_type(lua, -1);
+  if (t == LUA_TNUMBER) {
+    ver = (int)lua_tointeger(lua, -1);
+  }
+  lua_pop(lua, 1); // remove the version from the stack
+
+  if (t != LUA_TNIL) { // remove the version from the data preservation
+    lua_pushnil(lua);
+    lua_setglobal(lua, preservation_version);
+  }
+  return ver;
+}
 
 int preserve_global_data(lua_sandbox* lsb, const char* data_file)
 {
@@ -75,6 +93,10 @@ int preserve_global_data(lua_sandbox* lsb, const char* data_file)
              "preserve_global_data out of memory");
     result = 1;
   } else {
+    fprintf(data.fh, "if %s and %s ~= %d then return end\n",
+            preservation_version,
+            preservation_version,
+            get_preservation_version(lsb->lua));
     appendf(&data.keys, "%s", G);
     data.keys.pos += 1;
     data.globals = lua_topointer(lsb->lua, -1);

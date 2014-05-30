@@ -1,3 +1,4 @@
+if _PRESERVATION_VERSION and _PRESERVATION_VERSION ~= 0 then return end
 _G["_VERSION"] = "Lua 5.1"
 if _G["dataRef"] == nil then _G["dataRef"] = circular_buffer.new(3, 3, 1) end
 _G["dataRef"]:set_header(1, "Column_1", "count", "sum")
