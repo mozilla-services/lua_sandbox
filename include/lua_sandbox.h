@@ -78,7 +78,14 @@ LSB_EXPORT lua_sandbox* lsb_create(void* parent,
  *
  * @param lsb Pointer to the sandbox.
  * @param state_file Filename where the global data is read. Use a NULL or empty
- *                   string no data restoration.
+ *                   string for no data restoration.  The global
+ *                   _PRESERVATION_VERSION variable will be examined during
+ *                   restoration; if the previous version does not match the
+ *                   current version the restoration will be aborted and the
+ *                   sandbox will start cleanly. _PRESERVATION_VERSION should be
+ *                   incremented any time an incompatible change is made to the
+ *                   global data schema. If no version is set the check will
+ *                   always succeed and a version of zero is assigned.
  *
  * @return int Zero on success, non-zero on failure.
  */
