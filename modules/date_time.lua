@@ -14,6 +14,7 @@ setfenv(1, M) -- Remove external access to contain everything in the module
 -- Converts a time table into the number of nanoseconds since the UNIX epoch
 function time_to_ns(t)
     if not t then return 0 end
+    if t.time_t then return t.time_t * 1e9 end
 
     local offset = 0
     if t.offset_hour then
@@ -106,17 +107,17 @@ time_second = l.Cg(l.R"05" * l.digit
 
 time_secfrac = l.Cg(l.P"." * l.digit^1 / tonumber, "sec_frac")
 
-timezone = 
-      l.P"UTC" * l.Cg(l.Cc"+", "offset_sign") * l.Cg(l.Cc"00" / tonumber, "offset_hour") * l.Cg(l.Cc"00" / tonumber, "offset_min") 
+timezone =
+      l.P"UTC" * l.Cg(l.Cc"+", "offset_sign") * l.Cg(l.Cc"00" / tonumber, "offset_hour") * l.Cg(l.Cc"00" / tonumber, "offset_min")
     + l.P"PST" * l.Cg(l.Cc"-", "offset_sign") * l.Cg(l.Cc"08" / tonumber, "offset_hour") * l.Cg(l.Cc"00" / tonumber, "offset_min")
-    + l.P"PDT" * l.Cg(l.Cc"-", "offset_sign") * l.Cg(l.Cc"07" / tonumber, "offset_hour") * l.Cg(l.Cc"00" / tonumber, "offset_min") 
-    + l.P"MST" * l.Cg(l.Cc"-", "offset_sign") * l.Cg(l.Cc"07" / tonumber, "offset_hour") * l.Cg(l.Cc"00" / tonumber, "offset_min") 
-    + l.P"MDT" * l.Cg(l.Cc"-", "offset_sign") * l.Cg(l.Cc"06" / tonumber, "offset_hour") * l.Cg(l.Cc"00" / tonumber, "offset_min") 
-    + l.P"CST" * l.Cg(l.Cc"-", "offset_sign") * l.Cg(l.Cc"06" / tonumber, "offset_hour") * l.Cg(l.Cc"00" / tonumber, "offset_min") 
-    + l.P"CDT" * l.Cg(l.Cc"-", "offset_sign") * l.Cg(l.Cc"05" / tonumber, "offset_hour") * l.Cg(l.Cc"00" / tonumber, "offset_min") 
-    + l.P"EST" * l.Cg(l.Cc"-", "offset_sign") * l.Cg(l.Cc"05" / tonumber, "offset_hour") * l.Cg(l.Cc"00" / tonumber, "offset_min") 
-    + l.P"EDT" * l.Cg(l.Cc"-", "offset_sign") * l.Cg(l.Cc"04" / tonumber, "offset_hour") * l.Cg(l.Cc"00" / tonumber, "offset_min") 
-    + l.alpha^-5 * l.Cg(l.Cc"+", "offset_sign") * l.Cg(l.Cc"00" / tonumber, "offset_hour") * l.Cg(l.Cc"00" / tonumber, "offset_min") 
+    + l.P"PDT" * l.Cg(l.Cc"-", "offset_sign") * l.Cg(l.Cc"07" / tonumber, "offset_hour") * l.Cg(l.Cc"00" / tonumber, "offset_min")
+    + l.P"MST" * l.Cg(l.Cc"-", "offset_sign") * l.Cg(l.Cc"07" / tonumber, "offset_hour") * l.Cg(l.Cc"00" / tonumber, "offset_min")
+    + l.P"MDT" * l.Cg(l.Cc"-", "offset_sign") * l.Cg(l.Cc"06" / tonumber, "offset_hour") * l.Cg(l.Cc"00" / tonumber, "offset_min")
+    + l.P"CST" * l.Cg(l.Cc"-", "offset_sign") * l.Cg(l.Cc"06" / tonumber, "offset_hour") * l.Cg(l.Cc"00" / tonumber, "offset_min")
+    + l.P"CDT" * l.Cg(l.Cc"-", "offset_sign") * l.Cg(l.Cc"05" / tonumber, "offset_hour") * l.Cg(l.Cc"00" / tonumber, "offset_min")
+    + l.P"EST" * l.Cg(l.Cc"-", "offset_sign") * l.Cg(l.Cc"05" / tonumber, "offset_hour") * l.Cg(l.Cc"00" / tonumber, "offset_min")
+    + l.P"EDT" * l.Cg(l.Cc"-", "offset_sign") * l.Cg(l.Cc"04" / tonumber, "offset_hour") * l.Cg(l.Cc"00" / tonumber, "offset_min")
+    + l.alpha^-5 * l.Cg(l.Cc"+", "offset_sign") * l.Cg(l.Cc"00" / tonumber, "offset_hour") * l.Cg(l.Cc"00" / tonumber, "offset_min")
 
 timezone_offset = l.Cg(l.S"+-", "offset_sign") * l.Cg(time_hour / tonumber, "offset_hour") * l.Cg(time_minute / tonumber, "offset_min")
 
@@ -171,12 +172,17 @@ strftime_specifiers["j"] = l.P"00" * l.R"19"
                                 + l.S"12" * l.digit * l.digit
                                 + "3" * l.R"05" * l.digit
                                 + "36" * l.R"06"
+strftime_specifiers["k"] = l.Cg(l.S" 1" * l.digit
+                                + "2" * l.R"03", "hour")
+strftime_specifiers["l"] = l.Cg(l.space * l.digit
+                                + "1" * l.R"02", "hour")
 strftime_specifiers["m"] = date_month
 strftime_specifiers["M"] = time_minute
 strftime_specifiers["n"] = l.P"\n"
 strftime_specifiers["p"] = l.Cg(l.P"AM" + "PM", "period")
 strftime_specifiers["r"] = strftime_specifiers["I"] * ":" * time_minute * ":" * time_second * " " * strftime_specifiers["p"]
 strftime_specifiers["R"] = time_hour * ":" * time_minute
+strftime_specifiers["s"] = l.Cg(l.digit^1 / tonumber, "time_t")
 strftime_specifiers["S"] = l.Cg(l.R"05" * l.digit
                            + "6" * l.S"01", "sec")
 strftime_specifiers["t"] = l.P"\t"

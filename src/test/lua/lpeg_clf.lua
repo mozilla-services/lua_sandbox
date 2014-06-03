@@ -201,10 +201,11 @@ function process(tc)
             ,{"%{msec_frac}t"           ,"sec_frac"             ,"010"                          ,0.010}
             ,{"%{usec_frac}t"           ,"sec_frac"             ,"010000"                       ,0.010}
             ,{"%{%d/%b/%Y:%H:%M:%S %z}t","time"                 ,"10/Feb/2014:08:46:41 -0800"   ,1392050801000000000}
+            ,{"%{%s}t"                  ,"time"                 ,"1392050801"                   ,1392050801000000000}
             }
 
             if os.date("%c"):find("^%d") then -- windows
-                tests[54][3] = "10/Feb/2014:08:46:41 PST" 
+                tests[54][3] = "10/Feb/2014:08:46:41 PST"
             end
 
             for i, v in ipairs(tests) do
