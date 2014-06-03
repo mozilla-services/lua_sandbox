@@ -19,13 +19,17 @@ setfenv(1, M) -- Remove external access to contain everything in the module
 
 --[[ Nginx access log grammar generation and parsing --]]
 
+local pct_encoded   = l.P"%" * l.xdigit * l.xdigit
+local unreserved    = l.alnum + l.S"-._~"
+local sub_delims    = l.S"!$&'()*+,;="
+
 local last_literal  = l.space
 local integer       = l.digit^1 / tonumber
 local double        = l.digit^1 * "." * l.digit^1 / tonumber
 local msec_time     = double / dt.seconds_to_ns
 local host          = l.Ct(l.Cg(ip.v4, "value") * l.Cg(l.Cc"ipv4", "representation"))
                     + l.Ct(l.Cg(ip.v6, "value") * l.Cg(l.Cc"ipv6", "representation"))
-                    + l.Ct(l.Cg((l.P(1) - l.S" :\n\t/?#[]@")^1, "value") * l.Cg(l.Cc"hostname", "representation"))
+                    + l.Ct(l.Cg((unreserved + pct_encoded + sub_delims)^1, "value") * l.Cg(l.Cc"hostname", "representation"))
 local http_status   = l.digit * l.digit * l.digit / tonumber
 
 local nginx_error_levels = l.Cg((

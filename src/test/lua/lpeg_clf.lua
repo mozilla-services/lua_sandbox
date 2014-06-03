@@ -171,6 +171,7 @@ function process(tc)
             ,{"%U", "uri"                  ,"uri"                          ,"uri"}
             ,{"%v", "server_name"          ,"example.com"                  ,{"example.com","hostname"}}
             ,{"%V", "server_name"          ,"example.com"                  ,{"example.com","hostname"}}
+            ,{'\\"%V\\"', "server_name"    ,'"example.com"'                ,{"example.com","hostname"}}
             ,{"%X", "connection_status"    ,"X"                            ,"X"}
             ,{"%X", "connection_status"    ,"+"                            ,"+"}
             ,{"%X", "connection_status"    ,"-"                            ,"-"}
