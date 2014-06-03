@@ -73,9 +73,10 @@ function process(tc)
                  "%X", "%y", "%Y", "%z", "%Z", "%%", "test string"}
         else
             formats = {"%a", "%A", "%b", "%B","%c","%C", "%d", "%D", "%e",
-                 "%F", "%g", "%G", "%h", "%H", "%I", "%j", "%m", "%M", "%n", "%p",
-                 "%r", "%R", "%S", "%t", "%T", "%u", "%U", "%V", "%w", "%W", "%x",
-                 "%X", "%y", "%Y", "%z", "%Z", "%%", "test string"}
+                "%F", "%g", "%G", "%h", "%H", "%I", "%j", "%k", "%l", "%m",
+                "%M", "%n", "%p", "%r", "%R", "%s", "%S", "%t", "%T", "%u",
+                "%U", "%V", "%w", "%W", "%x","%X", "%y", "%Y", "%z", "%Z",
+                "%%", "test string", "%~"}
         end
 
         for i,v in ipairs(formats) do
