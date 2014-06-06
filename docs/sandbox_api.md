@@ -31,7 +31,9 @@ By default only the base library is loaded additional libraries must be explicit
   - [bloom_filter](bloom_filter.md) 
   - [circular_buffer](circular_buffer.md) 
   - **cjson** loads the cjson module in a global cjson table. The encode/decode 
-  buffers are limited to the maximum sandbox output_limit. 
+  buffers are limited to the maximum sandbox output_limit. By default a NULL
+  value is not decoded to cjson.null it is simply discarded; if this
+  functionality is desired use cjson.decode_null(true) to enable the behavior.
   http://www.kyne.com.au/~mark/software/lua-cjson-manual.html.
   - [hyperloglog](hyperloglog.md) 
   - **lpeg** loads the Lua Parsing Expression Grammar Library http://www.inf.puc-rio.br/~roberto/lpeg/lpeg.html
