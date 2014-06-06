@@ -3,14 +3,10 @@ require "table"
 local cj = require "cjson"
 
 function process()
-    if cj ~= cjson then
-        return 1
-    end
+    assert(cj == cjson, "cjson not creating a global table")
 
     local value = cjson.decode("[ true, { \"foo\": \"bar\" } ]")
-    if "bar" ~= value[2].foo then
-        return 2
-    end
+    assert("bar" == value[2].foo, string.format("bar: %s", tostring(value[2].foo)))
 
     local ls = "0123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789"
     local t = {}
@@ -18,10 +14,15 @@ function process()
     for i=1, 650 do
         t[#t+1] = ls
     end
-    local success, str = pcall(cj.encode, t) -- exceed the max_output size
-    if success then
-        return 3
-    end
+    local success, str = pcall(cj.encode, t)
+    assert(not success, "should have exceeded the max_output size")
 
+    local null_json = '{"test" : 1, "null" : null}'
+    local value = cjson.decode(null_json)
+    assert(value.null == nil, "null not discarded")
+
+    cjson.decode_null(true)
+    value = cjson.decode(null_json)
+    assert(type(value.null) == "userdata", "null discarded")
     return 0
 end
