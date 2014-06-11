@@ -19,7 +19,6 @@ v4          = d8 * "." * d8 * "." * d8 * "." * d8
 
 local h16   = l.xdigit * l.xdigit^-3
 local hg    = h16 * ":"
-local hgs   = hg - (h16 * "::")
 local ls32  = hg * h16
             + v4
 
