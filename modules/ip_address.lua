@@ -19,18 +19,17 @@ v4          = d8 * "." * d8 * "." * d8 * "." * d8
 
 local h16   = l.xdigit * l.xdigit^-3
 local hg    = h16 * ":"
-local hgs   = hg - (h16 * "::")
 local ls32  = hg * h16
             + v4
 
-v6          = hg    * hg    * hg    * hg    * hg    * hg    * ls32
-+ "::"  * hg    * hg    * hg    * hg    * hg    * ls32
-+ h16^-1   * "::"  * hg    * hg    * hg    * hg    * ls32
-+ (hgs^-1 * h16)^-1   * "::"  * hg    * hg    * hg    * ls32
-+ (hgs^-2 * h16)^-1   * "::"  * hg    * hg    * ls32
-+ (hgs^-3 * h16)^-1   * "::"  * hg    * ls32
-+ (hgs^-4 * h16)^-1   * "::"  * ls32
-+ (hgs^-5 * h16)^-1   * "::"  * h16
-+ (hgs^-6 * h16)^-1   * "::"
+v6          =             hg * hg * hg * hg * hg * hg * ls32
++                       "::" * hg * hg * hg * hg * hg * ls32
++ h16^-1             *  "::" * hg * hg * hg * hg * ls32
++ (hg * hg^-1 + ":") *  ":"  * hg * hg * hg * ls32
++ (hg * hg^-2 + ":") *  ":"  * hg * hg * ls32
++ (hg * hg^-3 + ":") *  ":"  * hg * ls32
++ (hg * hg^-4 + ":") *  ":"  * ls32
++ (hg * hg^-5 + ":") *  ":"  * h16
++ (hg * hg^-6 + ":") *  ":"
 
 return M
