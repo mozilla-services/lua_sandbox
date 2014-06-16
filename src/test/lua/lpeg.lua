@@ -3,7 +3,6 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 require "lpeg"
-require "cjson"
 
 -- csv grammar
 local field = '"' * lpeg.Cs(((lpeg.P(1) - '"') + lpeg.P'""' / '"')^0) * '"' +
@@ -11,6 +10,9 @@ local field = '"' * lpeg.Cs(((lpeg.P(1) - '"') + lpeg.P'""' / '"')^0) * '"' +
 local record = lpeg.Ct(field * (',' * field)^0) * (lpeg.P'\n' + -1)
 
 function process ()
-    write_output(cjson.encode(lpeg.match(record, "1,string with spaces,\"quoted string, with comma and \"\"quoted\"\" text\"")))
+    local t = lpeg.match(record, '1,string with spaces,"quoted string, with comma and ""quoted"" text"')
+    assert(t[1], "1", t[1])
+    assert(t[2], "string with spaces", t[2])
+    assert(t[3], 'quoted string, with comma and "quoted" text', t[3])
     return 0
 end

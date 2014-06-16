@@ -59,23 +59,31 @@ local function validate(tc, fields, t)
     end
 end
 
-function process(tc)
-    if tc == 0 then
-        local t = mysql.slow_query_grammar:match(slow_query_log[tc+1])
-        if not t then return error("no match") end
-        if t.Hostname ~= "127.0.0.1" then return error("Hostname:" .. t.Hostname) end
-        validate(tc, fields, t)
-    elseif tc == 1 then
-        local t = mysql.slow_query_grammar:match(slow_query_log[tc+1])
-        if not t then return error("no match") end
-        if t.Hostname ~= "127.0.0.1" then return error("Hostname:" .. t.Hostname) end
-        validate(tc, fields, t)
-    elseif tc == 2 then
-        local t = mysql.short_slow_query_grammar:match(slow_query_log[tc+1])
-        if not t then return error("no match") end
-        if t.Hostname then return error("Hostname:" .. t.Hostname) end
-        validate(tc, fields, t)
-    end
+local function header()
+    local t = mysql.slow_query_grammar:match(slow_query_log[1])
+    if not t then return error("no match") end
+    if t.Hostname ~= "127.0.0.1" then return error("Hostname:" .. t.Hostname) end
+    validate(tc, fields, t)
+end
 
-   return 0
+local function standard()
+    local t = mysql.slow_query_grammar:match(slow_query_log[2])
+    if not t then return error("no match") end
+    if t.Hostname ~= "127.0.0.1" then return error("Hostname:" .. t.Hostname) end
+    validate(tc, fields, t)
+end
+
+local function short()
+    local t = mysql.short_slow_query_grammar:match(slow_query_log[3])
+    if not t then return error("no match") end
+    if t.Hostname then return error("Hostname:" .. t.Hostname) end
+    validate(tc, fields, t)
+end
+
+function process(tc)
+    header()
+    standard()
+    short()
+
+    return 0
 end
