@@ -6,6 +6,7 @@ require "circular_buffer"
 require "cjson"
 
 local cbuf = circular_buffer.new(1440, 3, 60)
+local benchmark = {Timestamp = 1e9, Fields = {number=1,numbers={value={1,2,3}, representation="count"},string="string",strings={"s1","s2","s3"}, bool=true, bools={true,false,false}}}
 
 function process(tc)
     if tc == 0 then -- lua types
@@ -13,7 +14,7 @@ function process(tc)
     elseif tc == 1 then -- cbuf
         write_output("annotation\n", cbuf)
     elseif tc == 2 then -- heka message
-        local hm = {Timestamp = 1e9, Type="type", Logger="logger", Payload="payload", EnvVersion="env_version", Hostname="hostname", Severity=9, }
+        local hm = {Timestamp = 1e9, Type="type", Logger="logger", Payload="payload", EnvVersion="env_version", Hostname="hostname", Severity=9}
         write_message(hm)
     elseif tc == 3 then -- heka message field
         local hm = {Timestamp = 1e9, Fields = {count=1}}
@@ -28,7 +29,7 @@ function process(tc)
         local hm = {Timestamp = 1e9, Fields = {counts={value={6,7,8},representation="count"}}}
         write_message(hm)
     elseif tc == 7 then -- heka message field all types
-        local hm = {Timestamp = 1e9, Fields = {number=1,numbers={value={1,2,3}, representation="count"},string="string",strings={"s1","s2","s3"}, bool=true, bools={true,false,false}}}
+        local hm = benchmark
         write_message(hm)
     elseif tc == 8 then -- heka message force memmove
         local hm = {Timestamp = 1e9, Fields = {string="0123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789"}}

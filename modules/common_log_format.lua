@@ -304,21 +304,22 @@ local function ua_keyword(kw)
 end
 
 local ua_os_matchers = {
-      ["iPod"]           = "iPod"
-    , ["iPad"]           = "iPad"
-    , ["iPhone"]         = "iPhone"
-    , ["Android"]        = "Android"
-    , ["BlackBerry"]     = "BlackBerry"
-    , ["Linux"]          = "Linux"
-    , ["Macintosh"]      = "Macintosh"
-    , ["FirefoxOS"]      = "Mozilla/5.0 (Mobile; rv:"
-    -- http://en.wikipedia.org/wiki/Microsoft_Windows#Timeline_of_releases
-    , ["Windows 8.1"]    = "Windows NT 6.3"
-    , ["Windows 8"]      = "Windows NT 6.2"
-    , ["Windows 7"]      = "Windows NT 6.1"
-    , ["Windows Vista"]  = "Windows NT 6.0"
-    , ["Windows XP"]     = "Windows NT 5.1"
-    , ["Windows 2000"]   = "Windows NT 5.0"
+    -- search, replace
+      {"iPod"                    ,"iPod"         }
+    , {"iPad"                    ,"iPad"         }
+    , {"iPhone"                  ,"iPhone"       }
+    , {"Android"                 ,"Android"      }
+    , {"BlackBerry"              ,"BlackBerry"   }
+    , {"Linux"                   ,"Linux"        }
+    , {"Macintosh"               ,"Macintosh"    }
+    , {"Mozilla/5.0 (Mobile; rv:","FirefoxOS"    }
+    --http://en.wikipedia.org/wiki/Microsoft_Windows#Timeline_of_releases
+    , {"Windows NT 6.3"          ,"Windows 8.1"  }
+    , {"Windows NT 6.2"          ,"Windows 8"    }
+    , {"Windows NT 6.1"          ,"Windows 7"    }
+    , {"Windows NT 6.0"          ,"Windows Vista"}
+    , {"Windows NT 5.1"          ,"Windows XP"   }
+    , {"Windows NT 5.0"          ,"Windows 2000" }
 }
 
 local ua_browser_matchers = {
@@ -363,9 +364,9 @@ function normalize_user_agent(ua)
     if not ua then return end
 
     local browser, version, os
-    for k, v in pairs(ua_os_matchers) do
-        if ua:find(v, 1, true) then
-            os = k
+    for i, v in ipairs(ua_os_matchers) do
+        if ua:find(v[1], 1, true) then
+            os = v[2]
             break
         end
     end
