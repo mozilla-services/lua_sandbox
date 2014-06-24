@@ -34,7 +34,7 @@ WHERE id = 10;
 ]]
 }
 
-local maria_slow_query_log = {
+local mariadb_slow_query_log = {
 [[
 # User@Host: syncrw[syncrw] @  [127.0.0.1]
 # Thread_id: 110804  Schema: weave0  QC_hit: No
@@ -73,7 +73,7 @@ local fields = {
     {"Rows_sent", 251},
 }
 
-local maria_fields = {
+local mariadb_fields = {
     {"Query_time", 1.178108, "s"},
     {"Rows_examined", 198},
     {"Lock_time", 0.000053, "s"},
@@ -83,7 +83,7 @@ local maria_fields = {
     {"Schema", "weave0"}
 }
 
-local maria_verbose_fields = {
+local mariadb_verbose_fields = {
     {"Query_time", 1.178108, "s"},
     {"Rows_examined", 198},
     {"Lock_time", 0.000053, "s"},
@@ -139,25 +139,25 @@ local function short()
     validate(fields, t)
 end
 
-local function maria_standard()
-    local t = mysql.maria_slow_query_grammar:match(maria_slow_query_log[1])
+local function mariadb_standard()
+    local t = mysql.mariadb_slow_query_grammar:match(mariadb_slow_query_log[1])
     if not t then return error("no match") end
     if t.Hostname ~= "127.0.0.1" then return error("Hostname:" .. t.Hostname) end
-    validate(maria_fields, t)
+    validate(mariadb_fields, t)
 end
 
-local function maria_short()
-    local t = mysql.maria_short_slow_query_grammar:match(maria_slow_query_log[2])
+local function mariadb_short()
+    local t = mysql.mariadb_short_slow_query_grammar:match(mariadb_slow_query_log[2])
     if not t then return error("no match") end
     if t.Hostname then return error("Hostname:" .. t.Hostname) end
-    validate(maria_fields, t)
+    validate(mariadb_fields, t)
 end
 
-local function maria_verbose()
-    local t = mysql.maria_slow_query_grammar:match(maria_slow_query_log[3])
+local function mariadb_verbose()
+    local t = mysql.mariadb_slow_query_grammar:match(mariadb_slow_query_log[3])
     if not t then return error("no match") end
     if t.Hostname ~= "127.0.0.1" then return error("Hostname:" .. t.Hostname) end
-    validate(maria_verbose_fields, t)
+    validate(mariadb_verbose_fields, t)
 end
 
 
@@ -165,9 +165,9 @@ function process(tc)
     header()
     standard()
     short()
-    maria_standard()
-    maria_short()
-    maria_verbose()
+    mariadb_standard()
+    mariadb_short()
+    mariadb_verbose()
 
     return 0
 end

@@ -54,9 +54,9 @@ local full_scan     = l.P"# Full_scan: " * l.Cg(yes_no, "Full_scan")
                     * "  Merge_passes: " * l.Cg(l.digit^1 / tonumber, "Merge_passes") * sep
 
 slow_query_grammar          = l.Ct(time^0 * user * l.Cg(l.Ct(query), "Fields") * use_db^0 * set * admin^0 * sql)
-maria_slow_query_grammar    = l.Ct(time^0 * user * l.Cg(l.Ct(thread_id * query * full_scan^0), "Fields") * use_db^0 * set * admin^0 * sql)
+mariadb_slow_query_grammar  = l.Ct(time^0 * user * l.Cg(l.Ct(thread_id * query * full_scan^0), "Fields") * use_db^0 * set * admin^0 * sql)
 
 short_slow_query_grammar        = l.Ct(l.Cg(l.Ct(query), "Fields") * use_db^0 * set * admin^0 * sql)
-maria_short_slow_query_grammar  = l.Ct(l.Cg(l.Ct(thread_id * query * full_scan^0), "Fields") * use_db^0 * set * admin^0 * sql)
+mariadb_short_slow_query_grammar= l.Ct(l.Cg(l.Ct(thread_id * query * full_scan^0), "Fields") * use_db^0 * set * admin^0 * sql)
 
 return M
