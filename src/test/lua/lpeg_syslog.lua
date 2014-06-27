@@ -51,7 +51,7 @@ end
 
 local function kitchen_sink()
     local grammar = syslog.build_rsyslog_grammar("%HOSTNAME% %SOURCE% %FROMHOST% %FROMHOST-IP% %SYSLOGTAG% %PROGRAMNAME% %PRI% %PRI-TEXT% %IUT% %SYSLOGFACILITY% %SYSLOGFACILITY-TEXT% %SYSLOGPRIORITY% %SYSLOGPRIORITY-TEXT% %TIMEGENERATED% %TIMEREPORTED:::date-mysql% %TIMESTAMP:::date-rfc3339% %PROTOCOL-VERSION% %STRUCTURED-DATA% %APP-NAME% %PROCID% %MSGID% %$NOW% %$YEAR% %$MONTH% %$DAY% %$HOUR% %$HHOUR% %$QHOUR% %$MINUTE% %MSG%\n")
-    local log = 'trink-x230 trink-x230 trink-x230 127.0.0.1 kernel: kernel 6 kern.info<6> 1 0 kern 6 info Feb 10 09:20:53 20140210092053 2014-02-10T09:20:53.559934-08:00 0 - kernel  - imklog 2014-02-10 2014 02 10 09 00 01 20 imklog 5.8.6, log source = /proc/kmsg started.\n'
+    local log = 'trink-x230 trink-x230 trink-x230 127.0.0.1 kernel: kernel 6 kern.info<6> 1 0 kern 6 info Feb 10 09:20:53 20140210092053 2014-02-10T09:20:53.559934-08:00 0 - kernel  - 2014-02-10 2014 02 10 09 00 01 20 imklog 5.8.6, log source = /proc/kmsg started.\n'
     local fields = grammar:match(log)
     assert(fields.hostname == "trink-x230", fields.hostname)
     assert(fields.source == "trink-x230", fields.source)
@@ -73,8 +73,8 @@ local function kitchen_sink()
     assert(fields["protocol-version"] == "0", fields["protocol-version"])
     assert(fields["structured-data"] == "-", fields["structured-data"])
     assert(fields["app-name"] == "kernel", fields["app-name"])
-    assert(fields.procid == "-", fields.procid)
-    assert(fields.msgid == "imklog", fields.msgid)
+    assert(fields.procid == "", fields.procid)
+    assert(fields.msgid == "-", fields.msgid)
     assert(fields["$now"] == "2014-02-10", fields["$now"])
     assert(fields["$year"] == "2014")
     assert(fields["$month"] == "02")
@@ -86,12 +86,25 @@ local function kitchen_sink()
     assert(fields.msg == "imklog 5.8.6, log source = /proc/kmsg started.", fields.msg)
 end
 
+local function no_colon_in_tag()
+    local grammar = syslog.build_rsyslog_grammar('<%PRI%>%TIMESTAMP:::date-rfc3339% %HOSTNAME% %syslogtag:1:32%%msg:::sp-if-no-1st-sp%%msg%')
+    local log = '<166>2014-06-26T23:13:23-07:00 example.com     at java.net.SocketInputStream.socketRead0(Native Method)'
+    local fields = grammar:match(log)
+    assert(fields.msg == "at java.net.SocketInputStream.socketRead0(Native Method)", fields.msg)
+    assert(fields.timestamp == 1403849603000000000, fields.timestamp)
+    assert(fields.syslogtag.programname == "", fields.syslogtag.programname)
+    assert(fields.pri.severity == 6, fields.pri.severity)
+    assert(fields.pri.facility == 20, fields.pri.facility)
+    assert(fields.hostname == "example.com", fields.hostname)
+end
+
 function process()
     traditional_file_format()
     file_format()
     forward_format()
     traditional_forward_format()
     kitchen_sink()
+    no_colon_in_tag()
 
     return 0
 end
