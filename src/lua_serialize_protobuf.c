@@ -91,6 +91,7 @@ int pb_write_double(output_data* d, double i)
     if (realloc_output(d, needed)) return 1;
   }
 
+  // todo add big endian support if necessary
   memcpy(&d->data[d->pos], &i, needed);
   d->pos += needed;
   return 0;
@@ -176,24 +177,13 @@ int encode_int(lua_sandbox* lsb, output_data* d, char id, const char* name,
 }
 
 
-int encode_double(lua_sandbox* lsb, output_data* d, char id)
-{
-  // todo add big endian support if necessary
-  double n = lua_tonumber(lsb->lua, -1);
-  if (pb_write_tag(d, id, 1)) return 1;
-  return pb_write_double(d, n);
-}
-
-
 int encode_field_array(lua_sandbox* lsb, output_data* d, int t,
                        const char* representation)
 {
-  int result = 0, first = 1;
+  int result = 0, first = (int)lua_objlen(lsb->lua, -1);
   lua_checkstack(lsb->lua, 2);
   lua_pushnil(lsb->lua);
   while (result == 0 && lua_next(lsb->lua, -2) != 0) {
-    // numerics are not packed, the space savings aren't worth the extra
-    // buffer manipulation
     if (lua_type(lsb->lua, -1) != t) {
       snprintf(lsb->error_message, LSB_ERROR_SIZE, "array has mixed types");
       return 1;
@@ -252,8 +242,10 @@ int encode_field_value(lua_sandbox* lsb, output_data* d, int first,
           return 1;
         }
       }
+      if (pb_write_tag(d, 7, 2)) return 1;
+      if (pb_write_varint(d, first * sizeof(double))) return 1;
     }
-    result = encode_double(lsb, d, 7);
+    result = pb_write_double(d, lua_tonumber(lsb->lua, -1));
     break;
   case LUA_TBOOLEAN:
     if (first) {
@@ -265,8 +257,9 @@ int encode_field_value(lua_sandbox* lsb, output_data* d, int first,
           return 1;
         }
       }
+      if (pb_write_tag(d, 8, 2)) return 1;
+      if (pb_write_varint(d, first)) return 1;
     }
-    if (pb_write_tag(d, 8, 0)) return 1;
     result = pb_write_bool(d, lua_toboolean(lsb->lua, -1));
     break;
   case LUA_TTABLE:
@@ -274,16 +267,26 @@ int encode_field_value(lua_sandbox* lsb, output_data* d, int first,
       lua_rawgeti(lsb->lua, -1, 1);
       int t = lua_type(lsb->lua, -1);
       lua_pop(lsb->lua, 1); // remove the array test value
-      if (LUA_TNIL == t) {
+      switch (t) {
+      case LUA_TNIL:
         result = encode_field_object(lsb, d);
-      } else {
+        break;
+      case LUA_TNUMBER:
+      case LUA_TSTRING:
+      case LUA_TBOOLEAN:
         result = encode_field_array(lsb, d, t, representation);
+        break;
+      default:
+        snprintf(lsb->error_message, LSB_ERROR_SIZE,
+                 "unsupported array type: %s", lua_typename(lsb->lua, t));
+        result = 1;
+        break;
       }
     }
     break;
   default:
     snprintf(lsb->error_message, LSB_ERROR_SIZE, "unsupported type: %s",
-             lua_typename(lsb->lua,t));
+             lua_typename(lsb->lua, t));
     result = 1;
   }
   return result;

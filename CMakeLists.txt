@@ -7,7 +7,7 @@ project(lua_sandbox C)
 set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "Generic Lua sandbox for dynamic data analysis")
 set(CPACK_PACKAGE_VERSION_MAJOR 0)
 set(CPACK_PACKAGE_VERSION_MINOR 7)
-set(CPACK_PACKAGE_VERSION_PATCH 0)
+set(CPACK_PACKAGE_VERSION_PATCH 1)
 
 option(LUA_JIT "Enable LuaJIT" off)
 if(LUA_JIT)
