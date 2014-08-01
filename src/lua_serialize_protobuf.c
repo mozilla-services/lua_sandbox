@@ -184,8 +184,6 @@ int encode_field_array(lua_sandbox* lsb, output_data* d, int t,
   lua_checkstack(lsb->lua, 2);
   lua_pushnil(lsb->lua);
   while (result == 0 && lua_next(lsb->lua, -2) != 0) {
-    // numerics are not packed, the space savings aren't worth the extra
-    // buffer manipulation
     if (lua_type(lsb->lua, -1) != t) {
       snprintf(lsb->error_message, LSB_ERROR_SIZE, "array has mixed types");
       return 1;
