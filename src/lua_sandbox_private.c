@@ -27,7 +27,10 @@
 #else
 #define PATH_DELIMITER '/'
 #endif
-#define MAX_PATH 255
+
+#ifndef MAX_PATH
+#define MAX_PATH 260
+#endif
 
 const char* disable_none[] = { NULL };
 const char* package_table = "package";
