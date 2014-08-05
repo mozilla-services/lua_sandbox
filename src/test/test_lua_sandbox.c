@@ -713,7 +713,7 @@ static char* test_errors()
     , "process() lua/errors.lua:30: lua/bad_module.lua:1: attempt to perform arithmetic on global 'nilvalue' (a nil value)"
 #endif
     , "process() lua/errors.lua:32: invalid module name '../invalid'"
-    , "process() lua/errors.lua:34: require_path exceeded 255"
+    , "process() lua/errors.lua:34: require_path exceeded 260"
     , "process() lua/errors.lua:37: package table is missing"
     , "process() lua/errors.lua:40: package.loaded table is missing"
     , NULL
