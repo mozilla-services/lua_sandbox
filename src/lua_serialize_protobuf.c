@@ -242,8 +242,12 @@ int encode_field_value(lua_sandbox* lsb, output_data* d, int first,
           return 1;
         }
       }
-      if (pb_write_tag(d, 7, 2)) return 1;
-      if (pb_write_varint(d, first * sizeof(double))) return 1;
+      if (1 == first) {
+        if (pb_write_tag(d, 7, 1)) return 1;
+      } else {
+        if (pb_write_tag(d, 7, 2)) return 1;
+        if (pb_write_varint(d, first * sizeof(double))) return 1;
+      }
     }
     result = pb_write_double(d, lua_tonumber(lsb->lua, -1));
     break;
@@ -257,8 +261,12 @@ int encode_field_value(lua_sandbox* lsb, output_data* d, int first,
           return 1;
         }
       }
-      if (pb_write_tag(d, 8, 2)) return 1;
-      if (pb_write_varint(d, first)) return 1;
+      if (1 == first) {
+        if (pb_write_tag(d, 8, 0)) return 1;
+      } else {
+        if (pb_write_tag(d, 8, 2)) return 1;
+        if (pb_write_varint(d, first)) return 1;
+      }
     }
     result = pb_write_bool(d, lua_toboolean(lsb->lua, -1));
     break;

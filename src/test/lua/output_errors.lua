@@ -25,6 +25,9 @@ function process(tc)
     elseif tc == 5 then -- overflow
         local cb = circular_buffer.new(1000, 1, 60);
         write_output(cb)
+    elseif tc == 6 then -- invalid array type
+        local hm = {Timestamp = 1e9, Fields = {counts={{1},{2}}}}
+        write_message(hm)
     end
     return 0
 end
