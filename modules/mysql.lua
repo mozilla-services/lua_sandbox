@@ -12,7 +12,7 @@ setfenv(1, M) -- Remove external access to contain everything in the module
 
 local space         = l.space^1
 local sep           = l.P"\n"
-local sql_end       = l.P";\n"
+local sql_end       = l.P";" * (l.P"\n" + -1)
 local line          = (l.P(1) - sep)^0 * sep
 local float         = l.digit^1 * "." * l.digit^1
 
