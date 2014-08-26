@@ -35,7 +35,7 @@ By default only the base library is loaded additional libraries must be explicit
     - The encode buffer is limited to the sandbox output_limit.
     - The decode buffer will be roughly limited to one half of the sandbox memory_limit.
     - The NULL value is not decoded to cjson.null it is simply discarded.
-      If this functionality is desired use cjson.decode_null(true) to enable the behavior.
+      If the original behavior is desired use cjson.decode_null(true) to enable NULL decoding.
     - The new() method has been disabled so only a single cjson parser can be created.
   - [hyperloglog](hyperloglog.md)
   - **lpeg** loads the Lua Parsing Expression Grammar Library http://www.inf.puc-rio.br/~roberto/lpeg/lpeg.html
