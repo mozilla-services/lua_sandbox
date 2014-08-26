@@ -447,6 +447,7 @@ static char* test_output_errors()
     , "process() lua/output_errors.lua:24: bad argument #1 to 'write_output' (unknown userdata type)"
     , "process() lua/output_errors.lua:27: output_limit exceeded"
     , "process() lua/output_errors.lua:30: write_message() could not encode protobuf - unsupported array type: table"
+    , "process() lua/output_errors.lua:36: strbuf max_size exceeded"
     , NULL
   };
 
@@ -674,7 +675,7 @@ static char* test_cjson()
 {
 
   lua_sandbox* sb = lsb_create(NULL, "lua/cjson.lua", "../../modules", 128000,
-                               10000, 64512);
+                               10000, 64);
   mu_assert(sb, "lsb_create() received: NULL");
 
   int result = lsb_init(sb, NULL);
