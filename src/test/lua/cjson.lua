@@ -30,5 +30,7 @@ function process()
     assert(#t == 5, "could not decode a JSON string bigger than the output buffer")
     local ok, json = pcall(cjson.encode, t)
     assert(not ok, "could encode an array bigger than the the output buffer")
+    assert(not cjson.new)
+
     return 0
 end
