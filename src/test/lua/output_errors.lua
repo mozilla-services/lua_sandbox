@@ -2,9 +2,9 @@
 -- License, v. 2.0. If a copy of the MPL was not distributed with this
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+require "cjson"
 require "circular_buffer"
 require "lpeg"
-
 function process(tc)
     if tc == 0 then -- error internal reference
         output({})
@@ -28,6 +28,12 @@ function process(tc)
     elseif tc == 6 then -- invalid array type
         local hm = {Timestamp = 1e9, Fields = {counts={{1},{2}}}}
         write_message(hm)
+    elseif tc == 7 then -- overflow cjson encode buffer
+        local t = {}
+        for i=1, 10 do
+            t[#t+1] = "this is a test"
+        end
+        cjson.encode(t)
     end
     return 0
 end

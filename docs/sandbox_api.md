@@ -2,11 +2,11 @@ Sandbox API
 ===========
 
 Sandboxes provide a dynamic and isolated execution environment
-for data parsing, transformation, and analysis.  They allow access to data 
+for data parsing, transformation, and analysis.  They allow access to data
 without jeopardizing the integrity or performance of the processing
-infrastructure. This broadens the audience that the data can be 
-exposed to and facilitates new uses of the data (i.e. debugging, monitoring, 
-dynamic provisioning,  SLA analysis, intrusion detection, ad-hoc reporting, 
+infrastructure. This broadens the audience that the data can be
+exposed to and facilitates new uses of the data (i.e. debugging, monitoring,
+dynamic provisioning,  SLA analysis, intrusion detection, ad-hoc reporting,
 etc.)
 
 Features
@@ -15,8 +15,8 @@ Features
 - fast - microsecond execution times
 - stateful - ability to resume where it left off after a restart/reboot
 - isolated - failures are contained and malfunctioning sandboxes are terminated.
-  Containment is defined in terms of restriction to the operating system, 
-  file system, libraries, memory use, Lua instruction use, and output size. 
+  Containment is defined in terms of restriction to the operating system,
+  file system, libraries, memory use, Lua instruction use, and output size.
 
 Functions exposed to Lua by the core sandbox
 ============================================
@@ -28,14 +28,16 @@ By default only the base library is loaded additional libraries must be explicit
 
 - libraryName (string)
 
-  - [bloom_filter](bloom_filter.md) 
-  - [circular_buffer](circular_buffer.md) 
-  - **cjson** loads the cjson module in a global cjson table. The encode/decode 
-  buffers are limited to the maximum sandbox output_limit. By default a NULL
-  value is not decoded to cjson.null it is simply discarded; if this
-  functionality is desired use cjson.decode_null(true) to enable the behavior.
-  http://www.kyne.com.au/~mark/software/lua-cjson-manual.html.
-  - [hyperloglog](hyperloglog.md) 
+  - [bloom_filter](bloom_filter.md)
+  - [circular_buffer](circular_buffer.md)
+  - **cjson** http://www.kyne.com.au/~mark/software/lua-cjson-manual.html. With the following modifications:
+    - Loads the cjson module in a global cjson table
+    - The encode buffer is limited to the sandbox output_limit.
+    - The decode buffer will be roughly limited to one half of the sandbox memory_limit.
+    - The NULL value is not decoded to cjson.null it is simply discarded.
+      If this functionality is desired use cjson.decode_null(true) to enable the behavior.
+    - The new() method has been disabled so only a single cjson parser can be created.
+  - [hyperloglog](hyperloglog.md)
   - **lpeg** loads the Lua Parsing Expression Grammar Library http://www.inf.puc-rio.br/~roberto/lpeg/lpeg.html
   - **math**
   - **os**
@@ -44,15 +46,15 @@ By default only the base library is loaded additional libraries must be explicit
   - _user provided_
 
 *Return*
-- a table - For non user provided libraries the table is also globally registered 
-    with the library name.  User provided libraries may implement there own semantics 
+- a table - For non user provided libraries the table is also globally registered
+    with the library name.  User provided libraries may implement there own semantics
     i.e. the grammar libraries return a table but do not globally register the table name
     (see the individual module documentation for the correct usage).
 
 ____
 **output(arg0, arg1, ...argN)**
-    Appends data to the output buffer, which cannot exceed the output_limit 
-    configuration parameter. See lsb_get_output() to connect the output to the 
+    Appends data to the output buffer, which cannot exceed the output_limit
+    configuration parameter. See lsb_get_output() to connect the output to the
     host application.
 
 *Arguments*
@@ -66,7 +68,7 @@ ____
 
 Lua functions exposed to C by the core sandbox
 ==============================================
-There an no functions exposed by default, see lsb_pcall_setup() and 
+There are no functions exposed by default, see lsb_pcall_setup() and
 lsb_pcall_teardown() when defining an API.
 
 How to interact with the sandbox (creating an API)

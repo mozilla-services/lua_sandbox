@@ -15,8 +15,6 @@ xxhash.c
 redis_hyperloglog.c
 )
 
-add_definitions(-DLUA_OUTPUT=${LUA_OUTPUT})
-
 if(MSVC)
     add_definitions(-D_CRT_SECURE_NO_WARNINGS)
     set(LUA_SANDBOX_LIBS
