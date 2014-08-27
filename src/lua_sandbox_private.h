@@ -12,7 +12,7 @@
 #include <lua.h>
 #include "lua_sandbox.h"
 
-#define OUTPUT_SIZE 64
+#define OUTPUT_SIZE 1024
 
 #ifdef _WIN32
 #define snprintf _snprintf
@@ -159,7 +159,7 @@ int output(lua_State* lua);
  *
  * @param lua Pointer to the Lua state.
  *
- * @return int Returns 1 value on the stack (for the standard modules a table 
+ * @return int Returns 1 value on the stack (for the standard modules a table
  *         for the LPEG grammars, userdata).
  */
 int require_library(lua_State* lua);

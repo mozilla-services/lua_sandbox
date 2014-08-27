@@ -37,6 +37,7 @@ By default only the base library is loaded additional libraries must be explicit
     - The NULL value is not decoded to cjson.null it is simply discarded.
       If the original behavior is desired use cjson.decode_null(true) to enable NULL decoding.
     - The new() method has been disabled so only a single cjson parser can be created.
+    - The encode_keep_buffer() method has been disabled (the buffer is always reused).
   - [hyperloglog](hyperloglog.md)
   - **lpeg** loads the Lua Parsing Expression Grammar Library http://www.inf.puc-rio.br/~roberto/lpeg/lpeg.html
   - **math**
