@@ -36,15 +36,6 @@ lua_sandbox* lsb_create(void* parent,
     return NULL;
   }
 
-  if (memory_limit > LSB_MEMORY || instruction_limit > LSB_INSTRUCTION
-      || output_limit > LSB_OUTPUT) {
-    return NULL;
-  }
-
-  if (output_limit < OUTPUT_SIZE) {
-    output_limit = OUTPUT_SIZE;
-  }
-
 #if _WIN32
   if (_putenv("TZ=UTC") != 0) {
     return NULL;
@@ -79,7 +70,11 @@ lua_sandbox* lsb_create(void* parent,
   lsb->error_message[0] = 0;
   lsb->output.pos = 0;
   lsb->output.maxsize = output_limit;
-  lsb->output.size = OUTPUT_SIZE;
+  if (output_limit && output_limit < OUTPUT_SIZE) {
+    lsb->output.size = output_limit;
+  } else {
+    lsb->output.size = OUTPUT_SIZE;
+  }
   lsb->output.data = malloc(lsb->output.size);
   size_t len = strlen(lua_file);
   lsb->lua_file = malloc(len + 1);

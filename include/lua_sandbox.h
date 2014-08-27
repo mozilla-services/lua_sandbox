@@ -32,11 +32,6 @@ typedef enum {
   LSB_UT_MAX
 } lsb_usage_type;
 
-#define LSB_MEMORY 1024 * 1024 * 8
-#define LSB_INSTRUCTION 1000000
-#ifndef LSB_OUTPUT
-#define LSB_OUTPUT 1024 * 63
-#endif
 #define LSB_ERROR_SIZE 256
 
 #ifdef _WIN32

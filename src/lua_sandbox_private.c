@@ -242,7 +242,7 @@ int output(lua_State* lua)
 
 LUALIB_API int (luaopen_cjson)(lua_State* L);
 LUALIB_API int (luaopen_lpeg)(lua_State* L);
-int set_encode_max_buffer(lua_State *L, int index, int max_size);
+int set_encode_max_buffer(lua_State *L, int index, unsigned maxsize);
 
 int require_library(lua_State* lua)
 {
@@ -289,9 +289,9 @@ int require_library(lua_State* lua)
     }
     lua_sandbox* lsb = (lua_sandbox*)luserdata;
 
-    const char* disable[] = { "new", NULL };
+    const char* disable[] = { "new", "encode_keep_buffer", NULL };
     load_library(lua, name, luaopen_cjson, disable);
-    if (set_encode_max_buffer(lua, -1, (int)lsb->usage[LSB_UT_OUTPUT][LSB_US_LIMIT])) {
+    if (set_encode_max_buffer(lua, -1, lsb->output.maxsize)) {
       return luaL_error(lua, "cjson encode buffer could not be configured");
     }
     lua_pushvalue(lua, -1);
