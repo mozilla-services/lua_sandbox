@@ -380,7 +380,7 @@ static char* test_output()
     , NULL
   };
 
-  const unsigned output_size = 63 * 1024;
+  enum {output_size = 63 * 1024};
 
   lua_sandbox* sb = lsb_create(NULL, "lua/output.lua", "../../modules", 0, 0
                                , output_size);
