@@ -127,7 +127,7 @@ local function lookup_time_format(property)
 end
 
 -- http://rsyslog-5-8-6-doc.neocities.org/property_replacer.html
-local programname = (printusascii - l.S" :[/")^0
+local programname = (printusascii - l.S" :[")^0
 local rsyslog_properties = {
    -- special case msg since the rsyslog template can break the rfc5424 msg rules
    rawmsg                  = octet^0,
