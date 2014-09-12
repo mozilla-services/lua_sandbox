@@ -1266,7 +1266,7 @@ static char* benchmark_lpeg_decoder()
 
 static char* benchmark_lua_types_output()
 {
-  int iter = 10000;
+  int iter = 1000000;
 
   lua_sandbox* sb = lsb_create(NULL, "lua/output.lua", "../../modules",
                                100000, 1000, 1024 * 63);
@@ -1303,7 +1303,7 @@ static char* benchmark_cbuf_output()
 
   clock_t t = clock();
   for (int x = 0; x < iter; ++x) {
-    mu_assert(0 == process(sb, 0), "%s", lsb_get_error(sb));
+    mu_assert(0 == process(sb, 1), "%s", lsb_get_error(sb));
   }
   t = clock() - t;
   e = lsb_destroy(sb, NULL);
@@ -1317,19 +1317,18 @@ static char* benchmark_cbuf_output()
 
 static char* benchmark_message_output()
 {
-  int iter = 10000;
+  int iter = 1000000;
 
   lua_sandbox* sb = lsb_create(NULL, "lua/output.lua", "../../modules", 0, 0, 0);
   mu_assert(sb, "lsb_create() received: NULL");
   int result = lsb_init(sb, NULL);
   mu_assert(result == 0, "lsb_init() received: %d %s", result,
             lsb_get_error(sb));
-  lsb_add_function(sb, &write_output, "write_output");
   lsb_add_function(sb, &write_message, "write_message");
 
   clock_t t = clock();
   for (int x = 0; x < iter; ++x) {
-    mu_assert(0 == process(sb, 0), "%s", lsb_get_error(sb));
+    mu_assert(0 == process(sb, 7), "%s", lsb_get_error(sb));
   }
   t = clock() - t;
   e = lsb_destroy(sb, NULL);
