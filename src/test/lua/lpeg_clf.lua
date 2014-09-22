@@ -58,7 +58,7 @@ end
 
 local function nginx_formats()
     local tests = { -- format, input, result
-     {'"$arg_generic"'          ,'"test item"'                  ,"test item"}
+     {'"$arg_generic"'          ,'"test \\"item\\""'            ,'test \\"item\\"'}
     ,{"$binary_remote_addr"     ,"aaaa"                         ,"aaaa"}
     ,{"$body_bytes_sent"        ,"23"                           ,{23,"B"}}
     ,{"$bytes_sent"             ,"24"                           ,{24,"B"}}
@@ -262,6 +262,7 @@ local function apache_formats()
     ,{"%{usec_frac}t"           ,"sec_frac"             ,"010000"                       ,0.010}
     ,{"%{%d/%b/%Y:%H:%M:%S %z}t","time"                 ,"10/Feb/2014:08:46:41 -0800"   ,1392050801000000000}
     ,{"%{%s}t"                  ,"time"                 ,"1392050801"                   ,1392050801000000000}
+    ,{'"%r"'                    , "request"             ,'"test \\"item\\""'            ,'test \\"item\\"'}
     }
 
     if os.date("%c"):find("^%d") then -- windows

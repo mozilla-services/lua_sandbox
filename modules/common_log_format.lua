@@ -118,7 +118,11 @@ local nginx_format_variables = {
 local function nginx_lookup_grammar(var)
     local g = nginx_format_variables[var]
     if not g then
-        g = l.Cg((l.P(1) - last_literal)^0, var) -- todo may need to support escaped literals
+        if last_literal ~= '"' then
+            g = l.Cg((l.P(1) - last_literal)^0, var)
+        else
+            g = l.Cg((l.P'\\"' + (l.P(1) - l.P'"'))^0, var)
+        end
     elseif var == "time_local" or var == "time_iso8601" or var == "msec" then
         g = l.Cg(g, "time")
     else
@@ -219,7 +223,11 @@ local function apache_lookup_variable(var)
     if not g then
         error("unknown variable: " .. var)
     elseif type(g) == "string" then
-        g = l.Cg((l.P(1) - last_literal)^0, g) -- todo may need to support escaped literals
+        if last_literal ~= '"' then
+            g = l.Cg((l.P(1) - last_literal)^0, g)
+        else
+            g = l.Cg((l.P'\\"' + (l.P(1) - l.P'"'))^0, g)
+        end
     end
 
    return g
