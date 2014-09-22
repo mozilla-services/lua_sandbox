@@ -115,14 +115,18 @@ local nginx_format_variables = {
     --upstream_http_* handled by the generic grammar
 }
 
+local function get_string_grammar(s)
+    if last_literal ~= '"' then
+        return l.Cg((l.P(1) - last_literal)^0, s)
+    else
+        return l.Cg((l.P'\\"' + (l.P(1) - l.P'"'))^0, s)
+    end
+end
+
 local function nginx_lookup_grammar(var)
     local g = nginx_format_variables[var]
     if not g then
-        if last_literal ~= '"' then
-            g = l.Cg((l.P(1) - last_literal)^0, var)
-        else
-            g = l.Cg((l.P'\\"' + (l.P(1) - l.P'"'))^0, var)
-        end
+        g = get_string_grammar(var)
     elseif var == "time_local" or var == "time_iso8601" or var == "msec" then
         g = l.Cg(g, "time")
     else
@@ -223,18 +227,14 @@ local function apache_lookup_variable(var)
     if not g then
         error("unknown variable: " .. var)
     elseif type(g) == "string" then
-        if last_literal ~= '"' then
-            g = l.Cg((l.P(1) - last_literal)^0, g)
-        else
-            g = l.Cg((l.P'\\"' + (l.P(1) - l.P'"'))^0, g)
-        end
+        g = get_string_grammar(g)
     end
 
    return g
 end
 
 local function apache_lookup_argument(t)
-   local f = apache_format_arguments[t.variable]
+    local f = apache_format_arguments[t.variable]
     if not f then
         error("unknown variable: " .. t.variable)
     end
@@ -243,7 +243,7 @@ local function apache_lookup_argument(t)
     if not g then
         error(string.format("variable: %s invalid arguments: %s", t.variable, t.arguments))
     elseif type(g) == "string" then
-        g = l.Cg((l.P(1) - last_literal)^0, g)
+        g = get_string_grammar(g)
     end
 
     return g
