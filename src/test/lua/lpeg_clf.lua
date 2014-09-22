@@ -263,6 +263,7 @@ local function apache_formats()
     ,{"%{%d/%b/%Y:%H:%M:%S %z}t","time"                 ,"10/Feb/2014:08:46:41 -0800"   ,1392050801000000000}
     ,{"%{%s}t"                  ,"time"                 ,"1392050801"                   ,1392050801000000000}
     ,{'"%r"'                    , "request"             ,'"test \\"item\\""'            ,'test \\"item\\"'}
+    ,{'"%{Test-item}o"'         ,"sent_http_test_item"  ,'"test \\"item\\""'            ,'test \\"item\\"'}
     }
 
     if os.date("%c"):find("^%d") then -- windows
