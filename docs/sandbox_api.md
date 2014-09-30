@@ -27,7 +27,9 @@ By default only the base library is loaded additional libraries must be explicit
 *Arguments*
 
 - libraryName (string)
-
+  - **base library**
+    - The standard require() function is overridden by this version.
+    - Disabled functions: collectgarbage, coroutine, dofile, load, loadfile, loadstring, module, print.
   - [bloom_filter](bloom_filter.md)
   - [circular_buffer](circular_buffer.md)
   - **cjson** http://www.kyne.com.au/~mark/software/lua-cjson-manual.html. With the following modifications:
@@ -36,12 +38,14 @@ By default only the base library is loaded additional libraries must be explicit
     - The decode buffer will be roughly limited to one half of the sandbox memory_limit.
     - The NULL value is not decoded to cjson.null it is simply discarded.
       If the original behavior is desired use cjson.decode_null(true) to enable NULL decoding.
-    - The new() method has been disabled so only a single cjson parser can be created.
-    - The encode_keep_buffer() method has been disabled (the buffer is always reused).
+    - The new() function has been disabled so only a single cjson parser can be created.
+    - The encode_keep_buffer() function has been disabled (the buffer is always reused).
   - [hyperloglog](hyperloglog.md)
   - **lpeg** loads the Lua Parsing Expression Grammar Library http://www.inf.puc-rio.br/~roberto/lpeg/lpeg.html
   - **math**
   - **os**
+    - The local timezone is set to UTC in all sandboxes.
+    - Disabled functions: execute, exit, remove, rename, setlocale, tmpname.
   - **string**
   - **table**
   - _user provided_
