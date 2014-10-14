@@ -9,7 +9,9 @@ local f = {}
 
 function process ()
     util.table_to_fields(t, f, nil)
-    output(f)
-    write()
+    assert(f.toplevel == 0, f.toplevel)
+    assert(f["struct.item0"] == 0, f["struct.item0"])
+    assert(f["struct.item1"] == 1, f["struct.item1"])
+    assert(f["struct.item2.nested"] == "n1", f["struct.item2.nested"])
     return 0
 end

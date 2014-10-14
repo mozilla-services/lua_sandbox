@@ -26,7 +26,7 @@ struct bloom_filter
   size_t        bits;
   unsigned int  hashes;
   double        probability;
-  char          data[1];
+  char          data[];
 };
 
 
@@ -39,12 +39,12 @@ static int bloom_filter_new(lua_State* lua)
   double probability =  luaL_checknumber(lua, 2);
   luaL_argcheck(lua, 0 < probability && 1 > probability, 2, "probability must be between 0 and 1");
 
-  size_t bits = ceil(items * log(probability) / log(1 / pow(2, log(2))));
-  size_t bytes = ceil((double)bits / CHAR_BIT);
-  unsigned int hashes = round(log(2) * bits/items);
+  size_t bits = (size_t)ceil(items * log(probability) / log(1 / pow(2, log(2))));
+  size_t bytes = (size_t)ceil((double)bits / CHAR_BIT);
+  unsigned int hashes = (unsigned int)round(log(2) * bits/items);
 
   // subtract 1 for the byte already included in the struct
-  size_t nbytes = sizeof(bloom_filter) - sizeof(char) + bytes;
+  size_t nbytes = sizeof(bloom_filter) + bytes;
   bloom_filter* bf = (bloom_filter*)lua_newuserdata(lua, nbytes);
   bf->items = items;
   bf->bits = bits;
@@ -172,26 +172,7 @@ int serialize_bloom_filter(const char* key, bloom_filter* bf, output_data* outpu
   if (appendf(output, "%s:fromstring(\"", key)) {
     return 1;
   }
-
-  for (unsigned i = 0; i < bf->bytes; ++i) {
-    switch (bf->data[i]) {
-    case '\n':
-      appends(output, "\\n");
-      break;
-    case '\r':
-      appends(output, "\\r");
-      break;
-    case '"':
-      appends(output, "\\\"");
-      break;
-    case '\\':
-      appends(output, "\\\\");
-      break;
-    default:
-      appendc(output, bf->data[i]);
-      break;
-    }
-  }
+  if (serialize_binary(bf->data, bf->bytes, output)) return 1;
   if (appends(output, "\")\n")) {
     return 1;
   }

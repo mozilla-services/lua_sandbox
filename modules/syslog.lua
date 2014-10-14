@@ -127,7 +127,7 @@ local function lookup_time_format(property)
 end
 
 -- http://rsyslog-5-8-6-doc.neocities.org/property_replacer.html
-local programname = (1 - l.S" :[/")^0
+local programname = (printusascii - l.S" :[")^0
 local rsyslog_properties = {
    -- special case msg since the rsyslog template can break the rfc5424 msg rules
    rawmsg                  = octet^0,
@@ -135,7 +135,7 @@ local rsyslog_properties = {
    source                  = hostname,
    fromhost                = hostname,
    ["fromhost-ip"]         = ip.v4 + ip.v6,
-   syslogtag               = l.Ct(l.Cg(programname, "programname") * ("[" * l.Cg(l.digit^1 / tonumber, "pid") * "]")^-1 * ":"),
+   syslogtag               = l.Ct(l.Cg(programname, "programname") * ("[" * l.Cg(l.digit^1 / tonumber, "pid") * "]")^-1 * l.P":"^-1),
    programname             = programname,
    pri                     = pri, -- pri table with facility and severity keys
    ["pri-text"]            = syslog_facility_text * "." * syslog_severity_text * "<" * pri * ">",
@@ -167,7 +167,7 @@ local rsyslog_properties = {
 }
 
 local function space_grammar()
-    return l.space^1
+    return l.space
 end
 
 local last_literal = l.P"\n"
@@ -218,7 +218,7 @@ end
 
 -- http://rsyslog-5-8-6-doc.neocities.org/rsyslog_conf_templates.html
 function build_rsyslog_grammar(template)
-    local ws = l.space^1 / space_grammar
+    local ws = l.space / space_grammar
     local options = l.P":" * l.Cg((1 - l.P"%")^0, "options") -- todo support multiple options
     local tochar = l.Cg((1 - l.S":%")^0, "tochar")
     local fromchar = l.Cg((1 - l.P":")^0, "fromchar")

@@ -626,16 +626,16 @@ static double rank_data(double* sorted[], size_t ranked_size)
           *sorted[j] = tie_rank;
         }
         ++dupe_count;
-        tie_correction += pow(dupe_count, 3.0) - dupe_count;
+        tie_correction += pow((double)dupe_count, 3.0) - dupe_count;
         dupe_count = 0;
       } else {
-        *sorted[i] = next;
+        *sorted[i] = (double)next;
       }
     } else {
       ++dupe_count;
     }
   }
-  tie_correction = 1.0 - tie_correction / (pow(ranked_size, 3.0) - ranked_size);
+  tie_correction = 1.0 - tie_correction / (pow((double)ranked_size, 3.0) - ranked_size);
   return tie_correction;
 }
 
@@ -688,8 +688,8 @@ static int circular_buffer_mannwhitneyu(lua_State* lua)
     return 0;
   }
 
-  size_t n1 = ((end_1 - start_1) / 1e9 / cb->seconds_per_row) + 1;
-  size_t n2 = ((end_2 - start_2) / 1e9 / cb->seconds_per_row) + 1;
+  size_t n1 = (size_t)((end_1 - start_1) / 1e9 / cb->seconds_per_row) + 1;
+  size_t n2 = (size_t)((end_2 - start_2) / 1e9 / cb->seconds_per_row) + 1;
   size_t ranked_size = n1 + n2;
   // note: user could temporarily exceed the sandbox memory limit here without
   // detection

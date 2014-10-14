@@ -17,9 +17,9 @@
 
 #include "lua_bloom_filter.h"
 #include "lua_circular_buffer.h"
+#include "lua_hyperloglog.h"
 #include "lua_sandbox_private.h"
 #include "lua_serialize.h"
-#include "lua_serialize_json.h"
 #include "lua_serialize_protobuf.h"
 
 #ifdef _WIN32
@@ -27,7 +27,10 @@
 #else
 #define PATH_DELIMITER '/'
 #endif
-#define MAX_PATH 255
+
+#ifndef MAX_PATH
+#define MAX_PATH 260
+#endif
 
 const char* disable_none[] = { NULL };
 const char* package_table = "package";
@@ -225,99 +228,32 @@ int output(lua_State* lua)
 {
   void* luserdata = lua_touserdata(lua, lua_upvalueindex(1));
   if (NULL == luserdata) {
-    luaL_error(lua, "output() invalid lightuserdata");
+    return luaL_error(lua, "output() invalid lightuserdata");
   }
   lua_sandbox* lsb = (lua_sandbox*)luserdata;
 
   int n = lua_gettop(lua);
   if (n == 0) {
-    luaL_error(lua, "output() must have at least one argument");
+    return luaL_argerror(lsb->lua, 0, "must have at least one argument");
   }
-
-  int result = 0;
-  void* ud = NULL;
-  for (int i = 1; result == 0 && i <= n; ++i) {
-    switch (lua_type(lua, i)) {
-    case LUA_TNUMBER:
-      if (serialize_double(&lsb->output, lua_tonumber(lua, i))) {
-        result = 1;
-      }
-      break;
-    case LUA_TSTRING:
-      if (appendf(&lsb->output, "%s", lua_tostring(lua, i))) {
-        result = 1;
-      }
-      break;
-    case LUA_TNIL:
-      if (appends(&lsb->output, "nil")) {
-        result = 1;
-      }
-      break;
-    case LUA_TBOOLEAN:
-      if (appendf(&lsb->output, "%s",
-                  lua_toboolean(lsb->lua, i)
-                  ? "true" : "false")) {
-        result = 1;
-      }
-      break;
-    case LUA_TTABLE: // encode as JSON
-      {
-        serialization_data data;
-        data.globals = NULL;
-        data.tables.size = 64;
-        data.tables.pos = 0;
-        data.tables.array = malloc(data.tables.size * sizeof(table_ref));
-        if (!data.tables.array) {
-          snprintf(lsb->error_message, LSB_ERROR_SIZE,
-                   "json table serialization out of memory");
-          result = 1;
-        } else {
-          lua_checkstack(lsb->lua, 2);
-          lua_pushnil(lsb->lua); // no root key
-          lua_pushvalue(lsb->lua, i);
-          result = serialize_kvp_as_json(lsb, &data, 0);
-          if (result == 0) {
-            result = appendc(&lsb->output, '\n');
-          }
-          lua_pop(lsb->lua, 2); // remove the nil root key and copy of the table
-          free(data.tables.array);
-        }
-      }
-      break;
-    case LUA_TUSERDATA:
-      ud = userdata_type(lua, i, lsb_circular_buffer);
-      if (ud) {
-        if (output_circular_buffer(lua, (circular_buffer*)ud,
-                                   &lsb->output)) {
-          result = 1;
-        }
-      }
-      break;
-    }
-  }
-  update_output_stats(lsb);
-  if (result != 0) {
-    if (lsb->error_message[0] == 0) {
-      luaL_error(lua, "output_limit exceeded");
-    }
-    luaL_error(lua, lsb->error_message);
-  }
+  lsb_output(lsb, 1, n, 1);
   return 0;
 }
 
-LUALIB_API int (luaopen_cjson_safe)(lua_State* L);
+LUALIB_API int (luaopen_cjson)(lua_State* L);
 LUALIB_API int (luaopen_lpeg)(lua_State* L);
+int set_encode_max_buffer(lua_State *L, int index, unsigned maxsize);
 
 int require_library(lua_State* lua)
 {
   const char* name = luaL_checkstring(lua, 1);
   lua_getglobal(lua, package_table);
   if (!lua_istable(lua, -1)) {
-    luaL_error(lua, "%s table is missing", package_table);
+    return luaL_error(lua, "%s table is missing", package_table);
   }
   lua_getfield(lua, -1, loaded_table);
   if (!lua_istable(lua, -1)) {
-    luaL_error(lua, "%s.%s table is missing", package_table, loaded_table);
+    return luaL_error(lua, "%s.%s table is missing", package_table, loaded_table);
   }
   lua_getfield(lua, -1, name);
   if (!lua_isnil(lua, -1)) {
@@ -342,30 +278,39 @@ int require_library(lua_State* lua)
     load_library(lua, name, luaopen_circular_buffer, disable_none);
   } else if (strcmp(name, lsb_bloom_filter_table) == 0) {
     load_library(lua, name, luaopen_bloom_filter, disable_none);
+  } else if (strcmp(name, lsb_hyperloglog_table) == 0) {
+    load_library(lua, name, luaopen_hyperloglog, disable_none);
   } else if (strcmp(name, "lpeg") == 0) {
     load_library(lua, name, luaopen_lpeg, disable_none);
   } else if (strcmp(name, "cjson") == 0) {
-    const char* disable[] = { "encode",  "encode_sparse_array",
-      "encode_max_depth", "encode_number_precision", "encode_keep_buffer",
-      "encode_invalid_numbers", NULL };
-    load_library(lua, name, luaopen_cjson_safe, disable);
+    void* luserdata = lua_touserdata(lua, lua_upvalueindex(1));
+    if (NULL == luserdata) {
+      return luaL_error(lua, "require_library() invalid lightuserdata");
+    }
+    lua_sandbox* lsb = (lua_sandbox*)luserdata;
+
+    const char* disable[] = { "new", "encode_keep_buffer", NULL };
+    load_library(lua, name, luaopen_cjson, disable);
+    if (set_encode_max_buffer(lua, -1, lsb->output.maxsize)) {
+      return luaL_error(lua, "cjson encode buffer could not be configured");
+    }
     lua_pushvalue(lua, -1);
     lua_setglobal(lua, name);
   } else {
     void* luserdata = lua_touserdata(lua, lua_upvalueindex(1));
     if (NULL == luserdata) {
-      luaL_error(lua, "require_library() invalid lightuserdata");
+      return luaL_error(lua, "require_library() invalid lightuserdata");
     }
     lua_sandbox* lsb = (lua_sandbox*)luserdata;
 
     if (!lsb->require_path) {
-      luaL_error(lua, "require_library() external modules are disabled");
+      return luaL_error(lua, "require_library() external modules are disabled");
     }
 
     int i = 0;
     while (name[i]) {
       if (!isalnum(name[i]) && name[i] != '_') {
-        luaL_error(lua, "invalid module name '%s'", name);
+        return luaL_error(lua, "invalid module name '%s'", name);
       }
       ++i;
     }
@@ -373,11 +318,11 @@ int require_library(lua_State* lua)
     i = snprintf(fn, MAX_PATH, "%s%c%s.lua", lsb->require_path, PATH_DELIMITER,
                  name);
     if (i < 0 || i >= MAX_PATH) {
-      luaL_error(lua, "require_path exceeded %d", MAX_PATH);
+      return luaL_error(lua, "require_path exceeded %d", MAX_PATH);
     }
 
     if (luaL_dofile(lua, fn) != 0) {
-      luaL_error(lua, "%s", lua_tostring(lua, -1));
+      return luaL_error(lua, "%s", lua_tostring(lua, -1));
     }
     // Add an empty metatable to identify the library during preservation.
     lua_newtable(lua);

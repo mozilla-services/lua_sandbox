@@ -12,7 +12,7 @@ setfenv(1, M) -- Remove external access to contain everything in the module
 
 local space         = l.space^1
 local sep           = l.P"\n"
-local sql_end       = l.P";\n"
+local sql_end       = l.P";" * (l.P"\n" + -1)
 local line          = (l.P(1) - sep)^0 * sep
 local float         = l.digit^1 * "." * l.digit^1
 
@@ -26,7 +26,7 @@ local query_time    = l.P"# Query_time: " * l.Cg(l.Ct(l.Cg(float / tonumber, "va
 local lock_time     = l.P"Lock_time: " * l.Cg(l.Ct(l.Cg(float / tonumber, "value") * l.Cg(l.Cc"s", "representation")), "Lock_time")
 local rows_sent     = l.P"Rows_sent: " * l.Cg(l.digit^1 / tonumber, "Rows_sent")
 local rows_examined = l.P"Rows_examined: " * l.Cg(l.digit^1 / tonumber, "Rows_examined")
-local query         = l.Ct(query_time * space * lock_time * space * rows_sent * space * rows_examined * sep)
+local query         = query_time * space * lock_time * space * rows_sent * space * rows_examined * sep
 
 local use_db        = l.P"use " * line
 
@@ -39,7 +39,24 @@ local admin         = l.P"# administrator command: " * line
 
 local sql           = l.Cg((l.P(1) - sql_end)^0 * sql_end, "Payload")
 
-slow_query_grammar          = l.Ct(time^0 * user *  l.Cg(query, "Fields") * use_db^0 * set * admin^0 * sql)
-short_slow_query_grammar    = l.Ct(l.Cg(query, "Fields") * use_db^0 * set * admin^0 * sql)
+-- Maria DB extensions
+local yes_no        = l.C(l.P"Yes" + "No")
+local thread_id     = l.P"# Thread_id: " * l.Cg(l.digit^1 / tonumber, "Thread_id")
+                    * l.P"  Schema: " * l.Cg(l.alnum^0, "Schema")
+                    * l.P"  QC_hit: " * l.Cg(yes_no, "QC_hit") * sep
+
+local full_scan     = l.P"# Full_scan: " * l.Cg(yes_no, "Full_scan")
+                    * l.P"  Full_join: " * l.Cg(yes_no, "Full_join")
+                    * l.P"  Tmp_table: " * l.Cg(yes_no, "Tmp_table")
+                    * l.P"  Tmp_table_on_disk: " * l.Cg(yes_no, "Tmp_table_on_disk") * sep
+                    * l.P"# Filesort: " * l.Cg(yes_no, "Filesort")
+                    * "  Filesort_on_disk: " * l.Cg(yes_no, "Filesort_on_disk")
+                    * "  Merge_passes: " * l.Cg(l.digit^1 / tonumber, "Merge_passes") * sep
+
+slow_query_grammar          = l.Ct(time^0 * user * l.Cg(l.Ct(query), "Fields") * use_db^0 * set * admin^0 * sql)
+mariadb_slow_query_grammar  = l.Ct(time^0 * user * l.Cg(l.Ct(thread_id * query * full_scan^0), "Fields") * use_db^0 * set * admin^0 * sql)
+
+short_slow_query_grammar        = l.Ct(l.Cg(l.Ct(query), "Fields") * use_db^0 * set * admin^0 * sql)
+mariadb_short_slow_query_grammar= l.Ct(l.Cg(l.Ct(thread_id * query * full_scan^0), "Fields") * use_db^0 * set * admin^0 * sql)
 
 return M

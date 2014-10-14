@@ -20,13 +20,17 @@ setfenv(1, M) -- Remove external access to contain everything in the module
 
 --[[ Nginx access log grammar generation and parsing --]]
 
+local pct_encoded   = l.P"%" * l.xdigit * l.xdigit
+local unreserved    = l.alnum + l.S"-._~"
+local sub_delims    = l.S"!$&'()*+,;="
+
 local last_literal  = l.space
 local integer       = l.digit^1 / tonumber
 local double        = l.digit^1 * "." * l.digit^1 / tonumber
 local msec_time     = double / dt.seconds_to_ns
 local host          = l.Ct(l.Cg(ip.v4, "value") * l.Cg(l.Cc"ipv4", "representation"))
                     + l.Ct(l.Cg(ip.v6, "value") * l.Cg(l.Cc"ipv6", "representation"))
-                    + l.Ct(l.Cg((l.P(1) - l.S" :\n\t/?#[]@")^1, "value") * l.Cg(l.Cc"hostname", "representation"))
+                    + l.Ct(l.Cg((unreserved + pct_encoded + sub_delims)^1, "value") * l.Cg(l.Cc"hostname", "representation"))
 local http_status   = l.digit * l.digit * l.digit / tonumber
 
 local nginx_error_levels = l.Cg((
@@ -112,10 +116,18 @@ local nginx_format_variables = {
     --upstream_http_* handled by the generic grammar
 }
 
+local function get_string_grammar(s)
+    if last_literal ~= '"' then
+        return l.Cg((l.P(1) - last_literal)^0, s)
+    else
+        return l.Cg((l.P'\\"' + (l.P(1) - l.P'"'))^0, s)
+    end
+end
+
 local function nginx_lookup_grammar(var)
     local g = nginx_format_variables[var]
     if not g then
-        g = l.Cg((l.P(1) - last_literal)^0, var) -- todo may need to support escaped literals
+        g = get_string_grammar(var)
     elseif var == "time_local" or var == "time_iso8601" or var == "msec" then
         g = l.Cg(g, "time")
     else
@@ -216,14 +228,14 @@ local function apache_lookup_variable(var)
     if not g then
         error("unknown variable: " .. var)
     elseif type(g) == "string" then
-        g = l.Cg((l.P(1) - last_literal)^0, g) -- todo may need to support escaped literals
+        g = get_string_grammar(g)
     end
 
    return g
 end
 
 local function apache_lookup_argument(t)
-   local f = apache_format_arguments[t.variable]
+    local f = apache_format_arguments[t.variable]
     if not f then
         error("unknown variable: " .. t.variable)
     end
@@ -232,7 +244,7 @@ local function apache_lookup_argument(t)
     if not g then
         error(string.format("variable: %s invalid arguments: %s", t.variable, t.arguments))
     elseif type(g) == "string" then
-        g = l.Cg((l.P(1) - last_literal)^0, g)
+        g = get_string_grammar(g)
     end
 
     return g
@@ -299,21 +311,22 @@ local function ua_keyword(kw)
 end
 
 local ua_os_matchers = {
-      ["iPod"]           = "iPod"
-    , ["iPad"]           = "iPad"
-    , ["iPhone"]         = "iPhone"
-    , ["Android"]        = "Android"
-    , ["BlackBerry"]     = "BlackBerry"
-    , ["Linux"]          = "Linux"
-    , ["Macintosh"]      = "Macintosh"
-    , ["FirefoxOS"]      = "Mozilla/5.0 (Mobile; rv:"
-    -- http://en.wikipedia.org/wiki/Microsoft_Windows#Timeline_of_releases
-    , ["Windows 8.1"]    = "Windows NT 6.3"
-    , ["Windows 8"]      = "Windows NT 6.2"
-    , ["Windows 7"]      = "Windows NT 6.1"
-    , ["Windows Vista"]  = "Windows NT 6.0"
-    , ["Windows XP"]     = "Windows NT 5.1"
-    , ["Windows 2000"]   = "Windows NT 5.0"
+    -- search, replace
+      {"iPod"                    ,"iPod"         }
+    , {"iPad"                    ,"iPad"         }
+    , {"iPhone"                  ,"iPhone"       }
+    , {"Android"                 ,"Android"      }
+    , {"BlackBerry"              ,"BlackBerry"   }
+    , {"Linux"                   ,"Linux"        }
+    , {"Macintosh"               ,"Macintosh"    }
+    , {"Mozilla/5.0 (Mobile; rv:","FirefoxOS"    }
+    --http://en.wikipedia.org/wiki/Microsoft_Windows#Timeline_of_releases
+    , {"Windows NT 6.3"          ,"Windows 8.1"  }
+    , {"Windows NT 6.2"          ,"Windows 8"    }
+    , {"Windows NT 6.1"          ,"Windows 7"    }
+    , {"Windows NT 6.0"          ,"Windows Vista"}
+    , {"Windows NT 5.1"          ,"Windows XP"   }
+    , {"Windows NT 5.0"          ,"Windows 2000" }
 }
 
 local ua_browser_matchers = {
@@ -358,9 +371,9 @@ function normalize_user_agent(ua)
     if not ua then return end
 
     local browser, version, os
-    for k, v in pairs(ua_os_matchers) do
-        if ua:find(v, 1, true) then
-            os = k
+    for i, v in ipairs(ua_os_matchers) do
+        if ua:find(v[1], 1, true) then
+            os = v[2]
             break
         end
     end

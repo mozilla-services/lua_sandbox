@@ -7,14 +7,6 @@ local tonumber = tonumber
 local ipairs = ipairs
 local error = error
 
--- Verify TZ
-local offset = "([+-])(%d%d)(%d%d)"
-local tz = os.date("%z")
-local sign, hour, min  = tz:match(offset)
-if not(tz == "UTC" or (sign and tonumber(hour) == 0 and tonumber(min) == 0)) then
-    error("TZ must be set to UTC")
-end
-
 local M = {}
 setfenv(1, M) -- Remove external access to contain everything in the module
 
@@ -22,6 +14,7 @@ setfenv(1, M) -- Remove external access to contain everything in the module
 -- Converts a time table into the number of nanoseconds since the UNIX epoch
 function time_to_ns(t)
     if not t then return 0 end
+    if t.time_t then return t.time_t * 1e9 end
 
     local offset = 0
     if t.offset_hour then
@@ -46,7 +39,13 @@ function time_to_ns(t)
     if t.sec_frac then
         frac = t.sec_frac
     end
-    return (os.time(t) + frac + offset) * 1e9
+
+    local ost = os.time(t)
+    if not ost then
+        return 0
+    end
+
+    return (ost + frac + offset) * 1e9
 end
 
 --Converts a second value into the number of nanoseconds since the UNIX epoch
@@ -111,6 +110,19 @@ time_second = l.Cg(l.R"05" * l.digit
 
 time_secfrac = l.Cg(l.P"." * l.digit^1 / tonumber, "sec_frac")
 
+timezone =
+      l.P"UTC" * l.Cg(l.Cc"+", "offset_sign") * l.Cg(l.Cc"00" / tonumber, "offset_hour") * l.Cg(l.Cc"00" / tonumber, "offset_min")
+    + l.P"PST" * l.Cg(l.Cc"-", "offset_sign") * l.Cg(l.Cc"08" / tonumber, "offset_hour") * l.Cg(l.Cc"00" / tonumber, "offset_min")
+    + l.P"PDT" * l.Cg(l.Cc"-", "offset_sign") * l.Cg(l.Cc"07" / tonumber, "offset_hour") * l.Cg(l.Cc"00" / tonumber, "offset_min")
+    + l.P"MST" * l.Cg(l.Cc"-", "offset_sign") * l.Cg(l.Cc"07" / tonumber, "offset_hour") * l.Cg(l.Cc"00" / tonumber, "offset_min")
+    + l.P"MDT" * l.Cg(l.Cc"-", "offset_sign") * l.Cg(l.Cc"06" / tonumber, "offset_hour") * l.Cg(l.Cc"00" / tonumber, "offset_min")
+    + l.P"CST" * l.Cg(l.Cc"-", "offset_sign") * l.Cg(l.Cc"06" / tonumber, "offset_hour") * l.Cg(l.Cc"00" / tonumber, "offset_min")
+    + l.P"CDT" * l.Cg(l.Cc"-", "offset_sign") * l.Cg(l.Cc"05" / tonumber, "offset_hour") * l.Cg(l.Cc"00" / tonumber, "offset_min")
+    + l.P"EST" * l.Cg(l.Cc"-", "offset_sign") * l.Cg(l.Cc"05" / tonumber, "offset_hour") * l.Cg(l.Cc"00" / tonumber, "offset_min")
+    + l.P"EDT" * l.Cg(l.Cc"-", "offset_sign") * l.Cg(l.Cc"04" / tonumber, "offset_hour") * l.Cg(l.Cc"00" / tonumber, "offset_min")
+    + l.alpha^-5 * l.Cg(l.Cc"+", "offset_sign") * l.Cg(l.Cc"00" / tonumber, "offset_hour") * l.Cg(l.Cc"00" / tonumber, "offset_min")
+
+timezone_offset = l.Cg(l.S"+-", "offset_sign") * l.Cg(time_hour / tonumber, "offset_hour") * l.Cg(time_minute / tonumber, "offset_min")
 
 --[[ RFC3339 grammar
 sample input:  1999-05-05T23:23:59.217-07:00
@@ -139,16 +151,15 @@ rfc3339_full_date       = date_fullyear * "-"  * date_month * "-" * date_mday
 rfc3339_full_time       = rfc3339_partial_time * rfc3339_time_offset
 rfc3339                 = l.Ct(rfc3339_full_date * "T" * rfc3339_full_time)
 
-
 --[[ strftime Grammars --]]
+local century = os.date("%Y"):sub(1,2)
 local strftime_specifiers = {}
 strftime_specifiers["a"] = l.P"Mon" + "Tue" + "Wed" + "Thu" + "Fri" + "Sat" + "Sun"
 strftime_specifiers["A"] = l.P"Monday"  + "Tuesday"  + "Wednesday" + "Thursday"  + "Friday" + "Saturday"  + "Sunday"
 strftime_specifiers["b"] = date_mabbr
 strftime_specifiers["B"] = date_mfull
-strftime_specifiers["c"] = strftime_specifiers["a"] * " " * date_mabbr * " " * date_mday_sp * " " * time_hour * ":" * time_minute * ":" * time_second * " " * date_fullyear
 strftime_specifiers["C"] = l.digit * l.digit
-strftime_specifiers["y"] = l.Cg((l.digit * l.digit) / function (yy) return os.date("%C") .. yy end, "year")
+strftime_specifiers["y"] = l.Cg((l.digit * l.digit) / function (yy) return century .. yy end, "year")
 strftime_specifiers["d"] = date_mday
 strftime_specifiers["D"] = date_month * "/" * date_mday * "/" * strftime_specifiers["y"]
 strftime_specifiers["e"] = date_mday_sp
@@ -164,12 +175,17 @@ strftime_specifiers["j"] = l.P"00" * l.R"19"
                                 + l.S"12" * l.digit * l.digit
                                 + "3" * l.R"05" * l.digit
                                 + "36" * l.R"06"
+strftime_specifiers["k"] = l.Cg(l.S" 1" * l.digit
+                                + "2" * l.R"03", "hour")
+strftime_specifiers["l"] = l.Cg(l.space * l.digit
+                                + "1" * l.R"02", "hour")
 strftime_specifiers["m"] = date_month
 strftime_specifiers["M"] = time_minute
 strftime_specifiers["n"] = l.P"\n"
 strftime_specifiers["p"] = l.Cg(l.P"AM" + "PM", "period")
 strftime_specifiers["r"] = strftime_specifiers["I"] * ":" * time_minute * ":" * time_second * " " * strftime_specifiers["p"]
 strftime_specifiers["R"] = time_hour * ":" * time_minute
+strftime_specifiers["s"] = l.Cg(l.digit^1 / tonumber, "time_t")
 strftime_specifiers["S"] = l.Cg(l.R"05" * l.digit
                            + "6" * l.S"01", "sec")
 strftime_specifiers["t"] = l.P"\t"
@@ -183,9 +199,15 @@ strftime_specifiers["W"] = strftime_specifiers["U"]
 strftime_specifiers["x"] = strftime_specifiers["D"]
 strftime_specifiers["X"] = strftime_specifiers["T"]
 strftime_specifiers["Y"] = date_fullyear
-strftime_specifiers["z"] = l.Cg(l.S"+-", "offset_sign") * l.Cg(time_hour / tonumber, "offset_hour") * l.Cg(time_minute / tonumber, "offset_min")
-strftime_specifiers["Z"] = l.alpha^-5
+strftime_specifiers["z"] = timezone_offset
+strftime_specifiers["Z"] = timezone
 strftime_specifiers["%"] = l.P"%"
+if os.date("%c"):find("^%d") then -- windows
+    strftime_specifiers["c"] = strftime_specifiers["D"] * " " * strftime_specifiers["T"]
+    strftime_specifiers["z"] = timezone -- todo depending on the registry this could be the full name and not the abbreviation
+else
+    strftime_specifiers["c"] = strftime_specifiers["a"] * " " * date_mabbr * " " * date_mday_sp * " " * strftime_specifiers["T"] * " " * date_fullyear
+end
 
 local function strftime_lookup_grammar(var)
     local g = strftime_specifiers[var]
@@ -222,7 +244,7 @@ end
 
 --[[ Common Log Format Grammars --]]
 -- strftime format %d/%b/%Y:%H:%M:%S %z.
-clf_timestamp = l.Ct(date_mday * "/" * date_mabbr * "/" * date_fullyear * ":" * strftime_specifiers["T"] * " " * strftime_specifiers["z"])
+clf_timestamp = l.Ct(date_mday * "/" * date_mabbr * "/" * date_fullyear * ":" * strftime_specifiers["T"] * " " * timezone_offset)
 
 
 --[[ RFC3164 Grammars --]]

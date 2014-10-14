@@ -6,12 +6,13 @@ set(LUA_SANDBOX_SRC
 lua_sandbox.c
 lua_sandbox_private.c
 lua_serialize.c
-lua_serialize_json.c
 lua_serialize_protobuf.c
 lua_circular_buffer.c
 lua_bloom_filter.c
+lua_hyperloglog.c
 cephes.c
 xxhash.c
+redis_hyperloglog.c
 )
 
 if(MSVC)
