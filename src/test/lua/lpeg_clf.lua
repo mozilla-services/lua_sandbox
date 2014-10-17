@@ -225,7 +225,7 @@ local function apache_formats()
     ,{"%R", "request_handler"      ,"handler"                      ,"handler"}
     ,{"%s", "status"               ,"200"                          ,200}
     ,{"%t", "time"                 ,"[10/Feb/2014:08:46:41 -0800]" ,1392050801000000000}
-    ,{"%T",  "request_time"          ,"1"                            ,{1,"s"}}
+    ,{"%T", "request_time"          ,"1"                            ,{1,"s"}}
     ,{"%u", "remote_user"          ,"remote"                       ,"remote"}
     ,{"%U", "uri"                  ,"uri"                          ,"uri"}
     ,{"%v", "server_name"          ,"example.com"                  ,{"example.com","hostname"}}
@@ -267,7 +267,7 @@ local function apache_formats()
     }
 
     if os.date("%c"):find("^%d") then -- windows
-        tests[54][3] = "10/Feb/2014:08:46:41 PST"
+        tests[55][3] = "10/Feb/2014:08:46:41 PST"
     end
 
     for i, v in ipairs(tests) do

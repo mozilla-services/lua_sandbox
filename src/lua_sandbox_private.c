@@ -292,7 +292,7 @@ int require_library(lua_State* lua)
 
     const char* disable[] = { "new", "encode_keep_buffer", NULL };
     load_library(lua, name, luaopen_cjson, disable);
-    if (set_encode_max_buffer(lua, -1, lsb->output.maxsize)) {
+    if (set_encode_max_buffer(lua, -1, (unsigned)lsb->output.maxsize)) {
       return luaL_error(lua, "cjson encode buffer could not be configured");
     }
     lua_pushvalue(lua, -1);
