@@ -1165,6 +1165,26 @@ static char* test_hyperloglog()
 }
 
 
+static char* test_struct()
+{
+  lua_sandbox* sb = lsb_create(NULL, "lua/struct.lua", "../../modules",
+                               65765, 1000, 1024);
+  mu_assert(sb, "lsb_create() received: NULL");
+
+  int result = lsb_init(sb, NULL);
+  mu_assert(result == 0, "lsb_init() received: %d %s", result,
+            lsb_get_error(sb));
+
+  result = process(sb, 0);
+  mu_assert(result == 0, "process() received: %d %s", result, lsb_get_error(sb));
+
+  e = lsb_destroy(sb, NULL);
+  mu_assert(!e, "lsb_destroy() received: %s", e);
+
+  return NULL;
+}
+
+
 static char* benchmark_counter()
 {
   int iter = 10000000;
@@ -1458,6 +1478,7 @@ static char* all_tests()
   mu_run_test(test_bloom_filter);
   mu_run_test(test_hyperloglog_errors);
   mu_run_test(test_hyperloglog);
+  mu_run_test(test_struct);
 
   mu_run_test(benchmark_counter);
   mu_run_test(benchmark_serialize);
