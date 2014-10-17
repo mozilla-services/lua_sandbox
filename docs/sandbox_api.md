@@ -47,6 +47,7 @@ By default only the base library is loaded additional libraries must be explicit
     - The local timezone is set to UTC in all sandboxes.
     - Disabled functions: execute, exit, remove, rename, setlocale, tmpname.
   - **string**
+  - **struct** http://www.inf.puc-rio.br/~roberto/struct/
   - **table**
   - _user provided_
 
