@@ -87,7 +87,7 @@ local nginx_format_variables = {
     , request_completion    = l.P"OK"^-1
     --request_filename
     , request_length        = l.Ct(l.Cg(integer, "value") * l.Cg(l.Cc"B", "representation"))
-    , request_method        = l.P"GET" + "POST" + "HEAD" + "PUT" + "DELETE" + "OPTIONS" + "TRACE" + "CONNECT"
+    , request_method        = l.P"GET" + "POST" + "HEAD" + "PUT" + "DELETE" + "OPTIONS" + "TRACE" + "CONNECT" + "PURGE" + "LINK" + "UNLINK" + "PROPFIND" + "PROPPATCH" + "MKCOL" + "COPY" + "MOVE" + "LOCK" + "UNLOCK"
     , request_time          = l.Ct(l.Cg(double, "value") * l.Cg(l.Cc"s", "representation"))
     --request_uri
     , scheme                = l.P"https" + "http"
