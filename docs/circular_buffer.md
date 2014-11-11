@@ -10,7 +10,7 @@ Constructor
 *Arguments*
 - rows (unsigned) The number of rows in the buffer (must be > 1)
 - columns (unsigned)The number of columns in the buffer (must be > 0)
-- seconds_per_row (unsigned) The number of seconds each row represents (must be > 0 and <= 86400).
+- seconds_per_row (unsigned) The number of seconds each row represents (must be > 0).
 - enable_delta (**optional, default false** bool) When true the changes made to the 
     circular buffer between delta outputs are tracked.
 

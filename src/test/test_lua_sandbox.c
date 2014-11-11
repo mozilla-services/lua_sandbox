@@ -476,7 +476,7 @@ static char* test_cbuf_errors()
     , "process() lua/circular_buffer_errors.lua:17: bad argument #2 to 'new' (columns must be > 0)"
     , "process() lua/circular_buffer_errors.lua:19: bad argument #3 to 'new' (number expected, got nil)"
     , "process() lua/circular_buffer_errors.lua:21: bad argument #3 to 'new' (seconds_per_row is out of range)"
-    , "process() lua/circular_buffer_errors.lua:23: bad argument #3 to 'new' (seconds_per_row is out of range)"
+    , "process() lua/circular_buffer_errors.lua:23: removed test"
     , "process() not enough memory"
     , "process() lua/circular_buffer_errors.lua:28: bad argument #2 to 'set' (column out of range)"
     , "process() lua/circular_buffer_errors.lua:31: bad argument #2 to 'set' (column out of range)"
