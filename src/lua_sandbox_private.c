@@ -240,9 +240,10 @@ int output(lua_State* lua)
   return 0;
 }
 
-LUALIB_API int (luaopen_cjson)(lua_State* L);
-LUALIB_API int (luaopen_lpeg)(lua_State* L);
-int set_encode_max_buffer(lua_State *L, int index, unsigned maxsize);
+LUALIB_API int luaopen_cjson(lua_State* L);
+LUALIB_API int luaopen_lpeg(lua_State* L);
+LUALIB_API int luaopen_struct(lua_State* L);
+int set_encode_max_buffer(lua_State* L, int index, unsigned maxsize);
 
 int require_library(lua_State* lua)
 {
@@ -291,11 +292,13 @@ int require_library(lua_State* lua)
 
     const char* disable[] = { "new", "encode_keep_buffer", NULL };
     load_library(lua, name, luaopen_cjson, disable);
-    if (set_encode_max_buffer(lua, -1, lsb->output.maxsize)) {
+    if (set_encode_max_buffer(lua, -1, (unsigned)lsb->output.maxsize)) {
       return luaL_error(lua, "cjson encode buffer could not be configured");
     }
     lua_pushvalue(lua, -1);
     lua_setglobal(lua, name);
+  } else if (strcmp(name, "struct") == 0) {
+    load_library(lua, name, luaopen_struct, disable_none);
   } else {
     void* luserdata = lua_touserdata(lua, lua_upvalueindex(1));
     if (NULL == luserdata) {

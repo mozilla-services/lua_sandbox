@@ -13,6 +13,7 @@ lua_hyperloglog.c
 cephes.c
 xxhash.c
 redis_hyperloglog.c
+struct.c
 )
 
 if(MSVC)
