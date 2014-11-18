@@ -98,7 +98,7 @@ int process(lua_sandbox* lsb, double ts)
   if (lsb_pcall_setup(lsb, func_name)) return 1;
 
   lua_pushnumber(lua, ts);
-  if (lua_pcall(lua, 1, 1, 0) != 0) {
+  if (lua_pcall(lua, 1, 2, 0) != 0) {
     char err[LSB_ERROR_SIZE];
     int len = snprintf(err, LSB_ERROR_SIZE, "%s() %s", func_name,
                        lua_tostring(lua, -1));
@@ -121,7 +121,28 @@ int process(lua_sandbox* lsb, double ts)
   }
 
   int status = (int)lua_tointeger(lua, 1);
-  lua_pop(lua, 1);
+  switch (lua_type(lua, 2)) {
+  case LUA_TNIL:
+    lsb_set_error(lsb, NULL);
+    break;
+  case LUA_TSTRING:
+    lsb_set_error(lsb, lua_tostring(lua, 2));
+    break;
+  default:
+    {
+      char err[LSB_ERROR_SIZE];
+      int len = snprintf(err, LSB_ERROR_SIZE,
+                         "%s() must return a nil or string error message",
+                         func_name);
+      if (len >= LSB_ERROR_SIZE || len < 0) {
+        err[LSB_ERROR_SIZE - 1] = 0;
+      }
+      lsb_terminate(lsb, err);
+      return 1;
+    }
+    break;
+  }
+  lua_pop(lua, 2);
 
   lsb_pcall_teardown(lsb);
 
@@ -355,6 +376,39 @@ static char* test_simple()
   mu_assert(s == LSB_RUNNING, "lsb_get_state() received: %d", s);
 
   e = lsb_destroy(sb, "simple.preserve");
+  mu_assert(!e, "lsb_destroy() received: %s", e);
+
+  return NULL;
+}
+
+static char* test_simple_error()
+{
+  lua_sandbox* sb = lsb_create(NULL, "lua/simple.lua", "../../modules", 0, 0, 0);
+  mu_assert(sb, "lsb_create() received: NULL");
+
+  int result = lsb_init(sb, NULL);
+  mu_assert(result == 0, "lsb_init() received: %d %s", result,
+            lsb_get_error(sb));
+
+  result = process(sb, 1);
+  mu_assert(result == 0, "process() received: %d %s", result,
+            lsb_get_error(sb));
+
+  mu_assert(strcmp("ok", lsb_get_error(sb)) == 0, "process() received: %d %s", result,
+            lsb_get_error(sb));
+
+  result = process(sb, 0);
+  mu_assert(result == 0, "process() received: %d %s", result,
+            lsb_get_error(sb));
+
+  mu_assert(strcmp("", lsb_get_error(sb)) == 0, "process() received: %d %s", result,
+            lsb_get_error(sb));
+
+  result = process(sb, 2);
+  mu_assert(result == 1, "process() received: %d %s", result,
+            lsb_get_error(sb));
+
+  e = lsb_destroy(sb, NULL);
   mu_assert(!e, "lsb_destroy() received: %s", e);
 
   return NULL;
@@ -1460,6 +1514,7 @@ static char* all_tests()
   mu_run_test(test_usage_error);
   mu_run_test(test_misc);
   mu_run_test(test_simple);
+  mu_run_test(test_simple_error);
   mu_run_test(test_output);
   mu_run_test(test_output_errors);
   mu_run_test(test_cbuf_errors);

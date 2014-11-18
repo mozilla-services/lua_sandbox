@@ -128,6 +128,16 @@ LSB_EXPORT lsb_state lsb_get_state(lua_sandbox* lsb);
 LSB_EXPORT const char* lsb_get_error(lua_sandbox* lsb);
 
 /**
+ * Sets the last error string.
+ *
+ * @param lsb Pointer to the sandbox.
+ * @param err Error message.
+ *
+ * @return const char* error message
+ */
+LSB_EXPORT void lsb_set_error(lua_sandbox* lsb, const char* err);
+
+/**
  * Access the Lua pointer.
  *
  * @param lsb Pointer to the sandbox.
