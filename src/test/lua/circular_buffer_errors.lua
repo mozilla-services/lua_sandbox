@@ -20,7 +20,7 @@ function process(tc)
     elseif tc == 6 then
         local cb = circular_buffer.new(2, 1, 0) -- new() zero seconds_per_row
     elseif tc == 7 then
-        local cb = circular_buffer.new(2, 1, 86401) -- new() > day seconds_per_row
+        error("removed test")
     elseif tc == 8  then
         local cb = circular_buffer.new(1000, 10, 1) -- new() too much memory
     elseif tc == 9 then

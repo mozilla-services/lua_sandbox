@@ -237,6 +237,19 @@ const char* lsb_get_error(lua_sandbox* lsb)
 }
 
 
+void lsb_set_error(lua_sandbox* lsb, const char* err)
+{
+  if (lsb) {
+    if (err) {
+      strncpy(lsb->error_message, err, LSB_ERROR_SIZE);
+      lsb->error_message[LSB_ERROR_SIZE - 1] = 0;
+    } else {
+      lsb->error_message[0] = 0;
+    }
+  }
+}
+
+
 lua_State* lsb_get_lua(lua_sandbox* lsb)
 {
   return lsb->lua;
