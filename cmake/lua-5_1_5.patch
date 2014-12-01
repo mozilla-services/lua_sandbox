@@ -93,7 +93,7 @@ diff -Naur /work/lua-5.1.5/src/loslib.c lua-5_1_5/src/loslib.c
 +#if !defined(LUA_STRFTIMEOPTIONS)
 +
 +#if !defined(LUA_USE_POSIX)
-+#define LUA_STRFTIMEOPTIONS	{ "aAbBcdHIjmMpSUwWxXyYz%", "" }
++#define LUA_STRFTIMEOPTIONS	{ "aAbBcdHIjmMpSUwWxXyYzZ%", "" }
 +#else
 +#define LUA_STRFTIMEOPTIONS \
 +	{ "aAbBcCdDeFgGhHIjklmMnprRSstTuUVwWxXyYzZ%", "" \
