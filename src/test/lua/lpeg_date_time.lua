@@ -87,7 +87,7 @@ local function strftime_all()
             "%F", "%g", "%G", "%h", "%H", "%I", "%j", "%k", "%l", "%m",
             "%M", "%n", "%p", "%r", "%R", "%s", "%S", "%t", "%T", "%u",
             "%U", "%V", "%w", "%W", "%x","%X", "%y", "%Y", "%z", "%Z",
-            "%%", "test string", "%~"}
+            "%%", "test string"}
     end
 
     for i,v in ipairs(formats) do
