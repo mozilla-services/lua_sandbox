@@ -3,7 +3,6 @@
 
 -- imports
 local l = require "lpeg"
-local dt = require "dt"
 local tonumber = tonumber
 
 l.locale(l)
@@ -15,6 +14,7 @@ local space  = l.space^1
 local sep    = l.P"\n"
 local level  = l.alpha^5 -- Log level (5 characters)
 local brack  = l.S("[]") -- [ and ]
+local timestamp = (l.P(1) - brack)^1
 local colon  = l.S(":")  -- :
 local class  = (l.P(1) - colon)^1 -- com.domain.client.jobs.OutgoingQueue
 local line   = (l.P(1) - sep)^0 * sep
@@ -23,7 +23,7 @@ local line   = (l.P(1) - sep)^0 * sep
 local logline = l.Cg(level, "Level")         -- ERROR
               * space
               * brack
-              * l.Cg(timestamp, "Timestamp") -- [2014-11-21 16:35:59,501]
+              * l.Cg(timestamp, "Timestamp") -- 2014-11-21 16:35:59,501
               * brack
               * space
               * l.Cg(class, "class")         -- com.domain.client.jobs.OutgoingQueue
