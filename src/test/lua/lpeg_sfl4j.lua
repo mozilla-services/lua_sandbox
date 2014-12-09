@@ -14,7 +14,7 @@ local function single_logevent()
     assert(fields.Level == "ERROR", fields.Level)
     assert(fields.Timestamp == "2014-11-21 16:35:59,501", fields.Timestamp)
     assert(fields.Class == "com.domain.client.jobs.OutgoingQueue", fields.Class)
-    -- assert(fields.ErrorMessage == "Error handling output file with job job-name", fields.ErrorMessage)
+    assert(fields.ErrorMessage == "Error handling output file with job job-name", fields.ErrorMessage)
 end
 
 function process()
