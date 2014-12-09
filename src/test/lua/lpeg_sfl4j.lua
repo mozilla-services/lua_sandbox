@@ -21,12 +21,11 @@ end
 
 local function mainlogevent()
     local t = sfl4j.logevent_grammar:match(test_log_events[1])
-    if not t then return error("no match") end
     validate(fields, t)
 end
 
 function process(tc)
     mainlogevent()
 
-    return 0
+    return 1
 end
