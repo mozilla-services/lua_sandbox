@@ -2,7 +2,7 @@
 --
 
 -- imports
-local l = require "lpeg"
+local l  = require "lpeg"
 local tonumber = tonumber
 
 l.locale(l)
@@ -10,26 +10,29 @@ l.locale(l)
 local M = {}
 setfenv(1, M) -- Remove external access to contain everything in the module
 
-local space  = l.space^1
-local sep    = l.P"\n"
-local level  = l.alpha^5 -- Log level (5 characters)
-local brack  = l.S("[]") -- [ and ]
-local timestamp = (l.P(1) - brack)^1
-local colon  = l.S(":")  -- :
-local class  = (l.P(1) - colon)^1 -- com.domain.client.jobs.OutgoingQueue
-local line   = (l.P(1) - sep)^0 * sep
+local space     = l.space^1
+local sep       = l.P"\n"
+local level     = l.alpha^5 -- Log level (5 characters)
+local lbrack    = l.S("[")
+local rbrack    = l.S("]")
+local timestamp = (l.P(1) - rbrack)^0
+local colon     = l.S(":")  -- :
+local class     = (l.P(1) - colon)^1 -- com.domain.client.jobs.OutgoingQueue
+local errmsg    = (l.P(1) - sep)^0
+local line      = (l.P(1) - sep)^0 * sep
 
 -- Example: ERROR [2014-11-21 16:35:59,501] com.domain.client.jobs.OutgoingQueue: Error handling output file with job job-name
 local logline = l.Cg(level, "Level")         -- ERROR
               * space
-              * brack
+              * lbrack
               * l.Cg(timestamp, "Timestamp") -- 2014-11-21 16:35:59,501
-              * brack
+              * rbrack
               * space
-              * l.Cg(class, "class")         -- com.domain.client.jobs.OutgoingQueue
+              * l.Cg(class, "Class")         -- com.domain.client.jobs.OutgoingQueue
               * colon
               * space
-              * l.Cg(line, "ErrorMessage")                   -- Error handling output...
+              * l.Cg(errmsg, "ErrorMessage")   -- Error handling output...
+              * sep
 
 -- TODO: Multiline, need to figure out how to capture the entire stack in a table
 -- -- Example: ! com.domain.inet.ftp.Exception: java.io.IOException: FAILED
