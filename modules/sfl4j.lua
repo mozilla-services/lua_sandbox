@@ -18,57 +18,46 @@ local rbrack    = l.S("]")
 local timestamp = (l.P(1) - rbrack)^0
 local colon     = l.S(":")  -- :
 local class     = (l.P(1) - colon)^1 -- com.domain.client.jobs.OutgoingQueue
-local errmsg    = (l.P(1) - sep)^0
+local msg       = (l.P(1) - sep)^0
 local line      = (l.P(1) - sep)^0 * sep
 
 -- Example: ERROR [2014-11-21 16:35:59,501] com.domain.client.jobs.OutgoingQueue: Error handling output file with job job-name
 local logline = l.Cg(level, "Level")         -- ERROR
-              * space
-              * lbrack
+              * space * lbrack
               * l.Cg(timestamp, "Timestamp") -- 2014-11-21 16:35:59,501
-              * rbrack
-              * space
-              * l.Cg(class, "Class")         -- com.domain.client.jobs.OutgoingQueue
-              * colon
-              * space
-              * l.Cg(errmsg, "ErrorMessage")   -- Error handling output...
-              * sep
+              * rbrack * space
+              * l.Cg(class, "ErrorClass")    -- com.domain.client.jobs.OutgoingQueue
+              * colon * space
+              * l.Cg(msg, "ErrorMessage")    -- Error handling output...
 
 -- TODO: Multiline, need to figure out how to capture the entire stack in a table
--- -- Example: ! com.domain.inet.ftp.Exception: java.io.IOException: FAILED
--- local stackline = l.P"!"
---                 * space
---                 * line   -- com.domain.inet.ftp.Exception
--- 
--- -- Example: ! at com.domain.inet.ftp.TransferMode.upload(Unknown Source)
--- local stackatline = l.P"!"
---                   * space
---                   * l.P"at"
---                   * space
---                   * line    -- com.domain.inet.ftp.Exception
--- 
--- -- Matches entire line, use this to gather stuff we don't parse properly
--- local miscline = line
+-- Example: ! java.net.SocketTimeoutException: Read timed out
+local stackline = l.P"!" * space
+                * l.Cg(class, "ExceptionClass") -- java.net.SocketTimeoutException
+                * colon * space
+                * l.Cg(msg, "ExceptionMessage") -- Read timed out
 
--- local logevent = logline
---                * stackline
---                * stackatline
---                * miscline
---                * sep
+-- Example: ! at com.domain.inet.ftp.TransferMode.upload(Unknown Source)
 
-local slf4j_severity = l.digit^1 / tonumber
+-- Match line, use this to gather stuff we don't parse properly
+-- local misc = line
 
-local slf4j_log_levels_text = (
-  (l.P"fatal"   + "FATAL")      / "6"
-+ (l.P"error"   + "ERROR")      / "5"
-+ (l.P"warn"    + "WARN")       / "4"
-+ (l.P"info"    + "INFO")       / "3"
-+ (l.P"debug"   + "DEBUG")      / "2"
-+ (l.P"trace"   + "TRACE")      / "1"
-) / tonumber
+local logevent = logline * sep
+               * (stackline * sep)^0
+               -- * (stackatline * sep)^0
+               -- * (miscline * sep)^0
 
+logevent_grammar = l.Ct(logevent)
+
+-- local slf4j_severity = l.digit^1 / tonumber
+-- local slf4j_log_levels_text = (
+--   (l.P"fatal"   + "FATAL")      / "6"
+-- + (l.P"error"   + "ERROR")      / "5"
+-- + (l.P"warn"    + "WARN")       / "4"
+-- + (l.P"info"    + "INFO")       / "3"
+-- + (l.P"debug"   + "DEBUG")      / "2"
+-- + (l.P"trace"   + "TRACE")      / "1"
+-- ) / tonumber
 -- TODO: Map slf4j to standard log levels for "Severity"
-
-logevent_grammar = l.Ct(logline)
 
 return M
