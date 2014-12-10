@@ -26,26 +26,21 @@ local logline = l.Cg(level, "Level")         -- ERROR
               * space * lbrack
               * l.Cg(timestamp, "Timestamp") -- 2014-11-21 16:35:59,501
               * rbrack * space
-              * l.Cg(class, "ErrorClass")    -- com.domain.client.jobs.OutgoingQueue
+              * l.Cg(class, "Class")    -- com.domain.client.jobs.OutgoingQueue
               * colon * space
-              * l.Cg(msg, "ErrorMessage")    -- Error handling output...
+              * l.Cg(msg, "Message")    -- Error handling output...
 
 -- TODO: Multiline, need to figure out how to capture the entire stack in a table
 -- Example: ! java.net.SocketTimeoutException: Read timed out
-local stackline = l.P"!" * space
-                * l.Cg(class, "ExceptionClass") -- java.net.SocketTimeoutException
-                * colon * space
-                * l.Cg(msg, "ExceptionMessage") -- Read timed out
-
+local stackline = l.P"!" * space * class * colon * space * msg * sep
 -- Example: ! at com.domain.inet.ftp.TransferMode.upload(Unknown Source)
+local stackatline = l.P"!" * space * l.P"at" * space * (l.P(1) - sep)^0 * sep
+
 
 -- Match line, use this to gather stuff we don't parse properly
 -- local misc = line
 
-local logevent = logline * sep
-               * (stackline * sep)^0
-               -- * (stackatline * sep)^0
-               -- * (miscline * sep)^0
+local logevent = logline * sep * l.Cg(stackline^0 * stackatline^0 * line^0, "Stacktrace")
 
 logevent_grammar = l.Ct(logevent)
 
