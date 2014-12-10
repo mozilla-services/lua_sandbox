@@ -1,5 +1,6 @@
 local sfl4j = require("sfl4j")
 
+-- Parse a basic message, these are typically not errors, but whatever.
 local function single_line_logevent()
     local single_line_log = 'ERROR [2014-11-21 16:35:59,501] com.domain.client.jobs.OutgoingQueue: Error handling output file with job job-name\n'
     local single_line_test_fields = {
@@ -17,6 +18,7 @@ local function single_line_logevent()
     assert(fields.Message == single_line_test_fields.Message, fields.Message)
 end
 
+-- Use this to easily debug multi-line messages
 local function two_line_logevent()
     local two_line_log = [[
 ERROR [2014-11-20 16:40:51,577] com.domain.substitute.UsersLoop: Error caught in user loop
