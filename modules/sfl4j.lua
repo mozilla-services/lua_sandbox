@@ -32,9 +32,9 @@ local logline = l.Cg(level, "Level")         -- ERROR
 
 -- TODO: Multiline, need to figure out how to capture the entire stack in a table
 -- Example: ! java.net.SocketTimeoutException: Read timed out
-local stackline = l.P"!" * space * class * colon * space * msg * sep
+local stackline = l.P"!" * space * line
 -- Example: ! at com.domain.inet.ftp.TransferMode.upload(Unknown Source)
-local stackatline = l.P"!" * space * l.P"at" * space * (l.P(1) - sep)^0 * sep
+local stackatline = l.P"!" * space * l.P"at" * space * line
 
 
 -- Match line, use this to gather stuff we don't parse properly
