@@ -28,12 +28,12 @@ local line      = (l.P(1) - sep)^0 * sep
 
 -- Map sfl4j log levels to syslog severity
 local sfl4j_levels = l.Cg((
-  l.P"TRACE"   / "7"
-+ l.P"DEBUG"   / "7"
-+ l.P"INFO"    / "6"
-+ l.P"WARN"    / "4"
-+ l.P"ERROR"   / "3"
-+ l.P"FATAL"   / "0")
+  (l.P"TRACE" + "trace") / "7"
++ (l.P"DEBUG" + "debug") / "7"
++ (l.P"INFO"  + "info")  / "6"
++ (l.P"WARN"  + "warn")  / "4"
++ (l.P"ERROR" + "error") / "3"
++ (l.P"FATAL" + "fatal") / "0")
 / tonumber, "Severity")
 
 -- Example: ERROR [2014-11-21 16:35:59,501] com.domain.client.jobs.OutgoingQueue: Error handling output file with job job-name
@@ -54,16 +54,5 @@ local stackatline = l.P"!" * space * l.P"at" * space * line
 local logevent = logline * sep * l.Cg(stackline^0 * stackatline^0 * line^0, "Stacktrace")
 
 logevent_grammar = l.Ct(logevent)
-
--- local slf4j_severity = l.digit^1 / tonumber
--- local slf4j_log_levels_text = (
---   (l.P"fatal"   + "FATAL")      / "6"
--- + (l.P"error"   + "ERROR")      / "5"
--- + (l.P"warn"    + "WARN")       / "4"
--- + (l.P"info"    + "INFO")       / "3"
--- + (l.P"debug"   + "DEBUG")      / "2"
--- + (l.P"trace"   + "TRACE")      / "1"
--- ) / tonumber
--- TODO: Map slf4j to standard log levels for "Severity"
 
 return M
