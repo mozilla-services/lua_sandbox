@@ -13,13 +13,31 @@ setfenv(1, M) -- Remove external access to contain everything in the module
 local space     = l.space^1
 local sep       = l.P"\n"
 local level     = l.alpha^5 -- Log level (5 characters)
-local timestamp = (l.P(1) - rbrack)^0
-local class     = (l.P(1) - colon)^1 -- com.domain.client.jobs.OutgoingQueue
+local timestamp = (l.P(1) - l.P("]"))^0
+local class     = (l.P(1) - l.P(":"))^1 -- com.domain.client.jobs.OutgoingQueue
 local msg       = (l.P(1) - sep)^0
 local line      = (l.P(1) - sep)^0 * sep
 
+-- slf4j uses the following levels/severity
+-- "FATAL" = 6
+-- "ERROR" = 5
+-- "WARN"  = 4
+-- "INFO"  = 3
+-- "DEBUG" = 2
+-- "TRACE" = 1
+
+-- Map sfl4j log levels to syslog severity
+local sfl4j_levels = l.Cg((
+  l.P"TRACE"   / "7"
++ l.P"DEBUG"   / "7"
++ l.P"INFO"    / "6"
++ l.P"WARN"    / "4"
++ l.P"ERROR"   / "3"
++ l.P"FATAL"   / "0")
+/ tonumber, "Severity")
+
 -- Example: ERROR [2014-11-21 16:35:59,501] com.domain.client.jobs.OutgoingQueue: Error handling output file with job job-name
-local logline = l.Cg(level, "Level")         -- ERROR
+local logline = sfl4j_levels                 -- ERROR
               * space * l.P("[")
               * l.Cg(timestamp, "Timestamp") -- 2014-11-21 16:35:59,501
               * l.P("]") * space
@@ -32,6 +50,7 @@ local stackline = l.P"!" * space * line
 -- Example: ! at com.domain.inet.ftp.TransferMode.upload(Unknown Source)
 local stackatline = l.P"!" * space * l.P"at" * space * line
 
+-- A representation of a full log event
 local logevent = logline * sep * l.Cg(stackline^0 * stackatline^0 * line^0, "Stacktrace")
 
 logevent_grammar = l.Ct(logevent)
