@@ -1,6 +1,3 @@
--- Using this as a reference: https://github.banksimple.com/gist/sjl/92b4b5750739a46d38a7
---
-
 -- imports
 local l  = require "lpeg"
 local dt = require "date_time"
