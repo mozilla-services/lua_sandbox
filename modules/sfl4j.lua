@@ -3,6 +3,7 @@
 
 -- imports
 local l  = require "lpeg"
+local dt = require "date_time"
 local tonumber = tonumber
 
 l.locale(l)
@@ -13,7 +14,6 @@ setfenv(1, M) -- Remove external access to contain everything in the module
 local space     = l.space^1
 local sep       = l.P"\n"
 local level     = l.alpha^5 -- Log level (5 characters)
-local timestamp = (l.P(1) - l.P("]"))^0
 local class     = (l.P(1) - l.P(":"))^1 -- com.domain.client.jobs.OutgoingQueue
 local msg       = (l.P(1) - sep)^0
 local line      = (l.P(1) - sep)^0 * sep
@@ -36,10 +36,15 @@ local sfl4j_levels = l.Cg((
 + (l.P"FATAL" + "fatal") / "0")
 / tonumber, "Severity")
 
+-- Example: 2014-11-21 16:35:59,501
+local time_secfrac = l.Cg(l.P"," * l.digit^1 / tonumber, "sec_frac")
+local partial_time = dt.time_hour * l.P":" * dt.time_minute * l.P":" * dt.time_second * time_secfrac^-1
+local sfl4j_datetime = l.Ct(dt.rfc3339_full_date * space * partial_time)
+
 -- Example: ERROR [2014-11-21 16:35:59,501] com.domain.client.jobs.OutgoingQueue: Error handling output file with job job-name
 local logline = sfl4j_levels                 -- ERROR
               * space * l.P("[")
-              * l.Cg(timestamp, "Timestamp") -- 2014-11-21 16:35:59,501
+              * l.Cg(sfl4j_datetime, "Timestamp")               -- 2014-11-21 16:35:59,501
               * l.P("]") * space
               * l.Cg(class, "Class")         -- com.domain.client.jobs.OutgoingQueue
               * l.P(":") * space
