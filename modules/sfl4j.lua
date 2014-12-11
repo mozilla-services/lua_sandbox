@@ -10,7 +10,6 @@ setfenv(1, M) -- Remove external access to contain everything in the module
 
 local space     = l.space^1
 local sep       = l.P"\n"
-local level     = l.alpha^5 -- Log level (5 characters)
 local class     = (l.P(1) - l.P(":"))^1 -- com.domain.client.jobs.OutgoingQueue
 local msg       = (l.P(1) - sep)^0
 local line      = (l.P(1) - sep)^0 * sep
@@ -49,8 +48,6 @@ local logline = sfl4j_levels                 -- ERROR
 
 -- Example: ! java.net.SocketTimeoutException: Read timed out
 local stackline = l.P"!" * space * line
--- Example: ! at com.domain.inet.ftp.TransferMode.upload(Unknown Source)
-local stackatline = l.P"!" * space * l.P"at" * space * line
 
 -- A representation of a full log event
 local logevent = logline * sep * l.Cg(stackline^0 * stackatline^0 * line^0, "Stacktrace")
