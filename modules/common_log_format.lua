@@ -319,7 +319,7 @@ local ua_os_matchers = {
     , {"BlackBerry"              ,"BlackBerry"   }
     , {"Linux"                   ,"Linux"        }
     , {"Macintosh"               ,"Macintosh"    }
-    , {"Mozilla/5.0 (Mobile; rv:","FirefoxOS"    }
+    , {"Mozilla/5.0 (Mobile;"    ,"FirefoxOS"    }
     --http://en.wikipedia.org/wiki/Microsoft_Windows#Timeline_of_releases
     , {"Windows NT 6.3"          ,"Windows 8.1"  }
     , {"Windows NT 6.2"          ,"Windows 8"    }

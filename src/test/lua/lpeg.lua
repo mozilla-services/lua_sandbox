@@ -11,8 +11,8 @@ local record = lpeg.Ct(field * (',' * field)^0) * (lpeg.P'\n' + -1)
 
 function process ()
     local t = lpeg.match(record, '1,string with spaces,"quoted string, with comma and ""quoted"" text"')
-    assert(t[1], "1", t[1])
-    assert(t[2], "string with spaces", t[2])
-    assert(t[3], 'quoted string, with comma and "quoted" text', t[3])
+    assert(t[1] == "1", t[1])
+    assert(t[2] == "string with spaces", t[2])
+    assert(t[3] == 'quoted string, with comma and "quoted" text', t[3])
     return 0
 end

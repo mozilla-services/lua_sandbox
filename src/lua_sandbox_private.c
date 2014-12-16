@@ -37,6 +37,19 @@ const char* package_table = "package";
 const char* loaded_table = "loaded";
 
 
+// If necessary, add an empty metatable to flag the table as non-data
+// during preservation.
+static void add_empty_metatable(lua_State* lua)
+{
+  if (lua_getmetatable(lua, -1) == 0) {
+    lua_newtable(lua);
+    lua_setmetatable(lua, -2);
+  } else {
+    lua_pop(lua, 1);
+  }
+}
+
+
 void load_library(lua_State* lua, const char* table, lua_CFunction f,
                   const char** disable)
 {
@@ -53,10 +66,7 @@ void load_library(lua_State* lua, const char* table, lua_CFunction f,
       lua_pushnil(lua);
       lua_setfield(lua, -2, disable[i]);
     }
-    // Add an empty metatable to identify core libraries during
-    // preservation.
-    lua_newtable(lua);
-    lua_setmetatable(lua, -2);
+    add_empty_metatable(lua);
   }
 }
 
@@ -327,9 +337,7 @@ int require_library(lua_State* lua)
     if (luaL_dofile(lua, fn) != 0) {
       return luaL_error(lua, "%s", lua_tostring(lua, -1));
     }
-    // Add an empty metatable to identify the library during preservation.
-    lua_newtable(lua);
-    lua_setmetatable(lua, -2);
+    add_empty_metatable(lua);
   }
   lua_pushvalue(lua, -1);
   lua_setfield(lua, pos, name);
