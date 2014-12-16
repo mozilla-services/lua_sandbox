@@ -33,24 +33,21 @@ local sfl4j_levels = l.Cg((
 / tonumber, "Severity")
 
 -- Example: 2014-11-21 16:35:59,501
-local time_secfrac = l.Cg(l.P"," * l.digit^1 / tonumber, "sec_frac")
-local partial_time = dt.time_hour * l.P":" * dt.time_minute * l.P":" * dt.time_second * time_secfrac^-1
-local sfl4j_datetime = l.Ct(dt.rfc3339_full_date * space * partial_time)
+local time_secfrac = l.Cg(l.digit^3 / tonumber, "sec_frac")
+local partial_time = dt.time_hour * l.P":" * dt.time_minute * l.P":" * dt.time_second * l.P"," * time_secfrac^-1
+local sfl4j_datetime = l.Ct(dt.rfc3339_full_date * space * partial_time) / dt.time_to_ns
 
 -- Example: ERROR [2014-11-21 16:35:59,501] com.domain.client.jobs.OutgoingQueue: Error handling output file with job job-name
 local logline = sfl4j_levels                 -- ERROR
               * space * l.P("[")
-              * l.Cg(sfl4j_datetime, "Timestamp")               -- 2014-11-21 16:35:59,501
+              * l.Cg(sfl4j_datetime, "Timestamp") -- 2014-11-21 16:35:59,501
               * l.P("]") * space
               * l.Cg(class, "Class")         -- com.domain.client.jobs.OutgoingQueue
               * l.P(":") * space
               * l.Cg(msg, "Message")         -- Error handling output...
 
--- Example: ! java.net.SocketTimeoutException: Read timed out
-local stackline = l.P"!" * space * line
-
 -- A representation of a full log event
-local logevent = logline * sep * l.Cg(stackline^0 * stackatline^0 * line^0, "Stacktrace")
+local logevent = logline * sep * l.Cg(line^0, "Stacktrace")
 
 logevent_grammar = l.Ct(logevent)
 

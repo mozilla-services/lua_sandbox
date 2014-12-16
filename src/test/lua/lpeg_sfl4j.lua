@@ -6,7 +6,7 @@ local function single_line_logevent()
     local single_line_log = 'ERROR [2014-11-21 16:35:59,501] com.domain.client.jobs.OutgoingQueue: Error handling output file with job job-name\n'
     local single_line_test_fields = {
         Severity  = 3,
-        Timestamp = 1.416587759e+18,
+        Timestamp = 1.41658826e+18,
         Class     = "com.domain.client.jobs.OutgoingQueue",
         Message   = "Error handling output file with job job-name"
     }
@@ -15,7 +15,7 @@ local function single_line_logevent()
     if not fields then error("match didn't work " .. single_line_log) end
 
     assert(fields.Severity == single_line_test_fields.Severity, fields.Severity)
-    assert(dt.time_to_ns(fields.Timestamp) == single_line_test_fields.Timestamp, dt.time_to_ns(fields.Timestamp))
+    assert(fields.Timestamp == single_line_test_fields.Timestamp, fields.Timestamp)
     assert(fields.Class == single_line_test_fields.Class, fields.Class)
     assert(fields.Message == single_line_test_fields.Message, fields.Message)
 end
@@ -28,7 +28,7 @@ ERROR [2014-11-20 16:40:51,577] com.domain.substitute.UsersLoop: Error caught in
     ]]
     local two_line_test_fields = {
         Severity   = 3,
-        Timestamp  = 1.416501651e+18,
+        Timestamp  = 1.416502228e+18,
         Class      = "com.domain.substitute.UsersLoop",
         Message    = "Error caught in user loop",
         Stacktrace = "! java.net.SocketTimeoutException: Read timed out\n"
@@ -38,7 +38,7 @@ ERROR [2014-11-20 16:40:51,577] com.domain.substitute.UsersLoop: Error caught in
     if not fields then error("match didn't work " .. two_line_log) end
 
     assert(fields.Severity == two_line_test_fields.Severity, fields.Severity)
-    assert(dt.time_to_ns(fields.Timestamp) == two_line_test_fields.Timestamp, dt.time_to_ns(fields.Timestamp))
+    assert(fields.Timestamp == two_line_test_fields.Timestamp, fields.Timestamp)
     assert(fields.Class == two_line_test_fields.Class, fields.Class)
     assert(fields.Message == two_line_test_fields.Message, fields.Message)
     assert(fields.Stacktrace == two_line_test_fields.Stacktrace, fields.Stacktrace)
@@ -92,7 +92,7 @@ ERROR [2014-11-20 16:40:51,577] com.domain.substitute.UsersLoop: Error caught in
 
 local multi_line_test_fields = {
     Severity   = 3,
-    Timestamp  = 1.416501651e+18,
+    Timestamp  = 1.416502228e+18,
     Class      = "com.domain.substitute.UsersLoop",
     Message    = "Error caught in user loop",
     Stacktrace = "! java.net.SocketTimeoutException: Read timed out\n! at java.net.SocketInputStream.socketRead0(Native Method)\n! at java.net.SocketInputStream.read(SocketInputStream.java:152)\n! at java.net.SocketInputStream.read(SocketInputStream.java:122)\n! at sun.security.ssl.InputRecord.readFully(InputRecord.java:442)\n! at sun.security.ssl.InputRecord.read(InputRecord.java:480)\n! at sun.security.ssl.SSLSocketImpl.readRecord(SSLSocketImpl.java:927)\n! at sun.security.ssl.SSLSocketImpl.readDataRecord(SSLSocketImpl.java:884)\n! at sun.security.ssl.AppInputStream.read(AppInputStream.java:102)\n! at org.apache.http.impl.io.SessionInputBufferImpl.streamRead(SessionInputBufferImpl.java:136)\n! at org.apache.http.impl.io.SessionInputBufferImpl.fillBuffer(SessionInputBufferImpl.java:152)\n! at org.apache.http.impl.io.SessionInputBufferImpl.readLine(SessionInputBufferImpl.java:270)\n! at org.apache.http.impl.conn.DefaultHttpResponseParser.parseHead(DefaultHttpResponseParser.java:140)\n! at org.apache.http.impl.conn.DefaultHttpResponseParser.parseHead(DefaultHttpResponseParser.java:57)\n! at org.apache.http.impl.io.AbstractMessageParser.parse(AbstractMessageParser.java:260)\n! at org.apache.http.impl.DefaultBHttpClientConnection.receiveResponseHeader(DefaultBHttpClientConnection.java:161)\n! at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)\n! at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:57)\n! at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)\n! at java.lang.reflect.Method.invoke(Method.java:606)\n! at org.apache.http.impl.conn.CPoolProxy.invoke(CPoolProxy.java:138)\n! at com.sun.proxy.$Proxy25.receiveResponseHeader(Unknown Source)\n! at org.apache.http.protocol.HttpRequestExecutor.doReceiveResponse(HttpRequestExecutor.java:271)\n! at org.apache.http.protocol.HttpRequestExecutor.execute(HttpRequestExecutor.java:123)\n! at org.apache.http.impl.execchain.MainClientExec.execute(MainClientExec.java:253)\n! at org.apache.http.impl.execchain.ProtocolExec.execute(ProtocolExec.java:194)\n! at org.apache.http.impl.execchain.RetryExec.execute(RetryExec.java:85)\n! at org.apache.http.impl.execchain.RedirectExec.execute(RedirectExec.java:108)\n! at org.apache.http.impl.client.InternalHttpClient.doExecute(InternalHttpClient.java:186)\n! at org.apache.http.impl.client.CloseableHttpClient.execute(CloseableHttpClient.java:82)\n! at org.apache.http.impl.client.CloseableHttpClient.execute(CloseableHttpClient.java:106)\n! at org.apache.http.impl.client.CloseableHttpClient.execute(CloseableHttpClient.java:57)\n! at com.yammer.metrics.scala.Timer.time(Timer.scala:17)\n! at com.yammer.metrics.scala.Timer.time(Timer.scala:17)\n! at java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:471)\n! at java.util.concurrent.FutureTask.runAndReset(FutureTask.java:304)\n! at java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask.access$301(ScheduledThreadPoolExecutor.java:178)\n! at java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask.run(ScheduledThreadPoolExecutor.java:293)\n! at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1145)\n! at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:615)\n! at java.lang.Thread.run(Thread.java:744)\n"
@@ -103,7 +103,7 @@ local function multi_line_logevent()
     if not fields then error("match didn't work " .. multi_line_log) end
 
     assert(fields.Severity == multi_line_test_fields.Severity, fields.Severity)
-    assert(dt.time_to_ns(fields.Timestamp) == multi_line_test_fields.Timestamp, dt.time_to_ns(fields.Timestamp))
+    assert(fields.Timestamp == multi_line_test_fields.Timestamp, fields.Timestamp)
     assert(fields.Class == multi_line_test_fields.Class, fields.Class)
     assert(fields.Message == multi_line_test_fields.Message, fields.Message)
     assert(fields.Stacktrace == multi_line_test_fields.Stacktrace, fields.Stacktrace)
