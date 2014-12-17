@@ -30,7 +30,7 @@ local sfl4j_levels = l.Cg((
 + (l.P"WARN"  + "warn")  / "4"
 + (l.P"ERROR" + "error") / "3"
 + (l.P"FATAL" + "fatal") / "0")
-/ tonumber, "Severity")
+/ tonumber, "severity")
 
 -- Example: 2014-11-21 16:35:59,501
 local time_secfrac = l.Cg(l.digit^3 / tonumber, "sec_frac")
@@ -40,14 +40,14 @@ local sfl4j_datetime = l.Ct(dt.rfc3339_full_date * space * partial_time) / dt.ti
 -- Example: ERROR [2014-11-21 16:35:59,501] com.domain.client.jobs.OutgoingQueue: Error handling output file with job job-name
 local logline = sfl4j_levels                 -- ERROR
               * space * l.P("[")
-              * l.Cg(sfl4j_datetime, "Timestamp") -- 2014-11-21 16:35:59,501
+              * l.Cg(sfl4j_datetime, "timestamp") -- 2014-11-21 16:35:59,501
               * l.P("]") * space
-              * l.Cg(class, "Class")         -- com.domain.client.jobs.OutgoingQueue
+              * l.Cg(class, "class")         -- com.domain.client.jobs.OutgoingQueue
               * l.P(":") * space
-              * l.Cg(msg, "Message")         -- Error handling output...
+              * l.Cg(msg, "message")         -- Error handling output...
 
 -- A representation of a full log event
-local logevent = logline * sep * l.Cg(line^0, "Stacktrace")
+local logevent = logline * sep * l.Cg(line^0, "stacktrace")
 
 logevent_grammar = l.Ct(logevent)
 
