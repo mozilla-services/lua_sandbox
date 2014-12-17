@@ -32,8 +32,12 @@ local sfl4j_levels = l.Cg((
 + (l.P"FATAL" + "fatal") / "0")
 / tonumber, "severity")
 
+function convert_to_frac(sec)
+    return tonumber("0." .. sec)
+end
+
 -- Example: 2014-11-21 16:35:59,501
-local time_secfrac = l.Cg(l.digit^3 / tonumber, "sec_frac")
+local time_secfrac = l.Cg(l.digit^3 / convert_to_frac, "sec_frac")
 local partial_time = dt.time_hour * l.P":" * dt.time_minute * l.P":" * dt.time_second * l.P"," * time_secfrac^-1
 local sfl4j_datetime = l.Ct(dt.rfc3339_full_date * space * partial_time) / dt.time_to_ns
 
