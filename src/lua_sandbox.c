@@ -308,12 +308,16 @@ void lsb_output(lua_sandbox* lsb, int start, int end, int append)
       }
       break;
     case LUA_TSTRING:
-      if (appendf(&lsb->output, "%s", lua_tostring(lsb->lua, i))) {
-        result = 1;
+      {
+        size_t len;
+        const char* s = lua_tolstring(lsb->lua, i, &len);
+        if (appends(&lsb->output, s, len)) {
+          result = 1;
+        }
       }
       break;
     case LUA_TNIL:
-      if (appends(&lsb->output, "nil")) {
+      if (appends(&lsb->output, "nil", 3)) {
         result = 1;
       }
       break;

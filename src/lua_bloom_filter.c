@@ -173,7 +173,7 @@ int serialize_bloom_filter(const char* key, bloom_filter* bf, output_data* outpu
     return 1;
   }
   if (serialize_binary(bf->data, bf->bytes, output)) return 1;
-  if (appends(output, "\")\n")) {
+  if (appends(output, "\")\n", 3)) {
     return 1;
   }
   return 0;

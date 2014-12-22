@@ -158,7 +158,7 @@ int serialize_hyperloglog(const char* key, hyperloglog* hll, output_data* output
     return 1;
   }
   if (serialize_binary(hll, sizeof(hyperloglog) - 1, output)) return 1;
-  if (appends(output, "\")\n")) {
+  if (appends(output, "\")\n", 3)) {
     return 1;
   }
   return 0;

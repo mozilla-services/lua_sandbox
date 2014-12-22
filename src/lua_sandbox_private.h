@@ -127,10 +127,11 @@ int realloc_output(output_data* output, size_t needed);
  *
  * @param output Pointer the output collector.
  * @param str String to append to the output.
+ * @param len Length of the string to append
  *
  * @return int Zero on success, non-zero if out of memory.
  */
-int appends(output_data* output, const char* str);
+int appends(output_data* output, const char* str, size_t len);
 
 /**
  * Append a character to the output stream.
