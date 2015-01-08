@@ -6,7 +6,7 @@ require "string"
 
 local dt = require("date_time")
 
-local function test_valid(tc, grammar, tests, results)
+local function test_valid(grammar, tests, results)
     for i,v in ipairs(tests) do
         t = grammar:match(v)
         if not t then
@@ -14,7 +14,7 @@ local function test_valid(tc, grammar, tests, results)
         else
             ns = dt.time_to_ns(t)
             if ns ~= results[i] then
-                error(string.format("tc: %d %s expected: %g received: %g", tc, v, results[i], ns))
+                error(string.format("test: %d %s expected: %g received: %g", i, v, results[i], ns), 2)
             end
         end
     end
@@ -36,7 +36,7 @@ local function rfc3339()
     if os.date("%c"):find("^%d") then
         results[6] = 0 -- windows will fail to convert this time
     end
-    test_valid(tc, dt.rfc3339, tests, results)
+    test_valid(dt.rfc3339, tests, results)
 end
 
 local function rfc3339_invalid()
@@ -54,25 +54,25 @@ end
 local function clf()
     local tests = {"10/Feb/2014:08:46:36 -0800"}
     local results = {1392050796000000000}
-    test_valid(tc, dt.clf_timestamp, tests, results)
+    test_valid(dt.clf_timestamp, tests, results)
 end
 
 local function rfc3164()
     local tests = {"Feb 10 16:46:36"}
-    local results = {1392050796000000000}
-    test_valid(tc, dt.rfc3164_timestamp, tests, results)
+    local results = {1423586796000000000}
+    test_valid(dt.rfc3164_timestamp, tests, results)
 end
 
 local function mysql()
     local tests = {"20140210164636"}
     local results = {1392050796000000000}
-    test_valid(tc, dt.mysql_timestamp, tests, results)
+    test_valid(dt.mysql_timestamp, tests, results)
 end
 
 local function pgsql()
     local tests = {"2014-02-10 16:46:36"}
     local results = {1392050796000000000}
-    test_valid(tc, dt.pgsql_timestamp, tests, results)
+    test_valid(dt.pgsql_timestamp, tests, results)
 end
 
 local function strftime_all()
@@ -125,7 +125,7 @@ local function strftime_invalid()
     end
 end
 
-function process(tc)
+function process()
     rfc3339()
     rfc3339_invalid()
     clf()
