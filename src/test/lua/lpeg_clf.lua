@@ -400,13 +400,13 @@ end
 local function nginx_upstream()
     local addrs = {"192.168.1.1:80", "192.168.1.2:80", "unix:/tmp/sock", "192.168.10.1:80", "192.168.10.2:80"}
     local lengths = {1, 2, 3, 4, 5}
-    local times = {1.1, 1.2, 1.3, 1.4, 1.5}
-    local statuses = {200, 201, 202, 203, 204}
+    local times = {1.1, 1.2, 1.3, 1.4, "-"}
+    local statuses = {200, 201, 202, 203, "-"}
     local uscs = "HIT"
     local header = "header field"
 
     local grammar = clf.build_nginx_grammar('$upstream_addr $upstream_cache_status $upstream_response_length $upstream_response_time $upstream_status "$upstream_http_test" $upstream_cache_last_modified')
-    local log = string.format('%s, %s, %s : %s, %s %s %d, %d, %d : %d, %d %g, %g, %g : %g, %g %d, %d, %d : %d, %d "%s" Mon, 28 Sep 1970 06:00:00 GMT',
+    local log = string.format('%s, %s, %s : %s, %s %s %d, %d, %d : %d, %d %g, %g, %g : %g, %s %d, %d, %d : %d, %s "%s" Mon, 28 Sep 1970 06:00:00 GMT',
                               addrs[1], addrs[2], addrs[3], addrs[4], addrs[5], uscs,
                               lengths[1], lengths[2], lengths[3], lengths[4], lengths[5],
                               times[1], times[2], times[3], times[4], times[5],
@@ -442,6 +442,7 @@ local function nginx_upstream()
         error(string.format("upstream_response_time representation = '%s'", fields.upstream_response_time.representation))
     end
     for i, v in ipairs(times) do
+        if v == "-" then v = 0 end
         if fields.upstream_response_time.value[i] ~= v then
             error(string.format("expected value: %g received: %g", v, fields.upstream_response_time.value[i]))
         end
@@ -451,6 +452,7 @@ local function nginx_upstream()
         error(string.format("#upstream_status = %d", #fields.upstream_status))
     end
     for i, v in ipairs(statuses) do
+        if v == "-" then v = 0 end
         if fields.upstream_status[i] ~= v then
             error(string.format("expected value: %d received: %d", v, fields.upstream_status[i]))
         end
