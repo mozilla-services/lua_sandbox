@@ -147,7 +147,7 @@ int preserve_global_data(lua_sandbox* lsb, const char* data_file)
 int serialize_double(output_data* output, double d)
 {
   if (isnan(d)) {
-    return appends(output, not_a_number);
+    return appends(output, not_a_number, 3);
   }
   if (d > INT_MAX) {
     return appendf(output, "%0.17g", d);
@@ -557,16 +557,16 @@ int serialize_binary(const void* src, size_t len, output_data* output)
   for (unsigned i = 0; i < len; ++i) {
     switch (uc[i]) {
     case '\n':
-      if (appends(output, "\\n")) return 1;
+      if (appends(output, "\\n", 2)) return 1;
       break;
     case '\r':
-      if (appends(output, "\\r")) return 1;
+      if (appends(output, "\\r", 2)) return 1;
       break;
     case '"':
-      if (appends(output, "\\\"")) return 1;
+      if (appends(output, "\\\"", 2)) return 1;
       break;
     case '\\':
-      if (appends(output, "\\\\")) return 1;
+      if (appends(output, "\\\\", 2)) return 1;
       break;
     default:
       if (appendc(output, uc[i])) return 1;

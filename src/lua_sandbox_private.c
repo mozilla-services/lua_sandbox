@@ -210,14 +210,15 @@ int realloc_output(output_data* output, size_t needed)
 }
 
 
-int appends(output_data* output, const char* str)
+int appends(output_data* output, const char* str, size_t len)
 {
-  size_t needed = strlen(str) + 1;
+  size_t needed = len + 1;
   if (output->size - output->pos < needed) {
     if (realloc_output(output, needed)) return 1;
   }
-  memcpy(output->data + output->pos, str, needed);
-  output->pos += needed - 1;
+  memcpy(output->data + output->pos, str, len);
+  output->pos += len;
+  output->data[output->pos] = 0;
   return 0;
 }
 
