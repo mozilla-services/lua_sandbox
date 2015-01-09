@@ -34,6 +34,9 @@ function process(tc)
     elseif tc == 8 then -- heka message force memmove
         local hm = {Timestamp = 1e9, Fields = {string="0123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789"}}
         write_message(hm)
+    elseif tc == 9 then -- heka negative values
+        local hm = {Timestamp = -1, Pid = -1, Severity = -1}
+        write_message(hm)
     end
     return 0
 end

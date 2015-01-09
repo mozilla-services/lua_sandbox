@@ -33,11 +33,11 @@ int serialize_table_as_pb(lua_sandbox* lsb, int index)
 
   // use existing or create a timestamp
   lua_getfield(lsb->lua, index, "Timestamp");
-  long long ts;
+  unsigned long long ts;
   if (lua_isnumber(lsb->lua, -1)) {
-    ts = (long long)lua_tonumber(lsb->lua, -1);
+    ts = (unsigned long long)lua_tonumber(lsb->lua, -1);
   } else {
-    ts = (long long)(time(NULL) * 1e9);
+    ts = (unsigned long long)(time(NULL) * 1e9);
   }
   lua_pop(lsb->lua, 1);
   if (pb_write_tag(d, 2, 0)) return 1;
@@ -63,7 +63,7 @@ int serialize_table_as_pb(lua_sandbox* lsb, int index)
 }
 
 
-int pb_write_varint(output_data* d, long long i)
+int pb_write_varint(output_data* d, unsigned long long i)
 {
   size_t needed = 10;
   if (needed > d->size - d->pos) {
@@ -167,7 +167,7 @@ int encode_int(lua_sandbox* lsb, output_data* d, char id, const char* name,
   int result = 0;
   lua_getfield(lsb->lua, index, name);
   if (lua_isnumber(lsb->lua, -1)) {
-    long long i = (long long)lua_tonumber(lsb->lua, -1);
+    unsigned long long i = (unsigned long long)lua_tonumber(lsb->lua, -1);
     if (!(result = pb_write_tag(d, id, 0))) {
       result = pb_write_varint(d, i);
     }

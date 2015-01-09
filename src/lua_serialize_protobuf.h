@@ -28,7 +28,7 @@ int serialize_table_as_pb(lua_sandbox* lsb, int index);
  *
  * @return int Zero on success, non-zero if out of memory.
  */
-int pb_write_varint(output_data* d, long long i);
+int pb_write_varint(output_data* d, unsigned long long i);
 
 /**
  * Writes a double to the output buffer.
