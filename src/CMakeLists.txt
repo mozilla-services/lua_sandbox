@@ -4,6 +4,7 @@
 
 set(LUA_SANDBOX_SRC
 lua_sandbox.c
+lua_output.c
 lua_sandbox_private.c
 lua_serialize.c
 lua_serialize_protobuf.c

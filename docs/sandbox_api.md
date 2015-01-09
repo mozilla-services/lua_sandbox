@@ -59,7 +59,7 @@ By default only the base library is loaded additional libraries must be explicit
 
 ____
 **output(arg0, arg1, ...argN)**
-    Appends data to the output buffer, which cannot exceed the output_limit
+    lsb_appends data to the output buffer, which cannot exceed the output_limit
     configuration parameter. See lsb_get_output() to connect the output to the
     host application.
 

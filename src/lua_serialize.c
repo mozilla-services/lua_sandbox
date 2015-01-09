@@ -97,7 +97,7 @@ int preserve_global_data(lua_sandbox* lsb, const char* data_file)
             preservation_version,
             preservation_version,
             get_preservation_version(lsb->lua));
-    appendf(&data.keys, "%s", G);
+    lsb_appendf(&data.keys, "%s", G);
     data.keys.pos += 1;
     data.globals = lua_topointer(lsb->lua, -1);
     lua_checkstack(lsb->lua, 2);
@@ -147,10 +147,10 @@ int preserve_global_data(lua_sandbox* lsb, const char* data_file)
 int serialize_double(output_data* output, double d)
 {
   if (isnan(d)) {
-    return appends(output, not_a_number, 3);
+    return lsb_appends(output, not_a_number, 3);
   }
   if (d > INT_MAX) {
-    return appendf(output, "%0.17g", d);
+    return lsb_appendf(output, "%0.17g", d);
   }
 
   const int precision = 8;
@@ -205,7 +205,7 @@ int serialize_double(output_data* output, double d)
   size_t remaining = output->size - output->pos;
   size_t needed = (p - buffer) + negative;
   if (needed >= remaining) {
-    if (realloc_output(output, needed)) return 1;
+    if (lsb_realloc_output(output, needed)) return 1;
   }
 
   if (negative) {
@@ -261,7 +261,7 @@ int serialize_data(lua_sandbox* lsb, int index, output_data* output)
     lua_pushstring(lsb->lua, "%q");
     lua_pushvalue(lsb->lua, index - 3);
     if (lua_pcall(lsb->lua, 2, 1, 0) == 0) {
-      if (appendf(output, "%s", lua_tostring(lsb->lua, -1))) {
+      if (lsb_appendf(output, "%s", lua_tostring(lsb->lua, -1))) {
         lua_pop(lsb->lua, 1); // Remove the string table.
         return 1;
       }
@@ -279,7 +279,7 @@ int serialize_data(lua_sandbox* lsb, int index, output_data* output)
     lua_pop(lsb->lua, 2); // Remove the pcall result and the string table.
     break;
   case LUA_TBOOLEAN:
-    if (appendf(output, "%s",
+    if (lsb_appendf(output, "%s",
                 lua_toboolean(lsb->lua, index)
                 ? "true" : "false")) {
       return 1;
@@ -324,7 +324,7 @@ int serialize_kvp(lua_sandbox* lsb, serialization_data* data, size_t parent)
   }
 
   size_t pos = data->keys.pos;
-  if (appendf(&data->keys, "%s[%s]", data->keys.data + parent,
+  if (lsb_appendf(&data->keys, "%s[%s]", data->keys.data + parent,
               lsb->output.data)) {
     return 1;
   }
@@ -557,19 +557,19 @@ int serialize_binary(const void* src, size_t len, output_data* output)
   for (unsigned i = 0; i < len; ++i) {
     switch (uc[i]) {
     case '\n':
-      if (appends(output, "\\n", 2)) return 1;
+      if (lsb_appends(output, "\\n", 2)) return 1;
       break;
     case '\r':
-      if (appends(output, "\\r", 2)) return 1;
+      if (lsb_appends(output, "\\r", 2)) return 1;
       break;
     case '"':
-      if (appends(output, "\\\"", 2)) return 1;
+      if (lsb_appends(output, "\\\"", 2)) return 1;
       break;
     case '\\':
-      if (appends(output, "\\\\", 2)) return 1;
+      if (lsb_appends(output, "\\\\", 2)) return 1;
       break;
     default:
-      if (appendc(output, uc[i])) return 1;
+      if (lsb_appendc(output, uc[i])) return 1;
       break;
     }
   }

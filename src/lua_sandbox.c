@@ -311,18 +311,18 @@ void lsb_output(lua_sandbox* lsb, int start, int end, int append)
       {
         size_t len;
         const char* s = lua_tolstring(lsb->lua, i, &len);
-        if (appends(&lsb->output, s, len)) {
+        if (lsb_appends(&lsb->output, s, len)) {
           result = 1;
         }
       }
       break;
     case LUA_TNIL:
-      if (appends(&lsb->output, "nil", 3)) {
+      if (lsb_appends(&lsb->output, "nil", 3)) {
         result = 1;
       }
       break;
     case LUA_TBOOLEAN:
-      if (appendf(&lsb->output, "%s",
+      if (lsb_appendf(&lsb->output, "%s",
                   lua_toboolean(lsb->lua, i)
                   ? "true" : "false")) {
         result = 1;

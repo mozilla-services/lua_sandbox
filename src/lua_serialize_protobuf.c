@@ -12,62 +12,19 @@
 #include <string.h>
 #include <time.h>
 
-
-int serialize_table_as_pb(lua_sandbox* lsb, int index)
-{
-  output_data* d = &lsb->output;
-  d->pos = 0;
-  size_t needed = 18;
-  if (needed > d->size) {
-    if (realloc_output(d, needed)) return 1;
-  }
-
-  // create a type 4 uuid
-  d->data[d->pos++] = 2 | (1 << 3);
-  d->data[d->pos++] = 16;
-  for (int x = 0; x < 16; ++x) {
-    d->data[d->pos++] = rand() % 255;
-  }
-  d->data[8] = (d->data[8] & 0x0F) | 0x40;
-  d->data[10] = (d->data[10] & 0x0F) | 0xA0;
-
-  // use existing or create a timestamp
-  lua_getfield(lsb->lua, index, "Timestamp");
-  long long ts;
-  if (lua_isnumber(lsb->lua, -1)) {
-    ts = (long long)lua_tonumber(lsb->lua, -1);
-  } else {
-    ts = (long long)(time(NULL) * 1e9);
-  }
-  lua_pop(lsb->lua, 1);
-  if (pb_write_tag(d, 2, 0)) return 1;
-  if (pb_write_varint(d, ts)) return 1;
-
-  if (encode_string(lsb, d, 3, "Type", index)) return 1;
-  if (encode_string(lsb, d, 4, "Logger", index)) return 1;
-  if (encode_int(lsb, d, 5, "Severity", index)) return 1;
-  if (encode_string(lsb, d, 6, "Payload", index)) return 1;
-  if (encode_string(lsb, d, 7, "EnvVersion", index)) return 1;
-  if (encode_int(lsb, d, 8, "Pid", index)) return 1;
-  if (encode_string(lsb, d, 9, "Hostname", index)) return 1;
-  if (encode_fields(lsb, d, 10, "Fields", index)) return 1;
-  // if we go above 15 pb_write_tag will need to start varint encoding
-  needed = 1;
-  if (needed > d->size - d->pos) {
-    if (realloc_output(d, needed)) return 1;
-  }
-  d->data[d->pos] = 0; // NULL terminate incase someone tries to treat this
-                       // as a string
-
-  return 0;
-}
-
-
-int pb_write_varint(output_data* d, long long i)
+/**
+ * Writes a varint encoded number to the output buffer.
+ *
+ * @param d Pointer to the output data buffer.
+ * @param i Number to be encoded.
+ *
+ * @return int Zero on success, non-zero if out of memory.
+ */
+static int pb_write_varint(output_data* d, unsigned long long i)
 {
   size_t needed = 10;
   if (needed > d->size - d->pos) {
-    if (realloc_output(d, needed)) return 1;
+    if (lsb_realloc_output(d, needed)) return 1;
   }
 
   if (i == 0) {
@@ -84,11 +41,19 @@ int pb_write_varint(output_data* d, long long i)
 }
 
 
-int pb_write_double(output_data* d, double i)
+/**
+ * Writes a double to the output buffer.
+ *
+ * @param d Pointer to the output data buffer.
+ * @param i Double to be encoded.
+ *
+ * @return int Zero on success, non-zero if out of memory.
+ */
+static int pb_write_double(output_data* d, double i)
 {
   size_t needed = sizeof(double);
   if (needed > d->size - d->pos) {
-    if (realloc_output(d, needed)) return 1;
+    if (lsb_realloc_output(d, needed)) return 1;
   }
 
   // todo add big endian support if necessary
@@ -98,11 +63,19 @@ int pb_write_double(output_data* d, double i)
 }
 
 
-int pb_write_bool(output_data* d, int i)
+/**
+ * Writes a bool to the output buffer.
+ *
+ * @param d Pointer to the output data buffer.
+ * @param i Number to be encoded.
+ *
+ * @return int Zero on success, non-zero if out of memory.
+ */
+static int pb_write_bool(output_data* d, int i)
 {
   size_t needed = 1;
   if (needed > d->size - d->pos) {
-    if (realloc_output(d, needed)) return 1;
+    if (lsb_realloc_output(d, needed)) return 1;
   }
 
   if (i) {
@@ -114,11 +87,20 @@ int pb_write_bool(output_data* d, int i)
 }
 
 
-int pb_write_tag(output_data* d, char id, char wire_type)
+/**
+ * Writes a field tag (tag id/wire type) to the output buffer.
+ *
+ * @param d  Pointer to the output data buffer.
+ * @param id Field identifier.
+ * @param wire_type Field wire type.
+ *
+ * @return int Zero on success, non-zero if out of memory.
+ */
+static int pb_write_tag(output_data* d, char id, char wire_type)
 {
   size_t needed = 1;
   if (needed > d->size - d->pos) {
-    if (realloc_output(d, needed)) return 1;
+    if (lsb_realloc_output(d, needed)) return 1;
   }
 
   d->data[d->pos++] = wire_type | (id << 3);
@@ -126,7 +108,17 @@ int pb_write_tag(output_data* d, char id, char wire_type)
 }
 
 
-int pb_write_string(output_data* d, char id, const char* s, size_t len)
+/**
+ * Writes a string to the output buffer.
+ *
+ * @param d  Pointer to the output data buffer.
+ * @param id Field identifier.
+ * @param s  String to output.
+ * @param len Length of s.
+ *
+ * @return int Zero on success, non-zero if out of memory.
+ */
+static int pb_write_string(output_data* d, char id, const char* s, size_t len)
 {
 
   if (pb_write_tag(d, id, 2)) {
@@ -138,7 +130,7 @@ int pb_write_string(output_data* d, char id, const char* s, size_t len)
 
   size_t needed = len;
   if (needed > d->size - d->pos) {
-    if (realloc_output(d, needed)) return 1;
+    if (lsb_realloc_output(d, needed)) return 1;
   }
   memcpy(&d->data[d->pos], s, len);
   d->pos += len;
@@ -146,8 +138,21 @@ int pb_write_string(output_data* d, char id, const char* s, size_t len)
 }
 
 
-int encode_string(lua_sandbox* lsb, output_data* d, char id, const char* name,
-                  int index)
+/**
+ * Retrieve the string value for a Lua table entry (the table should be on top
+ * of the stack).  If the entry is not found or not a string nothing is encoded.
+ *
+ * @param lsb  Pointer to the sandbox.
+ * @param d  Pointer to the output data buffer.
+ * @param id Field identifier.
+ * @param name Key used for the Lua table entry lookup.
+ * @param index Lua stack index of the table.
+ *
+ * @return int Zero on success, non-zero if out of memory.
+ */
+static int
+encode_string(lua_sandbox* lsb, output_data* d, char id, const char* name,
+              int index)
 {
   int result = 0;
   lua_getfield(lsb->lua, index, name);
@@ -161,13 +166,27 @@ int encode_string(lua_sandbox* lsb, output_data* d, char id, const char* name,
 }
 
 
-int encode_int(lua_sandbox* lsb, output_data* d, char id, const char* name,
-               int index)
+/**
+ * Retrieve the numeric value for a Lua table entry (the table should be on top
+ * of the stack).  If the entry is not found or not a number nothing is encoded,
+ * otherwise the number is varint encoded.
+ *
+ * @param lsb  Pointer to the sandbox.
+ * @param d  Pointer to the output data buffer.
+ * @param id Field identifier.
+ * @param name Key used for the Lua table entry lookup.
+ * @param index Lua stack index of the table.
+ *
+ * @return int Zero on success, non-zero if out of memory.
+ */
+static int
+encode_int(lua_sandbox* lsb, output_data* d, char id, const char* name,
+           int index)
 {
   int result = 0;
   lua_getfield(lsb->lua, index, name);
   if (lua_isnumber(lsb->lua, -1)) {
-    long long i = (long long)lua_tonumber(lsb->lua, -1);
+    unsigned long long i = (unsigned long long)lua_tonumber(lsb->lua, -1);
     if (!(result = pb_write_tag(d, id, 0))) {
       result = pb_write_varint(d, i);
     }
@@ -177,8 +196,33 @@ int encode_int(lua_sandbox* lsb, output_data* d, char id, const char* name,
 }
 
 
-int encode_field_array(lua_sandbox* lsb, output_data* d, int t,
-                       const char* representation)
+/**
+ * Encodes the field value.
+ *
+ * @param lsb  Pointer to the sandbox.
+ * @param d  Pointer to the output data buffer.
+ * @param first Boolean indicator used to add addition protobuf data in the
+ *              correct order.
+ * @param representation String representation of the field i.e., "ms"
+ *
+ * @return int Zero on success, non-zero if out of memory.
+ */
+static int encode_field_value(lua_sandbox* lsb, output_data* d, int first,
+                              const char* representation);
+
+
+/**
+ * Encodes a field that has an array of values.
+ *
+ * @param lsb  Pointer to the sandbox.
+ * @param d  Pointer to the output data buffer.
+ * @param ltype Lua type of the array values.
+ * @param representation String representation of the field i.e., "ms"
+ *
+ * @return int Zero on success, non-zero if out of memory.
+ */
+static int encode_field_array(lua_sandbox* lsb, output_data* d, int t,
+                              const char* representation)
 {
   int result = 0, first = (int)lua_objlen(lsb->lua, -1);
   lua_checkstack(lsb->lua, 2);
@@ -197,7 +241,15 @@ int encode_field_array(lua_sandbox* lsb, output_data* d, int t,
 }
 
 
-int encode_field_object(lua_sandbox* lsb, output_data* d)
+/**
+ * Encodes a field that contains metadata in addition to its value.
+ *
+ * @param lsb  Pointer to the sandbox.
+ * @param d  Pointer to the output data buffer.
+ *
+ * @return int Zero on success, non-zero if out of memory.
+ */
+static int encode_field_object(lua_sandbox* lsb, output_data* d)
 {
   int result = 0;
   const char* representation = NULL;
@@ -212,8 +264,8 @@ int encode_field_object(lua_sandbox* lsb, output_data* d)
 }
 
 
-int encode_field_value(lua_sandbox* lsb, output_data* d, int first,
-                       const char* representation)
+static int encode_field_value(lua_sandbox* lsb, output_data* d, int first,
+                              const char* representation)
 {
   int result = 1;
   size_t len;
@@ -301,7 +353,17 @@ int encode_field_value(lua_sandbox* lsb, output_data* d, int first,
 }
 
 
-int update_field_length(output_data* d, size_t len_pos)
+/**
+ * Updates the field length in the output buffer once the size is known, this
+ * allows for single pass encoding.
+ *
+ * @param d  Pointer to the output data buffer.
+ * @param len_pos Position in the output buffer where the length should be
+ *                written.
+ *
+ * @return int Zero on success, non-zero if out of memory.
+ */
+static int update_field_length(output_data* d, size_t len_pos)
 {
   size_t len = d->pos - len_pos - 1;
   if (len < 128) {
@@ -315,7 +377,7 @@ int update_field_length(output_data* d, size_t len_pos)
   }
   size_t needed = cnt - 1;
   if (needed > d->size - d->pos) {
-    if (realloc_output(d, needed)) return 1;
+    if (lsb_realloc_output(d, needed)) return 1;
   }
   size_t end_pos = d->pos + needed;
   memmove(&d->data[len_pos + cnt], &d->data[len_pos + 1], len);
@@ -326,8 +388,21 @@ int update_field_length(output_data* d, size_t len_pos)
 }
 
 
-int encode_fields(lua_sandbox* lsb, output_data* d, char id, const char* name,
-                  int index)
+/**
+ * Iterates over the specified Lua table encoding the contents as user defined
+ * message fields.
+ *
+ * @param lsb  Pointer to the sandbox.
+ * @param d  Pointer to the output data buffer.
+ * @param id Field identifier.
+ * @param name Key used for the Lua table entry lookup.
+ * @param index Lua stack index of the table.
+ *
+ * @return int Zero on success, non-zero if out of memory.
+ */
+static int
+encode_fields(lua_sandbox* lsb, output_data* d, char id, const char* name,
+              int index)
 {
   int result = 0;
   lua_getfield(lsb->lua, index, name);
@@ -357,4 +432,54 @@ int encode_fields(lua_sandbox* lsb, output_data* d, char id, const char* name,
   }
   lua_pop(lsb->lua, 1); // remove the fields table
   return result;
+}
+
+
+int serialize_table_as_pb(lua_sandbox* lsb, int index)
+{
+  output_data* d = &lsb->output;
+  d->pos = 0;
+  size_t needed = 18;
+  if (needed > d->size) {
+    if (lsb_realloc_output(d, needed)) return 1;
+  }
+
+  // create a type 4 uuid
+  d->data[d->pos++] = 2 | (1 << 3);
+  d->data[d->pos++] = 16;
+  for (int x = 0; x < 16; ++x) {
+    d->data[d->pos++] = rand() % 255;
+  }
+  d->data[8] = (d->data[8] & 0x0F) | 0x40;
+  d->data[10] = (d->data[10] & 0x0F) | 0xA0;
+
+  // use existing or create a timestamp
+  lua_getfield(lsb->lua, index, "Timestamp");
+  unsigned long long ts;
+  if (lua_isnumber(lsb->lua, -1)) {
+    ts = (unsigned long long)lua_tonumber(lsb->lua, -1);
+  } else {
+    ts = (unsigned long long)(time(NULL) * 1e9);
+  }
+  lua_pop(lsb->lua, 1);
+  if (pb_write_tag(d, 2, 0)) return 1;
+  if (pb_write_varint(d, ts)) return 1;
+
+  if (encode_string(lsb, d, 3, "Type", index)) return 1;
+  if (encode_string(lsb, d, 4, "Logger", index)) return 1;
+  if (encode_int(lsb, d, 5, "Severity", index)) return 1;
+  if (encode_string(lsb, d, 6, "Payload", index)) return 1;
+  if (encode_string(lsb, d, 7, "EnvVersion", index)) return 1;
+  if (encode_int(lsb, d, 8, "Pid", index)) return 1;
+  if (encode_string(lsb, d, 9, "Hostname", index)) return 1;
+  if (encode_fields(lsb, d, 10, "Fields", index)) return 1;
+  // if we go above 15 pb_write_tag will need to start varint encoding
+  needed = 1;
+  if (needed > d->size - d->pos) {
+    if (lsb_realloc_output(d, needed)) return 1;
+  }
+  d->data[d->pos] = 0; // NULL terminate incase someone tries to treat this
+                       // as a string
+
+  return 0;
 }

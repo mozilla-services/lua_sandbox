@@ -6,6 +6,13 @@
 
 /** @brief Lua sandbox private implementation @file */
 
+#include "lua_bloom_filter.h"
+#include "lua_circular_buffer.h"
+#include "lua_hyperloglog.h"
+#include "lua_sandbox_private.h"
+#include "lua_serialize.h"
+#include "lua_serialize_protobuf.h"
+
 #include <ctype.h>
 #include <lauxlib.h>
 #include <lua.h>
@@ -14,13 +21,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
-
-#include "lua_bloom_filter.h"
-#include "lua_circular_buffer.h"
-#include "lua_hyperloglog.h"
-#include "lua_sandbox_private.h"
-#include "lua_serialize.h"
-#include "lua_serialize_protobuf.h"
 
 #ifdef _WIN32
 #define PATH_DELIMITER '\\'
@@ -137,104 +137,6 @@ void update_output_stats(lua_sandbox* lsb)
 }
 
 
-int appendf(output_data* output, const char* fmt, ...)
-{
-  va_list args;
-  int result = 0;
-  int remaining = 0;
-  char* ptr = NULL, *old_ptr = NULL;
-  do {
-    ptr = output->data + output->pos;
-    remaining = (int)(output->size - output->pos);
-    va_start(args, fmt);
-    int needed = vsnprintf(ptr, remaining, fmt, args);
-    va_end(args);
-    if (needed == -1) {
-      // Windows and Unix have different return values for this function
-      // -1 on Unix is a format error
-      // -1 on Windows means the buffer is too small and the required len
-      // is not returned
-      needed = remaining;
-    }
-    if (needed >= remaining) {
-      if (output->maxsize
-          && (output->size >= output->maxsize
-              || output->pos + needed >= output->maxsize)) {
-        return 1;
-      }
-      size_t newsize = output->size * 2;
-      while ((size_t)needed >= newsize - output->pos) {
-        newsize *= 2;
-      }
-      if (output->maxsize && newsize > output->maxsize) {
-        newsize = output->maxsize;
-      }
-      void* p = malloc(newsize);
-      if (p != NULL) {
-        memcpy(p, output->data, output->pos);
-        old_ptr = output->data;
-        output->data = p;
-        output->size = newsize;
-      } else {
-        return 1; // Out of memory condition.
-      }
-    } else {
-      output->pos += needed;
-      break;
-    }
-  }
-  while (1);
-  free(old_ptr);
-  return result;
-}
-
-
-int realloc_output(output_data* output, size_t needed)
-{
-  if (output->maxsize && needed + output->pos > output->maxsize) {
-    return 1;
-  }
-  size_t newsize = output->size * 2;
-  while (needed >= newsize - output->pos) {
-    newsize *= 2;
-  }
-  if (output->maxsize && newsize > output->maxsize) {
-    newsize = output->maxsize;
-  }
-
-  void* ptr = realloc(output->data, newsize);
-  if (!ptr) return 1;
-  output->data = ptr;
-  output->size = newsize;
-  return 0;
-}
-
-
-int appends(output_data* output, const char* str, size_t len)
-{
-  size_t needed = len + 1;
-  if (output->size - output->pos < needed) {
-    if (realloc_output(output, needed)) return 1;
-  }
-  memcpy(output->data + output->pos, str, len);
-  output->pos += len;
-  output->data[output->pos] = 0;
-  return 0;
-}
-
-
-int appendc(output_data* output, char ch)
-{
-  size_t needed = 2;
-  if (output->size - output->pos < needed) {
-    if (realloc_output(output, needed)) return 1;
-  }
-  output->data[output->pos++] = ch;
-  output->data[output->pos] = 0;
-  return 0;
-}
-
-
 int output(lua_State* lua)
 {
   void* luserdata = lua_touserdata(lua, lua_upvalueindex(1));
@@ -250,11 +152,6 @@ int output(lua_State* lua)
   lsb_output(lsb, 1, n, 1);
   return 0;
 }
-
-LUALIB_API int luaopen_cjson(lua_State* L);
-LUALIB_API int luaopen_lpeg(lua_State* L);
-LUALIB_API int luaopen_struct(lua_State* L);
-int set_encode_max_buffer(lua_State* L, int index, unsigned maxsize);
 
 int require_library(lua_State* lua)
 {

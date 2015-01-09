@@ -14,6 +14,11 @@
 
 extern const char* not_a_number;
 
+typedef int (*lsb_SerializeFunction) (lua_State *L,
+                                      const char* key,
+                                      void* ud,
+                                      output_data* output);
+
 typedef struct
 {
   const void*     ptr;

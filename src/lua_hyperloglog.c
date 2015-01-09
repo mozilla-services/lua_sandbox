@@ -149,16 +149,16 @@ static int hyperloglog_fromstring(lua_State* lua)
 int serialize_hyperloglog(const char* key, hyperloglog* hll, output_data* output)
 {
   output->pos = 0;
-  if (appendf(output,
+  if (lsb_appendf(output,
               "if %s == nil then %s = hyperloglog.new() end\n", key, key)) {
     return 1;
   }
 
-  if (appendf(output, "%s:fromstring(\"", key)) {
+  if (lsb_appendf(output, "%s:fromstring(\"", key)) {
     return 1;
   }
   if (serialize_binary(hll, sizeof(hyperloglog) - 1, output)) return 1;
-  if (appends(output, "\")\n", 3)) {
+  if (lsb_appends(output, "\")\n", 3)) {
     return 1;
   }
   return 0;

@@ -10,7 +10,7 @@
 #define lua_bloom_filter_h_
 
 #include <lua.h>
-#include "lua_sandbox_private.h"
+#include "lsb_output.h"
 
 extern const char* lsb_bloom_filter;
 extern const char* lsb_bloom_filter_table;

@@ -8,23 +8,15 @@
 #ifndef lua_sandbox_private_h_
 #define lua_sandbox_private_h_
 
-#include <stdio.h>
-#include <lua.h>
-#include "lua_sandbox.h"
+#include "lsb_output.h"
+#include "lsb.h"
 
-#define OUTPUT_SIZE 1024
+#include <lua.h>
+#include <stdio.h>
 
 #ifdef _WIN32
 #define snprintf _snprintf
 #endif
-
-typedef struct
-{
-  size_t maxsize;
-  size_t size;
-  size_t pos;
-  char*  data;
-} output_data;
 
 struct lua_sandbox {
   lua_State*      lua;
@@ -102,46 +94,6 @@ void sandbox_terminate(lua_sandbox* lsb);
  */
 void update_output_stats(lua_sandbox* lsb);
 
-/**
- * Append formatted string to the output stream.
- *
- * @param output Pointer the output collector.
- * @param fmt Printf format specifier.
- *
- * @return int Zero on success, non-zero if out of memory.
- */
-int appendf(output_data* output, const char* fmt, ...);
-
-/**
- * Resize the output buffer when more space is needed.
- *
- * @param output Output buffer to resize.
- * @param needed Number of additional bytes needed.
- *
- * @return int Zero on success, non-zero on failure.
- */
-int realloc_output(output_data* output, size_t needed);
-
-/**
- * Append a fixed string to the output stream.
- *
- * @param output Pointer the output collector.
- * @param str String to append to the output.
- * @param len Length of the string to append
- *
- * @return int Zero on success, non-zero if out of memory.
- */
-int appends(output_data* output, const char* str, size_t len);
-
-/**
- * Append a character to the output stream.
- *
- * @param output Pointer the output collector.
- * @param ch Character to append to the output.
- *
- * @return int Zero on success, non-zero if out of memory.
- */
-int appendc(output_data* output, char ch);
 
 ////////////////////////////////////////////////////////////////////////////////
 /// Lua to C function interface
@@ -164,5 +116,11 @@ int output(lua_State* lua);
  *         for the LPEG grammars, userdata).
  */
 int require_library(lua_State* lua);
+
+LUALIB_API int luaopen_cjson(lua_State* L);
+int set_encode_max_buffer(lua_State* L, int index, unsigned maxsize);
+
+LUALIB_API int luaopen_lpeg(lua_State* L);
+LUALIB_API int luaopen_struct(lua_State* L);
 
 #endif

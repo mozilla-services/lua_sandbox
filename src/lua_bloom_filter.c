@@ -160,7 +160,7 @@ static int bloom_filter_fromstring(lua_State* lua)
 int serialize_bloom_filter(const char* key, bloom_filter* bf, output_data* output)
 {
   output->pos = 0;
-  if (appendf(output,
+  if (lsb_appendf(output,
               "if %s == nil then %s = bloom_filter.new(%d, %g) end\n",
               key,
               key,
@@ -169,11 +169,11 @@ int serialize_bloom_filter(const char* key, bloom_filter* bf, output_data* outpu
     return 1;
   }
 
-  if (appendf(output, "%s:fromstring(\"", key)) {
+  if (lsb_appendf(output, "%s:fromstring(\"", key)) {
     return 1;
   }
   if (serialize_binary(bf->data, bf->bytes, output)) return 1;
-  if (appends(output, "\")\n", 3)) {
+  if (lsb_appends(output, "\")\n", 3)) {
     return 1;
   }
   return 0;
