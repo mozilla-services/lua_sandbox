@@ -34,6 +34,8 @@ function process(tc)
             t[#t+1] = "this is a test"
         end
         cjson.encode(t)
+    elseif tc == 8 then -- invalid type
+        write_message("string")
     end
     return 0
 end

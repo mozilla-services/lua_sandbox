@@ -6,23 +6,111 @@
 
 /** @brief Lua sandboxed implementation @file */
 
+#include "lsb.h"
+
+#include <ctype.h>
+#include <lauxlib.h>
+#include <lua.h>
+#include <lualib.h>
 #include <setjmp.h>
-#include <stdlib.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <time.h>
-#include <lua.h>
-#include <lauxlib.h>
-#include <lualib.h>
-#include "lua_sandbox_private.h"
-#include "lua_serialize.h"
-#include "lua_serialize_protobuf.h"
-#include "lua_circular_buffer.h"
+
+#include "lsb_modules.h"
+#include "lsb_output.h"
+#include "lsb_private.h"
+#include "lsb_serialize.h"
+#include "lsb_serialize_protobuf.h"
 
 static const char* disable_base_functions[] = { "collectgarbage", "coroutine",
-  "dofile", "load", "loadfile", "loadstring", "module", "print", "require", NULL };
+  "dofile", "load", "loadfile", "loadstring", "module", "print", "require",
+  NULL };
 
 static jmp_buf g_jbuf;
+
+#ifndef LUA_JIT
+/**
+* Implementation of the memory allocator for the Lua state.
+*
+* See: http://www.lua.org/manual/5.1/manual.html#lua_Alloc
+*
+* @param ud Pointer to the lua_sandbox
+* @param ptr Pointer to the memory block being allocated/reallocated/freed.
+* @param osize The original size of the memory block.
+* @param nsize The new size of the memory block.
+*
+* @return void* A pointer to the memory block.
+*/
+static void* memory_manager(void* ud, void* ptr, size_t osize, size_t nsize)
+{
+  lua_sandbox* lsb = (lua_sandbox*)ud;
+
+  void* nptr = NULL;
+  if (nsize == 0) {
+    free(ptr);
+    lsb->usage[LSB_UT_MEMORY][LSB_US_CURRENT] -= (unsigned)osize;
+  } else {
+    unsigned new_state_memory =
+      (unsigned)(lsb->usage[LSB_UT_MEMORY][LSB_US_CURRENT] + nsize - osize);
+    if (0 == lsb->usage[LSB_UT_MEMORY][LSB_US_LIMIT]
+        || new_state_memory
+        <= lsb->usage[LSB_UT_MEMORY][LSB_US_LIMIT]) {
+      nptr = realloc(ptr, nsize);
+      if (nptr != NULL) {
+        lsb->usage[LSB_UT_MEMORY][LSB_US_CURRENT] =
+          new_state_memory;
+        if (lsb->usage[LSB_UT_MEMORY][LSB_US_CURRENT]
+            > lsb->usage[LSB_UT_MEMORY][LSB_US_MAXIMUM]) {
+          lsb->usage[LSB_UT_MEMORY][LSB_US_MAXIMUM] =
+            lsb->usage[LSB_UT_MEMORY][LSB_US_CURRENT];
+        }
+      }
+    }
+  }
+  return nptr;
+}
+#endif
+
+
+static size_t instruction_usage(lua_sandbox* lsb)
+{
+  return lua_gethookcount(lsb->lua) - lua_gethookcountremaining(lsb->lua);
+}
+
+
+static void instruction_manager(lua_State* lua, lua_Debug* ar)
+{
+  if (LUA_HOOKCOUNT == ar->event) {
+    luaL_error(lua, "instruction_limit exceeded");
+  }
+}
+
+
+static int output(lua_State* lua)
+{
+  void* luserdata = lua_touserdata(lua, lua_upvalueindex(1));
+  if (NULL == luserdata) {
+    return luaL_error(lua, "output() invalid lightuserdata");
+  }
+  lua_sandbox* lsb = (lua_sandbox*)luserdata;
+
+  int n = lua_gettop(lua);
+  if (n == 0) {
+    return luaL_argerror(lsb->lua, 0, "must have at least one argument");
+  }
+  lsb_output(lsb, 1, n, 1);
+  return 0;
+}
+
+
+static int unprotected_panic(lua_State* lua)
+{
+  (void)lua;
+  longjmp(g_jbuf, 1);
+  return 0;
+}
 
 
 lua_sandbox* lsb_create(void* parent,
@@ -70,10 +158,10 @@ lua_sandbox* lsb_create(void* parent,
   lsb->error_message[0] = 0;
   lsb->output.pos = 0;
   lsb->output.maxsize = output_limit;
-  if (output_limit && output_limit < OUTPUT_SIZE) {
+  if (output_limit && output_limit < LSB_OUTPUT_SIZE) {
     lsb->output.size = output_limit;
   } else {
-    lsb->output.size = OUTPUT_SIZE;
+    lsb->output.size = LSB_OUTPUT_SIZE;
   }
   lsb->output.data = malloc(lsb->output.size);
   size_t len = strlen(lua_file);
@@ -100,15 +188,6 @@ lua_sandbox* lsb_create(void* parent,
   return lsb;
 }
 
-
-int unprotected_panic(lua_State* lua)
-{
-  (void)lua;
-  longjmp(g_jbuf, 1);
-  return 0;
-}
-
-
 int lsb_init(lua_sandbox* lsb, const char* data_file)
 {
   if (!lsb) {
@@ -119,23 +198,23 @@ int lsb_init(lua_sandbox* lsb, const char* data_file)
   lsb->usage[LSB_UT_MEMORY][LSB_US_LIMIT] = 0;
 #endif
 
-  load_library(lsb->lua, "", luaopen_base, disable_base_functions);
+  lsb_load_library(lsb->lua, "", luaopen_base, disable_base_functions);
   lua_pop(lsb->lua, 1);
 
   // Create a simple package cache
   lua_createtable(lsb->lua, 0, 1);
   lua_pushvalue(lsb->lua, -1);
-  lua_setglobal(lsb->lua, package_table);
+  lua_setglobal(lsb->lua, lsb_package_table);
   // Add empty metatable to prevent serialization
   lua_newtable(lsb->lua);
   lua_setmetatable(lsb->lua, -2);
   // add the loaded table
   lua_newtable(lsb->lua);
-  lua_setfield(lsb->lua, -2, loaded_table);
+  lua_setfield(lsb->lua, -2, lsb_loaded_table);
   lua_pop(lsb->lua, 1); // remove the package table
 
   lua_pushlightuserdata(lsb->lua, (void*)lsb);
-  lua_pushcclosure(lsb->lua, &require_library, 1);
+  lua_pushcclosure(lsb->lua, &lsb_require_library, 1);
   lua_setglobal(lsb->lua, "require");
 
   lua_pushlightuserdata(lsb->lua, (void*)lsb);
@@ -158,7 +237,7 @@ int lsb_init(lua_sandbox* lsb, const char* data_file)
     if (len >= LSB_ERROR_SIZE || len < 0) {
       lsb->error_message[LSB_ERROR_SIZE - 1] = 0;
     }
-    sandbox_terminate(lsb);
+    lsb_terminate(lsb, NULL);
     return 2;
   } else {
     lua_gc(lsb->lua, LUA_GCCOLLECT, 0);
@@ -171,7 +250,7 @@ int lsb_init(lua_sandbox* lsb, const char* data_file)
     }
     lsb->state = LSB_RUNNING;
     if (data_file != NULL && strlen(data_file) > 0) {
-      if (restore_global_data(lsb, data_file)) return 3;
+      if (lsb_restore_global_data(lsb, data_file)) return 3;
     }
   }
   lua_atpanic(lsb->lua, pf);
@@ -187,7 +266,7 @@ char* lsb_destroy(lua_sandbox* lsb, const char* data_file)
   }
 
   if (lsb->lua && data_file && strlen(data_file) > 0) {
-    if (preserve_global_data(lsb, data_file) != 0) {
+    if (lsb_preserve_global_data(lsb, data_file) != 0) {
       size_t len = strlen(lsb->error_message);
       err = malloc(len + 1);
       if (err != NULL) {
@@ -195,7 +274,7 @@ char* lsb_destroy(lua_sandbox* lsb, const char* data_file)
       }
     }
   }
-  sandbox_terminate(lsb);
+  lsb_terminate(lsb, NULL);
   free(lsb->output.data);
   free(lsb->lua_file);
   free(lsb->require_path);
@@ -292,85 +371,6 @@ const char* lsb_get_output(lua_sandbox* lsb, size_t* len)
 }
 
 
-void lsb_output(lua_sandbox* lsb, int start, int end, int append)
-{
-  if (!append) {
-    lsb->output.pos = 0;
-  }
-
-  int result = 0;
-  void* ud = NULL;
-  for (int i = start; result == 0 && i <= end; ++i) {
-    switch (lua_type(lsb->lua, i)) {
-    case LUA_TNUMBER:
-      if (serialize_double(&lsb->output, lua_tonumber(lsb->lua, i))) {
-        result = 1;
-      }
-      break;
-    case LUA_TSTRING:
-      {
-        size_t len;
-        const char* s = lua_tolstring(lsb->lua, i, &len);
-        if (appends(&lsb->output, s, len)) {
-          result = 1;
-        }
-      }
-      break;
-    case LUA_TNIL:
-      if (appends(&lsb->output, "nil", 3)) {
-        result = 1;
-      }
-      break;
-    case LUA_TBOOLEAN:
-      if (appendf(&lsb->output, "%s",
-                  lua_toboolean(lsb->lua, i)
-                  ? "true" : "false")) {
-        result = 1;
-      }
-      break;
-    case LUA_TUSERDATA:
-      ud = userdata_type(lsb->lua, i, lsb_circular_buffer);
-      if (ud) {
-        if (output_circular_buffer(lsb->lua, (circular_buffer*)ud,
-                                   &lsb->output)) {
-          result = 1;
-        }
-      } else {
-        luaL_argerror(lsb->lua, i, "unknown userdata type");
-      }
-      break;
-    default:
-      luaL_argerror(lsb->lua, i, "unsuported type");
-      break;
-    }
-  }
-  update_output_stats(lsb);
-  if (result != 0) {
-    if (lsb->error_message[0] == 0) {
-      luaL_error(lsb->lua, "output_limit exceeded");
-    }
-    luaL_error(lsb->lua, lsb->error_message);
-  }
-}
-
-
-int lsb_output_protobuf(lua_sandbox* lsb, int index, int append)
-{
-  if (!append) {
-    lsb->output.pos = 0;
-  }
-
-  size_t last_pos = lsb->output.pos;
-  if (serialize_table_as_pb(lsb, index) != 0) {
-    lsb->output.pos = last_pos;
-    return 1;
-  }
-
-  update_output_stats(lsb);
-  return 0;
-}
-
-
 int lsb_pcall_setup(lua_sandbox* lsb, const char* func_name)
 {
 
@@ -404,7 +404,15 @@ void lsb_pcall_teardown(lua_sandbox* lsb)
 
 void lsb_terminate(lua_sandbox* lsb, const char* err)
 {
-  strncpy(lsb->error_message, err, LSB_ERROR_SIZE);
-  lsb->error_message[LSB_ERROR_SIZE - 1] = 0;
-  sandbox_terminate(lsb);
+  if (err) {
+    strncpy(lsb->error_message, err, LSB_ERROR_SIZE);
+    lsb->error_message[LSB_ERROR_SIZE - 1] = 0;
+  }
+
+  if (lsb->lua) {
+    lua_close(lsb->lua);
+    lsb->lua = NULL;
+  }
+  lsb->usage[LSB_UT_MEMORY][LSB_US_CURRENT] = 0;
+  lsb->state = LSB_TERMINATED;
 }
