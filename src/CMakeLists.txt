@@ -30,9 +30,9 @@ elseif(MINGW)
     "${EP_BASE}/lib/liblua.dll"
     "${EP_BASE}/lib/liblpeg.dll"
     "${EP_BASE}/lib/libcjson.dll"
-    "${EP_BASE}/lib/bloom_filter.dll"
-    "${EP_BASE}/lib/circular_buffer.dll"
-    "${EP_BASE}/lib/hyperloglog.dll"
+    "${EP_BASE}/lib/libbloom_filter.dll"
+    "${EP_BASE}/lib/libcircular_buffer.dll"
+    "${EP_BASE}/lib/libhyperloglog.dll"
     )
     add_library(luasandbox SHARED ${LUA_SANDBOX_SRC})
     set_target_properties(luasandbox PROPERTIES LINK_FLAGS -s)
@@ -52,9 +52,9 @@ else()
     "${EP_BASE}/lib/liblua.a"
     "${EP_BASE}/lib/liblpeg.a"
     "${EP_BASE}/lib/libcjson.a"
-    "${EP_BASE}/lib/bloom_filter.a"
-    "${EP_BASE}/lib/circular_buffer.a"
-    "${EP_BASE}/lib/hyperloglog.a"
+    "${EP_BASE}/lib/libbloom_filter.a"
+    "${EP_BASE}/lib/libcircular_buffer.a"
+    "${EP_BASE}/lib/libhyperloglog.a"
     ${LINK_DL} -lm
     )
     add_library(luasandbox STATIC ${LUA_SANDBOX_SRC})
