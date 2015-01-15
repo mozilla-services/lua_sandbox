@@ -30,8 +30,8 @@ By default only the base library is loaded additional libraries must be explicit
   - **base library**
     - The standard require() function is overridden by this version.
     - Disabled functions: collectgarbage, coroutine, dofile, load, loadfile, loadstring, module, print.
-  - [bloom_filter](bloom_filter.md)
-  - [circular_buffer](circular_buffer.md)
+  - **bloom_filter** https://github.com/mozilla-services/lua_bloom_filter/blob/master/README.md
+  - **circular_buffer** https://github.com/mozilla-services/lua_circular_buffer/blob/master/README.md
   - **cjson** http://www.kyne.com.au/~mark/software/lua-cjson-manual.html. With the following modifications:
     - Loads the cjson module in a global cjson table
     - The encode buffer is limited to the sandbox output_limit.
@@ -40,7 +40,7 @@ By default only the base library is loaded additional libraries must be explicit
       If the original behavior is desired use cjson.decode_null(true) to enable NULL decoding.
     - The new() function has been disabled so only a single cjson parser can be created.
     - The encode_keep_buffer() function has been disabled (the buffer is always reused).
-  - [hyperloglog](hyperloglog.md)
+  - **hyperloglog** https://github.com/mozilla-services/lua_hyperloglog/blob/master/README.md
   - **lpeg** loads the Lua Parsing Expression Grammar Library http://www.inf.puc-rio.br/~roberto/lpeg/lpeg.html
   - **math**
   - **os**

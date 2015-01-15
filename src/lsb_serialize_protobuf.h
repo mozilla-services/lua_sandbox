@@ -4,11 +4,12 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-/// Lua sandbox Heka protobuf serialization implementation @file
-#ifndef lua_serialize_protobuf_h_
-#define lua_serialize_protobuf_h_
+/** Lua sandbox Heka protobuf serialization implementation @file */
 
-#include "lua_sandbox_private.h"
+#ifndef lsb_serialize_protobuf_h_
+#define lsb_serialize_protobuf_h_
+
+#include "lsb.h"
 
 /**
  * Serialize a specific Lua table structure as Protobuf
@@ -18,6 +19,6 @@
  *
  * @return int Zero on success, non-zero on failure.
  */
-int serialize_table_as_pb(lua_sandbox* lsb, int index);
+int lsb_serialize_table_as_pb(lua_sandbox* lsb, int index);
 
 #endif

@@ -4,13 +4,16 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-/// @brief Lua sandbox Heka protobuf serialization @file
+/** @brief Lua sandbox Heka protobuf serialization @file */
 
-#include "lua_serialize_protobuf.h"
+#include "lsb_serialize_protobuf.h"
 
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
+
+#include "lsb_output.h"
+#include "lsb_private.h"
 
 /**
  * Writes a varint encoded number to the output buffer.
@@ -20,7 +23,7 @@
  *
  * @return int Zero on success, non-zero if out of memory.
  */
-static int pb_write_varint(output_data* d, unsigned long long i)
+static int pb_write_varint(lsb_output_data* d, unsigned long long i)
 {
   size_t needed = 10;
   if (needed > d->size - d->pos) {
@@ -49,7 +52,7 @@ static int pb_write_varint(output_data* d, unsigned long long i)
  *
  * @return int Zero on success, non-zero if out of memory.
  */
-static int pb_write_double(output_data* d, double i)
+static int pb_write_double(lsb_output_data* d, double i)
 {
   size_t needed = sizeof(double);
   if (needed > d->size - d->pos) {
@@ -71,7 +74,7 @@ static int pb_write_double(output_data* d, double i)
  *
  * @return int Zero on success, non-zero if out of memory.
  */
-static int pb_write_bool(output_data* d, int i)
+static int pb_write_bool(lsb_output_data* d, int i)
 {
   size_t needed = 1;
   if (needed > d->size - d->pos) {
@@ -96,7 +99,7 @@ static int pb_write_bool(output_data* d, int i)
  *
  * @return int Zero on success, non-zero if out of memory.
  */
-static int pb_write_tag(output_data* d, char id, char wire_type)
+static int pb_write_tag(lsb_output_data* d, char id, char wire_type)
 {
   size_t needed = 1;
   if (needed > d->size - d->pos) {
@@ -118,9 +121,9 @@ static int pb_write_tag(output_data* d, char id, char wire_type)
  *
  * @return int Zero on success, non-zero if out of memory.
  */
-static int pb_write_string(output_data* d, char id, const char* s, size_t len)
+static int
+pb_write_string(lsb_output_data* d, char id, const char* s, size_t len)
 {
-
   if (pb_write_tag(d, id, 2)) {
     return 1;
   }
@@ -151,7 +154,7 @@ static int pb_write_string(output_data* d, char id, const char* s, size_t len)
  * @return int Zero on success, non-zero if out of memory.
  */
 static int
-encode_string(lua_sandbox* lsb, output_data* d, char id, const char* name,
+encode_string(lua_sandbox* lsb, lsb_output_data* d, char id, const char* name,
               int index)
 {
   int result = 0;
@@ -180,7 +183,7 @@ encode_string(lua_sandbox* lsb, output_data* d, char id, const char* name,
  * @return int Zero on success, non-zero if out of memory.
  */
 static int
-encode_int(lua_sandbox* lsb, output_data* d, char id, const char* name,
+encode_int(lua_sandbox* lsb, lsb_output_data* d, char id, const char* name,
            int index)
 {
   int result = 0;
@@ -207,8 +210,9 @@ encode_int(lua_sandbox* lsb, output_data* d, char id, const char* name,
  *
  * @return int Zero on success, non-zero if out of memory.
  */
-static int encode_field_value(lua_sandbox* lsb, output_data* d, int first,
-                              const char* representation);
+static int
+encode_field_value(lua_sandbox* lsb, lsb_output_data* d, int first,
+                   const char* representation);
 
 
 /**
@@ -221,8 +225,9 @@ static int encode_field_value(lua_sandbox* lsb, output_data* d, int first,
  *
  * @return int Zero on success, non-zero if out of memory.
  */
-static int encode_field_array(lua_sandbox* lsb, output_data* d, int t,
-                              const char* representation)
+static int
+encode_field_array(lua_sandbox* lsb, lsb_output_data* d, int t,
+                   const char* representation)
 {
   int result = 0, first = (int)lua_objlen(lsb->lua, -1);
   lua_checkstack(lsb->lua, 2);
@@ -249,7 +254,7 @@ static int encode_field_array(lua_sandbox* lsb, output_data* d, int t,
  *
  * @return int Zero on success, non-zero if out of memory.
  */
-static int encode_field_object(lua_sandbox* lsb, output_data* d)
+static int encode_field_object(lua_sandbox* lsb, lsb_output_data* d)
 {
   int result = 0;
   const char* representation = NULL;
@@ -264,8 +269,9 @@ static int encode_field_object(lua_sandbox* lsb, output_data* d)
 }
 
 
-static int encode_field_value(lua_sandbox* lsb, output_data* d, int first,
-                              const char* representation)
+static int
+encode_field_value(lua_sandbox* lsb, lsb_output_data* d, int first,
+                   const char* representation)
 {
   int result = 1;
   size_t len;
@@ -348,6 +354,7 @@ static int encode_field_value(lua_sandbox* lsb, output_data* d, int first,
     snprintf(lsb->error_message, LSB_ERROR_SIZE, "unsupported type: %s",
              lua_typename(lsb->lua, t));
     result = 1;
+    break;
   }
   return result;
 }
@@ -363,7 +370,7 @@ static int encode_field_value(lua_sandbox* lsb, output_data* d, int first,
  *
  * @return int Zero on success, non-zero if out of memory.
  */
-static int update_field_length(output_data* d, size_t len_pos)
+static int update_field_length(lsb_output_data* d, size_t len_pos)
 {
   size_t len = d->pos - len_pos - 1;
   if (len < 128) {
@@ -401,7 +408,7 @@ static int update_field_length(output_data* d, size_t len_pos)
  * @return int Zero on success, non-zero if out of memory.
  */
 static int
-encode_fields(lua_sandbox* lsb, output_data* d, char id, const char* name,
+encode_fields(lua_sandbox* lsb, lsb_output_data* d, char id, const char* name,
               int index)
 {
   int result = 0;
@@ -435,9 +442,9 @@ encode_fields(lua_sandbox* lsb, output_data* d, char id, const char* name,
 }
 
 
-int serialize_table_as_pb(lua_sandbox* lsb, int index)
+int lsb_serialize_table_as_pb(lua_sandbox* lsb, int index)
 {
-  output_data* d = &lsb->output;
+  lsb_output_data* d = &lsb->output;
   d->pos = 0;
   size_t needed = 18;
   if (needed > d->size) {

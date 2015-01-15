@@ -3,17 +3,11 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 set(LUA_SANDBOX_SRC
-lua_sandbox.c
-lua_output.c
-lua_sandbox_private.c
-lua_serialize.c
-lua_serialize_protobuf.c
-lua_circular_buffer.c
-lua_bloom_filter.c
-lua_hyperloglog.c
-cephes.c
-xxhash.c
-redis_hyperloglog.c
+lsb.c
+lsb_modules.c
+lsb_output.c
+lsb_serialize.c
+lsb_serialize_protobuf.c
 struct.c
 )
 
@@ -23,6 +17,9 @@ if(MSVC)
     "${EP_BASE}/lib/lua.lib"
     "${EP_BASE}/lib/lpeg.lib"
     "${EP_BASE}/lib/cjson.lib"
+    "${EP_BASE}/lib/bloom_filter.lib"
+    "${EP_BASE}/lib/circular_buffer.lib"
+    "${EP_BASE}/lib/hyperloglog.lib"
     )
     add_library(luasandbox SHARED ${LUA_SANDBOX_SRC})
     install(DIRECTORY "${EP_BASE}/lib/"  DESTINATION lib FILES_MATCHING PATTERN "*.dll")
@@ -33,6 +30,9 @@ elseif(MINGW)
     "${EP_BASE}/lib/liblua.dll"
     "${EP_BASE}/lib/liblpeg.dll"
     "${EP_BASE}/lib/libcjson.dll"
+    "${EP_BASE}/lib/bloom_filter.dll"
+    "${EP_BASE}/lib/circular_buffer.dll"
+    "${EP_BASE}/lib/hyperloglog.dll"
     )
     add_library(luasandbox SHARED ${LUA_SANDBOX_SRC})
     set_target_properties(luasandbox PROPERTIES LINK_FLAGS -s)
@@ -52,6 +52,9 @@ else()
     "${EP_BASE}/lib/liblua.a"
     "${EP_BASE}/lib/liblpeg.a"
     "${EP_BASE}/lib/libcjson.a"
+    "${EP_BASE}/lib/bloom_filter.a"
+    "${EP_BASE}/lib/circular_buffer.a"
+    "${EP_BASE}/lib/hyperloglog.a"
     ${LINK_DL} -lm
     )
     add_library(luasandbox STATIC ${LUA_SANDBOX_SRC})
@@ -61,7 +64,7 @@ endif()
 
 target_link_libraries(luasandbox ${LUA_SANDBOX_LIBS})
 
-add_dependencies(luasandbox ${LUA_PROJECT} lpeg-0_12 lua-cjson-2_1_0)
+add_dependencies(luasandbox ${LUA_PROJECT} lua_lpeg lua_cjson lua_bloom_filter lua_circular_buffer lua_hyperloglog)
 install(TARGETS luasandbox DESTINATION lib)
 install(DIRECTORY "${CMAKE_SOURCE_DIR}/include/" DESTINATION include)
 install(DIRECTORY "${LUA_INCLUDE_DIR}/" DESTINATION include)
