@@ -79,7 +79,7 @@ add_dependencies(lua_lpeg ${LUA_PROJECT})
 externalproject_add(
     lua_cjson
     GIT_REPOSITORY https://github.com/trink/lua-cjson.git
-    GIT_TAG be85986dc481ad2a0d3abc06ac57e1d1241d9d4c
+    GIT_TAG 9c3a1805796747d59e5b4f0a789796f368285251
     CMAKE_ARGS ${SANDBOX_CMAKE_ARGS}
     INSTALL_DIR ${EP_BASE}
 )
@@ -88,7 +88,7 @@ add_dependencies(lua_cjson ${LUA_PROJECT})
 externalproject_add(
     lua_bloom_filter
     GIT_REPOSITORY https://github.com/mozilla-services/lua_bloom_filter.git
-    GIT_TAG d305c436fa0bf225c7029b638dd202fad68c1cc9
+    GIT_TAG b264c84cca536f20a41a9950556383e8dc5fd2ae
     CMAKE_ARGS ${SANDBOX_CMAKE_ARGS}
     INSTALL_DIR ${EP_BASE}
 )
@@ -96,9 +96,8 @@ add_dependencies(lua_bloom_filter ${LUA_PROJECT})
 
 externalproject_add(
     lua_circular_buffer
-    URL /work/git/lua_circular_buffer1.tgz
     GIT_REPOSITORY https://github.com/mozilla-services/lua_circular_buffer.git
-    GIT_TAG 22cea7cea0d5a8f81f79998751b8f36c351d4f10
+    GIT_TAG 5e7726d70bd5cf6e61e1faccae2a2fabf5e9bf3d
     CMAKE_ARGS ${SANDBOX_CMAKE_ARGS}
     INSTALL_DIR ${EP_BASE}
 )
@@ -106,9 +105,8 @@ add_dependencies(lua_circular_buffer ${LUA_PROJECT})
 
 externalproject_add(
     lua_hyperloglog
-    URL /work/git/lua_hyperloglog1.tgz
     GIT_REPOSITORY https://github.com/mozilla-services/lua_hyperloglog.git
-    GIT_TAG a601f320bc814ecc5a64344d911498ec8acc6d56
+    GIT_TAG e5d3399b0d0a6913d18cc5a0a33326391363b936
     CMAKE_ARGS ${SANDBOX_CMAKE_ARGS}
     INSTALL_DIR ${EP_BASE}
 )

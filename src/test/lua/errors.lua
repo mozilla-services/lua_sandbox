@@ -32,12 +32,6 @@ function process(tc)
         local v = require "../invalid"
     elseif tc == 10 then
         local v = require "pathoverflowpathoverflowpathoverflowpathoverflowpathoverflowpathoverflowpathoverflowpathoverflowpathoverflowpathoverflowpathoverflowpathoverflowpathoverflowpathoverflowpathoverflowpathoverflowpathoverflowpathoverflowpathoverflowpathoverflowpathoverflow"
-    elseif tc == 11 then
-        package = nil
-        require "os"
-    elseif tc == 12 then
-        package.loaded = nil
-        require "os"
     end
     return 0
 end

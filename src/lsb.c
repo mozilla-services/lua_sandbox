@@ -18,17 +18,54 @@
 #include <string.h>
 #include <time.h>
 
-#include "lsb_modules.h"
 #include "lsb_output.h"
 #include "lsb_private.h"
 #include "lsb_serialize.h"
 #include "lsb_serialize_protobuf.h"
 
 static const char* disable_base_functions[] = { "collectgarbage", "coroutine",
-  "dofile", "load", "loadfile", "loadstring", "module", "print", "require",
-  NULL };
+  "dofile", "load", "loadfile", "loadstring", "module", "print", NULL };
+
+static const char* require_lpath = "lsb_require_path";
+static const char* require_cpath = "lsb_require_cpath";
 
 static jmp_buf g_jbuf;
+
+LUALIB_API int luaopen_struct(lua_State* L);
+LUALIB_API int luaopen_cjson(lua_State* L);
+LUALIB_API int luaopen_lpeg(lua_State* L);
+
+static const luaL_Reg preload_module_list[] = {
+  { LUA_TABLIBNAME, luaopen_table },
+  { LUA_IOLIBNAME, luaopen_io },
+  { LUA_OSLIBNAME, luaopen_os },
+  { LUA_STRLIBNAME, luaopen_string },
+  { LUA_MATHLIBNAME, luaopen_math },
+  { "struct", luaopen_struct },
+  { "cjson", luaopen_cjson },
+  { "lpeg", luaopen_lpeg },
+  { NULL, NULL }
+};
+
+static int libsize (const luaL_Reg *l) {
+  int size = 0;
+  for (; l->name; l++) size++;
+  return size;
+}
+
+static void preload_modules(lua_State* lua)
+{
+  const luaL_Reg *lib = preload_module_list;
+  luaL_findtable(lua, LUA_REGISTRYINDEX, "_PRELOADED",
+                 libsize(preload_module_list));
+  for (; lib->func; lib++) {
+    lua_pushstring(lua, lib->name);
+    lua_pushcfunction(lua, lib->func);
+    lua_rawset(lua, -3);
+  }
+  lua_pop(lua, 1); // remove the preloaded table
+}
+
 
 #ifndef LUA_JIT
 /**
@@ -166,27 +203,35 @@ lua_sandbox* lsb_create(void* parent,
   lsb->output.data = malloc(lsb->output.size);
   size_t len = strlen(lua_file);
   lsb->lua_file = malloc(len + 1);
-  lsb->require_path = NULL;
   if (require_path) {
-    len = strlen(require_path);
-    lsb->require_path = malloc(len + 1);
+#if defined(_WIN32)
+    lua_pushfstring(lsb->lua, "%s\\?.lua", require_path);
+    lua_setfield(lsb->lua, LUA_REGISTRYINDEX, require_lpath);
+    lua_pushfstring(lsb->lua, "%s\\?.dll", require_path);
+    lua_setfield(lsb->lua, LUA_REGISTRYINDEX, require_cpath);
+#else
+    lua_pushfstring(lsb->lua, "%s/?.lua", require_path);
+    lua_setfield(lsb->lua, LUA_REGISTRYINDEX, require_lpath);
+    lua_pushfstring(lsb->lua, "%s/?.so", require_path);
+    lua_setfield(lsb->lua, LUA_REGISTRYINDEX, require_cpath);
+#endif
   }
-  if (!lsb->output.data || !lsb->lua_file
-      || (require_path && !lsb->require_path)) {
+
+  lua_pushinteger(lsb->lua, output_limit);
+  lua_setfield(lsb->lua, LUA_REGISTRYINDEX, "lsb_output_limit");
+
+  if (!lsb->output.data || !lsb->lua_file) {
     free(lsb);
     free(lsb->lua_file);
-    free(lsb->require_path);
     lua_close(lsb->lua);
     lsb->lua = NULL;
     return NULL;
   }
   strcpy(lsb->lua_file, lua_file);
-  if (lsb->require_path) {
-    strcpy(lsb->require_path, require_path);
-  }
   srand((unsigned int)time(NULL));
   return lsb;
 }
+
 
 int lsb_init(lua_sandbox* lsb, const char* data_file)
 {
@@ -198,24 +243,24 @@ int lsb_init(lua_sandbox* lsb, const char* data_file)
   lsb->usage[LSB_UT_MEMORY][LSB_US_LIMIT] = 0;
 #endif
 
-  lsb_load_library(lsb->lua, "", luaopen_base, disable_base_functions);
-  lua_pop(lsb->lua, 1);
+  // load base module
+  lua_pushcfunction(lsb->lua, luaopen_base);
+  lua_pushstring(lsb->lua, "");
+  lua_call(lsb->lua, 1, 0);
+  for (int i = 0; disable_base_functions[i]; ++i) {
+    lua_pushnil(lsb->lua);
+    lua_setfield(lsb->lua, LUA_GLOBALSINDEX, disable_base_functions[i]);
+  }
 
-  // Create a simple package cache
-  lua_createtable(lsb->lua, 0, 1);
-  lua_pushvalue(lsb->lua, -1);
-  lua_setglobal(lsb->lua, lsb_package_table);
-  // Add empty metatable to prevent serialization
+  preload_modules(lsb->lua);
+
+  // load package module
+  lua_pushcfunction(lsb->lua, luaopen_package);
+  lua_pushstring(lsb->lua, LUA_LOADLIBNAME);
+  lua_call(lsb->lua, 1, 1);
   lua_newtable(lsb->lua);
   lua_setmetatable(lsb->lua, -2);
-  // add the loaded table
-  lua_newtable(lsb->lua);
-  lua_setfield(lsb->lua, -2, lsb_loaded_table);
-  lua_pop(lsb->lua, 1); // remove the package table
-
-  lua_pushlightuserdata(lsb->lua, (void*)lsb);
-  lua_pushcclosure(lsb->lua, &lsb_require_library, 1);
-  lua_setglobal(lsb->lua, "require");
+  lua_pop(lsb->lua, 1);
 
   lua_pushlightuserdata(lsb->lua, (void*)lsb);
   lua_pushcclosure(lsb->lua, &output, 1);
@@ -277,7 +322,6 @@ char* lsb_destroy(lua_sandbox* lsb, const char* data_file)
   lsb_terminate(lsb, NULL);
   free(lsb->output.data);
   free(lsb->lua_file);
-  free(lsb->require_path);
   free(lsb);
   return err;
 }

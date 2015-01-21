@@ -33,7 +33,6 @@ struct lua_sandbox {
   lsb_state       state;
   lsb_output_data output;
   char*           lua_file;
-  char*           require_path;
   unsigned        usage[LSB_UT_MAX][LSB_US_MAX];
   char            error_message[LSB_ERROR_SIZE];
 };

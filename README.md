@@ -23,7 +23,7 @@ lua_sandbox  - UNIX Build Instructions
 lua_sandbox  - Windows Build Instructions
 ----
 
-    # in a VS2013 command prompt window
+# in a VS2013 command prompt window
 
     git clone https://github.com/mozilla-services/lua_sandbox.git
     cd lua_sandbox 
@@ -31,10 +31,14 @@ lua_sandbox  - Windows Build Instructions
     cd release
     cmake -DCMAKE_BUILD_TYPE=release -G "NMake Makefiles" ..
     nmake
+    ctest
 
-    # To run the tests you must install
-    cmake -DCMAKE_INSTALL_PREFIX="" ..
-    nmake install DESTDIR=test
-    cd ..\src\test
-    ..\..\release\test\lib\test_lua_sandbox.exe 
+# in a MinGW command prompt window
 
+    git clone https://github.com/mozilla-services/lua_sandbox.git
+    cd lua_sandbox
+    mkdir release
+    cd release
+    cmake -DCMAKE_BUILD_TYPE=release -G "MinGW Makefiles" ..
+    mingw32-make
+    ctest

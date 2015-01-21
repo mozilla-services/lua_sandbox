@@ -1,2 +1,3 @@
 *.preserve
 release/
+src/test/modules/

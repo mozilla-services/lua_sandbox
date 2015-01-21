@@ -14,7 +14,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "lsb_modules.h"
 #include "lsb_private.h"
 
 typedef struct
@@ -366,22 +365,21 @@ serialize_kvp(lua_sandbox* lsb, serialization_data* data, size_t parent)
 
 int lsb_preserve_global_data(lua_sandbox* lsb, const char* data_file)
 {
-  static const char* G = "_G";
-
   // make sure the string library is loaded before we start
   lua_getglobal(lsb->lua, LUA_STRLIBNAME);
   if (!lua_istable(lsb->lua, -1)) {
-    lsb_load_library(lsb->lua, LUA_STRLIBNAME, luaopen_string,
-                     lsb_disable_none);
+    lua_getglobal(lsb->lua, "require");
+    if (!lua_iscfunction(lsb->lua, -1)) {
+      snprintf(lsb->error_message, LSB_ERROR_SIZE,
+               "lsb_preserve_global_data 'require' not found");
+      return 1;
+    }
+    lua_pushstring(lsb->lua, LUA_STRLIBNAME);
+    lua_call(lsb->lua, 1, 1);
   }
-  lua_pop(lsb->lua, 1); // Remove string table.
+  lua_pop(lsb->lua, 1);
 
-  lua_getglobal(lsb->lua, G);
-  if (!lua_istable(lsb->lua, -1)) {
-    snprintf(lsb->error_message, LSB_ERROR_SIZE,
-             "lsb_preserve_global_data cannot access the global table");
-    return 1;
-  }
+  lua_pushvalue(lsb->lua, LUA_GLOBALSINDEX);
 
   FILE* fh = fopen(data_file, "wb");
   if (fh == NULL) {
@@ -427,7 +425,7 @@ int lsb_preserve_global_data(lua_sandbox* lsb, const char* data_file)
             preservation_version,
             preservation_version,
             get_preservation_version(lsb->lua));
-    lsb_appendf(&data.keys, "%s", G);
+    lsb_appends(&data.keys, "_G", 2);
     data.keys.pos += 1;
     data.globals = lua_topointer(lsb->lua, -1);
     lua_checkstack(lsb->lua, 2);
