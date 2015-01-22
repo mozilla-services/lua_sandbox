@@ -23,11 +23,17 @@
 #include "lsb_serialize.h"
 #include "lsb_serialize_protobuf.h"
 
-static const char* disable_base_functions[] = { "collectgarbage", "coroutine",
-  "dofile", "load", "loadfile", "loadstring", "module", "print", NULL };
-
-static const char* require_lpath = "lsb_require_path";
-static const char* require_cpath = "lsb_require_cpath";
+static const char* standard_config = "{"
+  "memory_limit = %u,"
+  "instruction_limit = %u,"
+  "output_limit = %u,"
+  "path = '%s',"
+  "cpath = '%s',"
+  "remove_entries = {"
+  "[''] = { 'collectgarbage', 'coroutine', 'dofile', 'load', 'loadfile'"
+  ",'loadstring', 'module', 'print'},"
+  "os = {'execute', 'exit', 'remove', 'rename', 'setlocale', 'tmpname'}"
+  "}}";
 
 static jmp_buf g_jbuf;
 
@@ -36,6 +42,7 @@ LUALIB_API int luaopen_cjson(lua_State* L);
 LUALIB_API int luaopen_lpeg(lua_State* L);
 
 static const luaL_Reg preload_module_list[] = {
+  { "", luaopen_base },
   { LUA_TABLIBNAME, luaopen_table },
   { LUA_IOLIBNAME, luaopen_io },
   { LUA_OSLIBNAME, luaopen_os },
@@ -47,7 +54,8 @@ static const luaL_Reg preload_module_list[] = {
   { NULL, NULL }
 };
 
-static int libsize (const luaL_Reg *l) {
+static int libsize(const luaL_Reg* l)
+{
   int size = 0;
   for (; l->name; l++) size++;
   return size;
@@ -55,7 +63,7 @@ static int libsize (const luaL_Reg *l) {
 
 static void preload_modules(lua_State* lua)
 {
-  const luaL_Reg *lib = preload_module_list;
+  const luaL_Reg* lib = preload_module_list;
   luaL_findtable(lua, LUA_REGISTRYINDEX, "_PRELOADED",
                  libsize(preload_module_list));
   for (; lib->func; lib++) {
@@ -150,12 +158,79 @@ static int unprotected_panic(lua_State* lua)
 }
 
 
+static unsigned get_usage_config(lua_State* lua, int idx, const char* item)
+{
+  lua_getfield(lua, idx, item);
+  unsigned  u = (unsigned)lua_tonumber(lua, -1); // defaults to zero
+  lua_pop(lua, 1);
+  return u;
+}
+
+
+static int expand_path(const char* path, int n, const char* fmt, char* opath)
+{
+  // not an exhaustive check, just making sure the Lua markers are accounted for
+  for (int i = 0; (path[i]); ++i) {
+    if (path[i] == '\'' || path[i] == ';' || path[i] == '?'
+        || !isprint(path[i])) {
+      return 1;
+    }
+  }
+  int result = snprintf(opath, n, fmt, path);
+  if (result < 0 || result > n - 1) {
+    return 1;
+  }
+  return 0;
+}
+
+
 lua_sandbox* lsb_create(void* parent,
                         const char* lua_file,
                         const char* require_path,
                         unsigned memory_limit,
                         unsigned instruction_limit,
                         unsigned output_limit)
+{
+  if (!lua_file) {
+    return NULL;
+  }
+
+  char config[1024 * 2];
+  char lpath[260] = { 0 };
+  char cpath[260] = { 0 };
+
+  if (require_path) {
+#if defined(_WIN32)
+    if (expand_path(require_path, sizeof(lpath), "%s\\?.lua", lpath)) {
+      return NULL;
+    }
+    if (expand_path(require_path, sizeof(cpath), "%s\\?.dll", cpath)) {
+      return NULL;
+    }
+#else
+    if (expand_path(require_path, sizeof(lpath), "%s/?.lua", lpath)) {
+      return NULL;
+    }
+    if (expand_path(require_path, sizeof(cpath), "%s/?.so", cpath)) {
+      return NULL;
+    }
+#endif
+  }
+
+  int result = snprintf(config, sizeof(config), standard_config, memory_limit,
+                        instruction_limit, output_limit, lpath, cpath);
+
+  if (result < 0 || result > (int)sizeof(config) - 1) {
+    return NULL;
+  }
+
+  return lsb_create_custom(parent, lua_file, config);
+}
+
+
+lua_sandbox* lsb_create_custom(void* parent,
+                               const char* lua_file,
+                               const char* config)
 {
   if (!lua_file) {
     return NULL;
@@ -187,6 +262,21 @@ lua_sandbox* lsb_create(void* parent,
     return NULL;
   }
 
+  // create config table
+  lua_pushfstring(lsb->lua, "return %s", config);
+  if (luaL_dostring(lsb->lua, lua_tostring(lsb->lua, -1))
+      || lua_type(lsb->lua, -1) != LUA_TTABLE) {
+    lua_close(lsb->lua);
+    lsb->lua = NULL;
+    free(lsb);
+    return NULL;
+  }
+  unsigned memory_limit = get_usage_config(lsb->lua, -1, "memory_limit");
+  unsigned instruction_limit = get_usage_config(lsb->lua, -1, "instruction_limit");
+  unsigned output_limit = get_usage_config(lsb->lua, -1, "output_limit");
+  lua_setfield(lsb->lua, LUA_REGISTRYINDEX, "lsb_config");
+  lua_pop(lsb->lua, 1); // remove configuration string
+
   lsb->parent = parent;
   lsb->usage[LSB_UT_MEMORY][LSB_US_LIMIT] = memory_limit;
   lsb->usage[LSB_UT_INSTRUCTION][LSB_US_LIMIT] = instruction_limit;
@@ -203,28 +293,12 @@ lua_sandbox* lsb_create(void* parent,
   lsb->output.data = malloc(lsb->output.size);
   size_t len = strlen(lua_file);
   lsb->lua_file = malloc(len + 1);
-  if (require_path) {
-#if defined(_WIN32)
-    lua_pushfstring(lsb->lua, "%s\\?.lua", require_path);
-    lua_setfield(lsb->lua, LUA_REGISTRYINDEX, require_lpath);
-    lua_pushfstring(lsb->lua, "%s\\?.dll", require_path);
-    lua_setfield(lsb->lua, LUA_REGISTRYINDEX, require_cpath);
-#else
-    lua_pushfstring(lsb->lua, "%s/?.lua", require_path);
-    lua_setfield(lsb->lua, LUA_REGISTRYINDEX, require_lpath);
-    lua_pushfstring(lsb->lua, "%s/?.so", require_path);
-    lua_setfield(lsb->lua, LUA_REGISTRYINDEX, require_cpath);
-#endif
-  }
-
-  lua_pushinteger(lsb->lua, output_limit);
-  lua_setfield(lsb->lua, LUA_REGISTRYINDEX, "lsb_output_limit");
 
   if (!lsb->output.data || !lsb->lua_file) {
-    free(lsb);
     free(lsb->lua_file);
     lua_close(lsb->lua);
     lsb->lua = NULL;
+    free(lsb);
     return NULL;
   }
   strcpy(lsb->lua_file, lua_file);
@@ -243,15 +317,6 @@ int lsb_init(lua_sandbox* lsb, const char* data_file)
   lsb->usage[LSB_UT_MEMORY][LSB_US_LIMIT] = 0;
 #endif
 
-  // load base module
-  lua_pushcfunction(lsb->lua, luaopen_base);
-  lua_pushstring(lsb->lua, "");
-  lua_call(lsb->lua, 1, 0);
-  for (int i = 0; disable_base_functions[i]; ++i) {
-    lua_pushnil(lsb->lua);
-    lua_setfield(lsb->lua, LUA_GLOBALSINDEX, disable_base_functions[i]);
-  }
-
   preload_modules(lsb->lua);
 
   // load package module
@@ -261,6 +326,17 @@ int lsb_init(lua_sandbox* lsb, const char* data_file)
   lua_newtable(lsb->lua);
   lua_setmetatable(lsb->lua, -2);
   lua_pop(lsb->lua, 1);
+
+  // load base module
+  lua_getglobal(lsb->lua, "require");
+  if (!lua_iscfunction(lsb->lua, -1)) {
+    snprintf(lsb->error_message, LSB_ERROR_SIZE,
+             "lsb_init 'require' not found");
+    lsb_terminate(lsb, NULL);
+    return 1;
+  }
+  lua_pushstring(lsb->lua, "");
+  lua_call(lsb->lua, 1, 0);
 
   lua_pushlightuserdata(lsb->lua, (void*)lsb);
   lua_pushcclosure(lsb->lua, &output, 1);

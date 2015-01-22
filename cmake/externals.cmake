@@ -79,7 +79,7 @@ add_dependencies(lua_lpeg ${LUA_PROJECT})
 externalproject_add(
     lua_cjson
     GIT_REPOSITORY https://github.com/trink/lua-cjson.git
-    GIT_TAG 9c3a1805796747d59e5b4f0a789796f368285251
+    GIT_TAG 1ebc6061435a45ce23bf7d26d7ed04db995a8ba9
     CMAKE_ARGS ${SANDBOX_CMAKE_ARGS}
     INSTALL_DIR ${EP_BASE}
 )

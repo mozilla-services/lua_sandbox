@@ -113,7 +113,7 @@ int process(lua_sandbox* lsb, double ts)
   if (!lua_isnumber(lua, 1)) {
     char err[LSB_ERROR_SIZE];
     int len = snprintf(err, LSB_ERROR_SIZE,
-                       "%s() must return a single numeric value", func_name);
+                       "%s() must return a numeric error code", func_name);
     if (len >= LSB_ERROR_SIZE || len < 0) {
       err[LSB_ERROR_SIZE - 1] = 0;
     }
@@ -725,8 +725,8 @@ static char* test_errors()
     , "process() not enough memory"
     , "process() instruction_limit exceeded"
     , "process() lua/errors.lua:20: attempt to perform arithmetic on global 'x' (a nil value)"
-    , "process() must return a single numeric value"
-    , "process() must return a single numeric value"
+    , "process() must return a numeric error code"
+    , "process() must return a numeric error code"
     , "process() lua/errors.lua:27: output_limit exceeded"
 #ifdef _WIN32
     , "process() lua\\bad_module.lua:1: attempt to perform arithmetic on global 'nilvalue' (a nil value)"
