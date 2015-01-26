@@ -1,6 +1,6 @@
 diff -Naur /work/lua-5.1.5/CMakeLists.txt lua-5_1_5/CMakeLists.txt
 --- /work/lua-5.1.5/CMakeLists.txt	1969-12-31 16:00:00.000000000 -0800
-+++ lua-5_1_5/CMakeLists.txt	2015-01-22 12:06:12.578775487 -0800
++++ lua-5_1_5/CMakeLists.txt	2015-01-22 13:55:49.917296821 -0800
 @@ -0,0 +1,64 @@
 +# This Source Code Form is subject to the terms of the Mozilla Public
 +# License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -68,7 +68,7 @@ diff -Naur /work/lua-5.1.5/CMakeLists.txt lua-5_1_5/CMakeLists.txt
 +install(FILES src/lua.h src/luaconf.h src/lualib.h src/lauxlib.h DESTINATION include)
 diff -Naur /work/lua-5.1.5/src/ldebug.c lua-5_1_5/src/ldebug.c
 --- /work/lua-5.1.5/src/ldebug.c	2008-05-08 09:56:26.000000000 -0700
-+++ lua-5_1_5/src/ldebug.c	2015-01-22 12:06:12.578775487 -0800
++++ lua-5_1_5/src/ldebug.c	2015-01-22 13:55:49.917296821 -0800
 @@ -80,6 +80,10 @@
    return L->basehookcount;
  }
@@ -82,8 +82,8 @@ diff -Naur /work/lua-5.1.5/src/ldebug.c lua-5_1_5/src/ldebug.c
    int status;
 diff -Naur /work/lua-5.1.5/src/loadlib.c lua-5_1_5/src/loadlib.c
 --- /work/lua-5.1.5/src/loadlib.c	2009-09-09 06:17:16.000000000 -0700
-+++ lua-5_1_5/src/loadlib.c	2015-01-22 13:40:46.057329536 -0800
-@@ -23,23 +23,24 @@
++++ lua-5_1_5/src/loadlib.c	2015-01-26 10:00:16.095518127 -0800
+@@ -23,24 +23,24 @@
  
  
  /* prefix for open functions in C libraries */
@@ -111,12 +111,12 @@ diff -Naur /work/lua-5.1.5/src/loadlib.c lua-5_1_5/src/loadlib.c
 +#define ERRFUNC   2
  
 -#define setprogdir(L)		((void)0)
-+
+ 
 +#define LSB_CONFIG "lsb_config"
  
- 
  static void ll_unloadlib (void *lib);
-@@ -91,24 +92,6 @@
+ static void *ll_load (lua_State *L, const char *path);
+@@ -91,24 +91,6 @@
  
  #include <windows.h>
  
@@ -141,7 +141,7 @@ diff -Naur /work/lua-5.1.5/src/loadlib.c lua-5_1_5/src/loadlib.c
  static void pusherror (lua_State *L) {
    int error = GetLastError();
    char buffer[128];
-@@ -153,7 +136,7 @@
+@@ -153,7 +135,7 @@
  
  /* Mac appends a `_' before C function names */
  #undef POF
@@ -150,7 +150,7 @@ diff -Naur /work/lua-5.1.5/src/loadlib.c lua-5_1_5/src/loadlib.c
  
  
  static void pusherror (lua_State *L) {
-@@ -230,10 +213,10 @@
+@@ -230,10 +212,10 @@
  */
  
  #undef LIB_FAIL
@@ -163,15 +163,13 @@ diff -Naur /work/lua-5.1.5/src/loadlib.c lua-5_1_5/src/loadlib.c
  
  
  static void ll_unloadlib (void *lib) {
-@@ -351,11 +334,24 @@
+@@ -351,8 +333,20 @@
  static const char *findfile (lua_State *L, const char *name,
                                             const char *pname) {
    const char *path;
--  name = luaL_gsub(L, name, ".", LUA_DIRSEP);
--  lua_getfield(L, LUA_ENVIRONINDEX, pname);
 +  int i = 0;
 +  while (name[i]) {
-+    if (!isalnum(name[i]) && name[i] != '_') {
++    if (!isalnum(name[i]) && name[i] != '_' && name[i] != '.') {
 +      luaL_error(L, "invalid module name '%s'", name);
 +      return NULL; // never reached, just silences the compiler
 +    }
@@ -181,43 +179,13 @@ diff -Naur /work/lua-5.1.5/src/loadlib.c lua-5_1_5/src/loadlib.c
 +  if (lua_type(L, -1) != LUA_TTABLE) {
 +    return NULL;
 +  }
-+  lua_pushstring(L, name);
+   name = luaL_gsub(L, name, ".", LUA_DIRSEP);
+-  lua_getfield(L, LUA_ENVIRONINDEX, pname);
 +  lua_getfield(L, -2, pname);
    path = lua_tostring(L, -1);
--  if (path == NULL)
--    luaL_error(L, LUA_QL("package.%s") " must be a string", pname);
-+  if (path == NULL) {
-+    return NULL;
-+  }
-   lua_pushliteral(L, "");  /* error accumulator */
-   while ((path = pushnexttemplate(L, path)) != NULL) {
-     const char *filename;
-@@ -411,41 +407,61 @@
- }
- 
- 
--static int loader_Croot (lua_State *L) {
--  const char *funcname;
--  const char *filename;
--  const char *name = luaL_checkstring(L, 1);
--  const char *p = strchr(name, '.');
--  int stat;
--  if (p == NULL) return 0;  /* is root */
--  lua_pushlstring(L, name, p - name);
--  filename = findfile(L, lua_tostring(L, -1), "cpath");
--  if (filename == NULL) return 1;  /* root not found */
--  funcname = mkfuncname(L, name);
--  if ((stat = ll_loadfunc(L, filename, funcname)) != 0) {
--    if (stat != ERRFUNC) loaderror(L, filename);  /* real error */
--    lua_pushfstring(L, "\n\tno module " LUA_QS " in file " LUA_QS,
--                       name, filename);
--    return 1;  /* function not found */
--  }
--  return 1;
--}
--
--
- static int loader_preload (lua_State *L) {
+   if (path == NULL)
+     luaL_error(L, LUA_QL("package.%s") " must be a string", pname);
+@@ -436,16 +430,58 @@
    const char *name = luaL_checkstring(L, 1);
    lua_getfield(L, LUA_ENVIRONINDEX, "preload");
    if (!lua_istable(L, -1))
@@ -272,6 +240,7 @@ diff -Naur /work/lua-5.1.5/src/loadlib.c lua-5_1_5/src/loadlib.c
 +  }
 +  lua_pop(L, 3);
 +}
++
  
  static const int sentinel_ = 0;
 -#define sentinel	((void *)&sentinel_)
@@ -279,7 +248,7 @@ diff -Naur /work/lua-5.1.5/src/loadlib.c lua-5_1_5/src/loadlib.c
  
  
  static int ll_require (lua_State *L) {
-@@ -462,7 +478,7 @@
+@@ -462,7 +498,7 @@
    /* else must load it; iterate over available loaders */
    lua_getfield(L, LUA_ENVIRONINDEX, "loaders");
    if (!lua_istable(L, -1))
@@ -288,7 +257,7 @@ diff -Naur /work/lua-5.1.5/src/loadlib.c lua-5_1_5/src/loadlib.c
    lua_pushliteral(L, "");  /* error message accumulator */
    for (i=1; ; i++) {
      lua_rawgeti(L, -2, i);  /* get a loader */
-@@ -490,138 +506,27 @@
+@@ -490,6 +526,8 @@
      lua_pushvalue(L, -1);  /* extra copy to be returned */
      lua_setfield(L, 2, name);  /* _LOADED[name] = true */
    }
@@ -297,82 +266,19 @@ diff -Naur /work/lua-5.1.5/src/loadlib.c lua-5_1_5/src/loadlib.c
    return 1;
  }
  
- /* }====================================================== */
- 
- 
--
--/*
--** {======================================================
--** 'module' function
--** =======================================================
--*/
+@@ -502,7 +540,7 @@
+ ** 'module' function
+ ** =======================================================
+ */
 -  
--
--static void setfenv (lua_State *L) {
--  lua_Debug ar;
--  if (lua_getstack(L, 1, &ar) == 0 ||
--      lua_getinfo(L, "f", &ar) == 0 ||  /* get calling function */
--      lua_iscfunction(L, -1))
--    luaL_error(L, LUA_QL("module") " not called from a Lua function");
--  lua_pushvalue(L, -2);
--  lua_setfenv(L, -2);
--  lua_pop(L, 1);
--}
--
--
--static void dooptions (lua_State *L, int n) {
--  int i;
--  for (i = 2; i <= n; i++) {
--    lua_pushvalue(L, i);  /* get option (a function) */
--    lua_pushvalue(L, -2);  /* module */
--    lua_call(L, 1, 0);
--  }
--}
--
--
--static void modinit (lua_State *L, const char *modname) {
--  const char *dot;
--  lua_pushvalue(L, -1);
--  lua_setfield(L, -2, "_M");  /* module._M = module */
--  lua_pushstring(L, modname);
--  lua_setfield(L, -2, "_NAME");
--  dot = strrchr(modname, '.');  /* look for last dot in module name */
--  if (dot == NULL) dot = modname;
--  else dot++;
--  /* set _PACKAGE as package name (full module name minus last part) */
--  lua_pushlstring(L, modname, dot - modname);
--  lua_setfield(L, -2, "_PACKAGE");
--}
--
--
--static int ll_module (lua_State *L) {
--  const char *modname = luaL_checkstring(L, 1);
--  int loaded = lua_gettop(L) + 1;  /* index of _LOADED table */
--  lua_getfield(L, LUA_REGISTRYINDEX, "_LOADED");
--  lua_getfield(L, loaded, modname);  /* get _LOADED[modname] */
--  if (!lua_istable(L, -1)) {  /* not found? */
--    lua_pop(L, 1);  /* remove previous result */
--    /* try global variable (and create one if it does not exist) */
--    if (luaL_findtable(L, LUA_GLOBALSINDEX, modname, 1) != NULL)
--      return luaL_error(L, "name conflict for module " LUA_QS, modname);
--    lua_pushvalue(L, -1);
--    lua_setfield(L, loaded, modname);  /* _LOADED[modname] = new table */
--  }
--  /* check whether table already has a _NAME field */
--  lua_getfield(L, -1, "_NAME");
--  if (!lua_isnil(L, -1))  /* is table an initialized module? */
--    lua_pop(L, 1);
--  else {  /* no; initialize it */
--    lua_pop(L, 1);
--    modinit(L, modname);
--  }
--  lua_pushvalue(L, -1);
--  setfenv(L);
--  dooptions(L, loaded - 1);
--  return 0;
--}
--
--
++
+ 
+ static void setfenv (lua_State *L) {
+   lua_Debug ar;
+@@ -569,46 +607,11 @@
+ }
+ 
+ 
 -static int ll_seeall (lua_State *L) {
 -  luaL_checktype(L, 1, LUA_TTABLE);
 -  if (!lua_getmetatable(L, 1)) {
@@ -386,10 +292,10 @@ diff -Naur /work/lua-5.1.5/src/loadlib.c lua-5_1_5/src/loadlib.c
 -}
 -
 -
--/* }====================================================== */
--
--
--
+ /* }====================================================== */
+ 
+ 
+ 
 -/* auxiliary mark (for internal use) */
 -#define AUXMARK		"\1"
 -
@@ -416,21 +322,7 @@ diff -Naur /work/lua-5.1.5/src/loadlib.c lua-5_1_5/src/loadlib.c
    {NULL, NULL}
  };
  
- 
- static const luaL_Reg ll_funcs[] = {
--  {"module", ll_module},
-   {"require", ll_require},
-   {NULL, NULL}
- };
- 
- 
- static const lua_CFunction loaders[] =
--  {loader_preload, loader_Lua, loader_C, loader_Croot, NULL};
-+  {loader_preload, loader_Lua, loader_C, NULL};
- 
- 
- LUALIB_API int luaopen_package (lua_State *L) {
-@@ -630,12 +535,8 @@
+@@ -630,12 +633,8 @@
    luaL_newmetatable(L, "_LOADLIB");
    lua_pushcfunction(L, gctm);
    lua_setfield(L, -2, "__gc");
@@ -445,7 +337,7 @@ diff -Naur /work/lua-5.1.5/src/loadlib.c lua-5_1_5/src/loadlib.c
    lua_pushvalue(L, -1);
    lua_replace(L, LUA_ENVIRONINDEX);
    /* create `loaders' table */
-@@ -646,21 +547,17 @@
+@@ -646,21 +645,17 @@
      lua_rawseti(L, -2, i+1);
    }
    lua_setfield(L, -2, "loaders");  /* put it in field `loaders' */
@@ -477,7 +369,7 @@ diff -Naur /work/lua-5.1.5/src/loadlib.c lua-5_1_5/src/loadlib.c
 -
 diff -Naur /work/lua-5.1.5/src/loslib.c lua-5_1_5/src/loslib.c
 --- /work/lua-5.1.5/src/loslib.c	2008-01-18 08:38:18.000000000 -0800
-+++ lua-5_1_5/src/loslib.c	2015-01-22 12:06:12.578775487 -0800
++++ lua-5_1_5/src/loslib.c	2015-01-22 13:55:49.917296821 -0800
 @@ -33,6 +33,61 @@
      return 3;
    }
@@ -610,7 +502,7 @@ diff -Naur /work/lua-5.1.5/src/loslib.c lua-5_1_5/src/loslib.c
        }
 diff -Naur /work/lua-5.1.5/src/luaconf.h lua-5_1_5/src/luaconf.h
 --- /work/lua-5.1.5/src/luaconf.h	2008-02-11 08:25:08.000000000 -0800
-+++ lua-5_1_5/src/luaconf.h	2015-01-22 12:06:12.578775487 -0800
++++ lua-5_1_5/src/luaconf.h	2015-01-22 13:55:49.917296821 -0800
 @@ -1,5 +1,5 @@
  /*
 -** $Id: luaconf.h,v 1.82.1.7 2008/02/11 16:25:08 roberto Exp $
@@ -655,7 +547,7 @@ diff -Naur /work/lua-5.1.5/src/luaconf.h lua-5_1_5/src/luaconf.h
  
 diff -Naur /work/lua-5.1.5/src/lua.h lua-5_1_5/src/lua.h
 --- /work/lua-5.1.5/src/lua.h	2012-01-13 12:36:20.000000000 -0800
-+++ lua-5_1_5/src/lua.h	2015-01-22 12:06:12.578775487 -0800
++++ lua-5_1_5/src/lua.h	2015-01-22 13:55:49.917296821 -0800
 @@ -341,6 +341,7 @@
  LUA_API lua_Hook lua_gethook (lua_State *L);
  LUA_API int lua_gethookmask (lua_State *L);

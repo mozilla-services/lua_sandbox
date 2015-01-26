@@ -735,6 +735,11 @@ static char* test_errors()
 #endif
     , "process() invalid module name '../invalid'"
     , "process() lua/errors.lua:34: module 'pathoverflowpathoverflowpathoverflowpathoverflowpathoverflowpathoverflowpathoverflowpathoverflowpathoverflowpathoverflowpathoverflowpathoverflowpathoverflowpathoverflowpathoverflowpathoverflowpathoverflowpathoverflowpa"
+#ifdef _WIN32
+    , "process() lua/errors.lua:36: module 'foo.bar' not found:\n\tno file 'lua\\foo\\bar.lua'\n\tno file 'lua\\foo\\bar.dll'\n\tno file 'lua\\foo.dll'"
+#else
+    , "process() lua/errors.lua:36: module 'foo.bar' not found:\n\tno file 'lua/foo/bar.lua'\n\tno file 'lua/foo/bar.so'\n\tno file 'lua/foo.so'"
+#endif
     , NULL
   };
 

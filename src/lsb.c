@@ -31,7 +31,7 @@ static const char* standard_config = "{"
   "cpath = '%s',"
   "remove_entries = {"
   "[''] = { 'collectgarbage', 'coroutine', 'dofile', 'load', 'loadfile'"
-  ",'loadstring', 'module', 'print'},"
+  ",'loadstring', 'print'},"
   "os = {'execute', 'exit', 'remove', 'rename', 'setlocale', 'tmpname'}"
   "}}";
 
