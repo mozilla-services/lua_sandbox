@@ -12,8 +12,7 @@ endif()
 
 set(EP_BASE "${CMAKE_BINARY_DIR}/ep_base")
 set_property(DIRECTORY PROPERTY EP_BASE ${EP_BASE})
-set(CJSON_PATCH_FILE "lua-cjson-2_1_0.patch")
-set(SANDBOX_CMAKE_ARGS -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE} -DCMAKE_INSTALL_PREFIX=${EP_BASE} -DEP_BASE=${EP_BASE} -DADDRESS_MODEL=${ADDRESS_MODEL} --no-warn-unused-cli)
+set(SANDBOX_CMAKE_ARGS -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE} -DCMAKE_INSTALL_PREFIX=${EP_BASE} -DEP_BASE=${EP_BASE} -DADDRESS_MODEL=${ADDRESS_MODEL} -DLUA_SANDBOX_INCLUDE=${CMAKE_SOURCE_DIR}/include --no-warn-unused-cli)
 set(LUA_INCLUDE_DIR "${EP_BASE}/include")
 
 if (LUA_JIT)
@@ -68,21 +67,47 @@ endif()
 include_directories(${LUA_INCLUDE_DIR})
 
 externalproject_add(
-    lpeg-0_12
+    lua_lpeg
     URL http://www.inf.puc-rio.br/~roberto/lpeg/lpeg-0.12.tar.gz
     URL_MD5 4abb3c28cd8b6565c6a65e88f06c9162
     PATCH_COMMAND ${PATCH_EXECUTABLE} -p1 < ${CMAKE_CURRENT_LIST_DIR}/lpeg-0_12.patch
     CMAKE_ARGS ${SANDBOX_CMAKE_ARGS}
     INSTALL_DIR ${EP_BASE}
 )
-add_dependencies(lpeg-0_12 ${LUA_PROJECT})
+add_dependencies(lua_lpeg ${LUA_PROJECT})
 
 externalproject_add(
-    lua-cjson-2_1_0
+    lua_cjson
     GIT_REPOSITORY https://github.com/trink/lua-cjson.git
-    GIT_TAG be85986dc481ad2a0d3abc06ac57e1d1241d9d4c
+    GIT_TAG 1ebc6061435a45ce23bf7d26d7ed04db995a8ba9
     CMAKE_ARGS ${SANDBOX_CMAKE_ARGS}
     INSTALL_DIR ${EP_BASE}
 )
-add_dependencies(lua-cjson-2_1_0 ${LUA_PROJECT})
+add_dependencies(lua_cjson ${LUA_PROJECT})
 
+externalproject_add(
+    lua_bloom_filter
+    GIT_REPOSITORY https://github.com/mozilla-services/lua_bloom_filter.git
+    GIT_TAG b264c84cca536f20a41a9950556383e8dc5fd2ae
+    CMAKE_ARGS ${SANDBOX_CMAKE_ARGS}
+    INSTALL_DIR ${EP_BASE}
+)
+add_dependencies(lua_bloom_filter ${LUA_PROJECT})
+
+externalproject_add(
+    lua_circular_buffer
+    GIT_REPOSITORY https://github.com/mozilla-services/lua_circular_buffer.git
+    GIT_TAG 5e7726d70bd5cf6e61e1faccae2a2fabf5e9bf3d
+    CMAKE_ARGS ${SANDBOX_CMAKE_ARGS}
+    INSTALL_DIR ${EP_BASE}
+)
+add_dependencies(lua_circular_buffer ${LUA_PROJECT})
+
+externalproject_add(
+    lua_hyperloglog
+    GIT_REPOSITORY https://github.com/mozilla-services/lua_hyperloglog.git
+    GIT_TAG e5d3399b0d0a6913d18cc5a0a33326391363b936
+    CMAKE_ARGS ${SANDBOX_CMAKE_ARGS}
+    INSTALL_DIR ${EP_BASE}
+)
+add_dependencies(lua_hyperloglog ${LUA_PROJECT})

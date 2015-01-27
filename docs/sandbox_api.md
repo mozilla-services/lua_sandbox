@@ -27,12 +27,12 @@ By default only the base library is loaded additional libraries must be explicit
 *Arguments*
 
 - libraryName (string)
-  - **base library**
+  - [base library(http://www.lua.org/manual/5.1/manual.html#5.1)
     - The standard require() function is overridden by this version.
     - Disabled functions: collectgarbage, coroutine, dofile, load, loadfile, loadstring, module, print.
-  - [bloom_filter](bloom_filter.md)
-  - [circular_buffer](circular_buffer.md)
-  - **cjson** http://www.kyne.com.au/~mark/software/lua-cjson-manual.html. With the following modifications:
+  - [bloom_filter](https://github.com/mozilla-services/lua_bloom_filter/blob/master/README.md)
+  - [circular_buffer](https://github.com/mozilla-services/lua_circular_buffer/blob/master/README.md)
+  - [cjson](http://www.kyne.com.au/~mark/software/lua-cjson-manual.html) With the following modifications:
     - Loads the cjson module in a global cjson table
     - The encode buffer is limited to the sandbox output_limit.
     - The decode buffer will be roughly limited to one half of the sandbox memory_limit.
@@ -40,15 +40,15 @@ By default only the base library is loaded additional libraries must be explicit
       If the original behavior is desired use cjson.decode_null(true) to enable NULL decoding.
     - The new() function has been disabled so only a single cjson parser can be created.
     - The encode_keep_buffer() function has been disabled (the buffer is always reused).
-  - [hyperloglog](hyperloglog.md)
-  - **lpeg** loads the Lua Parsing Expression Grammar Library http://www.inf.puc-rio.br/~roberto/lpeg/lpeg.html
-  - **math**
-  - **os**
+  - [hyperloglog](https://github.com/mozilla-services/lua_hyperloglog/blob/master/README.md)
+  - [lpeg](http://www.inf.puc-rio.br/~roberto/lpeg/lpeg.html) Lua Parsing Expression Grammar Library
+  - [math](http://www.lua.org/manual/5.1/manual.html#5.6)
+  - [os](http://www.lua.org/manual/5.1/manual.html#5.8)
     - The local timezone is set to UTC in all sandboxes.
     - Disabled functions: execute, exit, remove, rename, setlocale, tmpname.
-  - **string**
-  - **struct** http://www.inf.puc-rio.br/~roberto/struct/
-  - **table**
+  - [string](http://www.lua.org/manual/5.1/manual.html#5.4)
+  - [struct](http://www.inf.puc-rio.br/~roberto/struct/)
+  - [table](http://www.lua.org/manual/5.1/manual.html#5.5)
   - _user provided_
 
 *Return*
@@ -59,7 +59,7 @@ By default only the base library is loaded additional libraries must be explicit
 
 ____
 **output(arg0, arg1, ...argN)**
-    Appends data to the output buffer, which cannot exceed the output_limit
+    lsb_appends data to the output buffer, which cannot exceed the output_limit
     configuration parameter. See lsb_get_output() to connect the output to the
     host application.
 

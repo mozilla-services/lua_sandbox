@@ -4,38 +4,15 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-/// Generic Lua sandbox for dynamic data analysis  @file
-#ifndef lua_sandbox_h_
-#define lua_sandbox_h_
+/** Generic Lua sandbox for dynamic data analysis  @file */
+
+#ifndef lsb_h_
+#define lsb_h_
 
 #include <lua.h>
 
-typedef enum {
-  LSB_UNKNOWN      = 0,
-  LSB_RUNNING      = 1,
-  LSB_TERMINATED   = 2
-} lsb_state;
-
-typedef enum {
-  LSB_US_LIMIT    = 0,
-  LSB_US_CURRENT  = 1,
-  LSB_US_MAXIMUM  = 2,
-
-  LSB_US_MAX
-} lsb_usage_stat;
-
-typedef enum {
-  LSB_UT_MEMORY       = 0,
-  LSB_UT_INSTRUCTION  = 1,
-  LSB_UT_OUTPUT       = 2,
-
-  LSB_UT_MAX
-} lsb_usage_type;
-
-#define LSB_ERROR_SIZE 256
-
 #ifdef _WIN32
-#if defined(luasandbox_EXPORTS)
+#ifdef luasandbox_EXPORTS
 #define  LSB_EXPORT __declspec(dllexport)
 #else
 #define  LSB_EXPORT __declspec(dllimport)
@@ -44,7 +21,32 @@ typedef enum {
 #define LSB_EXPORT
 #endif
 
+#define LSB_ERROR_SIZE 256
+
+typedef enum {
+  LSB_UNKNOWN = 0,
+  LSB_RUNNING = 1,
+  LSB_TERMINATED = 2
+} lsb_state;
+
+typedef enum {
+  LSB_US_LIMIT = 0,
+  LSB_US_CURRENT = 1,
+  LSB_US_MAXIMUM = 2,
+
+  LSB_US_MAX
+} lsb_usage_stat;
+
+typedef enum {
+  LSB_UT_MEMORY = 0,
+  LSB_UT_INSTRUCTION = 1,
+  LSB_UT_OUTPUT = 2,
+
+  LSB_UT_MAX
+} lsb_usage_type;
+
 typedef struct lua_sandbox lua_sandbox;
+typedef struct lsb_output_data lsb_output_data;
 
 /**
  * Allocates and initializes the structure around the Lua sandbox.
@@ -66,6 +68,33 @@ LSB_EXPORT lua_sandbox* lsb_create(void* parent,
                                    unsigned memory_limit,
                                    unsigned instruction_limit,
                                    unsigned output_limit);
+
+/**
+ * Allocates and initializes the structure around the Lua sandbox allowing
+ * full specification of the sandbox configuration using a Lua configuration
+ * string.
+ *
+ * {
+ * memory_limit = 1024*1024*1,
+ * instruction_limit = 10000,
+ * output_limit = 64*1024,
+ * path = '/modules/?.lua',
+ * cpath = '/modules/?.so',
+ * remove_entries = {
+ *    [''] = { 'collectgarbage', 'coroutine', 'dofile', 'load', 'loadfile',
+ *          'loadstring', 'module', 'print'},
+ *    os = {'execute', 'exit', 'remove', 'rename', 'setlocale', 'tmpname'}
+ * }
+ * }
+ *
+ * @param parent Pointer to associate the owner to this sandbox.
+ * @param lua_file Filename of the Lua script to run in this sandbox.
+ * @param config Lua structure defining the full sandbox restrictions.
+ * @return lua_sandbox Sandbox pointer or NULL on failure.
+ */
+LSB_EXPORT lua_sandbox* lsb_create_custom(void* parent,
+                                          const char* lua_file,
+                                          const char* config);
 
 /**
  * Initializes the Lua sandbox and loads/runs the Lua script that was specified
@@ -177,29 +206,6 @@ LSB_EXPORT void lsb_add_function(lua_sandbox* lsb, lua_CFunction func,
  * @return const char* Pointer to the output buffer.
  */
 LSB_EXPORT const char* lsb_get_output(lua_sandbox* lsb, size_t* len);
-
-/**
- * Write an array of variables on the Lua stack to the output buffer.
- *
- * @param lsb Pointer to the sandbox.
- * @param start Lua stack index of first variable.
- * @param end Lua stack index of the last variable.
- * @param append 0 to overwrite the output buffer, 1 to append the output to it
- *
- *
- */
-LSB_EXPORT void lsb_output(lua_sandbox* lsb, int start, int end, int append);
-
-/**
- * Write a Lua table (in a Heka protobuf structure) to the output buffer.
- *
- * @param lsb Pointer to the sandbox.
- * @param index Lua stack index of the table.
- * @param append 0 to overwrite the output buffer, 1 to append the output to it
- *
- * @return int 0 on success
- */
-LSB_EXPORT int lsb_output_protobuf(lua_sandbox* lsb, int index, int append);
 
 /**
  * Helper function to load the Lua function and set the instruction limits

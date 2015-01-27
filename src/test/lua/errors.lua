@@ -33,11 +33,7 @@ function process(tc)
     elseif tc == 10 then
         local v = require "pathoverflowpathoverflowpathoverflowpathoverflowpathoverflowpathoverflowpathoverflowpathoverflowpathoverflowpathoverflowpathoverflowpathoverflowpathoverflowpathoverflowpathoverflowpathoverflowpathoverflowpathoverflowpathoverflowpathoverflowpathoverflow"
     elseif tc == 11 then
-        package = nil
-        require "os"
-    elseif tc == 12 then
-        package.loaded = nil
-        require "os"
+        local v = require "foo.bar"
     end
     return 0
 end
