@@ -11,6 +11,7 @@
 #include <limits.h>
 #include <stddef.h>
 
+#define LUA_USE_AFORMAT		/* assume 'printf' handles 'aA' specifiers */
 
 /*
 ** ==================================================================
@@ -35,6 +36,10 @@
 #cmakedefine LUA_USE_ISATTY
 #cmakedefine LUA_USE_POPEN
 #cmakedefine LUA_USE_ULONGJMP
+#cmakedefine LUA_USE_STRTODHEX
+#cmakedefine LUA_USE_AFORMAT
+#cmakedefine LUA_USE_LONGLONG
+#cmakedefine LUA_USE_GMTIME_R
 
 //#if defined(LUA_USE_MACOSX)
 //#define LUA_USE_POSIX

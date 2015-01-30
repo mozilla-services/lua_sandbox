@@ -341,6 +341,7 @@ LUA_API int lua_sethook (lua_State *L, lua_Hook func, int mask, int count);
 LUA_API lua_Hook lua_gethook (lua_State *L);
 LUA_API int lua_gethookmask (lua_State *L);
 LUA_API int lua_gethookcount (lua_State *L);
+LUA_API int lua_gethookcountremaining (lua_State *L);
 
 
 struct lua_Debug {
