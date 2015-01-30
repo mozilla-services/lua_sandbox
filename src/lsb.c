@@ -194,10 +194,10 @@ lua_sandbox* lsb_create(void* parent,
 
   if (require_path) {
 #if defined(_WIN32)
-    if (expand_path(require_path, sizeof(lpath), "%s\\?.lua", lpath)) {
+    if (expand_path(require_path, sizeof(lpath), "%s\\\\?.lua", lpath)) {
       return NULL;
     }
-    if (expand_path(require_path, sizeof(cpath), "%s\\?.dll", cpath)) {
+    if (expand_path(require_path, sizeof(cpath), "%s\\\\?.dll", cpath)) {
       return NULL;
     }
 #else
