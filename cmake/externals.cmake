@@ -12,7 +12,7 @@ endif()
 
 set(EP_BASE "${CMAKE_BINARY_DIR}/ep_base")
 set_property(DIRECTORY PROPERTY EP_BASE ${EP_BASE})
-set(SANDBOX_CMAKE_ARGS -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE} -DCMAKE_INSTALL_PREFIX=${EP_BASE} -DEP_BASE=${EP_BASE} -DADDRESS_MODEL=${ADDRESS_MODEL} -DLUA_SANDBOX_INCLUDE=${CMAKE_SOURCE_DIR}/include --no-warn-unused-cli)
+set(SANDBOX_CMAKE_ARGS -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE} -DCMAKE_INSTALL_PREFIX=${EP_BASE} -DEP_BASE=${EP_BASE} -DLUA_SANDBOX_INCLUDE=${CMAKE_SOURCE_DIR}/include --no-warn-unused-cli)
 set(LUA_INCLUDE_DIR "${EP_BASE}/include")
 
 if (LUA_JIT)
@@ -100,7 +100,6 @@ externalproject_add(
     CMAKE_ARGS ${SANDBOX_CMAKE_ARGS}
     INSTALL_DIR ${EP_BASE}
 )
-add_dependencies(lua_bloom_filter ${LUA_PROJECT})
 
 externalproject_add(
     lua_circular_buffer
@@ -109,7 +108,6 @@ externalproject_add(
     CMAKE_ARGS ${SANDBOX_CMAKE_ARGS}
     INSTALL_DIR ${EP_BASE}
 )
-add_dependencies(lua_circular_buffer ${LUA_PROJECT})
 
 externalproject_add(
     lua_hyperloglog
@@ -118,4 +116,3 @@ externalproject_add(
     CMAKE_ARGS ${SANDBOX_CMAKE_ARGS}
     INSTALL_DIR ${EP_BASE}
 )
-add_dependencies(lua_hyperloglog ${LUA_PROJECT})
