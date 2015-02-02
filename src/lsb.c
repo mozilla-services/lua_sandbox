@@ -37,10 +37,6 @@ static const char* standard_config = "{"
 
 static jmp_buf g_jbuf;
 
-LUALIB_API int luaopen_struct(lua_State* L);
-LUALIB_API int luaopen_cjson(lua_State* L);
-LUALIB_API int luaopen_lpeg(lua_State* L);
-
 static const luaL_Reg preload_module_list[] = {
   { "", luaopen_base },
   { LUA_TABLIBNAME, luaopen_table },
@@ -48,9 +44,6 @@ static const luaL_Reg preload_module_list[] = {
   { LUA_OSLIBNAME, luaopen_os },
   { LUA_STRLIBNAME, luaopen_string },
   { LUA_MATHLIBNAME, luaopen_math },
-  { "struct", luaopen_struct },
-  { "cjson", luaopen_cjson },
-  { "lpeg", luaopen_lpeg },
   { NULL, NULL }
 };
 
@@ -201,10 +194,10 @@ lua_sandbox* lsb_create(void* parent,
 
   if (require_path) {
 #if defined(_WIN32)
-    if (expand_path(require_path, sizeof(lpath), "%s\\?.lua", lpath)) {
+    if (expand_path(require_path, sizeof(lpath), "%s\\\\?.lua", lpath)) {
       return NULL;
     }
-    if (expand_path(require_path, sizeof(cpath), "%s\\?.dll", cpath)) {
+    if (expand_path(require_path, sizeof(cpath), "%s\\\\?.dll", cpath)) {
       return NULL;
     }
 #else
@@ -318,7 +311,6 @@ int lsb_init(lua_sandbox* lsb, const char* data_file)
 #endif
 
   preload_modules(lsb->lua);
-
   // load package module
   lua_pushcfunction(lsb->lua, luaopen_package);
   lua_pushstring(lsb->lua, LUA_LOADLIBNAME);
@@ -336,7 +328,12 @@ int lsb_init(lua_sandbox* lsb, const char* data_file)
     return 1;
   }
   lua_pushstring(lsb->lua, "");
-  lua_call(lsb->lua, 1, 0);
+  if (lua_pcall(lsb->lua, 1, 0, 0)) {
+    snprintf(lsb->error_message, LSB_ERROR_SIZE,
+             "lsb_init %s", lua_tostring(lsb->lua, -1));
+    lsb_terminate(lsb, NULL);
+    return 1;
+  }
 
   lua_pushlightuserdata(lsb->lua, (void*)lsb);
   lua_pushcclosure(lsb->lua, &output, 1);

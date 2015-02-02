@@ -12,7 +12,7 @@ endif()
 
 set(EP_BASE "${CMAKE_BINARY_DIR}/ep_base")
 set_property(DIRECTORY PROPERTY EP_BASE ${EP_BASE})
-set(SANDBOX_CMAKE_ARGS -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE} -DCMAKE_INSTALL_PREFIX=${EP_BASE} -DEP_BASE=${EP_BASE} -DADDRESS_MODEL=${ADDRESS_MODEL} -DLUA_SANDBOX_INCLUDE=${CMAKE_SOURCE_DIR}/include --no-warn-unused-cli)
+set(SANDBOX_CMAKE_ARGS -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE} -DCMAKE_INSTALL_PREFIX=${EP_BASE} -DEP_BASE=${EP_BASE} -DLUA_SANDBOX_INCLUDE=${CMAKE_SOURCE_DIR}/include --no-warn-unused-cli)
 set(LUA_INCLUDE_DIR "${EP_BASE}/include")
 
 if (LUA_JIT)
@@ -57,9 +57,8 @@ else()
     set(LUA_PROJECT "lua-5_1_5")
     externalproject_add(
         ${LUA_PROJECT}
-        URL http://www.lua.org/ftp/lua-5.1.5.tar.gz
-        URL_MD5 2e115fe26e435e33b0d5c022e4490567
-        PATCH_COMMAND ${PATCH_EXECUTABLE} -p1 < ${CMAKE_CURRENT_LIST_DIR}/lua-5_1_5.patch
+        GIT_REPOSITORY https://github.com/trink/lua.git
+        GIT_TAG 63a4f245d214cdb61e7ae1ce2595e5c1ce3c7f51
         CMAKE_ARGS ${SANDBOX_CMAKE_ARGS}
         INSTALL_DIR ${EP_BASE}
     )
@@ -68,9 +67,8 @@ include_directories(${LUA_INCLUDE_DIR})
 
 externalproject_add(
     lua_lpeg
-    URL http://www.inf.puc-rio.br/~roberto/lpeg/lpeg-0.12.tar.gz
-    URL_MD5 4abb3c28cd8b6565c6a65e88f06c9162
-    PATCH_COMMAND ${PATCH_EXECUTABLE} -p1 < ${CMAKE_CURRENT_LIST_DIR}/lpeg-0_12.patch
+    GIT_REPOSITORY https://github.com/LuaDist/lpeg.git
+    GIT_TAG baf0dc90b9278360be719dbfb8e56d34ce3c61bd
     CMAKE_ARGS ${SANDBOX_CMAKE_ARGS}
     INSTALL_DIR ${EP_BASE}
 )
@@ -79,35 +77,42 @@ add_dependencies(lua_lpeg ${LUA_PROJECT})
 externalproject_add(
     lua_cjson
     GIT_REPOSITORY https://github.com/trink/lua-cjson.git
-    GIT_TAG 1ebc6061435a45ce23bf7d26d7ed04db995a8ba9
+    GIT_TAG af793dbfd83d9be69835faf8b88702ebb74547ed
     CMAKE_ARGS ${SANDBOX_CMAKE_ARGS}
     INSTALL_DIR ${EP_BASE}
 )
 add_dependencies(lua_cjson ${LUA_PROJECT})
 
 externalproject_add(
-    lua_bloom_filter
-    GIT_REPOSITORY https://github.com/mozilla-services/lua_bloom_filter.git
-    GIT_TAG b264c84cca536f20a41a9950556383e8dc5fd2ae
+    lua_struct
+    GIT_REPOSITORY https://github.com/trink/struct.git
+    GIT_TAG 5cf31819bee0d829d058cb5219e95ef0b1dd43a8
+    UPDATE_COMMAND cmake -E copy ${CMAKE_CURRENT_LIST_DIR}/FindLua.cmake <SOURCE_DIR>/cmake
     CMAKE_ARGS ${SANDBOX_CMAKE_ARGS}
     INSTALL_DIR ${EP_BASE}
 )
-add_dependencies(lua_bloom_filter ${LUA_PROJECT})
+add_dependencies(lua_struct ${LUA_PROJECT})
+
+externalproject_add(
+    lua_bloom_filter
+    GIT_REPOSITORY https://github.com/mozilla-services/lua_bloom_filter.git
+    GIT_TAG ba756520a51592612c9709ebdfb99392f97eb51f
+    CMAKE_ARGS ${SANDBOX_CMAKE_ARGS}
+    INSTALL_DIR ${EP_BASE}
+)
 
 externalproject_add(
     lua_circular_buffer
     GIT_REPOSITORY https://github.com/mozilla-services/lua_circular_buffer.git
-    GIT_TAG 5e7726d70bd5cf6e61e1faccae2a2fabf5e9bf3d
+    GIT_TAG ca4b0271bd741b857527f8315387142beac9cef9
     CMAKE_ARGS ${SANDBOX_CMAKE_ARGS}
     INSTALL_DIR ${EP_BASE}
 )
-add_dependencies(lua_circular_buffer ${LUA_PROJECT})
 
 externalproject_add(
     lua_hyperloglog
     GIT_REPOSITORY https://github.com/mozilla-services/lua_hyperloglog.git
-    GIT_TAG e5d3399b0d0a6913d18cc5a0a33326391363b936
+    GIT_TAG c9e3a7310b6e65a1ed54bc073ca6b836edb84cd5
     CMAKE_ARGS ${SANDBOX_CMAKE_ARGS}
     INSTALL_DIR ${EP_BASE}
 )
-add_dependencies(lua_hyperloglog ${LUA_PROJECT})
