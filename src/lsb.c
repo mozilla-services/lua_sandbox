@@ -27,8 +27,8 @@ static const char* standard_config = "{"
   "memory_limit = %u,"
   "instruction_limit = %u,"
   "output_limit = %u,"
-  "path = '%s',"
-  "cpath = '%s',"
+  "path = [[%s]],"
+  "cpath = [[%s]],"
   "remove_entries = {"
   "[''] = { 'collectgarbage', 'coroutine', 'dofile', 'load', 'loadfile'"
   ",'loadstring', 'print'},"
@@ -194,10 +194,10 @@ lua_sandbox* lsb_create(void* parent,
 
   if (require_path) {
 #if defined(_WIN32)
-    if (expand_path(require_path, sizeof(lpath), "%s\\\\?.lua", lpath)) {
+    if (expand_path(require_path, sizeof(lpath), "%s\\?.lua", lpath)) {
       return NULL;
     }
-    if (expand_path(require_path, sizeof(cpath), "%s\\\\?.dll", cpath)) {
+    if (expand_path(require_path, sizeof(cpath), "%s\\?.dll", cpath)) {
       return NULL;
     }
 #else
