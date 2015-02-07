@@ -480,12 +480,37 @@ static void remove_entries(lua_State* L, const char* name)
 }
 
 
+static int is_disabled(lua_State* L, const char* name)
+{
+  int status = 0;
+  lua_getfield(L, LUA_REGISTRYINDEX, LSB_CONFIG);
+  if (lua_type(L, -1) != LUA_TTABLE) {
+    lua_pop(L, 1);
+    return status;
+  }
+  lua_getfield(L, -1, "disable_modules");
+  if (lua_type(L, -1) != LUA_TTABLE) {
+    lua_pop(L, 2);
+    return status;
+  }
+  lua_getfield(L, -1, name);
+  if (lua_type(L, -1) != LUA_TNIL) {
+    status = 1;
+  }
+  lua_pop(L, 3);
+  return status;
+}
+
+
 static const int sentinel_ = 0;
 #define sentinel  ((void *)&sentinel_)
 
 
 static int ll_require (lua_State *L) {
   const char *name = luaL_checkstring(L, 1);
+  if (is_disabled(L, name)) {
+    luaL_error(L, "module " LUA_QS " disabled", name);
+  }
   int i;
   lua_settop(L, 1);  /* _LOADED table will be at index 2 */
   lua_getfield(L, LUA_REGISTRYINDEX, "_LOADED");
