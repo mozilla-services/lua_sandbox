@@ -81,10 +81,11 @@ LSB_EXPORT lua_sandbox* lsb_create(void* parent,
  * path = '/modules/?.lua',
  * cpath = '/modules/?.so',
  * remove_entries = {
- *    [''] = { 'collectgarbage', 'coroutine', 'dofile', 'load', 'loadfile',
- *          'loadstring', 'module', 'print'},
- *    os = {'execute', 'exit', 'remove', 'rename', 'setlocale', 'tmpname'}
- * }
+ *    [''] = {'collectgarbage','coroutine','dofile','load','loadfile'"
+ *           ",'loadstring','newproxy','print'},
+ *    os = {'getenv','execute','exit','remove','rename','setlocale','tmpname'}
+ * },
+ * disable_modules = {io = 1}
  * }
  *
  * @param parent Pointer to associate the owner to this sandbox.

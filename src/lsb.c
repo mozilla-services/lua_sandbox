@@ -30,10 +30,12 @@ static const char* standard_config = "{"
   "path = [[%s]],"
   "cpath = [[%s]],"
   "remove_entries = {"
-  "[''] = { 'collectgarbage', 'coroutine', 'dofile', 'load', 'loadfile'"
-  ",'loadstring', 'print'},"
-  "os = {'execute', 'exit', 'remove', 'rename', 'setlocale', 'tmpname'}"
-  "}}";
+  "[''] = {'collectgarbage','coroutine','dofile','load','loadfile'"
+  ",'loadstring','newproxy','print'},"
+  "os = {'getenv','execute','exit','remove','rename','setlocale','tmpname'}"
+  "},"
+  "disable_modules = {io = 1}"
+  "}";
 
 static jmp_buf g_jbuf;
 
