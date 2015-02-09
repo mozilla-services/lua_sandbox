@@ -76,7 +76,7 @@ By default only the base library is loaded additional libraries must be loaded w
 - libraryName (string)
   - [base library](http://www.lua.org/manual/5.1/manual.html#5.1)
     - The require() function has been modified to not expose any of the package table to the sandbox.
-    - Disabled functions (default): collectgarbage, coroutine, dofile, load, loadfile, loadstring, print.
+    - Disabled functions (default): collectgarbage, coroutine, dofile, load, loadfile, loadstring, newproxy, print.
   - [bloom_filter](https://github.com/mozilla-services/lua_bloom_filter/blob/master/README.md) Test whether an element is a member of a set
   - [circular_buffer](https://github.com/mozilla-services/lua_circular_buffer/blob/master/README.md) In memory time series data base and analysis
   - [cjson](http://www.kyne.com.au/~mark/software/lua-cjson-manual.html) JSON parser with the following modifications:
@@ -93,7 +93,7 @@ By default only the base library is loaded additional libraries must be loaded w
   - [math](http://www.lua.org/manual/5.1/manual.html#5.6)
   - [os](http://www.lua.org/manual/5.1/manual.html#5.8)
     - The local timezone is set to UTC in all sandboxes.
-    - Disabled functions (default): execute, exit, remove, rename, setlocale, tmpname.
+    - Disabled functions (default): getenv, execute, exit, remove, rename, setlocale, tmpname.
   - [strict](http://www.lua.org/extras/5.2/strict.lua) Checks for use of undeclared global variables.
   - [string](http://www.lua.org/manual/5.1/manual.html#5.4)
   - [struct](http://www.inf.puc-rio.br/~roberto/struct/) Converts data to/from C structs
