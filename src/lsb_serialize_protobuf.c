@@ -15,6 +15,9 @@
 #include "lsb_output.h"
 #include "lsb_private.h"
 
+#define UUID_SIZE 16
+#define MAX_VARINT_BYTES 10
+
 /**
  * Writes a varint encoded number to the output buffer.
  *
@@ -25,7 +28,7 @@
  */
 static int pb_write_varint(lsb_output_data* d, unsigned long long i)
 {
-  size_t needed = 10;
+  size_t needed = MAX_VARINT_BYTES;
   if (needed > d->size - d->pos) {
     if (lsb_realloc_output(d, needed)) return 1;
   }
@@ -99,7 +102,8 @@ static int pb_write_bool(lsb_output_data* d, int i)
  *
  * @return int Zero on success, non-zero if out of memory.
  */
-static int pb_write_tag(lsb_output_data* d, char id, char wire_type)
+static int pb_write_tag(lsb_output_data* d, unsigned char id,
+                        unsigned char wire_type)
 {
   size_t needed = 1;
   if (needed > d->size - d->pos) {
@@ -107,6 +111,41 @@ static int pb_write_tag(lsb_output_data* d, char id, char wire_type)
   }
 
   d->data[d->pos++] = wire_type | (id << 3);
+  return 0;
+}
+
+
+/**
+ * Updates the field length in the output buffer once the size is known, this
+ * allows for single pass encoding.
+ *
+ * @param d  Pointer to the output data buffer.
+ * @param len_pos Position in the output buffer where the length should be
+ *                written.
+ *
+ * @return int Zero on success, non-zero if out of memory.
+ */
+static int update_field_length(lsb_output_data* d, size_t len_pos)
+{
+  size_t len = d->pos - len_pos - 1;
+  if (len < 128) {
+    d->data[len_pos] = (char)len;
+    return 0;
+  }
+  size_t l = len, cnt = 0;
+  while (l) {
+    l >>= 7;
+    ++cnt;  // compute the number of bytes needed for the varint length
+  }
+  size_t needed = cnt - 1;
+  if (needed > d->size - d->pos) {
+    if (lsb_realloc_output(d, needed)) return 1;
+  }
+  size_t end_pos = d->pos + needed;
+  memmove(&d->data[len_pos + cnt], &d->data[len_pos + 1], len);
+  d->pos = len_pos;
+  if (pb_write_varint(d, len)) return 1;
+  d->pos = end_pos;
   return 0;
 }
 
@@ -207,12 +246,13 @@ encode_int(lua_sandbox* lsb, lsb_output_data* d, char id, const char* name,
  * @param first Boolean indicator used to add addition protobuf data in the
  *              correct order.
  * @param representation String representation of the field i.e., "ms"
+ * @param value_type Protobuf value type
  *
  * @return int Zero on success, non-zero if out of memory.
  */
 static int
 encode_field_value(lua_sandbox* lsb, lsb_output_data* d, int first,
-                   const char* representation);
+                   const char* representation, int value_type);
 
 
 /**
@@ -227,9 +267,11 @@ encode_field_value(lua_sandbox* lsb, lsb_output_data* d, int first,
  */
 static int
 encode_field_array(lua_sandbox* lsb, lsb_output_data* d, int t,
-                   const char* representation)
+                   const char* representation, int value_type)
 {
   int result = 0, first = (int)lua_objlen(lsb->lua, -1);
+  int multiple = first > 1 ? first : 0;
+  size_t len_pos = 0;
   lua_checkstack(lsb->lua, 2);
   lua_pushnil(lsb->lua);
   while (result == 0 && lua_next(lsb->lua, -2) != 0) {
@@ -237,10 +279,26 @@ encode_field_array(lua_sandbox* lsb, lsb_output_data* d, int t,
       snprintf(lsb->error_message, LSB_ERROR_SIZE, "array has mixed types");
       return 1;
     }
-    result = encode_field_value(lsb, d, first, representation);
-    first = 0;
+    result = encode_field_value(lsb, d, first, representation, value_type);
+    if (first) {
+      len_pos = d->pos;
+      first = 0;
+    }
     lua_pop(lsb->lua, 1); // Remove the value leaving the key on top for
                           // the next interation.
+  }
+  if (multiple && value_type == 2) { // fix up the varint packed length
+    int i = len_pos - 2;
+    int y = 0;
+    while (d->data[i] != 0 && y < MAX_VARINT_BYTES) { // find the length byte
+      --i;
+      ++y;
+    }
+    if (y == MAX_VARINT_BYTES || update_field_length(d, i)) {
+      snprintf(lsb->error_message, LSB_ERROR_SIZE,
+               "unable set the length of the packed integer array");
+      return 1;
+    }
   }
   return result;
 }
@@ -257,21 +315,26 @@ encode_field_array(lua_sandbox* lsb, lsb_output_data* d, int t,
 static int encode_field_object(lua_sandbox* lsb, lsb_output_data* d)
 {
   int result = 0;
+  int value_type = -1;
   const char* representation = NULL;
   lua_getfield(lsb->lua, -1, "representation");
   if (lua_isstring(lsb->lua, -1)) {
     representation = lua_tostring(lsb->lua, -1);
   }
-  lua_getfield(lsb->lua, -2, "value");
-  result = encode_field_value(lsb, d, 1, representation);
-  lua_pop(lsb->lua, 2); // remove representation and  value
+  lua_getfield(lsb->lua, -2, "value_type");
+  if (lua_isnumber(lsb->lua, -1)) {
+    value_type = lua_tointeger(lsb->lua, -1);
+  }
+  lua_getfield(lsb->lua, -3, "value");
+  result = encode_field_value(lsb, d, 1, representation, value_type);
+  lua_pop(lsb->lua, 3); // remove representation, value_type and  value
   return result;
 }
 
 
 static int
 encode_field_value(lua_sandbox* lsb, lsb_output_data* d, int first,
-                   const char* representation)
+                   const char* representation, int value_type)
 {
   int result = 1;
   size_t len;
@@ -280,20 +343,50 @@ encode_field_value(lua_sandbox* lsb, lsb_output_data* d, int first,
   int t = lua_type(lsb->lua, -1);
   switch (t) {
   case LUA_TSTRING:
+    switch (value_type) {
+    case -1: // not specified defaults to string
+      value_type = 0;
+    case 0:
+    case 1:
+      break;
+    default:
+      snprintf(lsb->error_message, LSB_ERROR_SIZE,
+               "invalid string value_type: %d", value_type);
+      return 1;
+    }
     if (first && representation) { // this uglyness keeps the protobuf
                                    // fields in order without additional
                                    // lookups
       if (pb_write_string(d, 3, representation, strlen(representation))) {
         return 1;
       }
+      if (value_type == 1) {
+        if (pb_write_tag(d, 2, 0)) return 1;
+        if (pb_write_varint(d, value_type)) return 1;
+      }
     }
     s = lua_tolstring(lsb->lua, -1, &len);
-    result = pb_write_string(d, 4, s, len);
+    if (value_type == 1) {
+      result = pb_write_string(d, 5, s, len);
+    } else {
+      result = pb_write_string(d, 4, s, len);
+    }
     break;
   case LUA_TNUMBER:
+    switch (value_type) {
+    case -1: // not specified defaults to double
+      value_type = 3;
+    case 2:
+    case 3:
+      break;
+    default:
+      snprintf(lsb->error_message, LSB_ERROR_SIZE,
+               "invalid numeric value_type: %d", value_type);
+      return 1;
+    }
     if (first) {
       if (pb_write_tag(d, 2, 0)) return 1;
-      if (pb_write_varint(d, 3)) return 1;
+      if (pb_write_varint(d, value_type)) return 1;
       if (representation) {
         if (pb_write_string(d, 3, representation,
                             strlen(representation))) {
@@ -301,15 +394,34 @@ encode_field_value(lua_sandbox* lsb, lsb_output_data* d, int first,
         }
       }
       if (1 == first) {
-        if (pb_write_tag(d, 7, 1)) return 1;
-      } else {
-        if (pb_write_tag(d, 7, 2)) return 1;
-        if (pb_write_varint(d, first * sizeof(double))) return 1;
+        if (value_type == 2) {
+          if (pb_write_tag(d, 6, 0)) return 1;
+        } else {
+          if (pb_write_tag(d, 7, 1)) return 1;
+        }
+      } else { // pack array
+        if (value_type == 2) {
+          if (pb_write_tag(d, 6, 2)) return 1;
+          if (pb_write_varint(d, 0)) return 1; // length tbd later
+        } else {
+          if (pb_write_tag(d, 7, 2)) return 1;
+          if (pb_write_varint(d, first * sizeof(double))) return 1;
+        }
       }
     }
-    result = pb_write_double(d, lua_tonumber(lsb->lua, -1));
+    if (value_type == 2) {
+      result = pb_write_varint(d, lua_tointeger(lsb->lua, -1));
+    } else {
+      result = pb_write_double(d, lua_tonumber(lsb->lua, -1));
+    }
     break;
+
   case LUA_TBOOLEAN:
+    if (value_type != -1 && value_type != 4) {
+      snprintf(lsb->error_message, LSB_ERROR_SIZE,
+               "invalid boolean value_type: %d", value_type);
+      return 1;
+    }
     if (first) {
       if (pb_write_tag(d, 2, 0)) return 1;
       if (pb_write_varint(d, 4)) return 1;
@@ -328,6 +440,7 @@ encode_field_value(lua_sandbox* lsb, lsb_output_data* d, int first,
     }
     result = pb_write_bool(d, lua_toboolean(lsb->lua, -1));
     break;
+
   case LUA_TTABLE:
     {
       lua_rawgeti(lsb->lua, -1, 1);
@@ -340,7 +453,7 @@ encode_field_value(lua_sandbox* lsb, lsb_output_data* d, int first,
       case LUA_TNUMBER:
       case LUA_TSTRING:
       case LUA_TBOOLEAN:
-        result = encode_field_array(lsb, d, t, representation);
+        result = encode_field_array(lsb, d, t, representation, value_type);
         break;
       default:
         snprintf(lsb->error_message, LSB_ERROR_SIZE,
@@ -350,6 +463,7 @@ encode_field_value(lua_sandbox* lsb, lsb_output_data* d, int first,
       }
     }
     break;
+
   default:
     snprintf(lsb->error_message, LSB_ERROR_SIZE, "unsupported type: %s",
              lua_typename(lsb->lua, t));
@@ -357,41 +471,6 @@ encode_field_value(lua_sandbox* lsb, lsb_output_data* d, int first,
     break;
   }
   return result;
-}
-
-
-/**
- * Updates the field length in the output buffer once the size is known, this
- * allows for single pass encoding.
- *
- * @param d  Pointer to the output data buffer.
- * @param len_pos Position in the output buffer where the length should be
- *                written.
- *
- * @return int Zero on success, non-zero if out of memory.
- */
-static int update_field_length(lsb_output_data* d, size_t len_pos)
-{
-  size_t len = d->pos - len_pos - 1;
-  if (len < 128) {
-    d->data[len_pos] = (char)len;
-    return 0;
-  }
-  size_t l = len, cnt = 0;
-  while (l) {
-    l >>= 7;
-    ++cnt;  // compute the number of bytes needed for the varint length
-  }
-  size_t needed = cnt - 1;
-  if (needed > d->size - d->pos) {
-    if (lsb_realloc_output(d, needed)) return 1;
-  }
-  size_t end_pos = d->pos + needed;
-  memmove(&d->data[len_pos + cnt], &d->data[len_pos + 1], len);
-  d->pos = len_pos;
-  if (pb_write_varint(d, len)) return 1;
-  d->pos = end_pos;
-  return 0;
 }
 
 
@@ -417,25 +496,53 @@ encode_fields(lua_sandbox* lsb, lsb_output_data* d, char id, const char* name,
     return result;
   }
 
+  lua_rawgeti(lsb->lua, -1, 1); // test for the array notation
   size_t len_pos, len;
-  lua_checkstack(lsb->lua, 2);
-  lua_pushnil(lsb->lua);
-  while (result == 0 && lua_next(lsb->lua, -2) != 0) {
-    if (pb_write_tag(d, id, 2)) return 1;
-    len_pos = d->pos;
-    if (pb_write_varint(d, 0)) return 1;  // length tbd later
-    if (lua_isstring(lsb->lua, -2)) {
-      const char* s = lua_tolstring(lsb->lua, -2, &len);
-      if (pb_write_string(d, 1, s, len)) return 1;
-    } else {
-      snprintf(lsb->error_message, LSB_ERROR_SIZE,
-               "field name must be a string");
-      return 1;
+  if (lua_istable(lsb->lua, -1)) {
+    int i = 1;
+    do {
+      if (pb_write_tag(d, id, 2)) return 1;
+      len_pos = d->pos;
+      if (pb_write_varint(d, 0)) return 1;  // length tbd later
+      lua_getfield(lsb->lua, -1, "name");
+      if (lua_isstring(lsb->lua, -1)) {
+        const char* s = lua_tolstring(lsb->lua, -1, &len);
+        if (pb_write_string(d, 1, s, len)) return 1;
+      } else {
+        snprintf(lsb->error_message, LSB_ERROR_SIZE,
+                 "field name must be a string");
+        return 1;
+      }
+      lua_pop(lsb->lua, 1); // remove the name
+
+      if (encode_field_object(lsb, d)) return 1;
+      if (update_field_length(d, len_pos)) return 1;
+
+      lua_pop(lsb->lua, 1); // remove the current field object
+      lua_rawgeti(lsb->lua, -1, ++i); // grab the next field object
     }
-    if (encode_field_value(lsb, d, 1, NULL)) return 1;
-    if (update_field_length(d, len_pos)) return 1;
-    lua_pop(lsb->lua, 1); // Remove the value leaving the key on top for
-                          // the next interation.
+    while (!lua_isnil(lsb->lua, -1));
+  } else {
+    lua_pop(lsb->lua, 1); // remove the array test value
+    lua_checkstack(lsb->lua, 2);
+    lua_pushnil(lsb->lua);
+    while (result == 0 && lua_next(lsb->lua, -2) != 0) {
+      if (pb_write_tag(d, id, 2)) return 1;
+      len_pos = d->pos;
+      if (pb_write_varint(d, 0)) return 1;  // length tbd later
+      if (lua_isstring(lsb->lua, -2)) {
+        const char* s = lua_tolstring(lsb->lua, -2, &len);
+        if (pb_write_string(d, 1, s, len)) return 1;
+      } else {
+        snprintf(lsb->error_message, LSB_ERROR_SIZE,
+                 "field name must be a string");
+        return 1;
+      }
+      if (encode_field_value(lsb, d, 1, NULL, -1)) return 1;
+      if (update_field_length(d, len_pos)) return 1;
+      lua_pop(lsb->lua, 1); // Remove the value leaving the key on top for
+                            // the next interation.
+    }
   }
   lua_pop(lsb->lua, 1); // remove the fields table
   return result;
@@ -451,14 +558,24 @@ int lsb_serialize_table_as_pb(lua_sandbox* lsb, int index)
     if (lsb_realloc_output(d, needed)) return 1;
   }
 
-  // create a type 4 uuid
+  // use existing or create a type 4 uuid
+  lua_getfield(lsb->lua, index, "Uuid");
+  size_t len;
+  const char* uuid = lua_tolstring(lsb->lua, -1, &len);
+
   d->data[d->pos++] = 2 | (1 << 3);
-  d->data[d->pos++] = 16;
-  for (int x = 0; x < 16; ++x) {
-    d->data[d->pos++] = rand() % 255;
+  d->data[d->pos++] = UUID_SIZE;
+  if (uuid && len == UUID_SIZE) {
+    memcpy(d->data + d->pos, uuid, UUID_SIZE);
+    d->pos += UUID_SIZE;
+  } else {
+    for (int x = 0; x < UUID_SIZE; ++x) {
+      d->data[d->pos++] = rand() % 255;
+    }
+    d->data[8] = (d->data[8] & 0x0F) | 0x40;
+    d->data[10] = (d->data[10] & 0x0F) | 0xA0;
   }
-  d->data[8] = (d->data[8] & 0x0F) | 0x40;
-  d->data[10] = (d->data[10] & 0x0F) | 0xA0;
+  lua_pop(lsb->lua, 1); // remove uuid
 
   // use existing or create a timestamp
   lua_getfield(lsb->lua, index, "Timestamp");
@@ -468,7 +585,8 @@ int lsb_serialize_table_as_pb(lua_sandbox* lsb, int index)
   } else {
     ts = (unsigned long long)(time(NULL) * 1e9);
   }
-  lua_pop(lsb->lua, 1);
+  lua_pop(lsb->lua, 1); // remove timestamp
+
   if (pb_write_tag(d, 2, 0)) return 1;
   if (pb_write_varint(d, ts)) return 1;
 
