@@ -39,7 +39,7 @@ target_link_libraries(luasandbox ${LUA_SANDBOX_LIBS})
 
 install(TARGETS luasandbox DESTINATION lib)
 install(DIRECTORY "${EP_BASE}/lib/"  DESTINATION lib  PATTERN "lua" EXCLUDE)
-install(DIRECTORY "${EP_BASE}/lib/lua/" DESTINATION modules)
+install(DIRECTORY "${EP_BASE}/lib/lua/" DESTINATION modules PATTERN "strict.lua" EXCLUDE)
 install(DIRECTORY "${EP_BASE}/include/" DESTINATION include)
 install(DIRECTORY "${CMAKE_SOURCE_DIR}/include/" DESTINATION include)
 
