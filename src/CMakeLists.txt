@@ -7,6 +7,7 @@ lsb.c
 lsb_output.c
 lsb_serialize.c
 lsb_serialize_protobuf.c
+lsb_deserialize_protobuf.c
 )
 
 set ( CMAKE_SKIP_BUILD_RPATH FALSE CACHE STRING "" FORCE )

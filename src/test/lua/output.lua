@@ -14,7 +14,7 @@ function process(tc)
     elseif tc == 1 then -- cbuf
         write_output("annotation\n", cbuf)
     elseif tc == 2 then -- heka message
-        local hm = {Timestamp = 1e9, Type="type", Logger="logger", Payload="payload", EnvVersion="env_version", Hostname="hostname", Severity=9}
+        local hm = {Uuid = "ignored", Timestamp = 1e9, Type="type", Logger="logger", Payload="payload", EnvVersion="env_version", Hostname="hostname", Severity=9}
         write_message(hm)
     elseif tc == 3 then -- heka message field
         local hm = {Timestamp = 1e9, Fields = {count=1}}
@@ -36,6 +36,30 @@ function process(tc)
         write_message(hm)
     elseif tc == 9 then -- heka negative values
         local hm = {Timestamp = -1, Pid = -1, Severity = -1}
+        write_message(hm)
+    elseif tc == 10 then -- heka varint encoding
+        local hm = {Timestamp = 1e9, Fields = { count = {value=1, value_type=2, representation="integer"}}}
+        write_message(hm)
+    elseif tc == 11 then -- heka varint packed encoding
+        local hm = {Timestamp = 1e9, Fields = { count = {value={1,2}, value_type=2, representation="integer"}}}
+        write_message(hm)
+    elseif tc == 12 then -- heka field array message
+        local hm = {Timestamp = 1e9, Fields = {{name = "count", value=1, value_type=2, representation="integer"}}}
+        write_message(hm)
+    elseif tc == 13 then -- heka field array message multiple fields
+        local hm = {Timestamp = 1e9, Fields = {{name = "count", value=1, value_type=2, representation="integer"}, {name = "count", value=2, value_type=2, representation="integer"}}}
+        write_message(hm)
+    elseif tc == 14 then -- heka field array message value defaults to a double
+        local hm = {Timestamp = 1e9, Fields = {{name = "count", value=1, representation="double"}}}
+        write_message(hm)
+    elseif tc == 15 then -- heka field array message value defaults to a double packed
+        local hm = {Timestamp = 1e9, Fields = {{name = "count", value={1,1}, representation="double"}}}
+        write_message(hm)
+    elseif tc == 16 then -- heka array of byte fields
+        local hm = {Timestamp = 1e9, Fields = {{name = "names", value={"s1","s2"}, value_type = 1, representation="list"}}}
+        write_message(hm)
+    elseif tc == 17 then -- heka array of explicit string fields
+        local hm = {Timestamp = 1e9, Fields = {{name = "names", value={"s1","s2"}, value_type = 0, representation="list"}}}
         write_message(hm)
     end
     return 0

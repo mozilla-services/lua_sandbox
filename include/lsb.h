@@ -233,4 +233,15 @@ LSB_EXPORT void lsb_pcall_teardown(lua_sandbox* lsb);
  */
 LSB_EXPORT void lsb_terminate(lua_sandbox* lsb, const char* err);
 
+/**
+ * Deserialize a Heka message protobuf string into a Lua table structure. For
+ * ease of reuse it is include here (since many of our sandboxes process Heka
+ * messages).  If needed it must be manually added to the sandbox.
+ *
+ * @param lua Pointer the Lua state.
+ *
+ * @return One on success (table), two on failure (nil, error_message).
+ */
+LSB_EXPORT int lsb_decode_protobuf(lua_State* lua);
+
 #endif

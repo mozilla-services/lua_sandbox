@@ -430,6 +430,14 @@ static char* test_output()
 #endif
     , "\x10\x80\x94\xeb\xdc\x03\x52\x8d\x01\x0a\x06\x73\x74\x72\x69\x6e\x67\x22\x82\x01\x30\x31\x32\x33\x34\x35\x36\x37\x38\x39\x30\x31\x32\x33\x34\x35\x36\x37\x38\x39\x30\x31\x32\x33\x34\x35\x36\x37\x38\x39\x30\x31\x32\x33\x34\x35\x36\x37\x38\x39\x30\x31\x32\x33\x34\x35\x36\x37\x38\x39\x30\x31\x32\x33\x34\x35\x36\x37\x38\x39\x30\x31\x32\x33\x34\x35\x36\x37\x38\x39\x30\x31\x32\x33\x34\x35\x36\x37\x38\x39\x30\x31\x32\x33\x34\x35\x36\x37\x38\x39\x30\x31\x32\x33\x34\x35\x36\x37\x38\x39\x30\x31\x32\x33\x34\x35\x36\x37\x38\x39\x30\x31\x32\x33\x34\x35\x36\x37\x38\x39\x30\x31\x32\x33\x34\x35\x36\x37\x38\x39"
     , "\x10\xff\xff\xff\xff\xff\xff\xff\xff\xff\x01\x28\xff\xff\xff\xff\xff\xff\xff\xff\xff\x01\x40\xff\xff\xff\xff\xff\xff\xff\xff\xff\x01"
+    , "\x10\x80\x94\xeb\xdc\x03\x52\x14\x0a\x05\x63\x6f\x75\x6e\x74\x10\x02\x1a\x07\x69\x6e\x74\x65\x67\x65\x72\x30\x01"
+    , "\x10\x80\x94\xeb\xdc\x03\x52\x16\x0a\x05\x63\x6f\x75\x6e\x74\x10\x02\x1a\x07\x69\x6e\x74\x65\x67\x65\x72\x32\x02\x01\x02"
+    , "\x10\x80\x94\xeb\xdc\x03\x52\x14\x0a\x05\x63\x6f\x75\x6e\x74\x10\x02\x1a\x07\x69\x6e\x74\x65\x67\x65\x72\x30\x01"
+    , "\x10\x80\x94\xeb\xdc\x03\x52\x14\x0a\x05\x63\x6f\x75\x6e\x74\x10\x02\x1a\x07\x69\x6e\x74\x65\x67\x65\x72\x30\x01\x52\x14\x0a\x05\x63\x6f\x75\x6e\x74\x10\x02\x1a\x07\x69\x6e\x74\x65\x67\x65\x72\x30\x02"
+    , "\x10\x80\x94\xeb\xdc\x03\x52\x1a\x0a\x05\x63\x6f\x75\x6e\x74\x10\x03\x1a\x06\x64\x6f\x75\x62\x6c\x65\x39\x00\x00\x00\x00\x00\x00\xf0\x3f"
+    , "\x10\x80\x94\xeb\xdc\x03\x52\x23\x0a\x05\x63\x6f\x75\x6e\x74\x10\x03\x1a\x06\x64\x6f\x75\x62\x6c\x65\x3a\x10\x00\x00\x00\x00\x00\x00\xf0\x3f\x00\x00\x00\x00\x00\x00\xf0\x3f"
+    , "\x10\x80\x94\xeb\xdc\x03\x52\x17\x0a\x05\x6e\x61\x6d\x65\x73\x1a\x04\x6c\x69\x73\x74\x10\x01\x2a\x02\x73\x31\x2a\x02\x73\x32"
+    , "\x10\x80\x94\xeb\xdc\x03\x52\x15\x0a\x05\x6e\x61\x6d\x65\x73\x1a\x04\x6c\x69\x73\x74\x22\x02\x73\x31\x22\x02\x73\x32"
     , NULL
   };
 
@@ -490,6 +498,16 @@ static char* test_output_errors()
     , "process() lua/output_errors.lua:30: write_message() could not encode protobuf - unsupported array type: table"
     , "process() lua/output_errors.lua:36: strbuf output_limit exceeded"
     , "process() lua/output_errors.lua:38: write_message() could not encode protobuf - takes a single table argument"
+    , "process() lua/output_errors.lua:41: write_message() could not encode protobuf - invalid string value_type: 2"
+    , "process() lua/output_errors.lua:44: write_message() could not encode protobuf - invalid string value_type: 3"
+    , "process() lua/output_errors.lua:47: write_message() could not encode protobuf - invalid string value_type: 4"
+    , "process() lua/output_errors.lua:50: write_message() could not encode protobuf - invalid numeric value_type: 0"
+    , "process() lua/output_errors.lua:53: write_message() could not encode protobuf - invalid numeric value_type: 1"
+    , "process() lua/output_errors.lua:56: write_message() could not encode protobuf - invalid numeric value_type: 4"
+    , "process() lua/output_errors.lua:59: write_message() could not encode protobuf - invalid boolean value_type: 0"
+    , "process() lua/output_errors.lua:62: write_message() could not encode protobuf - invalid boolean value_type: 1"
+    , "process() lua/output_errors.lua:65: write_message() could not encode protobuf - invalid boolean value_type: 2"
+    , "process() lua/output_errors.lua:68: write_message() could not encode protobuf - invalid boolean value_type: 3"
     , NULL
   };
 
@@ -1109,6 +1127,24 @@ static char* test_sandbox_config()
 }
 
 
+static char* test_decode_message()
+{
+  lua_sandbox* sb = lsb_create(NULL, "lua/decode_message.lua", "modules", 0, 0, 0);
+  mu_assert(sb, "lsb_create() received: NULL");
+
+  lsb_add_function(sb, &lsb_decode_protobuf, "decode_message");
+
+  int result = lsb_init(sb, NULL);
+  mu_assert(result == 0, "lsb_init() received: %d %s", result,
+            lsb_get_error(sb));
+
+  e = lsb_destroy(sb, NULL);
+  mu_assert(!e, "lsb_destroy() received: %s", e);
+
+  return NULL;
+}
+
+
 static char* benchmark_counter()
 {
   int iter = 10000000;
@@ -1375,6 +1411,36 @@ static char* benchmark_hyperloglog_add()
 }
 
 
+static char* benchmark_decode_message()
+{
+  int iter = 10000;
+
+  lua_sandbox* sb = lsb_create(NULL, "lua/decode_message_benchmark.lua", "modules",
+                               0, 0, 0);
+  mu_assert(sb, "lsb_create() received: NULL");
+  int result = lsb_init(sb, NULL);
+  mu_assert(result == 0, "lsb_init() received: %d %s", result,
+            lsb_get_error(sb));
+
+  lsb_add_function(sb, &lsb_decode_protobuf, "decode_message");
+
+  clock_t t = clock();
+  for (int x = 0; x < iter; ++x) {
+    mu_assert(0 == process(sb, x), "%s", lsb_get_error(sb)); // test add speed
+  }
+  t = clock() - t;
+  report(sb, 0);
+  mu_assert(lsb_get_state(sb) == LSB_RUNNING,
+            "benchmark_decode_message() failed %s", lsb_get_error(sb));
+  e = lsb_destroy(sb, NULL);
+  mu_assert(!e, "lsb_destroy() received: %s", e);
+  printf("benchmark_decode_message() %g seconds\n", ((float)t)
+         / CLOCKS_PER_SEC / iter);
+
+  return NULL;
+}
+
+
 static char* all_tests()
 {
   mu_run_test(test_create_error);
@@ -1401,6 +1467,7 @@ static char* all_tests()
   mu_run_test(test_hyperloglog);
   mu_run_test(test_struct);
   mu_run_test(test_sandbox_config);
+  mu_run_test(test_decode_message);
 
   mu_run_test(benchmark_counter);
   mu_run_test(benchmark_serialize);
@@ -1412,6 +1479,7 @@ static char* all_tests()
   mu_run_test(benchmark_cbuf_add);
   mu_run_test(benchmark_bloom_filter_add);
   mu_run_test(benchmark_hyperloglog_add);
+  mu_run_test(benchmark_decode_message);
 
   return NULL;
 }

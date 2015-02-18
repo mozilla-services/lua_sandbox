@@ -36,6 +36,36 @@ function process(tc)
         cjson.encode(t)
     elseif tc == 8 then -- invalid type
         write_message("string")
+    elseif tc == 9 then -- invalid value_type integer
+        local hm = {Timestamp = 1e9, Fields = {counts={value="s", value_type=2}}}
+        write_message(hm)
+    elseif tc == 10 then -- invalid value_type double
+        local hm = {Timestamp = 1e9, Fields = {counts={value="s", value_type=3}}}
+        write_message(hm)
+    elseif tc == 11 then -- invalid value_type bool
+        local hm = {Timestamp = 1e9, Fields = {counts={value="s", value_type=4}}}
+        write_message(hm)
+    elseif tc == 12 then -- invalid value_type string
+        local hm = {Timestamp = 1e9, Fields = {counts={value=1, value_type=0}}}
+        write_message(hm)
+    elseif tc == 13 then -- invalid value_type bytes
+        local hm = {Timestamp = 1e9, Fields = {counts={value=1, value_type=1}}}
+        write_message(hm)
+    elseif tc == 14 then -- invalid value_type bool
+        local hm = {Timestamp = 1e9, Fields = {counts={value=1, value_type=4}}}
+        write_message(hm)
+    elseif tc == 15 then -- invalid value_type string
+        local hm = {Timestamp = 1e9, Fields = {counts={value=true, value_type=0}}}
+        write_message(hm)
+    elseif tc == 16 then -- invalid value_type bytes
+        local hm = {Timestamp = 1e9, Fields = {counts={value=true, value_type=1}}}
+        write_message(hm)
+    elseif tc == 17 then -- invalid value_type integer
+        local hm = {Timestamp = 1e9, Fields = {counts={value=true, value_type=2}}}
+        write_message(hm)
+    elseif tc == 18 then -- invalid value_type double
+        local hm = {Timestamp = 1e9, Fields = {counts={value=true, value_type=3}}}
+        write_message(hm)
     end
     return 0
 end
