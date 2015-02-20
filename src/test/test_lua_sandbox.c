@@ -497,7 +497,7 @@ static char* test_output_errors()
     , "process() lua/output_errors.lua:27: output_limit exceeded"
     , "process() lua/output_errors.lua:30: write_message() could not encode protobuf - unsupported array type: table"
     , "process() lua/output_errors.lua:36: strbuf output_limit exceeded"
-    , "process() lua/output_errors.lua:38: write_message() could not encode protobuf - takes a single table argument"
+    , "process() lua/output_errors.lua:38: write_message() could not encode protobuf - takes a table argument"
     , "process() lua/output_errors.lua:41: write_message() could not encode protobuf - invalid string value_type: 2"
     , "process() lua/output_errors.lua:44: write_message() could not encode protobuf - invalid string value_type: 3"
     , "process() lua/output_errors.lua:47: write_message() could not encode protobuf - invalid string value_type: 4"

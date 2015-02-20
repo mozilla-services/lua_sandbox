@@ -213,9 +213,8 @@ void lsb_output(lua_sandbox* lsb, int start, int end, int append)
 
 int lsb_output_protobuf(lua_sandbox* lsb, int index, int append)
 {
-  if (lua_gettop(lsb->lua) != 1 || lua_type(lsb->lua, 1) != LUA_TTABLE) {
-    snprintf(lsb->error_message, LSB_ERROR_SIZE,
-             "takes a single table argument");
+  if (lua_type(lsb->lua, index) != LUA_TTABLE) {
+    snprintf(lsb->error_message, LSB_ERROR_SIZE, "takes a table argument");
     return 1;
   }
 
