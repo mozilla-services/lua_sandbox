@@ -269,9 +269,7 @@ int lsb_decode_protobuf(lua_State* lua)
   size_t len;
   const char* pbstr = lua_tolstring(lua, 1, &len);
   if (len < 20) {
-    lua_pushnil(lua);
-    lua_pushstring(lua, "invalid message, too short");
-    return 2;
+    return luaL_error(lua, "invalid message, too short");
   }
 
   unsigned const char* p = (unsigned const char*)pbstr;
@@ -371,18 +369,14 @@ int lsb_decode_protobuf(lua_State* lua)
   while (p && p < e);
 
   if (!p) {
-    lua_pushnil(lua);
-    lua_pushfstring(lua, "error in tag: %d wiretype: %d offset: %d", tag,
-                    wiretype, (const char*)lp - pbstr);
-    return 2;
+    return luaL_error(lua, "error in tag: %d wiretype: %d offset: %d", tag,
+                      wiretype, (const char*)lp - pbstr);
   }
 
   if (!(has_uuid && has_timestamp)) {
-    lua_pushnil(lua);
-    lua_pushfstring(lua, "missing required field uuid: %s timestamp: %s",
-                    has_uuid ? "found" : "not found",
-                    has_timestamp ? "found" : "not found");
-    return 2;
+    return luaL_error(lua, "missing required field uuid: %s timestamp: %s",
+                      has_uuid ? "found" : "not found",
+                      has_timestamp ? "found" : "not found");
   }
 
   if (field_count) {
