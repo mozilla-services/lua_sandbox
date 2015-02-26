@@ -61,6 +61,9 @@ function process(tc)
     elseif tc == 17 then -- heka array of explicit string fields
         local hm = {Timestamp = 1e9, Fields = {{name = "names", value={"s1","s2"}, value_type = 0, representation="list"}}}
         write_message(hm)
+    elseif tc == 18 then -- heka array of byte fields no representation
+        local hm = {Timestamp = 1e9, Fields = {{name = "names", value={"s1","s2"}, value_type = 1}}}
+        write_message(hm)
     end
     return 0
 end
