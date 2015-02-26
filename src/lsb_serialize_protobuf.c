@@ -354,15 +354,16 @@ encode_field_value(lua_sandbox* lsb, lsb_output_data* d, int first,
                "invalid string value_type: %d", value_type);
       return 1;
     }
-    if (first && representation) { // this uglyness keeps the protobuf
-                                   // fields in order without additional
-                                   // lookups
-      if (pb_write_string(d, 3, representation, strlen(representation))) {
-        return 1;
-      }
+    if (first) { // this uglyness keeps the protobuf fields in order without
+                 // additional lookups
       if (value_type == 1) {
         if (pb_write_tag(d, 2, 0)) return 1;
         if (pb_write_varint(d, value_type)) return 1;
+      }
+      if (representation) {
+        if (pb_write_string(d, 3, representation, strlen(representation))) {
+          return 1;
+        }
       }
     }
     s = lua_tolstring(lsb->lua, -1, &len);
