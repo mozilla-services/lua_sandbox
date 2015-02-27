@@ -37,4 +37,14 @@ struct lua_sandbox {
   char            error_message[LSB_ERROR_SIZE];
 };
 
+/**
+ * Utility function to retrieve a user data output function
+ *
+ * @param lua
+ * @param index
+ *
+ * @return lua_CFunction
+ */
+lua_CFunction lsb_get_output_function(lua_State* lua, int index);
+
 #endif

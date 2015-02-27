@@ -439,6 +439,8 @@ static char* test_output()
     , "\x10\x80\x94\xeb\xdc\x03\x52\x17\x0a\x05\x6e\x61\x6d\x65\x73\x10\x01\x1a\x04\x6c\x69\x73\x74\x2a\x02\x73\x31\x2a\x02\x73\x32"
     , "\x10\x80\x94\xeb\xdc\x03\x52\x15\x0a\x05\x6e\x61\x6d\x65\x73\x1a\x04\x6c\x69\x73\x74\x22\x02\x73\x31\x22\x02\x73\x32"
     , "\x10\x80\x94\xeb\xdc\x03\x52\x11\x0a\x05\x6e\x61\x6d\x65\x73\x10\x01\x2a\x02\x73\x31\x2a\x02\x73\x32"
+    , "\x10\x80\x94\xeb\xdc\x03\x52\x9f\x60\x0a\x03\x68\x6c\x6c\x10\x01\x1a\x03\x68\x6c\x6c\x2a\x90\x60\x48\x59\x4c\x4c"
+    , "\x10\x80\x94\xeb\xdc\x03\x52\x93\x01\x0a\x02\x63\x62\x10\x01\x1a\x04\x63\x62\x75\x66\x2a\x84\x01{\"time\":0,\"rows\":2,\"columns\":1,\"seconds_per_row\":60,\"column_info\":[{\"name\":\"Column_1\",\"unit\":\"count\",\"aggregation\":\"sum\"}]}\nnan\nnan\n"
     , NULL
   };
 
@@ -461,9 +463,13 @@ static char* test_output()
     if (outputs[x][0]) {
       if (outputs[x][0] == 0x10) {
         size_t header = 18;
+        if (x == 19) {
+          mu_assert(written_data_len == 12346, "test: %d received: %zu", x, written_data_len);
+          written_data_len = header + 28; // just compare the protobuf before the hyperloglog
+        }
         if (memcmp(outputs[x], written_data + header, written_data_len - header)
             != 0) {
-          char hex_data[output_size + 1];
+          char hex_data[output_size * 3 + 1];
           size_t z = 0;
           for (size_t y = header; y < written_data_len; ++y, z += 3) {
             snprintf(hex_data + z, output_size - z, "%02x ",
@@ -509,6 +515,7 @@ static char* test_output_errors()
     , "process() lua/output_errors.lua:62: write_message() could not encode protobuf - invalid boolean value_type: 1"
     , "process() lua/output_errors.lua:65: write_message() could not encode protobuf - invalid boolean value_type: 2"
     , "process() lua/output_errors.lua:68: write_message() could not encode protobuf - invalid boolean value_type: 3"
+    , "process() lua/output_errors.lua:72: write_message() could not encode protobuf - user data object does not implement lsb_output"
     , NULL
   };
 
