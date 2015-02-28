@@ -465,6 +465,34 @@ encode_field_value(lua_sandbox* lsb, lsb_output_data* d, int first,
     }
     break;
 
+  case LUA_TUSERDATA:
+    {
+      lua_CFunction fp = lsb_get_output_function(lsb->lua, -1);
+      if (!fp) {
+        snprintf(lsb->error_message, LSB_ERROR_SIZE,
+                 "user data object does not implement lsb_output");
+        return 1;
+      }
+      if (first) {
+        if (pb_write_tag(d, 2, 0)) return 1;
+        if (pb_write_varint(d, 1)) return 1; // encode userdata as a byte array
+        if (representation) {
+          if (pb_write_string(d, 3, representation, strlen(representation))) {
+            return 1;
+          }
+        }
+      }
+
+      if (pb_write_tag(d, 5, 2)) return 1;
+      size_t len_pos = d->pos;
+      if (pb_write_varint(d, 0)) return 1;  // length tbd later
+      lua_pushlightuserdata(lsb->lua, d);
+      if (fp(lsb->lua)) return 1;
+      lua_pop(lsb->lua, 1); // remove output function
+      result = update_field_length(d, len_pos);
+    }
+    break;
+
   default:
     snprintf(lsb->error_message, LSB_ERROR_SIZE, "unsupported type: %s",
              lua_typename(lsb->lua, t));

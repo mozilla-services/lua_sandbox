@@ -4,6 +4,7 @@
 
 require "circular_buffer"
 require "cjson"
+require "hyperloglog"
 
 local cbuf = circular_buffer.new(1440, 3, 60)
 local benchmark = {Timestamp = 1e9, Fields = {number=1,numbers={value={1,2,3}, representation="count"},string="string",strings={"s1","s2","s3"}, bool=true, bools={true,false,false}}}
@@ -63,6 +64,14 @@ function process(tc)
         write_message(hm)
     elseif tc == 18 then -- heka array of byte fields no representation
         local hm = {Timestamp = 1e9, Fields = {{name = "names", value={"s1","s2"}, value_type = 1}}}
+        write_message(hm)
+    elseif tc == 19 then
+        local hll = hyperloglog.new()
+        local hm = {Timestamp = 1e9, Fields = {hll = {value=hll, representation="hll"}}}
+        write_message(hm)
+    elseif tc == 20 then
+        local cb = circular_buffer.new(2, 1, 60)
+        local hm = {Timestamp = 1e9, Fields = {cb = {value=cb, representation="cbuf"}}}
         write_message(hm)
     end
     return 0
