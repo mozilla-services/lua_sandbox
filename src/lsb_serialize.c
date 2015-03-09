@@ -474,8 +474,21 @@ int lsb_preserve_global_data(lua_sandbox* lsb, const char* data_file)
 }
 
 
+int file_exists(const char* fn)
+{
+  FILE* fh = fopen(fn, "r");
+  if (fh) {
+    fclose(fh);
+    return 1;
+  }
+  return 0;
+}
+
+
 int lsb_restore_global_data(lua_sandbox* lsb, const char* data_file)
 {
+  if (!file_exists(data_file)) return 0;
+
   // Clear the sandbox limits during restoration.
 #ifdef LUA_JIT
   lua_gc(lsb->lua, LUA_GCSETMEMLIMIT, 0);
