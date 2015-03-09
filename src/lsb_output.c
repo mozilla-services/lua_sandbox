@@ -20,17 +20,6 @@
 
 static const char* output_function = "lsb_output";
 
-static lua_CFunction get_output_function(lua_State* lua, int index)
-{
-  lua_CFunction fp = NULL;
-  lua_getfenv(lua, index);
-  lua_pushstring(lua, output_function);
-  lua_rawget(lua, -2);
-  fp = lua_tocfunction(lua, -1);
-  lua_pop(lua, 2); // environment and field
-  return fp;
-}
-
 
 static void update_output_stats(lua_sandbox* lsb)
 {
@@ -48,6 +37,18 @@ void lsb_add_output_function(lua_State* lua, lua_CFunction fp)
   lua_pushstring(lua, output_function);
   lua_pushcfunction(lua, fp);
   lua_rawset(lua, -3);
+}
+
+
+lua_CFunction lsb_get_output_function(lua_State* lua, int index)
+{
+  lua_CFunction fp = NULL;
+  lua_getfenv(lua, index);
+  lua_pushstring(lua, output_function);
+  lua_rawget(lua, -2);
+  fp = lua_tocfunction(lua, -1);
+  lua_pop(lua, 2); // environment and field
+  return fp;
 }
 
 
@@ -186,7 +187,7 @@ void lsb_output(lua_sandbox* lsb, int start, int end, int append)
       break;
     case LUA_TUSERDATA:
       {
-        lua_CFunction fp = get_output_function(lsb->lua, i);
+        lua_CFunction fp = lsb_get_output_function(lsb->lua, i);
         if (!fp) {
           luaL_argerror(lsb->lua, i, "unknown userdata type");
           return; // never reaches here but the compiler doesn't know it
