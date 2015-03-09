@@ -474,7 +474,7 @@ int lsb_preserve_global_data(lua_sandbox* lsb, const char* data_file)
 }
 
 
-int file_exists(const char* fn)
+static int file_exists(const char* fn)
 {
   FILE* fh = fopen(fn, "r");
   if (fh) {
