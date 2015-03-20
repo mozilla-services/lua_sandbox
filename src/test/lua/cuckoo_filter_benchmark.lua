@@ -2,16 +2,16 @@
 -- License, v. 2.0. If a copy of the MPL was not distributed with this
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-require "bloom_filter"
+require "cuckoo_filter"
 
-bf = bloom_filter.new(2e6, 0.01)
+cf = cuckoo_filter.new(2e6)
 
 function process(ts)
-    bf:add(ts)
+    cf:add(ts)
     return 0
 end
 
 function report(tc)
-    write_output(bf:count())
+    write_output(cf:count())
 end
 

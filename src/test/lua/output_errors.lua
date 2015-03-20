@@ -3,7 +3,7 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 require "cjson"
-require "circular_buffer"; require "bloom_filter"
+require "circular_buffer"; require "bloom_filter"; require "cuckoo_filter"
 require "lpeg"
 function process(tc)
     if tc == 0 then -- error internal reference
@@ -69,6 +69,10 @@ function process(tc)
     elseif tc == 19 then -- bloom_filter doesn't implement lsb_output
         local bf = bloom_filter.new(10, 0.01)
         local hm = {Timestamp = 1e9, Fields = {bf = {value=bf, representation="bf"}}}
+        write_message(hm)
+    elseif tc == 20 then -- cuckoo_filter doesn't implement lsb_output
+        local cf = cuckoo_filter.new(10)
+        local hm = {Timestamp = 1e9, Fields = {cf = {value=cf, representation="cf"}}}
         write_message(hm)
     end
     return 0
