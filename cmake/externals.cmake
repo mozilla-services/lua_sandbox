@@ -96,7 +96,7 @@ add_dependencies(lua_struct ${LUA_PROJECT})
 externalproject_add(
     lua_bloom_filter
     GIT_REPOSITORY https://github.com/mozilla-services/lua_bloom_filter.git
-    GIT_TAG ba756520a51592612c9709ebdfb99392f97eb51f
+    GIT_TAG 1a7d0bd9298074805c53b2c06c66defa90afaf2b
     CMAKE_ARGS ${SANDBOX_CMAKE_ARGS}
     INSTALL_DIR ${EP_BASE}
 )
@@ -113,6 +113,14 @@ externalproject_add(
     lua_hyperloglog
     GIT_REPOSITORY https://github.com/mozilla-services/lua_hyperloglog.git
     GIT_TAG 78c32961102d977cef5afac2c20a3fd9f5eae808
+    CMAKE_ARGS ${SANDBOX_CMAKE_ARGS}
+    INSTALL_DIR ${EP_BASE}
+)
+
+externalproject_add(
+    lua_cuckoo_filter
+    GIT_REPOSITORY https://github.com/mozilla-services/lua_cuckoo_filter.git
+    GIT_TAG a171662d38cb4bfd552f37306189c3dd9791d511
     CMAKE_ARGS ${SANDBOX_CMAKE_ARGS}
     INSTALL_DIR ${EP_BASE}
 )

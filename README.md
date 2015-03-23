@@ -87,6 +87,7 @@ By default only the base library is loaded additional libraries must be loaded w
       If the original behavior is desired use cjson.decode_null(true) to enable NULL decoding.
     - The new() function has been disabled so only a single cjson parser can be created.
     - The encode_keep_buffer() function has been disabled (the buffer is always reused).
+  - [cuckoo_filter](https://github.com/mozilla-services/lua_cuckoo_filter/blob/master/README.md) Bloom filter alternative supporting deletions
   - [hyperloglog](https://github.com/mozilla-services/lua_hyperloglog/blob/master/README.md) Efficiently count the number of elements in a set 
   - [lpeg](http://www.inf.puc-rio.br/~roberto/lpeg/lpeg.html) Lua Parsing Expression Grammar Library
   - [re](http://www.inf.puc-rio.br/~roberto/lpeg/re.html) Regex syntax for LPEG

@@ -2,13 +2,13 @@
 -- License, v. 2.0. If a copy of the MPL was not distributed with this
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-require "bloom_filter"
+require "cuckoo_filter"
 
-bf = bloom_filter.new(20, 0.01)
+cf = cuckoo_filter.new(16)
 
 function process(ts)
-    if not bf:query(ts) then
-        if not bf:add(ts) then
+    if not cf:query(ts) then
+        if not cf:add(ts) then
             error("key existed")
         end
     end
@@ -17,10 +17,14 @@ function process(ts)
 end
 
 function report(tc)
-    if tc == 99 then
-        bf:clear()
+    if tc == 98 then
+        cf:delete(1);
+        write_output(cf:count())
+    elseif tc == 99 then
+        cf:clear()
+        write_output(cf:count())
     else
-        write_output(bf:count())
+        write_output(cf:count())
     end
 end
 

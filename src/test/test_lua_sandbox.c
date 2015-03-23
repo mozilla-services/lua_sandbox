@@ -516,6 +516,7 @@ static char* test_output_errors()
     , "process() lua/output_errors.lua:65: write_message() could not encode protobuf - invalid boolean value_type: 2"
     , "process() lua/output_errors.lua:68: write_message() could not encode protobuf - invalid boolean value_type: 3"
     , "process() lua/output_errors.lua:72: write_message() could not encode protobuf - user data object does not implement lsb_output"
+    , "process() lua/output_errors.lua:76: write_message() could not encode protobuf - user data object does not implement lsb_output"
     , NULL
   };
 
@@ -1004,6 +1005,10 @@ static char* test_bloom_filter()
             lsb_get_error(sb));
   lsb_add_function(sb, &write_output, "write_output");
 
+  report(sb, 0);
+  mu_assert(strcmp("3", written_data) == 0, "test: count received: %s",
+            written_data);
+
   for (int i = 0; tests[i]; ++i) {
     result = process(sb, i);
     mu_assert(result == 0, "process() received: %d %s", result,
@@ -1145,6 +1150,86 @@ static char* test_decode_message()
   int result = lsb_init(sb, NULL);
   mu_assert(result == 0, "lsb_init() received: %d %s", result,
             lsb_get_error(sb));
+
+  e = lsb_destroy(sb, NULL);
+  mu_assert(!e, "lsb_destroy() received: %s", e);
+
+  return NULL;
+}
+
+
+static char* test_cuckoo_filter()
+{
+  const char* output_file = "cuckoo_filter.preserve";
+  const char* tests[] = {
+    "1"
+    , "2"
+    , "3"
+    , NULL
+  };
+
+  lua_sandbox* sb = lsb_create(NULL, "lua/cuckoo_filter.lua", "modules",
+                               0, 0, 0);
+  mu_assert(sb, "lsb_create() received: NULL");
+
+  int result = lsb_init(sb, NULL);
+  mu_assert(result == 0, "lsb_init() received: %d %s", result,
+            lsb_get_error(sb));
+  lsb_add_function(sb, &write_output, "write_output");
+
+  int i = 0;
+  for (; tests[i]; ++i) {
+    result = process(sb, i);
+    mu_assert(result == 0, "process() received: %d %s", result,
+              lsb_get_error(sb));
+    result = report(sb, 0);
+    mu_assert(result == 0, "report() received: %d", result);
+    mu_assert(strcmp(tests[i], written_data) == 0, "test: %d received: %s", i,
+              written_data);
+  }
+
+  result = process(sb, 0);
+  mu_assert(result == 0, "process() received: %d %s", result,
+            lsb_get_error(sb));
+  result = report(sb, 0);
+  mu_assert(result == 0, "report() received: %d", result);
+  mu_assert(strcmp(tests[i - 1], written_data) == 0, "test: %d received: %s", i,
+            written_data); // count should remain the same
+
+  e = lsb_destroy(sb, output_file);
+  mu_assert(!e, "lsb_destroy() received: %s", e);
+
+  // re-load to test the preserved data
+  sb = lsb_create(NULL, "lua/cuckoo_filter.lua", "modules", 0, 0, 0);
+  mu_assert(sb, "lsb_create() received: NULL");
+
+  result = lsb_init(sb, output_file);
+  mu_assert(result == 0, "lsb_init() received: %d %s", result,
+            lsb_get_error(sb));
+  lsb_add_function(sb, &write_output, "write_output");
+
+  report(sb, 0);
+  mu_assert(strcmp("3", written_data) == 0, "test: count received: %s",
+            written_data);
+
+  for (int i = 0; tests[i]; ++i) {
+    result = process(sb, i);
+    mu_assert(result == 0, "process() received: %d %s", result,
+              lsb_get_error(sb));
+  }
+  result = report(sb, 0);
+  mu_assert(result == 0, "report() received: %d", result);
+  mu_assert(strcmp(tests[i - 1], written_data) == 0, "test: %d received: %s", i,
+            written_data); // count should remain the same
+
+  // test deletion
+  report(sb, 98);
+  mu_assert(strcmp("2", written_data) == 0, "test: delete received: %s",
+            written_data);
+  // tst clear
+  report(sb, 99);
+  mu_assert(strcmp("0", written_data) == 0, "test: clear received: %s",
+            written_data);
 
   e = lsb_destroy(sb, NULL);
   mu_assert(!e, "lsb_destroy() received: %s", e);
@@ -1377,7 +1462,7 @@ static char* benchmark_bloom_filter_add()
   }
   t = clock() - t;
   report(sb, 0);
-  mu_assert(strcmp("1000000", written_data) == 0, "received: %s", written_data);
+  mu_assert(strcmp("999970", written_data) == 0, "received: %s", written_data);
   mu_assert(lsb_get_state(sb) == LSB_RUNNING,
             "benchmark_bloom_filter_add() failed %s", lsb_get_error(sb));
   e = lsb_destroy(sb, NULL);
@@ -1449,6 +1534,37 @@ static char* benchmark_decode_message()
 }
 
 
+static char* benchmark_cuckoo_filter_add()
+{
+  int iter = 1000000;
+
+  lua_sandbox* sb = lsb_create(NULL,
+                               "lua/cuckoo_filter_benchmark.lua", "modules",
+                               0, 0, 0);
+  mu_assert(sb, "lsb_create() received: NULL");
+  int result = lsb_init(sb, NULL);
+  mu_assert(result == 0, "lsb_init() received: %d %s", result,
+            lsb_get_error(sb));
+  lsb_add_function(sb, &write_output, "write_output");
+
+  clock_t t = clock();
+  for (int x = 0; x < iter; ++x) {
+    mu_assert(0 == process(sb, x), "%s", lsb_get_error(sb)); // test add speed
+  }
+  t = clock() - t;
+  report(sb, 0);
+  mu_assert(strcmp("999985", written_data) == 0, "received: %s", written_data);
+  mu_assert(lsb_get_state(sb) == LSB_RUNNING,
+            "benchmark_cuckoo_filter_add() failed %s", lsb_get_error(sb));
+  e = lsb_destroy(sb, NULL);
+  mu_assert(!e, "lsb_destroy() received: %s", e);
+  printf("benchmark_cuckoo_filter_add() %g seconds\n", ((float)t)
+         / CLOCKS_PER_SEC / iter);
+
+  return NULL;
+}
+
+
 static char* all_tests()
 {
   mu_run_test(test_create_error);
@@ -1476,6 +1592,7 @@ static char* all_tests()
   mu_run_test(test_struct);
   mu_run_test(test_sandbox_config);
   mu_run_test(test_decode_message);
+  mu_run_test(test_cuckoo_filter);
 
   mu_run_test(benchmark_counter);
   mu_run_test(benchmark_serialize);
@@ -1488,6 +1605,7 @@ static char* all_tests()
   mu_run_test(benchmark_bloom_filter_add);
   mu_run_test(benchmark_hyperloglog_add);
   mu_run_test(benchmark_decode_message);
+  mu_run_test(benchmark_cuckoo_filter_add);
 
   return NULL;
 }
