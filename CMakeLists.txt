@@ -20,7 +20,7 @@ set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
 include(mozsvc)
 include(externals)
 
-include_directories("${CMAKE_SOURCE_DIR}/include")
+include_directories("${EP_BASE}/include")
 install(DIRECTORY "${CMAKE_SOURCE_DIR}/modules/" DESTINATION modules)
 
 add_subdirectory(src)

@@ -9,10 +9,10 @@
 #ifndef lsb_output_h_
 #define lsb_output_h_
 
-#include <lua.h>
 #include <stdio.h>
 
 #include "lsb.h"
+#include "lsb/lua.h"
 
 /**
  * Add a output function to the environment table. The environment table must be

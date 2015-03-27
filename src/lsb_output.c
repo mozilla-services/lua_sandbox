@@ -8,12 +8,12 @@
 
 #include "lsb_output.h"
 
-#include <lauxlib.h>
 #include <stdarg.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
+#include "lsb/lauxlib.h"
 #include "lsb_private.h"
 #include "lsb_serialize.h"
 #include "lsb_serialize_protobuf.h"

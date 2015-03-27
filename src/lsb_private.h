@@ -9,9 +9,8 @@
 #ifndef lsb_private_h_
 #define lsb_private_h_
 
-#include <lua.h>
-
 #include "lsb.h"
+#include "lsb/lua.h"
 
 #ifdef _WIN32
 #define snprintf _snprintf

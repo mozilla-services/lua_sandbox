@@ -7,14 +7,14 @@
 /** @brief Lua sandbox unit tests @file */
 
 #include <errno.h>
-#include <lauxlib.h>
-#include <lua.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
 
 #include "lsb.h"
+#include "lsb/lauxlib.h"
+#include "lsb/lua.h"
 #include "lsb_output.h"
 
 #ifdef _WIN32

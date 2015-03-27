@@ -9,15 +9,15 @@
 #include "lsb.h"
 
 #include <ctype.h>
-#include <lauxlib.h>
-#include <lua.h>
-#include <lualib.h>
 #include <setjmp.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
 
+#include "lsb/lauxlib.h"
+#include "lsb/lua.h"
+#include "lsb/lualib.h"
 #include "lsb_output.h"
 #include "lsb_private.h"
 #include "lsb_serialize.h"
