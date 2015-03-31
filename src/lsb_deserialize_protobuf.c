@@ -6,10 +6,10 @@
 
 /** @brief Lua sandbox Heka protobuf deserialization @file */
 
-#include "lsb.h"
-
-#include <lauxlib.h>
 #include <string.h>
+
+#include "lsb/lauxlib.h"
+#include "lsb.h"
 
 #define UUID_SIZE 16
 #define MAX_VARINT_BYTES 10

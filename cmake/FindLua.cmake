@@ -33,9 +33,9 @@
 
 
 if (LUA_SANDBOX_INCLUDE)
-    set(LUA_INCLUDE_DIR ${EP_BASE}/include)
+    set(LUA_INCLUDE_DIR ${EP_BASE}/include/lsb)
     set(LIB_PATH ${EP_BASE}/lib)
-    find_library(LUA_LIBRARY lua PATHS ${LIB_PATH} NO_DEFAULT_PATH)
+    find_library(LUA_LIBRARY luasb PATHS ${LIB_PATH} NO_DEFAULT_PATH)
 else()
     # Always search for non-versioned lua first (recommended)
     SET(_POSSIBLE_LUA_INCLUDE include include/lua)

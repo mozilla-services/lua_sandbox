@@ -8,12 +8,12 @@
 
 #include "lsb_serialize.h"
 
-#include <lualib.h>
-#include <lauxlib.h>
 #include <math.h>
 #include <stdlib.h>
 #include <string.h>
 
+#include "lsb/lauxlib.h"
+#include "lsb/lualib.h"
 #include "lsb_private.h"
 
 typedef struct

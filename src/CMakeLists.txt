@@ -16,31 +16,38 @@ set ( CMAKE_INSTALL_RPATH "$ORIGIN/../lib" CACHE STRING "" FORCE )
 set ( CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE CACHE STRING "" FORCE )
 set ( CMAKE_INSTALL_NAME_DIR "@executable_path/../lib" CACHE STRING "" FORCE )
 
+add_custom_target(copy_includes
+COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_SOURCE_DIR}/include/lsb.h ${EP_BASE}/include
+COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_SOURCE_DIR}/include/lsb_output.h ${EP_BASE}/include
+COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_SOURCE_DIR}/include/lsb_serialize.h ${EP_BASE}/include)
 add_library(luasandbox SHARED ${LUA_SANDBOX_SRC})
+add_dependencies(luasandbox copy_includes)
+
 add_dependencies(lua_bloom_filter luasandbox)
 add_dependencies(lua_circular_buffer luasandbox)
 add_dependencies(lua_hyperloglog luasandbox)
+add_dependencies(lua_cuckoo_filter luasandbox)
 
 if(MSVC)
     add_definitions(-D_CRT_SECURE_NO_WARNINGS)
-    set(LUA_SANDBOX_LIBS "${EP_BASE}/lib/lua.lib")
+    set(LUA_SANDBOX_LIBS "${EP_BASE}/lib/luasb.lib")
 elseif(MINGW)
     add_definitions(-D_MINGW)
-    set(LUA_SANDBOX_LIBS "${EP_BASE}/bin/liblua.dll")
+    set(LUA_SANDBOX_LIBS "${EP_BASE}/bin/libluasb.dll")
     set_target_properties(luasandbox PROPERTIES LINK_FLAGS -s)
     install(DIRECTORY "${EP_BASE}/bin/"  DESTINATION lib PATTERN "*.dll")
 else()
     if(NOT CMAKE_SYSTEM_NAME MATCHES "FreeBSD")
         set(LINK_DL "-ldl")
     endif()
-    set(LUA_SANDBOX_LIBS "${EP_BASE}/lib/${CMAKE_SHARED_LIBRARY_PREFIX}lua${CMAKE_SHARED_LIBRARY_SUFFIX}" ${LINK_DL} -lm)
+    set(LUA_SANDBOX_LIBS "${EP_BASE}/lib/${CMAKE_SHARED_LIBRARY_PREFIX}luasb${CMAKE_SHARED_LIBRARY_SUFFIX}" ${LINK_DL} -lm)
 endif()
 
 target_link_libraries(luasandbox ${LUA_SANDBOX_LIBS})
 
 install(TARGETS luasandbox DESTINATION lib)
 install(DIRECTORY "${EP_BASE}/lib/"  DESTINATION lib  PATTERN "lua" EXCLUDE)
-install(DIRECTORY "${EP_BASE}/lib/lua/" DESTINATION modules PATTERN "strict.lua" EXCLUDE)
+install(DIRECTORY "${EP_BASE}/lib/lua/" DESTINATION modules)
 install(DIRECTORY "${EP_BASE}/include/" DESTINATION include)
 install(DIRECTORY "${CMAKE_SOURCE_DIR}/include/" DESTINATION include)
 

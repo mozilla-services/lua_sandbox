@@ -9,9 +9,9 @@
 #ifndef lsb_serialize_h_
 #define lsb_serialize_h_
 
-#include <lua.h>
 #include <stdio.h>
 
+#include "lsb/lua.h"
 #include "lsb_output.h"
 
 /**

@@ -13,9 +13,10 @@ endif()
 set(EP_BASE "${CMAKE_BINARY_DIR}/ep_base")
 set_property(DIRECTORY PROPERTY EP_BASE ${EP_BASE})
 set(SANDBOX_CMAKE_ARGS -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE} -DCMAKE_INSTALL_PREFIX=${EP_BASE} -DEP_BASE=${EP_BASE} -DLUA_SANDBOX_INCLUDE=${CMAKE_SOURCE_DIR}/include --no-warn-unused-cli)
-set(LUA_INCLUDE_DIR "${EP_BASE}/include")
+set(LUA_INCLUDE_DIR "${EP_BASE}/include/lsb")
 
 if (LUA_JIT)
+    message(FATAL_ERROR, "LuaJIT support has not been added back in yet, issue #66")
     set(LUA_PROJECT "luajit-2_0_2")
     if(MSVC)
         externalproject_add(
@@ -25,14 +26,14 @@ if (LUA_JIT)
             URL_MD5 112dfb82548b03377fbefbba2e0e3a5b
             PATCH_COMMAND ${PATCH_EXECUTABLE} -p1 < ${CMAKE_CURRENT_LIST_DIR}/luajit-2_0_2.patch
             CONFIGURE_COMMAND ""
-            BUILD_COMMAND cmake -E chdir src msvcbuild.bat
-            INSTALL_COMMAND cmake -E copy src/lua.dll ${EP_BASE}/lib/lua.dll
-            COMMAND cmake -E copy src/lua.lib ${EP_BASE}/lib/lua.lib
-            COMMAND cmake -E copy src/lauxlib.h "${LUA_INCLUDE_DIR}/lauxlib.h"
-            COMMAND cmake -E copy src/luaconf.h "${LUA_INCLUDE_DIR}/luaconf.h"
-            COMMAND cmake -E copy src/lua.h "${LUA_INCLUDE_DIR}/lua.h"
-            COMMAND cmake -E copy src/luajit.h "${LUA_INCLUDE_DIR}/luajit.h"
-            COMMAND cmake -E copy src/lualib.h "${LUA_INCLUDE_DIR}/lualib.h"
+            BUILD_COMMAND ${CMAKE_COMMAND} -E chdir src msvcbuild.bat
+            INSTALL_COMMAND ${CMAKE_COMMAND} -E copy src/lua.dll ${EP_BASE}/lib/lua.dll
+            COMMAND ${CMAKE_COMMAND} -E copy src/lua.lib ${EP_BASE}/lib/lua.lib
+            COMMAND ${CMAKE_COMMAND} -E copy src/lauxlib.h "${LUA_INCLUDE_DIR}/lauxlib.h"
+            COMMAND ${CMAKE_COMMAND} -E copy src/luaconf.h "${LUA_INCLUDE_DIR}/luaconf.h"
+            COMMAND ${CMAKE_COMMAND} -E copy src/lua.h "${LUA_INCLUDE_DIR}/lua.h"
+            COMMAND ${CMAKE_COMMAND} -E copy src/luajit.h "${LUA_INCLUDE_DIR}/luajit.h"
+            COMMAND ${CMAKE_COMMAND} -E copy src/lualib.h "${LUA_INCLUDE_DIR}/lualib.h"
         )
     elseif(UNIX)
         externalproject_add(
@@ -43,12 +44,12 @@ if (LUA_JIT)
             PATCH_COMMAND ${PATCH_EXECUTABLE} -p1 < ${CMAKE_CURRENT_LIST_DIR}/luajit-2_0_2.patch
             CONFIGURE_COMMAND ""
             BUILD_COMMAND make
-            INSTALL_COMMAND cmake -E copy src/libluajit.a ${EP_BASE}/lib/liblua.a
-            COMMAND cmake -E copy src/lauxlib.h "${LUA_INCLUDE_DIR}/lauxlib.h"
-            COMMAND cmake -E copy src/luaconf.h "${LUA_INCLUDE_DIR}/luaconf.h"
-            COMMAND cmake -E copy src/lua.h "${LUA_INCLUDE_DIR}/lua.h"
-            COMMAND cmake -E copy src/luajit.h "${LUA_INCLUDE_DIR}/luajit.h"
-            COMMAND cmake -E copy src/lualib.h "${LUA_INCLUDE_DIR}/lualib.h"
+            INSTALL_COMMAND ${CMAKE_COMMAND} -E copy src/libluajit.a ${EP_BASE}/lib/liblua.a
+            COMMAND ${CMAKE_COMMAND} -E copy src/lauxlib.h "${LUA_INCLUDE_DIR}/lauxlib.h"
+            COMMAND ${CMAKE_COMMAND} -E copy src/luaconf.h "${LUA_INCLUDE_DIR}/luaconf.h"
+            COMMAND ${CMAKE_COMMAND} -E copy src/lua.h "${LUA_INCLUDE_DIR}/lua.h"
+            COMMAND ${CMAKE_COMMAND} -E copy src/luajit.h "${LUA_INCLUDE_DIR}/luajit.h"
+            COMMAND ${CMAKE_COMMAND} -E copy src/lualib.h "${LUA_INCLUDE_DIR}/lualib.h"
         )
     else()
         message(FATAL_ERROR "Cannot use LuaJIT with ${CMAKE_GENERATOR}")
@@ -58,17 +59,17 @@ else()
     externalproject_add(
         ${LUA_PROJECT}
         GIT_REPOSITORY https://github.com/trink/lua.git
-        GIT_TAG d7ff33f45cf02b4b2e2c1a3cc671bda99b0056c6
+        GIT_TAG b0f8c615c58ec4daf6f5d86e740cfedf4b76b53c
         CMAKE_ARGS ${SANDBOX_CMAKE_ARGS}
         INSTALL_DIR ${EP_BASE}
     )
 endif()
-include_directories(${LUA_INCLUDE_DIR})
 
 externalproject_add(
     lua_lpeg
     GIT_REPOSITORY https://github.com/LuaDist/lpeg.git
     GIT_TAG baf0dc90b9278360be719dbfb8e56d34ce3c61bd
+    UPDATE_COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_LIST_DIR}/FindLua.cmake <SOURCE_DIR>/cmake
     CMAKE_ARGS ${SANDBOX_CMAKE_ARGS}
     INSTALL_DIR ${EP_BASE}
 )
@@ -77,7 +78,7 @@ add_dependencies(lua_lpeg ${LUA_PROJECT})
 externalproject_add(
     lua_cjson
     GIT_REPOSITORY https://github.com/trink/lua-cjson.git
-    GIT_TAG af793dbfd83d9be69835faf8b88702ebb74547ed
+    GIT_TAG d7a112639d8c84ee9498fce7f664d896d53eec4e
     CMAKE_ARGS ${SANDBOX_CMAKE_ARGS}
     INSTALL_DIR ${EP_BASE}
 )
@@ -87,7 +88,7 @@ externalproject_add(
     lua_struct
     GIT_REPOSITORY https://github.com/trink/struct.git
     GIT_TAG 5cf31819bee0d829d058cb5219e95ef0b1dd43a8
-    UPDATE_COMMAND cmake -E copy ${CMAKE_CURRENT_LIST_DIR}/FindLua.cmake <SOURCE_DIR>/cmake
+    UPDATE_COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_LIST_DIR}/FindLua.cmake <SOURCE_DIR>/cmake
     CMAKE_ARGS ${SANDBOX_CMAKE_ARGS}
     INSTALL_DIR ${EP_BASE}
 )
@@ -96,7 +97,7 @@ add_dependencies(lua_struct ${LUA_PROJECT})
 externalproject_add(
     lua_bloom_filter
     GIT_REPOSITORY https://github.com/mozilla-services/lua_bloom_filter.git
-    GIT_TAG 1a7d0bd9298074805c53b2c06c66defa90afaf2b
+    GIT_TAG 6358d0ead2b1b5a96d8b66a46505ee083d1ac644
     CMAKE_ARGS ${SANDBOX_CMAKE_ARGS}
     INSTALL_DIR ${EP_BASE}
 )
@@ -104,7 +105,7 @@ externalproject_add(
 externalproject_add(
     lua_circular_buffer
     GIT_REPOSITORY https://github.com/mozilla-services/lua_circular_buffer.git
-    GIT_TAG ca4b0271bd741b857527f8315387142beac9cef9
+    GIT_TAG 9c484bda208132a349cb706f8c37c6e0d8f87e36
     CMAKE_ARGS ${SANDBOX_CMAKE_ARGS}
     INSTALL_DIR ${EP_BASE}
 )
@@ -112,7 +113,7 @@ externalproject_add(
 externalproject_add(
     lua_hyperloglog
     GIT_REPOSITORY https://github.com/mozilla-services/lua_hyperloglog.git
-    GIT_TAG 78c32961102d977cef5afac2c20a3fd9f5eae808
+    GIT_TAG 2baf9e0e8da958f7675acfae1e8157470d8a5ab8
     CMAKE_ARGS ${SANDBOX_CMAKE_ARGS}
     INSTALL_DIR ${EP_BASE}
 )
@@ -120,7 +121,7 @@ externalproject_add(
 externalproject_add(
     lua_cuckoo_filter
     GIT_REPOSITORY https://github.com/mozilla-services/lua_cuckoo_filter.git
-    GIT_TAG a171662d38cb4bfd552f37306189c3dd9791d511
+    GIT_TAG bd092808481260be373a85334514c55b1ef99ba2
     CMAKE_ARGS ${SANDBOX_CMAKE_ARGS}
     INSTALL_DIR ${EP_BASE}
 )

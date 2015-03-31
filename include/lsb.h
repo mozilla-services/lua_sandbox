@@ -9,7 +9,7 @@
 #ifndef lsb_h_
 #define lsb_h_
 
-#include <lua.h>
+#include "lsb/lua.h"
 
 #ifdef _WIN32
 #ifdef luasandbox_EXPORTS
