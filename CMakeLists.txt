@@ -147,6 +147,7 @@ set_target_properties ( liblua PROPERTIES OUTPUT_NAME luasb CLEAN_DIRECT_OUTPUT 
 if ( LUA_BUILD_AS_DLL )
   set_target_properties ( liblua PROPERTIES COMPILE_DEFINITIONS LUA_BUILD_AS_DLL )
 endif ( )
+set_target_properties(liblua PROPERTIES VERSION 5.1.5.1 SOVERSION 0)
 
 # Create static library, this is needed to compile luac in the 5.1.x Lua series
 #add_library ( liblua_static STATIC ${SRC_LIB} )
