@@ -11,8 +11,8 @@
 
 #include <stdio.h>
 
-#include "lsb.h"
-#include "lsb/lua.h"
+#include "luasandbox.h"
+#include "luasandbox/lua.h"
 
 /**
  * Add a output function to the environment table. The environment table must be

@@ -8,8 +8,8 @@
 
 #include <string.h>
 
-#include "lsb/lauxlib.h"
-#include "lsb.h"
+#include "luasandbox/lauxlib.h"
+#include "luasandbox.h"
 
 #define UUID_SIZE 16
 #define MAX_VARINT_BYTES 10

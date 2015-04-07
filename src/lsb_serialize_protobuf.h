@@ -9,7 +9,7 @@
 #ifndef lsb_serialize_protobuf_h_
 #define lsb_serialize_protobuf_h_
 
-#include "lsb.h"
+#include "luasandbox.h"
 
 /**
  * Serialize a specific Lua table structure as Protobuf

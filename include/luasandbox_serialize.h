@@ -11,8 +11,8 @@
 
 #include <stdio.h>
 
-#include "lsb/lua.h"
-#include "lsb_output.h"
+#include "luasandbox/lua.h"
+#include "luasandbox_output.h"
 
 /**
  * Serialize all user global data to disk.

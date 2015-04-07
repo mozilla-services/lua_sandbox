@@ -33,7 +33,7 @@
 
 
 if (LUA_SANDBOX_INCLUDE)
-    set(LUA_INCLUDE_DIR ${EP_BASE}/include/lsb)
+    set(LUA_INCLUDE_DIR ${EP_BASE}/include/luasandbox)
     set(LIB_PATH ${EP_BASE}/lib)
     find_library(LUA_LIBRARY luasb PATHS ${LIB_PATH} NO_DEFAULT_PATH)
 else()

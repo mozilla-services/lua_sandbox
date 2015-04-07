@@ -6,16 +6,16 @@
 
 /** @brief Lua sandbox output buffer implementation @file */
 
-#include "lsb_output.h"
+#include "luasandbox_output.h"
 
 #include <stdarg.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
-#include "lsb/lauxlib.h"
+#include "luasandbox/lauxlib.h"
 #include "lsb_private.h"
-#include "lsb_serialize.h"
+#include "luasandbox_serialize.h"
 #include "lsb_serialize_protobuf.h"
 
 static const char* output_function = "lsb_output";

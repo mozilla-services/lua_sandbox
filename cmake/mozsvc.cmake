@@ -20,7 +20,7 @@ if(MSVC)
     set(CMAKE_C_FLAGS_RELEASE   "/MD /O2 /Ob2 /DNDEBUG")
     set(CMAKE_CXX_FLAGS_RELEASE ${CMAKE_C_FLAGS_RELEASE})
 
-    set(CPACK_GENERATOR         "NSIS")
+    set(CPACK_GENERATOR         "ZIP")
 else()
     # Predefined Macros: clang|gcc -dM -E -x c /dev/null
     # Compiler options: http://gcc.gnu.org/onlinedocs/gcc/Invoking-GCC.html#Invoking-GCC
@@ -47,6 +47,8 @@ endif()
 
 set(CPACK_PACKAGE_VENDOR        "Mozilla Services")
 set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_SOURCE_DIR}/LICENSE.txt")
+set(CPACK_STRIP_FILES TRUE)
+
 include(CPack)
 include(CTest)
 include(doxygen)
