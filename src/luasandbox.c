@@ -6,7 +6,7 @@
 
 /** @brief Lua sandboxed implementation @file */
 
-#include "lsb.h"
+#include "luasandbox.h"
 
 #include <ctype.h>
 #include <setjmp.h>
@@ -15,12 +15,12 @@
 #include <string.h>
 #include <time.h>
 
-#include "lsb/lauxlib.h"
-#include "lsb/lua.h"
-#include "lsb/lualib.h"
-#include "lsb_output.h"
+#include "luasandbox/lauxlib.h"
+#include "luasandbox/lua.h"
+#include "luasandbox/lualib.h"
+#include "luasandbox_output.h"
 #include "lsb_private.h"
-#include "lsb_serialize.h"
+#include "luasandbox_serialize.h"
 #include "lsb_serialize_protobuf.h"
 
 static const char* standard_config = "{"

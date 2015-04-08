@@ -12,7 +12,7 @@
 #include <string.h>
 #include <time.h>
 
-#include "lsb_output.h"
+#include "luasandbox_output.h"
 #include "lsb_private.h"
 
 #define UUID_SIZE 16

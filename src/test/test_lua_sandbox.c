@@ -12,10 +12,10 @@
 #include <string.h>
 #include <time.h>
 
-#include "lsb.h"
-#include "lsb/lauxlib.h"
-#include "lsb/lua.h"
-#include "lsb_output.h"
+#include "luasandbox.h"
+#include "luasandbox/lauxlib.h"
+#include "luasandbox/lua.h"
+#include "luasandbox_output.h"
 
 #ifdef _WIN32
 #define snprintf _snprintf

@@ -6,14 +6,14 @@
 
 /** @brief Sandbox serialization implementation @file */
 
-#include "lsb_serialize.h"
+#include "luasandbox_serialize.h"
 
 #include <math.h>
 #include <stdlib.h>
 #include <string.h>
 
-#include "lsb/lauxlib.h"
-#include "lsb/lualib.h"
+#include "luasandbox/lauxlib.h"
+#include "luasandbox/lualib.h"
 #include "lsb_private.h"
 
 typedef struct
