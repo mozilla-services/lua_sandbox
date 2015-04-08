@@ -29,7 +29,7 @@ read_length(unsigned const char* p, unsigned const char* e, size_t* vi)
   *vi = 0;
   unsigned i, shift = 0;
   for (i = 0; p != e && i < MAX_VARINT_BYTES; i++) {
-    *vi |= (p[i] & 0x7f) << shift;
+    *vi |= ((unsigned long long)p[i] & 0x7f) << shift;
     shift += 7;
     if ((p[i] & 0x80) == 0) break;
   }
@@ -46,7 +46,7 @@ read_varint(unsigned const char* p, unsigned const char* e, long long* vi)
   *vi = 0;
   unsigned i, shift = 0;
   for (i = 0; p != e && i < MAX_VARINT_BYTES; i++) {
-    *vi |= (p[i] & 0x7f) << shift;
+    *vi |= ((unsigned long long)p[i] & 0x7f) << shift;
     shift += 7;
     if ((p[i] & 0x80) == 0) break;
   }
