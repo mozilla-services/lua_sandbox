@@ -62,7 +62,6 @@ else()
         GIT_REPOSITORY https://github.com/trink/lua.git
         GIT_TAG 477c0b5ae0932953ee41ab7cd24098c23e3e33c3
         CMAKE_ARGS ${SANDBOX_CMAKE_ARGS}
-        INSTALL_DIR ${EP_BASE}
         INSTALL_ARGS "install/strip"
     )
 endif()
@@ -73,7 +72,6 @@ externalproject_add(
     GIT_TAG baf0dc90b9278360be719dbfb8e56d34ce3c61bd
     UPDATE_COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_LIST_DIR}/FindLua.cmake <SOURCE_DIR>/cmake
     CMAKE_ARGS ${SANDBOX_CMAKE_ARGS}
-    INSTALL_DIR ${EP_BASE}
     INSTALL_ARGS "install/strip"
 )
 add_dependencies(lua_lpeg ${LUA_PROJECT})
@@ -83,7 +81,6 @@ externalproject_add(
     GIT_REPOSITORY https://github.com/trink/lua-cjson.git
     GIT_TAG 3c8321cbfc6bea944974e046da82deca38e66587
     CMAKE_ARGS ${SANDBOX_CMAKE_ARGS}
-    INSTALL_DIR ${EP_BASE}
     INSTALL_ARGS "install/strip"
 )
 add_dependencies(lua_cjson ${LUA_PROJECT})
@@ -94,17 +91,27 @@ externalproject_add(
     GIT_TAG 5cf31819bee0d829d058cb5219e95ef0b1dd43a8
     UPDATE_COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_LIST_DIR}/FindLua.cmake <SOURCE_DIR>/cmake
     CMAKE_ARGS ${SANDBOX_CMAKE_ARGS}
-    INSTALL_DIR ${EP_BASE}
     INSTALL_ARGS "install/strip"
 )
 add_dependencies(lua_struct ${LUA_PROJECT})
+
+externalproject_add(
+    lua_socket
+    GIT_REPOSITORY https://github.com/LuaDist/luasocket.git
+    GIT_TAG b97ed47e7a01e0d2523809efe11676333a85dcab
+    UPDATE_COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_LIST_DIR}/FindLua.cmake <SOURCE_DIR>/cmake
+    CMAKE_ARGS ${SANDBOX_CMAKE_ARGS} -DCMAKE_INSTALL_PREFIX=${EP_BASE}/io
+    INSTALL_ARGS "install/strip"
+)
+add_dependencies(lua_socket ${LUA_PROJECT})
+
+# sandbox enhanced modules
 
 externalproject_add(
     lua_bloom_filter
     GIT_REPOSITORY https://github.com/mozilla-services/lua_bloom_filter.git
     GIT_TAG 1afb5fe85adec5750238c5ebd7d6d95e7993f122
     CMAKE_ARGS ${SANDBOX_CMAKE_ARGS}
-    INSTALL_DIR ${EP_BASE}
     INSTALL_ARGS "install/strip"
 )
 
@@ -113,7 +120,6 @@ externalproject_add(
     GIT_REPOSITORY https://github.com/mozilla-services/lua_circular_buffer.git
     GIT_TAG e87bcc0a3ae29c5a7acaabbb7b1f2b56700769c6
     CMAKE_ARGS ${SANDBOX_CMAKE_ARGS}
-    INSTALL_DIR ${EP_BASE}
     INSTALL_ARGS "install/strip"
 )
 
@@ -122,7 +128,6 @@ externalproject_add(
     GIT_REPOSITORY https://github.com/mozilla-services/lua_hyperloglog.git
     GIT_TAG 5deeaf7c24088dada8d80529951502aa4a55c8ab
     CMAKE_ARGS ${SANDBOX_CMAKE_ARGS}
-    INSTALL_DIR ${EP_BASE}
     INSTALL_ARGS "install/strip"
 )
 
@@ -131,6 +136,5 @@ externalproject_add(
     GIT_REPOSITORY https://github.com/mozilla-services/lua_cuckoo_filter.git
     GIT_TAG cfb311a433ed7e4c8224ca99ab58b54302037b6d
     CMAKE_ARGS ${SANDBOX_CMAKE_ARGS}
-    INSTALL_DIR ${EP_BASE}
     INSTALL_ARGS "install/strip"
 )

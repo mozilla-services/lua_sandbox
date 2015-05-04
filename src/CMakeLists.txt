@@ -47,6 +47,7 @@ target_link_libraries(luasandbox ${LUA_SANDBOX_LIBS})
 install(TARGETS luasandbox DESTINATION lib COMPONENT core)
 install(DIRECTORY "${EP_BASE}/lib/"  DESTINATION lib COMPONENT core PATTERN "lua" EXCLUDE)
 install(DIRECTORY "${EP_BASE}/lib/lua/" DESTINATION lib/${PROJECT_NAME}/modules COMPONENT core)
+install(DIRECTORY "${EP_BASE}/io/lib/lua/" DESTINATION lib/${PROJECT_NAME}/io_modules COMPONENT core)
 install(DIRECTORY "${EP_BASE}/include/" DESTINATION include COMPONENT core)
 
 add_subdirectory(test)
