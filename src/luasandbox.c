@@ -10,6 +10,7 @@
 
 #include <ctype.h>
 #include <setjmp.h>
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -156,7 +157,7 @@ static int unprotected_panic(lua_State* lua)
 static unsigned get_usage_config(lua_State* lua, int idx, const char* item)
 {
   lua_getfield(lua, idx, item);
-  unsigned  u = (unsigned)lua_tonumber(lua, -1); // defaults to zero
+  unsigned u = (unsigned)lua_tonumber(lua, -1); // defaults to zero
   lua_pop(lua, 1);
   return u;
 }
@@ -231,15 +232,36 @@ lua_sandbox* lsb_create_custom(void* parent,
     return NULL;
   }
 
+  bool seeded = false;
 #if _WIN32
   if (_putenv("TZ=UTC") != 0) {
     return NULL;
   }
+  // todo use CryptGenRandom to seed srand
 #else
   if (setenv("TZ", "UTC", 1) != 0) {
     return NULL;
   }
+
+  FILE* fh = fopen("/dev/urandom", "r");
+  if (fh) {
+    unsigned seed;
+    unsigned char advance;
+    if (fread(&seed, sizeof(unsigned), 1, fh) == 1 &&
+        fread(&advance, sizeof(char), 1, fh) == 1) {
+      srand(seed);
+      // advance the sequence a random amount
+      for (unsigned i = 0; i < advance; ++i) {
+        rand();
+      }
+      seeded = true;
+    }
+    fclose(fh);
+  }
 #endif
+  if (!seeded) {
+    srand((unsigned)time(NULL));
+  }
 
   lua_sandbox* lsb = malloc(sizeof(lua_sandbox));
   memset(lsb->usage, 0, sizeof(lsb->usage));
@@ -297,7 +319,6 @@ lua_sandbox* lsb_create_custom(void* parent,
     return NULL;
   }
   strcpy(lsb->lua_file, lua_file);
-  srand((unsigned int)time(NULL));
   return lsb;
 }
 
