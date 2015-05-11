@@ -578,6 +578,23 @@ static char* test_cbuf_errors()
 }
 
 
+static char* test_cbuf_core()
+{
+  lua_sandbox* sb = lsb_create(NULL, "../../ep_base/Source/lua_circular_buffer/test.lua",
+                               "modules",
+                               0, 0, 0);
+  mu_assert(sb, "lsb_create() received: NULL");
+
+  int result = lsb_init(sb, NULL);
+  mu_assert(result == 0, "lsb_init() received: %d %s", result,
+            lsb_get_error(sb));
+  e = lsb_destroy(sb, "");
+  mu_assert(!e, "lsb_destroy() received: %s", e);
+
+  return NULL;
+}
+
+
 static char* test_cbuf()
 {
   const char* outputs[] = {
@@ -955,6 +972,23 @@ static char* test_serialize_failure()
 }
 
 
+static char* test_bloom_filter_core()
+{
+  lua_sandbox* sb = lsb_create(NULL, "../../ep_base/Source/lua_bloom_filter/test.lua",
+                               "modules",
+                               0, 0, 0);
+  mu_assert(sb, "lsb_create() received: NULL");
+
+  int result = lsb_init(sb, NULL);
+  mu_assert(result == 0, "lsb_init() received: %d %s", result,
+            lsb_get_error(sb));
+  e = lsb_destroy(sb, "");
+  mu_assert(!e, "lsb_destroy() received: %s", e);
+
+  return NULL;
+}
+
+
 static char* test_bloom_filter()
 {
   const char* output_file = "bloom_filter.preserve";
@@ -1027,6 +1061,23 @@ static char* test_bloom_filter()
             written_data);
 
   e = lsb_destroy(sb, NULL);
+  mu_assert(!e, "lsb_destroy() received: %s", e);
+
+  return NULL;
+}
+
+
+static char* test_hyperloglog_core()
+{
+  lua_sandbox* sb = lsb_create(NULL, "../../ep_base/Source/lua_hyperloglog/test.lua",
+                               "modules",
+                               0, 0, 0);
+  mu_assert(sb, "lsb_create() received: NULL");
+
+  int result = lsb_init(sb, NULL);
+  mu_assert(result == 0, "lsb_init() received: %d %s", result,
+            lsb_get_error(sb));
+  e = lsb_destroy(sb, "");
   mu_assert(!e, "lsb_destroy() received: %s", e);
 
   return NULL;
@@ -1577,6 +1628,7 @@ static char* all_tests()
   mu_run_test(test_output);
   mu_run_test(test_output_errors);
   mu_run_test(test_cbuf_errors);
+  mu_run_test(test_cbuf_core);
   mu_run_test(test_cbuf);
   mu_run_test(test_cbuf_delta);
   mu_run_test(test_cjson);
@@ -1587,7 +1639,9 @@ static char* all_tests()
   mu_run_test(test_serialize);
   mu_run_test(test_restore);
   mu_run_test(test_serialize_failure);
+  mu_run_test(test_bloom_filter_core);
   mu_run_test(test_bloom_filter);
+  mu_run_test(test_hyperloglog_core);
   mu_run_test(test_hyperloglog);
   mu_run_test(test_struct);
   mu_run_test(test_sandbox_config);
