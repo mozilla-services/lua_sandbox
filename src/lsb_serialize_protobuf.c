@@ -599,7 +599,7 @@ int lsb_serialize_table_as_pb(lua_sandbox* lsb, int index)
     d->pos += UUID_SIZE;
   } else {
     for (int x = 0; x < UUID_SIZE; ++x) {
-      d->data[d->pos++] = rand() % 255;
+      d->data[d->pos++] = rand() % 256;
     }
     d->data[8] = (d->data[8] & 0x0F) | 0x40;
     d->data[10] = (d->data[10] & 0x0F) | 0xA0;
