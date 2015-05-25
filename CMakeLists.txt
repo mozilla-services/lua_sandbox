@@ -23,6 +23,8 @@ if(LUA_JIT)
 endif()
 
 find_package(Git REQUIRED)
+set(CPACK_RPM_PACKAGE_LICENSE "MPLv2.0")
+set(CPACK_RPM_PACKAGE_PROVIDES "libluasb.so.0()(64bit)")
 
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
 include(mozsvc)
