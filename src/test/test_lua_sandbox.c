@@ -820,6 +820,7 @@ static char* test_lpeg()
     , "lua/lpeg_date_time.lua"
     , "lua/lpeg_ip_address.lua"
     , "lua/lpeg_mysql.lua"
+    , "lua/lpeg_postfix.lua"
     , "lua/lpeg_syslog.lua"
     , "lua/lpeg_sfl4j.lua"
     , NULL
