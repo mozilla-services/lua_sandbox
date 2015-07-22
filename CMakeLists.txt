@@ -157,11 +157,11 @@ set_target_properties(liblua PROPERTIES VERSION 5.1.5.1 SOVERSION 0)
 #target_link_libraries ( lua liblua )
 
 # On windows a variant of the lua interpreter without console output needs to be built
-if ( LUA_BUILD_WLUA )
-  add_executable ( wlua WIN32 src/wmain.c ${SRC_LUA} ${LUA_RC} )
-  target_link_libraries ( wlua liblua )
-  install_executable ( wlua )
-endif ( )
+#if ( LUA_BUILD_WLUA )
+#  add_executable ( wlua WIN32 src/wmain.c ${SRC_LUA} ${LUA_RC} )
+#  target_link_libraries ( wlua liblua )
+#  install_executable ( wlua )
+#endif ( )
 
 #add_executable ( luac ${SRC_LUAC} ${LUAC_RC} )
 #target_link_libraries ( luac liblua_static )
