@@ -13,9 +13,18 @@ local tonumber = tonumber
 local error = error
 local type = type
 local ipairs = ipairs
+local rawset = rawset
 
 local M = {}
 setfenv(1, M) -- Remove external access to contain everything in the module
+
+local function unescape_param_value(param_value)
+    return string.gsub(param_value, '\\([]"\\])', '%1')
+end
+
+local function prefix_param_name(param_name)
+    return '_' .. param_name
+end
 
 -- http://tools.ietf.org/html/rfc5424#page-8
 local octet           = l.P(1)
@@ -30,12 +39,15 @@ local msg_any         = octet^0
 local msg_utf8        = bom * utf8_string
 local msg             = msg_utf8 + msg_any
 local hostname        = nilvalue + printusascii^-255
-local sd_name         = printusascii^-32
-local param_name      = sd_name
-local param_value     = utf8_string
-local sd_param        = param_name * '="' * param_value * '"'
-local sd_id           = sd_name
-local sd_element      = l.P"[" * sd_id * (sp * sd_param)^0 * "]"
+local sd_name         = (printusascii - l.S'=]" ')^-32
+local param_name      = sd_name / prefix_param_name
+local esc             = l.P'\\'
+local param_value_esc = l.S'"\\]'
+local param_value     = ((octet - param_value_esc) + (esc * octet))^0 / unescape_param_value
+local sd_id           = l.Cg(l.Cc"id" * l.C(sd_name))
+local sd_param        = l.Cg(param_name * '="' * param_value * '"')
+local sd_params       = l.Cf(l.Ct"" * sd_id * (sp * sd_param)^0, rawset)
+local sd_element      = l.P"[" * sd_params * "]"
 local syslog_facility = digit^-3 / tonumber
 local syslog_severity = digit / tonumber
 
