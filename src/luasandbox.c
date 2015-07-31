@@ -362,8 +362,12 @@ int lsb_init(lua_sandbox* lsb, const char* data_file)
   lua_pushcclosure(lsb->lua, &output, 1);
   lua_setglobal(lsb->lua, "output");
 
-  lua_sethook(lsb->lua, instruction_manager, LUA_MASKCOUNT,
-              lsb->usage[LSB_UT_INSTRUCTION][LSB_US_LIMIT]);
+  if (lsb->usage[LSB_UT_INSTRUCTION][LSB_US_LIMIT] != 0) {
+    lua_sethook(lsb->lua, instruction_manager, LUA_MASKCOUNT,
+                (int)lsb->usage[LSB_UT_INSTRUCTION][LSB_US_LIMIT]);
+  } else {
+    lua_sethook(lsb->lua, NULL, 0, 0);
+  }
 #ifdef LUA_JIT
   // todo limit
   lua_gc(lsb->lua, LUA_GCSETMEMLIMIT,
@@ -514,9 +518,12 @@ const char* lsb_get_output(lua_sandbox* lsb, size_t* len)
 
 int lsb_pcall_setup(lua_sandbox* lsb, const char* func_name)
 {
-
-  lua_sethook(lsb->lua, instruction_manager, LUA_MASKCOUNT,
-              lsb->usage[LSB_UT_INSTRUCTION][LSB_US_LIMIT]);
+  if (lsb->usage[LSB_UT_INSTRUCTION][LSB_US_LIMIT] != 0) {
+    lua_sethook(lsb->lua, instruction_manager, LUA_MASKCOUNT,
+                (int)lsb->usage[LSB_UT_INSTRUCTION][LSB_US_LIMIT]);
+  } else {
+    lua_sethook(lsb->lua, NULL, 0, 0);
+  }
   lua_getglobal(lsb->lua, func_name);
   if (!lua_isfunction(lsb->lua, -1)) {
     int len = snprintf(lsb->error_message, LSB_ERROR_SIZE,
