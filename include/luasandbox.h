@@ -135,9 +135,9 @@ LSB_EXPORT char* lsb_destroy(lua_sandbox* lsb, const char* state_file);
  * @param lsb_usage_type Type of statistic to retrieve i.e. memory.
  * @param lsb_usage_stat Type of statistic to retrieve i.e. current.
  *
- * @return unsigned Count or number of bytes depending on the statistic.
+ * @return size_t Count or number of bytes depending on the statistic.
  */
-LSB_EXPORT unsigned
+LSB_EXPORT size_t
 lsb_usage(lua_sandbox* lsb, lsb_usage_type utype, lsb_usage_stat ustat);
 /**
  * Retrieve the current sandbox status.

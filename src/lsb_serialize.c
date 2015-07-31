@@ -401,7 +401,7 @@ int lsb_preserve_global_data(lua_sandbox* lsb, const char* data_file)
 #ifdef LUA_JIT
   lua_gc(lsb->lua, LUA_GCSETMEMLIMIT, 0);
 #else
-//  unsigned limit = lsb->usage[LSB_UT_MEMORY][LSB_US_LIMIT];
+//  size_t limit = lsb->usage[LSB_UT_MEMORY][LSB_US_LIMIT];
   lsb->usage[LSB_UT_MEMORY][LSB_US_LIMIT] = 0;
 #endif
   lua_sethook(lsb->lua, NULL, 0, 0);
@@ -493,7 +493,7 @@ int lsb_restore_global_data(lua_sandbox* lsb, const char* data_file)
 #ifdef LUA_JIT
   lua_gc(lsb->lua, LUA_GCSETMEMLIMIT, 0);
 #else
-  unsigned limit = lsb->usage[LSB_UT_MEMORY][LSB_US_LIMIT];
+  size_t limit = lsb->usage[LSB_UT_MEMORY][LSB_US_LIMIT];
   lsb->usage[LSB_UT_MEMORY][LSB_US_LIMIT] = 0;
 #endif
   lua_sethook(lsb->lua, NULL, 0, 0);

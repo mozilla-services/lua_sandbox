@@ -91,10 +91,10 @@ static void* memory_manager(void* ud, void* ptr, size_t osize, size_t nsize)
   void* nptr = NULL;
   if (nsize == 0) {
     free(ptr);
-    lsb->usage[LSB_UT_MEMORY][LSB_US_CURRENT] -= (unsigned)osize;
+    lsb->usage[LSB_UT_MEMORY][LSB_US_CURRENT] -= osize;
   } else {
-    unsigned new_state_memory =
-      (unsigned)(lsb->usage[LSB_UT_MEMORY][LSB_US_CURRENT] + nsize - osize);
+    size_t new_state_memory =
+      lsb->usage[LSB_UT_MEMORY][LSB_US_CURRENT] + nsize - osize;
     if (0 == lsb->usage[LSB_UT_MEMORY][LSB_US_LIMIT]
         || new_state_memory
         <= lsb->usage[LSB_UT_MEMORY][LSB_US_LIMIT]) {
@@ -154,10 +154,10 @@ static int unprotected_panic(lua_State* lua)
 }
 
 
-static unsigned get_usage_config(lua_State* lua, int idx, const char* item)
+static size_t get_usage_config(lua_State* lua, int idx, const char* item)
 {
   lua_getfield(lua, idx, item);
-  unsigned u = (unsigned)lua_tonumber(lua, -1); // defaults to zero
+  size_t u = (size_t)lua_tointeger(lua, -1); // defaults to zero
   lua_pop(lua, 1);
   return u;
 }
@@ -288,9 +288,9 @@ lua_sandbox* lsb_create_custom(void* parent,
     free(lsb);
     return NULL;
   }
-  unsigned memory_limit = get_usage_config(lsb->lua, -1, "memory_limit");
-  unsigned instruction_limit = get_usage_config(lsb->lua, -1, "instruction_limit");
-  unsigned output_limit = get_usage_config(lsb->lua, -1, "output_limit");
+  size_t memory_limit = get_usage_config(lsb->lua, -1, "memory_limit");
+  size_t instruction_limit = get_usage_config(lsb->lua, -1, "instruction_limit");
+  size_t output_limit = get_usage_config(lsb->lua, -1, "output_limit");
   lua_setfield(lsb->lua, LUA_REGISTRYINDEX, "lsb_config");
   lua_pop(lsb->lua, 1); // remove configuration string
 
@@ -329,7 +329,7 @@ int lsb_init(lua_sandbox* lsb, const char* data_file)
     return 0;
   }
 #ifndef LUA_JIT
-  unsigned mem_limit = lsb->usage[LSB_UT_MEMORY][LSB_US_LIMIT];
+  size_t mem_limit = lsb->usage[LSB_UT_MEMORY][LSB_US_LIMIT];
   lsb->usage[LSB_UT_MEMORY][LSB_US_LIMIT] = 0;
 #endif
 
@@ -365,6 +365,7 @@ int lsb_init(lua_sandbox* lsb, const char* data_file)
   lua_sethook(lsb->lua, instruction_manager, LUA_MASKCOUNT,
               lsb->usage[LSB_UT_INSTRUCTION][LSB_US_LIMIT]);
 #ifdef LUA_JIT
+  // todo limit
   lua_gc(lsb->lua, LUA_GCSETMEMLIMIT,
          (int)lsb->usage[LSB_UT_MEMORY][LSB_US_LIMIT]);
 #else
@@ -423,8 +424,8 @@ char* lsb_destroy(lua_sandbox* lsb, const char* data_file)
 }
 
 
-unsigned lsb_usage(lua_sandbox* lsb, lsb_usage_type utype,
-                   lsb_usage_stat ustat)
+size_t lsb_usage(lua_sandbox* lsb, lsb_usage_type utype,
+                 lsb_usage_stat ustat)
 {
   if (!lsb || utype >= LSB_UT_MAX || ustat >= LSB_US_MAX) {
     return 0;

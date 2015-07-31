@@ -23,7 +23,7 @@ static const char* output_function = "lsb_output";
 
 static void update_output_stats(lua_sandbox* lsb)
 {
-  lsb->usage[LSB_UT_OUTPUT][LSB_US_CURRENT] = (unsigned)lsb->output.pos;
+  lsb->usage[LSB_UT_OUTPUT][LSB_US_CURRENT] = lsb->output.pos;
   if (lsb->usage[LSB_UT_OUTPUT][LSB_US_CURRENT]
       > lsb->usage[LSB_UT_OUTPUT][LSB_US_MAXIMUM]) {
     lsb->usage[LSB_UT_OUTPUT][LSB_US_MAXIMUM] =

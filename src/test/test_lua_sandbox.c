@@ -289,22 +289,22 @@ static char* test_destroy_error()
 
 static char* test_usage_error()
 {
-  unsigned u = lsb_usage(NULL, LSB_UT_MEMORY, LSB_US_CURRENT);
-  mu_assert(u == 0, "NULL sandbox memory usage received: %u", u);
+  size_t u = lsb_usage(NULL, LSB_UT_MEMORY, LSB_US_CURRENT);
+  mu_assert(u == 0, "NULL sandbox memory usage received: %zu", u);
 
   lua_sandbox* sb = lsb_create(NULL, "lua/simple.lua", "modules", 0, 0, 0);
   mu_assert(sb, "lsb_create() received: NULL");
 
   u = lsb_usage(NULL, LSB_UT_MAX + 1, LSB_US_CURRENT);
-  mu_assert(u == 0, "Invalid usage type received: %u", u);
+  mu_assert(u == 0, "Invalid usage type received: %zu", u);
 
   u = lsb_usage(NULL, LSB_UT_MEMORY, LSB_US_MAX + 1);
-  mu_assert(u == 0, "Invalid usage stat received: %u", u);
+  mu_assert(u == 0, "Invalid usage stat received: %zu", u);
 
   mu_assert(sb, "lsb_create() received: NULL");
   lsb_terminate(sb, "forced termination");
   u = lsb_usage(sb, LSB_UT_MEMORY, LSB_US_CURRENT);
-  mu_assert(u == 0, "Terminated memory usage received: %u", u);
+  mu_assert(u == 0, "Terminated memory usage received: %zu", u);
 
   e = lsb_destroy(sb, NULL);
   mu_assert(!e, "lsb_destroy() received: %s", e);
@@ -335,39 +335,39 @@ static char* test_simple()
   mu_assert(result == 0, "lsb_init() received: %d %s", result,
             lsb_get_error(sb));
 
-  unsigned u = lsb_usage(sb, LSB_UT_MEMORY, LSB_US_CURRENT);
-  mu_assert(u > 0, "Current memory usage received: %u", u);
-  printf("cur_mem %u\n", u);
+  size_t u = lsb_usage(sb, LSB_UT_MEMORY, LSB_US_CURRENT);
+  mu_assert(u > 0, "Current memory usage received: %zu", u);
+  printf("cur_mem %zu\n", u);
 
   u = lsb_usage(sb, LSB_UT_MEMORY, LSB_US_MAXIMUM);
-  mu_assert(u > 0, "Maximum memory usage received: %u", u);
-  printf("max_mem %u\n", u);
+  mu_assert(u > 0, "Maximum memory usage received: %zu", u);
+  printf("max_mem %zu\n", u);
 
   u = lsb_usage(sb, LSB_UT_MEMORY, LSB_US_LIMIT);
-  mu_assert(u == 65765, "Memory limit received: %u", u);
+  mu_assert(u == 65765, "Memory limit received: %zu", u);
 
   u = lsb_usage(sb, LSB_UT_INSTRUCTION, LSB_US_CURRENT);
-  mu_assert(u == 7, "Current instructions received: %u", u);
+  mu_assert(u == 7, "Current instructions received: %zu", u);
 
   u = lsb_usage(sb, LSB_UT_INSTRUCTION, LSB_US_MAXIMUM);
-  mu_assert(u == 7, "Maximum instructions received: %u", u);
-  printf("max_ins %u\n", u);
+  mu_assert(u == 7, "Maximum instructions received: %zu", u);
+  printf("max_ins %zu\n", u);
 
   u = lsb_usage(sb, LSB_UT_INSTRUCTION, LSB_US_LIMIT);
-  mu_assert(u == 1000, "Instruction limit received: %u", u);
+  mu_assert(u == 1000, "Instruction limit received: %zu", u);
 
   u = lsb_usage(sb, LSB_UT_OUTPUT, LSB_US_CURRENT);
-  mu_assert(u == 0, "Current output received: %u", u);
+  mu_assert(u == 0, "Current output received: %zu", u);
 
   u = lsb_usage(sb, LSB_UT_OUTPUT, LSB_US_MAXIMUM);
-  mu_assert(u == 0, "Maximum output received: %u", u);
-  printf("max_out %u\n", u);
+  mu_assert(u == 0, "Maximum output received: %zu", u);
+  printf("max_out %zu\n", u);
 
   u = lsb_usage(sb, LSB_UT_OUTPUT, LSB_US_LIMIT);
-  mu_assert(u == 1024, "Output limit received: %u", u);
+  mu_assert(u == 1024, "Output limit received: %zu", u);
 
   u = lsb_usage(sb, LSB_UT_OUTPUT, LSB_US_LIMIT);
-  mu_assert(u == 1024, "Output limit received: %u", u);
+  mu_assert(u == 1024, "Output limit received: %zu", u);
 
   lsb_state s = lsb_get_state(sb);
   mu_assert(s == LSB_RUNNING, "lsb_get_state() received: %d", s);
