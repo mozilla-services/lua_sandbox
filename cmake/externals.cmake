@@ -16,6 +16,11 @@ set_property(DIRECTORY PROPERTY EP_BASE ${EP_BASE})
 set(SANDBOX_CMAKE_ARGS -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE} -DCMAKE_INSTALL_PREFIX=${EP_BASE} -DEP_BASE=${EP_BASE} -DLUA_SANDBOX_INCLUDE=${CMAKE_SOURCE_DIR}/include -DUSE_RPATH=false --no-warn-unused-cli)
 set(LUA_INCLUDE_DIR "${EP_BASE}/include/${PROJECT_NAME}")
 
+set(INST_ARGS "install/strip")
+if(MSVC)
+    set(INST_ARGS "install")
+endif()
+
 if (LUA_JIT)
     message(FATAL_ERROR, "LuaJIT support has not been added back in yet, issue #66")
     set(LUA_PROJECT "luajit-2_0_2")
@@ -60,9 +65,9 @@ else()
     externalproject_add(
         ${LUA_PROJECT}
         GIT_REPOSITORY https://github.com/trink/lua.git
-        GIT_TAG 477c0b5ae0932953ee41ab7cd24098c23e3e33c3
+        GIT_TAG 57d3e82ef270b20dc976f3a6001439589c807793
         CMAKE_ARGS ${SANDBOX_CMAKE_ARGS}
-        INSTALL_ARGS "install/strip"
+        INSTALL_ARGS ${INST_ARGS}
     )
 endif()
 
@@ -72,7 +77,7 @@ externalproject_add(
     GIT_TAG baf0dc90b9278360be719dbfb8e56d34ce3c61bd
     UPDATE_COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_LIST_DIR}/FindLua.cmake <SOURCE_DIR>/cmake
     CMAKE_ARGS ${SANDBOX_CMAKE_ARGS}
-    INSTALL_ARGS "install/strip"
+    INSTALL_ARGS ${INST_ARGS}
 )
 add_dependencies(lua_lpeg ${LUA_PROJECT})
 
@@ -81,7 +86,7 @@ externalproject_add(
     GIT_REPOSITORY https://github.com/trink/lua-cjson.git
     GIT_TAG 3c8321cbfc6bea944974e046da82deca38e66587
     CMAKE_ARGS ${SANDBOX_CMAKE_ARGS}
-    INSTALL_ARGS "install/strip"
+    INSTALL_ARGS ${INST_ARGS}
 )
 add_dependencies(lua_cjson ${LUA_PROJECT})
 
@@ -91,7 +96,7 @@ externalproject_add(
     GIT_TAG 5cf31819bee0d829d058cb5219e95ef0b1dd43a8
     UPDATE_COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_LIST_DIR}/FindLua.cmake <SOURCE_DIR>/cmake
     CMAKE_ARGS ${SANDBOX_CMAKE_ARGS}
-    INSTALL_ARGS "install/strip"
+    INSTALL_ARGS ${INST_ARGS}
 )
 add_dependencies(lua_struct ${LUA_PROJECT})
 
@@ -101,7 +106,7 @@ externalproject_add(
     GIT_TAG b97ed47e7a01e0d2523809efe11676333a85dcab
     UPDATE_COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_LIST_DIR}/FindLua.cmake <SOURCE_DIR>/cmake
     CMAKE_ARGS ${SANDBOX_CMAKE_ARGS} -DCMAKE_INSTALL_PREFIX=${EP_BASE}/io
-    INSTALL_ARGS "install/strip"
+    INSTALL_ARGS ${INST_ARGS}
 )
 add_dependencies(lua_socket ${LUA_PROJECT})
 
@@ -110,9 +115,9 @@ add_dependencies(lua_socket ${LUA_PROJECT})
 externalproject_add(
     lua_bloom_filter
     GIT_REPOSITORY https://github.com/mozilla-services/lua_bloom_filter.git
-    GIT_TAG 1afb5fe85adec5750238c5ebd7d6d95e7993f122
+    GIT_TAG 4151be752c3dd2f74d1c3487d8352ca54055eb81
     CMAKE_ARGS ${SANDBOX_CMAKE_ARGS}
-    INSTALL_ARGS "install/strip"
+    INSTALL_ARGS ${INST_ARGS}
 )
 
 externalproject_add(
@@ -120,7 +125,7 @@ externalproject_add(
     GIT_REPOSITORY https://github.com/mozilla-services/lua_circular_buffer.git
     GIT_TAG e87bcc0a3ae29c5a7acaabbb7b1f2b56700769c6
     CMAKE_ARGS ${SANDBOX_CMAKE_ARGS}
-    INSTALL_ARGS "install/strip"
+    INSTALL_ARGS ${INST_ARGS}
 )
 
 externalproject_add(
@@ -128,13 +133,13 @@ externalproject_add(
     GIT_REPOSITORY https://github.com/mozilla-services/lua_hyperloglog.git
     GIT_TAG 92f8a59e9e6f4ee381482f449b6cee78bb55460a
     CMAKE_ARGS ${SANDBOX_CMAKE_ARGS}
-    INSTALL_ARGS "install/strip"
+    INSTALL_ARGS ${INST_ARGS}
 )
 
 externalproject_add(
     lua_cuckoo_filter
     GIT_REPOSITORY https://github.com/mozilla-services/lua_cuckoo_filter.git
-    GIT_TAG cfb311a433ed7e4c8224ca99ab58b54302037b6d
+    GIT_TAG 8343207aa7656d0324d23f79a5732fcb0bdb5917
     CMAKE_ARGS ${SANDBOX_CMAKE_ARGS}
-    INSTALL_ARGS "install/strip"
+    INSTALL_ARGS ${INST_ARGS}
 )

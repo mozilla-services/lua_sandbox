@@ -8,7 +8,7 @@ target_link_libraries(test_lua_sandbox luasandbox)
 add_test(NAME test_move_c_modules COMMAND cmake -E copy_directory ${CMAKE_BINARY_DIR}/ep_base/lib/lua ${CMAKE_CURRENT_BINARY_DIR}/modules)
 if(WIN32)
    add_test(NAME test_move_lua_lib COMMAND cmake -E copy
-   ${CMAKE_BINARY_DIR}/ep_base/bin/${CMAKE_SHARED_MODULE_PREFIX}lua${CMAKE_SHARED_MODULE_SUFFIX} ${CMAKE_CURRENT_BINARY_DIR})
+   ${CMAKE_BINARY_DIR}/ep_base/bin/${CMAKE_SHARED_MODULE_PREFIX}luasb${CMAKE_SHARED_MODULE_SUFFIX} ${CMAKE_CURRENT_BINARY_DIR})
    add_test(NAME test_move_sandbox_lib COMMAND cmake -E copy
    ${CMAKE_BINARY_DIR}/src/${CMAKE_SHARED_MODULE_PREFIX}luasandbox${CMAKE_SHARED_MODULE_SUFFIX} ${CMAKE_CURRENT_BINARY_DIR})
 elseif(APPLE)

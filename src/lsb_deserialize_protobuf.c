@@ -94,7 +94,7 @@ process_varint(lua_State* lua,
   if (!p) {
     return NULL;
   }
-  lua_pushnumber(lua, val);
+  lua_pushnumber(lua, (lua_Number)val);
   lua_setfield(lua, stack_index, name);
   return p;
 }
@@ -223,7 +223,7 @@ process_fields(lua_State* lua,
         case 0:
           p = read_varint(p, p + len, &val);
           if (!p) break;
-          lua_pushboolean(lua, val);
+          lua_pushboolean(lua, (int)val);
           lua_rawseti(lua, 5, ++value_count);
           break;
         case 2:
@@ -235,7 +235,7 @@ process_fields(lua_State* lua,
           do {
             p = read_varint(p, p + len, &val);
             if (!p) break;
-            lua_pushboolean(lua, val);
+            lua_pushboolean(lua, (int)val);
             lua_rawseti(lua, 5, ++value_count);
           }
           while (p < e);

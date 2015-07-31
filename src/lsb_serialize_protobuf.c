@@ -288,7 +288,7 @@ encode_field_array(lua_sandbox* lsb, lsb_output_data* d, int t,
                           // the next interation.
   }
   if (multiple && value_type == 2) { // fix up the varint packed length
-    int i = len_pos - 2;
+    size_t i = len_pos - 2;
     int y = 0;
     while (d->data[i] != 0 && y < MAX_VARINT_BYTES) { // find the length byte
       --i;
@@ -323,7 +323,7 @@ static int encode_field_object(lua_sandbox* lsb, lsb_output_data* d)
   }
   lua_getfield(lsb->lua, -2, "value_type");
   if (lua_isnumber(lsb->lua, -1)) {
-    value_type = lua_tointeger(lsb->lua, -1);
+    value_type = (int)lua_tointeger(lsb->lua, -1);
   }
   lua_getfield(lsb->lua, -3, "value");
   result = encode_field_value(lsb, d, 1, representation, value_type);
@@ -468,6 +468,7 @@ encode_field_value(lua_sandbox* lsb, lsb_output_data* d, int first,
   case LUA_TUSERDATA:
     {
       lua_CFunction fp = lsb_get_output_function(lsb->lua, -1);
+      size_t len_pos = 0;
       if (!fp) {
         snprintf(lsb->error_message, LSB_ERROR_SIZE,
                  "user data object does not implement lsb_output");
@@ -484,7 +485,7 @@ encode_field_value(lua_sandbox* lsb, lsb_output_data* d, int first,
       }
 
       if (pb_write_tag(d, 5, 2)) return 1;
-      size_t len_pos = d->pos;
+      len_pos = d->pos;
       if (pb_write_varint(d, 0)) return 1;  // length tbd later
       lua_pushlightuserdata(lsb->lua, d);
       if (fp(lsb->lua)) return 1;
