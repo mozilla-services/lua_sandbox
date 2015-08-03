@@ -71,7 +71,7 @@ local function kitchen_sink()
     -- time reported is mapped to timestamp
     assert(fields.timestamp == 1392052853559934000, fields.timestamp)
     assert(fields["protocol-version"] == "0", fields["protocol-version"])
-    assert(fields["structured-data"] == "-", fields["structured-data"])
+    assert(type(fields["structured-data"]) == "table", type(fields["structured-data"]))
     assert(fields["app-name"] == "kernel", fields["app-name"])
     assert(fields.procid == "", fields.procid)
     assert(fields.msgid == "-", fields.msgid)
@@ -103,26 +103,26 @@ local function structured_data()
     local log = '[origin@123 name1="first value" name2="sec\\ond\\\\v[a\\]l\\"ue"]'
     local fields = grammar:match(log)
     local sd = fields["structured-data"]
-    assert(sd["name1"] == "first value", sd["name1"])
-    assert(sd["name2"] == "sec\\ond\\v[a]l\"ue", sd["name2"])
+    assert(sd["_name1"] == "first value", sd["_name1"])
+    assert(sd["_name2"] == "sec\\ond\\v[a]l\"ue", sd["_name2"])
     assert(sd["id"] == "origin@123", sd["id"])
 
     log = '[origin@123 name="value\\\\"]'
     fields = grammar:match(log)
     sd = fields["structured-data"]
-    assert(sd["name"] == "value\\", sd["name"])
+    assert(sd["_name"] == "value\\", sd["_name"])
     assert(sd["id"] == "origin@123", sd["id"])
 
     log = '[origin@123 name="value\\\""]'
     fields = grammar:match(log)
     sd = fields["structured-data"]
-    assert(sd["name"] == 'value"', sd["name"])
+    assert(sd["_name"] == 'value"', sd["_name"])
     assert(sd["id"] == "origin@123", sd["id"])
 
     log = '[origin@123 name=""]'
     fields = grammar:match(log)
     sd = fields["structured-data"]
-    assert(sd["name"] == "", sd["name"])
+    assert(sd["_name"] == "", sd["_name"])
     assert(sd["id"] == "origin@123", sd["id"])
 end
 
