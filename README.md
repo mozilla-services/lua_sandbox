@@ -106,6 +106,7 @@ By default only the base library is loaded additional libraries must be loaded w
     - mysql - MySQL and MariaDB slow query and short slow query parsers
     - postfix - Postfix messages
     - syslog - Rsyslog meta grammar generator (creates a grammar based on the template configuration)
+    - syslog_message - Syslog messages
   - _user provided_ (lua, so/dll)
 
 *Return*
