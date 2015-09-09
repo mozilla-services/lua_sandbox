@@ -104,7 +104,9 @@ By default only the base library is loaded additional libraries must be loaded w
     - data_time - RFC3339, RFC3164, strftime, common log format, MySQL and Postgres timestamps
     - ip_address - IPv4 and IPv6 address
     - mysql - MySQL and MariaDB slow query and short slow query parsers
+    - postfix - Postfix messages
     - syslog - Rsyslog meta grammar generator (creates a grammar based on the template configuration)
+    - syslog_message - Syslog messages
   - _user provided_ (lua, so/dll)
 
 *Return*
