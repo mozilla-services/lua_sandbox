@@ -177,6 +177,15 @@ LSB_EXPORT void lsb_set_error(lua_sandbox* lsb, const char* err);
 LSB_EXPORT lua_State* lsb_get_lua(lua_sandbox* lsb);
 
 /**
+ * Returns the filename of the Lua source.
+ *
+ * @param lsb Pointer to the sandbox.
+ *
+ * @return const char* filename.
+ */
+LSB_EXPORT const char* lsb_get_lua_file(lua_sandbox* lsb);
+
+/**
  * Access the parent pointer stored in the sandbox.
  *
  * @param lsb Pointer to the sandbox.

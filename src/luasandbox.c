@@ -480,6 +480,12 @@ lua_State* lsb_get_lua(lua_sandbox* lsb)
 }
 
 
+const char* lsb_get_lua_file(lua_sandbox* lsb)
+{
+  return lsb->lua_file;
+}
+
+
 void* lsb_get_parent(lua_sandbox* lsb)
 {
   return lsb->parent;
