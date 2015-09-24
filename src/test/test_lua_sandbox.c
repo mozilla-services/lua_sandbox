@@ -496,7 +496,7 @@ static char* test_output_errors()
 {
   const char* tests[] =
   {
-    "process() lua/output_errors.lua:10: bad argument #1 to 'output' (unsuported type)"
+    "process() lua/output_errors.lua:10: bad argument #1 to 'output' (unsupported type)"
     , "process() lua/output_errors.lua:16: output_limit exceeded"
     , "process() lua/output_errors.lua:19: write_message() could not encode protobuf - array has mixed types"
     , "process() lua/output_errors.lua:22: write_message() could not encode protobuf - unsupported type: nil"

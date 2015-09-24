@@ -198,7 +198,7 @@ void lsb_output(lua_sandbox* lsb, int start, int end, int append)
       }
       break;
     default:
-      luaL_argerror(lsb->lua, i, "unsuported type");
+      luaL_argerror(lsb->lua, i, "unsupported type");
       break;
     }
   }
