@@ -330,6 +330,7 @@ local ua_os_matchers = {
     , {"Windows NT 6.0"          ,"Windows Vista"}
     , {"Windows NT 5.1"          ,"Windows XP"   }
     , {"Windows NT 5.0"          ,"Windows 2000" }
+    , {"Windows NT 10.0"         ,"Windows 10" }
 }
 
 local ua_browser_matchers = {
