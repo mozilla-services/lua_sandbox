@@ -21,6 +21,12 @@
 #define snprintf _snprintf
 #endif
 
+#ifdef _MSC_VER
+#define PRIuSIZE "Iu"
+#else
+#define PRIuSIZE "zu"
+#endif
+
 #define mu_assert(cond, ...)                                                   \
 do {                                                                           \
   if (!(cond)) {                                                               \
@@ -290,21 +296,21 @@ static char* test_destroy_error()
 static char* test_usage_error()
 {
   size_t u = lsb_usage(NULL, LSB_UT_MEMORY, LSB_US_CURRENT);
-  mu_assert(u == 0, "NULL sandbox memory usage received: %zu", u);
+  mu_assert(u == 0, "NULL sandbox memory usage received: %" PRIuSIZE, u);
 
   lua_sandbox* sb = lsb_create(NULL, "lua/simple.lua", "modules", 0, 0, 0);
   mu_assert(sb, "lsb_create() received: NULL");
 
   u = lsb_usage(NULL, LSB_UT_MAX + 1, LSB_US_CURRENT);
-  mu_assert(u == 0, "Invalid usage type received: %zu", u);
+  mu_assert(u == 0, "Invalid usage type received: %" PRIuSIZE, u);
 
   u = lsb_usage(NULL, LSB_UT_MEMORY, LSB_US_MAX + 1);
-  mu_assert(u == 0, "Invalid usage stat received: %zu", u);
+  mu_assert(u == 0, "Invalid usage stat received: %" PRIuSIZE, u);
 
   mu_assert(sb, "lsb_create() received: NULL");
   lsb_terminate(sb, "forced termination");
   u = lsb_usage(sb, LSB_UT_MEMORY, LSB_US_CURRENT);
-  mu_assert(u == 0, "Terminated memory usage received: %zu", u);
+  mu_assert(u == 0, "Terminated memory usage received: %" PRIuSIZE, u);
 
   e = lsb_destroy(sb, NULL);
   mu_assert(!e, "lsb_destroy() received: %s", e);
@@ -336,38 +342,38 @@ static char* test_simple()
             lsb_get_error(sb));
 
   size_t u = lsb_usage(sb, LSB_UT_MEMORY, LSB_US_CURRENT);
-  mu_assert(u > 0, "Current memory usage received: %zu", u);
-  printf("cur_mem %zu\n", u);
+  mu_assert(u > 0, "Current memory usage received: %" PRIuSIZE, u);
+  printf("cur_mem %" PRIuSIZE "\n", u);
 
   u = lsb_usage(sb, LSB_UT_MEMORY, LSB_US_MAXIMUM);
-  mu_assert(u > 0, "Maximum memory usage received: %zu", u);
-  printf("max_mem %zu\n", u);
+  mu_assert(u > 0, "Maximum memory usage received: %" PRIuSIZE, u);
+  printf("max_mem %" PRIuSIZE "\n", u);
 
   u = lsb_usage(sb, LSB_UT_MEMORY, LSB_US_LIMIT);
-  mu_assert(u == 65765, "Memory limit received: %zu", u);
+  mu_assert(u == 65765, "Memory limit received: %" PRIuSIZE, u);
 
   u = lsb_usage(sb, LSB_UT_INSTRUCTION, LSB_US_CURRENT);
-  mu_assert(u == 7, "Current instructions received: %zu", u);
+  mu_assert(u == 7, "Current instructions received: %" PRIuSIZE, u);
 
   u = lsb_usage(sb, LSB_UT_INSTRUCTION, LSB_US_MAXIMUM);
-  mu_assert(u == 7, "Maximum instructions received: %zu", u);
-  printf("max_ins %zu\n", u);
+  mu_assert(u == 7, "Maximum instructions received: %" PRIuSIZE, u);
+  printf("max_ins %" PRIuSIZE "\n", u);
 
   u = lsb_usage(sb, LSB_UT_INSTRUCTION, LSB_US_LIMIT);
-  mu_assert(u == 1000, "Instruction limit received: %zu", u);
+  mu_assert(u == 1000, "Instruction limit received: %" PRIuSIZE, u);
 
   u = lsb_usage(sb, LSB_UT_OUTPUT, LSB_US_CURRENT);
-  mu_assert(u == 0, "Current output received: %zu", u);
+  mu_assert(u == 0, "Current output received: %" PRIuSIZE, u);
 
   u = lsb_usage(sb, LSB_UT_OUTPUT, LSB_US_MAXIMUM);
-  mu_assert(u == 0, "Maximum output received: %zu", u);
-  printf("max_out %zu\n", u);
+  mu_assert(u == 0, "Maximum output received: %" PRIuSIZE, u);
+  printf("max_out %" PRIuSIZE "\n", u);
 
   u = lsb_usage(sb, LSB_UT_OUTPUT, LSB_US_LIMIT);
-  mu_assert(u == 1024, "Output limit received: %zu", u);
+  mu_assert(u == 1024, "Output limit received: %" PRIuSIZE, u);
 
   u = lsb_usage(sb, LSB_UT_OUTPUT, LSB_US_LIMIT);
-  mu_assert(u == 1024, "Output limit received: %zu", u);
+  mu_assert(u == 1024, "Output limit received: %" PRIuSIZE, u);
 
   lsb_state s = lsb_get_state(sb);
   mu_assert(s == LSB_RUNNING, "lsb_get_state() received: %d", s);
@@ -464,7 +470,7 @@ static char* test_output()
       if (outputs[x][0] == 0x10) {
         size_t header = 18;
         if (x == 19) {
-          mu_assert(written_data_len == 12346, "test: %d received: %zu", x, written_data_len);
+          mu_assert(written_data_len == 12346, "test: %d received: %" PRIuSIZE, x, written_data_len);
           written_data_len = header + 28; // just compare the protobuf before the hyperloglog
         }
         if (memcmp(outputs[x], written_data + header, written_data_len - header)

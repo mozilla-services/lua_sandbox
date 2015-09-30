@@ -157,7 +157,7 @@ process_fields(lua_State* lua,
         case 0:
           p = read_varint(p, p + len, &val);
           if (!p) break;
-          lua_pushinteger(lua, val);
+          lua_pushnumber(lua, (lua_Number)val);
           lua_rawseti(lua, 5, ++value_count);
           break;
         case 2:
@@ -169,7 +169,7 @@ process_fields(lua_State* lua,
           do {
             p = read_varint(p, p + len, &val);
             if (!p) break;
-            lua_pushinteger(lua, val);
+            lua_pushnumber(lua, (lua_Number)val);
             lua_rawseti(lua, 5, ++value_count);
           }
           while (p < e);

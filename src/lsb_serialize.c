@@ -487,7 +487,9 @@ static int file_exists(const char* fn)
 
 int lsb_restore_global_data(lua_sandbox* lsb, const char* data_file)
 {
-  if (!file_exists(data_file)) return 0;
+  if (!file_exists(data_file)) {
+    return 0;
+  }
 
   // Clear the sandbox limits during restoration.
 #ifdef LUA_JIT
