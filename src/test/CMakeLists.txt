@@ -20,4 +20,7 @@ endif()
 
 add_test(NAME test_move_lua_modules COMMAND cmake -E copy_directory ${CMAKE_SOURCE_DIR}/modules ${CMAKE_CURRENT_BINARY_DIR}/modules)
 add_test(NAME test_move_tests COMMAND cmake -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR})
-add_test(NAME test_sandbox WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR} COMMAND test_lua_sandbox)
+add_test(NAME test_sandbox COMMAND test_lua_sandbox)
+if(APPLE)
+	set_tests_properties(test_sandbox PROPERTIES ENVIRONMENT DYLD_LIBRARY_PATH=../lib)
+endif()
