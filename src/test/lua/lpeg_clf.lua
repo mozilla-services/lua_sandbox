@@ -384,7 +384,7 @@ end
 
 local function nginx_error_connection()
     -- optional connection
-    local log = '2014/03/01 11:29:39 [notice] 16842#0: 8878 using inherited sockets from "6;"'
+    local log = '2014/03/01 11:29:39 [notice] 16842#0: *8878 using inherited sockets from "6;"'
     local fields = clf.nginx_error_grammar:match(log)
     local result = {
         Pid         = 16842,

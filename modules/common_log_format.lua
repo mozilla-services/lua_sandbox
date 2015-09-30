@@ -426,7 +426,7 @@ end
 nginx_error_grammar = l.Ct(l.Cg(dt.build_strftime_grammar("%Y/%m/%d %T") / dt.time_to_ns, "time")
                            * l.space * "[" * nginx_error_levels * "]"
                            * l.space * l.Cg(l.digit^1 / tonumber, "Pid") * "#"
-                           * l.Cg(l.Ct(l.Cg(l.digit^1 / tonumber, "tid") * ": *" * (l.Cg(l.digit^1 / tonumber, "connection") * " ")^-1), "Fields")
+                           * l.Cg(l.Ct(l.Cg(l.digit^1 / tonumber, "tid") * ": " * (l.P"*" * l.Cg(l.digit^1 / tonumber, "connection") * " ")^-1), "Fields")
                            * l.Cg(l.P(1)^0, "Payload"))
 
 return M
