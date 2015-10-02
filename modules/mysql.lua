@@ -19,7 +19,7 @@ local float         = l.digit^1 * "." * l.digit^1
 local time          = l.P"# Time: " * line
 
 local user_name     = l.alpha^1 * "[" * l.alpha^1 * "]"
-local host_name     = l.alpha^0 * l.space^0 * "[" * l.Cg((l.P(1) - "]")^1, "Hostname") * "]"
+local host_name     = l.alpha^0 * l.space^0 * "[" * (l.P(1) - "]")^0 * "]"
 local user          = l.P"# User@Host: " * user_name * space * "@" * space * host_name * sep
 
 local query_time    = l.P"# Query_time: " * l.Cg(l.Ct(l.Cg(float / tonumber, "value") * l.Cg(l.Cc"s", "representation")), "Query_time")
