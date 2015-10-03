@@ -160,7 +160,7 @@ void lsb_output(lua_sandbox* lsb, int start, int end, int append)
   for (int i = start; result == 0 && i <= end; ++i) {
     switch (lua_type(lsb->lua, i)) {
     case LUA_TNUMBER:
-      if (lsb_serialize_double(&lsb->output, lua_tonumber(lsb->lua, i))) {
+      if (lsb_output_double(&lsb->output, lua_tonumber(lsb->lua, i))) {
         result = 1;
       }
       break;
@@ -192,9 +192,10 @@ void lsb_output(lua_sandbox* lsb, int start, int end, int append)
           luaL_argerror(lsb->lua, i, "unknown userdata type");
           return; // never reaches here but the compiler doesn't know it
         }
+        lua_pushvalue(lsb->lua, i);
         lua_pushlightuserdata(lsb->lua, &lsb->output);
         result = fp(lsb->lua);
-        lua_pop(lsb->lua, 1); // remove output
+        lua_pop(lsb->lua, 2); // remove the copy of the value and the output
       }
       break;
     default:

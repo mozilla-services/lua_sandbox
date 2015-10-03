@@ -312,6 +312,7 @@ lua_sandbox* lsb_create_custom(void* parent,
   lsb->lua_file = malloc(len + 1);
 
   if (!lsb->output.data || !lsb->lua_file) {
+    free(lsb->output.data);
     free(lsb->lua_file);
     lua_close(lsb->lua);
     lsb->lua = NULL;

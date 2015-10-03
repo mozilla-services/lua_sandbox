@@ -37,7 +37,6 @@ typedef struct
   const void* globals;
 } serialization_data;
 
-static const char* not_a_number = "nan";
 static const char* preservation_version = "_PRESERVATION_VERSION";
 static const char* serialize_function = "lsb_serialize";
 
@@ -559,12 +558,8 @@ int lsb_serialize_binary(const void* src, size_t len, lsb_output_data* output)
   return 0;
 }
 
-
-int lsb_serialize_double(lsb_output_data* output, double d)
+static int fast_double(lsb_output_data* output, double d)
 {
-  if (isnan(d)) {
-    return lsb_appends(output, not_a_number, 3);
-  }
   if (d > INT_MAX) {
     return lsb_appendf(output, "%0.17g", d);
   }
@@ -635,4 +630,34 @@ int lsb_serialize_double(lsb_output_data* output, double d)
   output->data[output->pos] = 0;
 
   return 0;
+}
+
+
+int lsb_serialize_double(lsb_output_data* output, double d)
+{
+  if (isnan(d)) {
+    return lsb_appends(output, "0/0", 3);
+  }
+  if (d == INFINITY) {
+    return lsb_appends(output, "1/0", 3);
+  }
+  if (d == -INFINITY) {
+    return lsb_appends(output, "-1/0", 4);
+  }
+  return fast_double(output, d);
+}
+
+
+int lsb_output_double(lsb_output_data* output, double d)
+{
+  if (isnan(d)) {
+    return lsb_appends(output, "nan", 3);
+  }
+  if (d == INFINITY) {
+    return lsb_appends(output, "inf", 3);
+  }
+  if (d == -INFINITY) {
+    return lsb_appends(output, "-inf", 4);
+  }
+  return fast_double(output, d);
 }

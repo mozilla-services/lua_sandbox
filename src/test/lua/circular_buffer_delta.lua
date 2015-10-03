@@ -73,6 +73,14 @@ function report(tc)
         cb:add(0, MIN_COL, 0)
         write_output(cb:format("cbufd"))
     elseif tc == 11 then
-        cb:fromstring(0, 0, 1, 2, 3, 4, 0, 3, 4)
+        cb:fromstring("1 1 1 2 3 4 0 3 4")
+        write_output(cb:format("cbufd"))
+    elseif tc == 12 then
+        data:set(0, ADD_COL, 1/0)
+        data:set(0, ADD_COL, 1/0)
+        data:set(0, SET_COL, -1/0)
+        data:add(0, SET_COL, 1)
+        data:set(0, GET_COL, data:get(0, ADD_COL))
+        write_output(data:format("cbufd"))
     end
 end

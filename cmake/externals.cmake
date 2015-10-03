@@ -123,7 +123,7 @@ externalproject_add(
 externalproject_add(
     lua_circular_buffer
     GIT_REPOSITORY https://github.com/mozilla-services/lua_circular_buffer.git
-    GIT_TAG e87bcc0a3ae29c5a7acaabbb7b1f2b56700769c6
+    GIT_TAG 444a68f839026a976a15fa63e339c4b1a0f8bad0
     CMAKE_ARGS ${SANDBOX_CMAKE_ARGS}
     INSTALL_ARGS ${INST_ARGS}
 )

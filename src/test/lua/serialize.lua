@@ -18,6 +18,9 @@ uuids = {
     {uuid="BD48B609-8922-4E59-A358-C242075CE088", type="test"},
     {uuid="BD48B609-8922-4E59-A358-C242075CE089", type="test1"}
 }
+nan = 0/0
+inf = 1/0
+ninf = -1/0
 
 large_key = {
     aaaaaaaaaaaaaaaaaaa = {["BD48B609-8922-4E59-A358-C242075CE081"] = 1,

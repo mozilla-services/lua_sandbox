@@ -1,4 +1,5 @@
 if _PRESERVATION_VERSION and _PRESERVATION_VERSION ~= 0 then return end
+_G["ninf"] = -1/0
 if _G["dataRef"] == nil then _G["dataRef"] = circular_buffer.new(3, 3, 1) end
 _G["dataRef"]:set_header(1, "Column_1", "count", "sum")
 _G["dataRef"]:set_header(2, "Column_2", "count", "sum")
@@ -15,6 +16,9 @@ _G["kvp"]["r"][4] = 92.002
 _G["kvp"]["r"][5] = 91.10001
 _G["kvp"]["r"]["key"] = "val"
 _G["kvp"]["b"] = "bar"
+if _G["delta"] == nil then _G["delta"] = circular_buffer.new(2, 1, 1, true) end
+_G["delta"]:set_header(1, "Column_1", "count", "sum")
+_G["delta"]:fromstring("1 1 2 nan 0 2")
 _G["uuids"] = {}
 _G["uuids"][1] = {}
 _G["uuids"][1]["type"] = "test"
@@ -22,16 +26,14 @@ _G["uuids"][1]["uuid"] = "BD48B609-8922-4E59-A358-C242075CE088"
 _G["uuids"][2] = {}
 _G["uuids"][2]["type"] = "test1"
 _G["uuids"][2]["uuid"] = "BD48B609-8922-4E59-A358-C242075CE089"
+_G["inf"] = 1/0
+_G["rates"] = _G["kvp"]["r"]
+_G["data"] = _G["dataRef"]
 _G["cycleb"] = {}
 _G["cycleb"]["a"] = {}
 _G["cycleb"]["a"]["b"] = _G["cycleb"]
 _G["cycleb"]["a"]["type"] = "cycle a"
 _G["cycleb"]["type"] = "cycle b"
-_G["rates"] = _G["kvp"]["r"]
-if _G["delta"] == nil then _G["delta"] = circular_buffer.new(2, 1, 1, true) end
-_G["delta"]:set_header(1, "Column_1", "count", "sum")
-_G["delta"]:fromstring("1 1 2 nan 0 2")
-_G["data"] = _G["dataRef"]
 _G["cyclea"] = _G["cycleb"]["a"]
 _G["large_key"] = {}
 _G["large_key"]["aaaaaaaaaaaaaaaaaaa"] = {}
@@ -69,4 +71,5 @@ _G["nested"]["cb"]:set_header(5, "Column_5", "count", "sum")
 _G["nested"]["cb"]:set_header(6, "Column_6", "count", "sum")
 _G["nested"]["cb"]:fromstring("1 1 nan nan nan nan nan nan nan nan nan nan nan nan")
 _G["count"] = 0
+_G["nan"] = 0/0
 _G["_VERSION"] = "Lua 5.1"

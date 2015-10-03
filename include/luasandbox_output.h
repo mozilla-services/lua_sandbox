@@ -93,4 +93,13 @@ LSB_EXPORT void lsb_output(lua_sandbox* lsb, int start, int end, int append);
  */
 LSB_EXPORT int lsb_output_protobuf(lua_sandbox* lsb, int index, int append);
 
+/**
+ * More efficient output of a double to a string
+ *
+ * @param output Pointer the output collector.
+ * @param d Double value to convert to a string.
+ *
+ * @return int Zero on success, non-zero on failure.
+ */
+LSB_EXPORT int lsb_output_double(lsb_output_data* output, double d);
 #endif
