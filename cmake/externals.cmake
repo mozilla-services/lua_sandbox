@@ -143,3 +143,11 @@ externalproject_add(
     CMAKE_ARGS ${SANDBOX_CMAKE_ARGS}
     INSTALL_ARGS ${INST_ARGS}
 )
+
+externalproject_add(
+    lua_sax
+    GIT_REPOSITORY https://github.com/trink/symtseries.git
+    GIT_TAG f8231b556bc53dbf7a71ea7b577e388e0e21a728
+    CMAKE_ARGS ${SANDBOX_CMAKE_ARGS}
+    INSTALL_ARGS ${INST_ARGS}
+)
