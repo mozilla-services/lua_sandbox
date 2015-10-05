@@ -93,7 +93,7 @@ add_dependencies(lua_cjson ${LUA_PROJECT})
 externalproject_add(
     lua_struct
     GIT_REPOSITORY https://github.com/trink/struct.git
-    GIT_TAG 5cf31819bee0d829d058cb5219e95ef0b1dd43a8
+    GIT_TAG b7e9b87d1ee36a5e22c6749be0959b45858beaad
     UPDATE_COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_LIST_DIR}/FindLua.cmake <SOURCE_DIR>/cmake
     CMAKE_ARGS ${SANDBOX_CMAKE_ARGS}
     INSTALL_ARGS ${INST_ARGS}
@@ -123,7 +123,7 @@ externalproject_add(
 externalproject_add(
     lua_circular_buffer
     GIT_REPOSITORY https://github.com/mozilla-services/lua_circular_buffer.git
-    GIT_TAG 444a68f839026a976a15fa63e339c4b1a0f8bad0
+    GIT_TAG bb6dd9f88f148813315b5a660b7e2ba47f958b31
     CMAKE_ARGS ${SANDBOX_CMAKE_ARGS}
     INSTALL_ARGS ${INST_ARGS}
 )
@@ -147,7 +147,7 @@ externalproject_add(
 externalproject_add(
     lua_sax
     GIT_REPOSITORY https://github.com/trink/symtseries.git
-    GIT_TAG f8231b556bc53dbf7a71ea7b577e388e0e21a728
+    GIT_TAG ee04aa0f3f7a6527e5345e8d1f7c767c11915da8
     CMAKE_ARGS ${SANDBOX_CMAKE_ARGS}
     INSTALL_ARGS ${INST_ARGS}
 )

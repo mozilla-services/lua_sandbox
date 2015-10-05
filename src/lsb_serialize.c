@@ -16,6 +16,10 @@
 #include "luasandbox/lualib.h"
 #include "lsb_private.h"
 
+#ifdef _MSC_VER
+#pragma warning( disable : 4056 )
+#endif
+
 typedef struct
 {
   const void* ptr;
