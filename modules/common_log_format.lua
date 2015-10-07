@@ -422,7 +422,7 @@ function build_apache_grammar(log_format)
     return l.Ct(grammar)
 end
 
-nginx_error_grammar = l.Ct(l.Cg(dt.build_strftime_grammar("%Y/%m/%d %T") / dt.time_to_ns, "time")
+nginx_error_grammar = l.Ct(l.Cg(dt.build_strftime_grammar("%Y/%m/%d %T") / dt.time_to_ns, "Timestamp")
                            * l.space * "[" * nginx_error_levels * "]"
                            * l.space * l.Cg(l.digit^1 / tonumber, "Pid") * "#"
                            * l.Cg(l.Ct(l.Cg(l.digit^1 / tonumber, "tid") * ": " * (l.Cg(l.digit^1 / tonumber, "connection") * " ")^-1), "Fields")

@@ -376,7 +376,7 @@ local function nginx_error()
         Pid         = 16842,
         Payload     = 'using inherited sockets from "6;"',
         Severity    = 5,
-        time        = 1393673379000000000
+        Timestamp   = 1393673379000000000
     }
     verify_result(fields, result)
     assert(fields.Fields.tid == 0, "expected a thread id of 0")
@@ -390,7 +390,7 @@ local function nginx_error_connection()
         Pid         = 16842,
         Payload     = 'using inherited sockets from "6;"',
         Severity    = 5,
-        time        = 1393673379000000000
+        Timestamp   = 1393673379000000000
     }
     verify_result(fields, result)
     assert(fields.Fields.tid == 0, "invalid tid")
