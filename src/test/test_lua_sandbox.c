@@ -876,26 +876,6 @@ static char* test_util()
 }
 
 
-static char* test_behead_array()
-{
-  lua_sandbox* sb = lsb_create(NULL, "lua/behead_array_test.lua", "modules", 0, 0, 0);
-  mu_assert(sb, "lsb_create() received: NULL");
-
-  int result = lsb_init(sb, NULL);
-  mu_assert(result == 0, "lsb_init() received: %d %s", result,
-            lsb_get_error(sb));
-
-  result = process(sb, 0);
-  mu_assert(result == 0, "process() received: %d %s", result,
-            lsb_get_error(sb));
-
-  e = lsb_destroy(sb, NULL);
-  mu_assert(!e, "lsb_destroy() received: %s", e);
-
-  return NULL;
-}
-
-
 static char* test_serialize()
 {
   const char* output_file = "serialize.preserve";
@@ -1742,7 +1722,6 @@ static char* all_tests()
   mu_run_test(test_errors);
   mu_run_test(test_lpeg);
   mu_run_test(test_util);
-  mu_run_test(test_behead_array);
   mu_run_test(test_serialize);
   mu_run_test(test_restore);
   mu_run_test(test_serialize_failure);
