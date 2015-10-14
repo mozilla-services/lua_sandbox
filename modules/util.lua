@@ -10,7 +10,7 @@ local string = require "string"
 local M = {}
 setfenv(1, M) -- Remove external access to contain everything in the module
 
--- flattens a Lua table so it can be encoded as a protobuf fields object
+-- Flattens a Lua table so it can be encoded as a protobuf fields object.
 function table_to_fields(t, fields, parent)
     for k,v in pairs(t) do
         if parent then
@@ -25,6 +25,27 @@ function table_to_fields(t, fields, parent)
                 fields[full_key] = v
             end
         end
+    end
+end
+
+-- Effectively removes all array values up to the provided index from an array
+-- by copying end values to the array head and setting now unused entries at
+-- the end of the array to `nil`.
+function behead_array(idx, array)
+    if idx <= 1 then return end
+    local array_len = #array
+    local start_nil_idx = 1 -- If idx > #array we zero it out completely.
+    if idx <= array_len then
+        -- Copy values to lower indexes.
+        local difference = idx - 1
+        for i = idx, array_len do
+            array[i-difference] = array[i]
+        end
+        start_nil_idx = array_len - difference + 1
+    end
+    -- Empty out the end of the array.
+    for i = start_nil_idx, array_len do
+        array[i] = nil
     end
 end
 
