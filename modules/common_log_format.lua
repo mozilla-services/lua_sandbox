@@ -334,7 +334,8 @@ local ua_os_matchers = {
 }
 
 local ua_browser_matchers = {
-      {"Chrome"        , ua_keyword("Chrome/")}
+      {"Edge"          , ua_keyword("Edge/")}
+    , {"Chrome"        , ua_keyword("Chrome/")}
     , {"Opera Mini"    , ua_basic}
     , {"Opera Mobi"    , ua_basic}
     , {"Opera"         , ua_basic}
