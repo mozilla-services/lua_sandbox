@@ -1095,6 +1095,6 @@ function process()
     postfix_dsn = '2.0.0',
     postfix_status = 'sent'
    }
-  process_one("discard_0001.yaml+extract_keyvalue_data", 'postfix/discard', message, expect, true)
+  process_one("discard_0001.yaml+extract_keyvalue_data", 'mta-in/discard', message, expect, true)
   return 0
 end
