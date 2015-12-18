@@ -411,8 +411,7 @@ postfix_patterns['lmtp'] = postfix_patterns['smtp']
 
 
 
-local postfix_programname = l.P'postfix'
-                          * (l.P(1) - l.P'/')^0
+local postfix_programname = (l.P(1) - l.P'/')^1
                           * '/'
                           * l.Cg(l.P(1)^1)
 
