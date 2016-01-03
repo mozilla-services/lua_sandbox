@@ -59,7 +59,7 @@ end
 
 local function rfc3164()
     local tests = {"Feb 10 16:46:36"}
-    local results = {1455122796000000000}
+    local results = {1455122796000000000} -- update timestamp in 2017 unless https://github.com/mozilla-services/lua_sandbox/issues/108 is fixed
     test_valid(dt.rfc3164_timestamp, tests, results)
 end
 
