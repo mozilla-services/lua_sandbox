@@ -9,7 +9,8 @@ local function traditional_file_format()
     local log = 'Feb  9 14:17:01 trink-x230 CRON[20758]: (root) CMD (   cd / && run-parts --report /etc/cron.hourly)\n'
     local fields = grammar:match(log)
     assert(fields.msg == "(root) CMD (   cd / && run-parts --report /etc/cron.hourly)", fields.msg)
-    assert(fields.timestamp == 1423491421000000000, fields.timestamp)
+    local ts = os.time{year = os.date("%Y"), month = 2, day = 9, hour = 14, min = 17, sec = 01} * 1e9
+    assert(fields.timestamp == ts, fields.timestamp)
     assert(fields.syslogtag.pid == 20758, fields.syslogtag.pid)
     assert(fields.syslogtag.programname == "CRON", fields.syslogtag.programname)
     assert(fields.hostname == "trink-x230", fields.hostname)
@@ -42,7 +43,8 @@ local function traditional_forward_format()
     local log = '<6>Feb 10 08:38:47 trink-x230 kernel: imklog 5.8.6, log source = /proc/kmsg started.'
     local fields = grammar:match(log)
     assert(fields.msg == "imklog 5.8.6, log source = /proc/kmsg started.", fields.msg)
-    assert(fields.timestamp == 1423557527000000000, fields.timestamp)
+    local ts = os.time{year = os.date("%Y"), month = 2, day = 10, hour = 8, min = 38, sec = 47} * 1e9
+    assert(fields.timestamp == ts, fields.timestamp)
     assert(fields.syslogtag.programname == "kernel", fields.syslogtag.programname)
     assert(fields.pri.severity == 6, fields.pri.severity)
     assert(fields.pri.facility == 0, fields.pri.facility)
@@ -67,7 +69,8 @@ local function kitchen_sink()
     assert(fields["syslogfacility-text"] == 0, fields["syslogfacility-text"])
     assert(fields.syslogpriority == 6, fields.syslogpriority)
     assert(fields["syslogpriority-text"] == 6, fields["syslogpriority-text"])
-    assert(fields.timegenerated == 1423560053000000000, fields.timegenerated)
+    local ts = os.time{year = os.date("%Y"), month = 2, day = 10, hour = 9, min = 20, sec = 53} * 1e9
+    assert(fields.timegenerated == ts, fields.timegenerated)
     -- time reported is mapped to timestamp
     assert(fields.timestamp == 1392052853559934000, fields.timestamp)
     assert(fields["protocol-version"] == "0", fields["protocol-version"])

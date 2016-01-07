@@ -59,7 +59,7 @@ end
 
 local function rfc3164()
     local tests = {"Feb 10 16:46:36"}
-    local results = {1423586796000000000}
+    local results = {os.time{year = os.date("%Y"), month = 2, day = 10, hour = 16, min = 46, sec = 36} * 1e9}
     test_valid(dt.rfc3164_timestamp, tests, results)
 end
 
