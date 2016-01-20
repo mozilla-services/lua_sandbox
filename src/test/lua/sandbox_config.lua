@@ -29,6 +29,7 @@ local tests = {
         getfenv=1,
         getmetatable=1,
         ipairs=1,
+        read_config=1,
         math=1,
         module=1,
         next=1,

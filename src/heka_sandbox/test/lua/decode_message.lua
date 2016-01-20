@@ -1,3 +1,7 @@
+-- This Source Code Form is subject to the terms of the Mozilla Public
+-- License, v. 2.0. If a copy of the MPL was not distributed with this
+-- file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
 -- minimal message, required fields only
 local test = "\010\016\233\213\137\149\106\254\064\066\175\098\058\163\017\067\202\068\016\000"
 local msg = decode_message(test)

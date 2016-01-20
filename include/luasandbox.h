@@ -6,96 +6,103 @@
 
 /** Generic Lua sandbox for dynamic data analysis  @file */
 
-#ifndef lsb_h_
-#define lsb_h_
+#ifndef luasandbox_h_
+#define luasandbox_h_
 
 #include "luasandbox/lua.h"
 
 #ifdef _WIN32
 #ifdef luasandbox_EXPORTS
-#define  LSB_EXPORT __declspec(dllexport)
+#define LSB_EXPORT __declspec(dllexport)
 #else
-#define  LSB_EXPORT __declspec(dllimport)
+#define LSB_EXPORT __declspec(dllimport)
 #endif
 #else
+#if __GNUC__ >= 4
+#define LSB_EXPORT __attribute__ ((visibility ("default")))
+#else
 #define LSB_EXPORT
+#endif
+#endif
+
+#if defined(_MSC_VER)
+#define PRIuSIZE "Iu"
+#else
+#define PRIuSIZE "zu"
 #endif
 
 #define LSB_ERROR_SIZE 256
 
+#define LSB_CONFIG_TABLE      "lsb_config"
+#define LSB_MEMORY_LIMIT      "memory_limit"
+#define LSB_INSTRUCTION_LIMIT "instruction_limit"
+#define LSB_OUTPUT_LIMIT      "output_limit"
+#define LSB_LUA_PATH          "path"
+#define LSB_LUA_CPATH         "cpath"
+
 typedef enum {
-  LSB_UNKNOWN = 0,
-  LSB_RUNNING = 1,
-  LSB_TERMINATED = 2
+  LSB_UNKNOWN     = 0,
+  LSB_RUNNING     = 1,
+  LSB_TERMINATED  = 2
 } lsb_state;
 
 typedef enum {
-  LSB_US_LIMIT = 0,
-  LSB_US_CURRENT = 1,
-  LSB_US_MAXIMUM = 2,
+  LSB_US_LIMIT    = 0,
+  LSB_US_CURRENT  = 1,
+  LSB_US_MAXIMUM  = 2,
 
   LSB_US_MAX
 } lsb_usage_stat;
 
 typedef enum {
-  LSB_UT_MEMORY = 0,
-  LSB_UT_INSTRUCTION = 1,
-  LSB_UT_OUTPUT = 2,
+  LSB_UT_MEMORY       = 0,
+  LSB_UT_INSTRUCTION  = 1,
+  LSB_UT_OUTPUT       = 2,
 
   LSB_UT_MAX
 } lsb_usage_type;
 
-typedef struct lua_sandbox lua_sandbox;
-typedef struct lsb_output_data lsb_output_data;
+typedef void (*lsb_logger)(const char* component,
+                           int level,
+                           const char* fmt,
+                           ...);
 
-/**
- * Allocates and initializes the structure around the Lua sandbox.
- *
- * @param parent Pointer to associate the owner to this sandbox.
- * @param lua_file Filename of the Lua script to run in this sandbox.
- * @param require_path Location of the common sandbox modules
- * @param memory_limit Sets the sandbox memory limit (bytes).
- * @param instruction_limit Sets the sandbox Lua instruction limit (count).
- * This limit is per call to process_message or timer_event
- * @param output_limit Sets the single message payload limit (bytes). This
- * limit applies to the in memory output buffer.  The buffer is reset back
- * to zero when inject_message is called.
- * @return lua_sandbox Sandbox pointer or NULL on failure.
- */
-LSB_EXPORT lua_sandbox* lsb_create(void* parent,
-                                   const char* lua_file,
-                                   const char* require_path,
-                                   unsigned memory_limit,
-                                   unsigned instruction_limit,
-                                   unsigned output_limit);
+typedef struct lsb_lua_sandbox lsb_lua_sandbox;
+typedef struct lsb_output_buffer lsb_output_buffer;
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 /**
  * Allocates and initializes the structure around the Lua sandbox allowing
  * full specification of the sandbox configuration using a Lua configuration
  * string.
- *
- * {
- * memory_limit = 1024*1024*1,
- * instruction_limit = 10000,
- * output_limit = 64*1024,
- * path = '/modules/?.lua',
- * cpath = '/modules/?.so',
+ * memory_limit = 1024*1024*1
+ * instruction_limit = 10000
+ * output_limit = 64*1024
+ * path = '/modules/?.lua'
+ * cpath = '/modules/?.so'
  * remove_entries = {
- *    [''] = {'collectgarbage','coroutine','dofile','load','loadfile'"
- *           ",'loadstring','newproxy','print'},
- *    os = {'getenv','execute','exit','remove','rename','setlocale','tmpname'}
- * },
- * disable_modules = {io = 1}
+ * [''] =
+ * {'collectgarbage','coroutine','dofile','load','loadfile','loadstring',
+ * 'newproxy','print'},
+ * os = {'getenv','execute','exit','remove','rename','setlocale','tmpname'}
  * }
+ * disable_modules = {io = 1}
+ *
  *
  * @param parent Pointer to associate the owner to this sandbox.
  * @param lua_file Filename of the Lua script to run in this sandbox.
- * @param config Lua structure defining the full sandbox restrictions.
- * @return lua_sandbox Sandbox pointer or NULL on failure.
+ * @param cfg Lua structure defining the full sandbox restrictions (may contain
+ *            optional host configuration options, everything is available to
+ *            the sandbox through the read_config API.
+ * @param logger Optional logger function pointer for error reporting
+ * @return lsb_lua_sandbox Sandbox pointer or NULL on failure.
  */
-LSB_EXPORT lua_sandbox* lsb_create_custom(void* parent,
-                                          const char* lua_file,
-                                          const char* config);
+LSB_EXPORT lsb_lua_sandbox*
+lsb_create(void *parent, const char *lua_file, const char *cfg,
+           lsb_logger logger);
 
 /**
  * Initializes the Lua sandbox and loads/runs the Lua script that was specified
@@ -114,19 +121,17 @@ LSB_EXPORT lua_sandbox* lsb_create_custom(void* parent,
  *
  * @return int Zero on success, non-zero on failure.
  */
-LSB_EXPORT int lsb_init(lua_sandbox* lsb, const char* state_file);
+LSB_EXPORT int lsb_init(lsb_lua_sandbox *lsb, const char *state_file);
 
 /**
  * Frees the memory associated with the sandbox.
  *
  * @param lsb        Sandbox pointer to discard.
- * @param state_file Filename where the sandbox global data is saved. Use a
- * NULL or empty string for no preservation.
  *
  * @return NULL on success, pointer to an error message on failure that MUST BE
  * FREED by the caller.
  */
-LSB_EXPORT char* lsb_destroy(lua_sandbox* lsb, const char* state_file);
+LSB_EXPORT char* lsb_destroy(lsb_lua_sandbox *lsb);
 
 /**
  * Retrieve the sandbox usage statistics.
@@ -137,8 +142,9 @@ LSB_EXPORT char* lsb_destroy(lua_sandbox* lsb, const char* state_file);
  *
  * @return size_t Count or number of bytes depending on the statistic.
  */
-LSB_EXPORT size_t
-lsb_usage(lua_sandbox* lsb, lsb_usage_type utype, lsb_usage_stat ustat);
+LSB_EXPORT size_t lsb_usage(lsb_lua_sandbox *lsb,
+                            lsb_usage_type utype,
+                            lsb_usage_stat ustat);
 /**
  * Retrieve the current sandbox status.
  *
@@ -146,7 +152,7 @@ lsb_usage(lua_sandbox* lsb, lsb_usage_type utype, lsb_usage_stat ustat);
  *
  * @return lsb_state code
  */
-LSB_EXPORT lsb_state lsb_get_state(lua_sandbox* lsb);
+LSB_EXPORT lsb_state lsb_get_state(lsb_lua_sandbox *lsb);
 
 /**
  * Return the last error in human readable form.
@@ -155,7 +161,7 @@ LSB_EXPORT lsb_state lsb_get_state(lua_sandbox* lsb);
  *
  * @return const char* error message
  */
-LSB_EXPORT const char* lsb_get_error(lua_sandbox* lsb);
+LSB_EXPORT const char* lsb_get_error(lsb_lua_sandbox *lsb);
 
 /**
  * Sets the last error string.
@@ -165,7 +171,7 @@ LSB_EXPORT const char* lsb_get_error(lua_sandbox* lsb);
  *
  * @return const char* error message
  */
-LSB_EXPORT void lsb_set_error(lua_sandbox* lsb, const char* err);
+LSB_EXPORT void lsb_set_error(lsb_lua_sandbox *lsb, const char *err);
 
 /**
  * Access the Lua pointer.
@@ -174,7 +180,7 @@ LSB_EXPORT void lsb_set_error(lua_sandbox* lsb, const char* err);
  *
  * @return lua_State* The lua_State pointer.
  */
-LSB_EXPORT lua_State* lsb_get_lua(lua_sandbox* lsb);
+LSB_EXPORT lua_State* lsb_get_lua(lsb_lua_sandbox *lsb);
 
 /**
  * Returns the filename of the Lua source.
@@ -183,7 +189,7 @@ LSB_EXPORT lua_State* lsb_get_lua(lua_sandbox* lsb);
  *
  * @return const char* filename.
  */
-LSB_EXPORT const char* lsb_get_lua_file(lua_sandbox* lsb);
+LSB_EXPORT const char* lsb_get_lua_file(lsb_lua_sandbox *lsb);
 
 /**
  * Access the parent pointer stored in the sandbox.
@@ -192,7 +198,7 @@ LSB_EXPORT const char* lsb_get_lua_file(lua_sandbox* lsb);
  *
  * @return void* The parent pointer passed to init.
  */
-LSB_EXPORT void* lsb_get_parent(lua_sandbox* lsb);
+LSB_EXPORT void* lsb_get_parent(lsb_lua_sandbox *lsb);
 
 /**
  * Create a CFunction for use by the Sandbox. The Lua sandbox pointer is pushed
@@ -202,20 +208,9 @@ LSB_EXPORT void* lsb_get_parent(lua_sandbox* lsb);
  * @param func Lua CFunction pointer.
  * @param func_name Function name exposed to the Lua sandbox.
  */
-LSB_EXPORT void lsb_add_function(lua_sandbox* lsb, lua_CFunction func,
-                                 const char* func_name);
-
-/**
- * Retrieve the data in the output buffer and reset the buffer. The returned
- * output string will remain valid until additional sandbox output is performed.
- * The output should be copied if the application needs to hold onto it.
- *
- * @param lsb Pointer to the sandbox.
- * @param len If len is not NULL, it will be set to the length of the string.
- *
- * @return const char* Pointer to the output buffer.
- */
-LSB_EXPORT const char* lsb_get_output(lua_sandbox* lsb, size_t* len);
+LSB_EXPORT void lsb_add_function(lsb_lua_sandbox *lsb,
+                                 lua_CFunction func,
+                                 const char *func_name);
 
 /**
  * Helper function to load the Lua function and set the instruction limits
@@ -225,14 +220,14 @@ LSB_EXPORT const char* lsb_get_output(lua_sandbox* lsb, size_t* len);
  *
  * @return int 0 on success
  */
-LSB_EXPORT int lsb_pcall_setup(lua_sandbox* lsb, const char* func_name);
+LSB_EXPORT int lsb_pcall_setup(lsb_lua_sandbox *lsb, const char *func_name);
 
 /**
  * Helper function to update the statistics after the call
  *
  * @param lsb Pointer to the sandbox.
  */
-LSB_EXPORT void lsb_pcall_teardown(lua_sandbox* lsb);
+LSB_EXPORT void lsb_pcall_teardown(lsb_lua_sandbox *lsb);
 
 /**
  * Shutdown the sandbox due to a fatal error.
@@ -240,17 +235,10 @@ LSB_EXPORT void lsb_pcall_teardown(lua_sandbox* lsb);
  * @param lsb Pointer to the sandbox.
  * @param err Reason for termination
  */
-LSB_EXPORT void lsb_terminate(lua_sandbox* lsb, const char* err);
+LSB_EXPORT void lsb_terminate(lsb_lua_sandbox *lsb, const char *err);
 
-/**
- * Deserialize a Heka message protobuf string into a Lua table structure. For
- * ease of reuse it is include here (since many of our sandboxes process Heka
- * messages).  If needed it must be manually added to the sandbox.
- *
- * @param lua Pointer the Lua state.
- *
- * @return One on success (table), two on failure (nil, error_message).
- */
-LSB_EXPORT int lsb_decode_protobuf(lua_State* lua);
+#ifdef __cplusplus
+}
+#endif
 
 #endif

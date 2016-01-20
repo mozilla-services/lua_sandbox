@@ -26,7 +26,7 @@ else()
     # Compiler options: http://gcc.gnu.org/onlinedocs/gcc/Invoking-GCC.html#Invoking-GCC
     set(CMAKE_C_FLAGS   "-std=gnu99 -pedantic -Werror -Wall -Wextra")
     if (NOT WIN32)
-        set(CMAKE_C_FLAGS  "${CMAKE_C_FLAGS} -fPIC")
+        set(CMAKE_C_FLAGS  "${CMAKE_C_FLAGS} -fPIC -fvisibility=hidden")
     else()
         set(CMAKE_C_FLAGS  "${CMAKE_C_FLAGS} -D__USE_MINGW_ANSI_STDIO")
     endif()

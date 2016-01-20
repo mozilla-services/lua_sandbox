@@ -6,20 +6,25 @@
 
 /** @brief Lua sandbox output buffer functions @file */
 
-#ifndef lsb_output_h_
-#define lsb_output_h_
+#ifndef luasandbox_output_h_
+#define luasandbox_output_h_
 
 #include <stdio.h>
 
 #include "luasandbox.h"
 #include "luasandbox/lua.h"
+#include "util/output_buffer.h"
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 /**
  * Add a output function to the environment table. The environment table must be
  * on the top of the stack. This function will receive the userdata and
- * lsb_output_data struct as pointers on the Lua stack.
+ * lsb_output_buffer struct as pointers on the Lua stack.
  *
- * lsb_output_data* output = (output_data*)lua_touserdata(lua, -1);
+ * lsb_output_buffer* output = (output_data*)lua_touserdata(lua, -1);
  * ud_object* ud = (ud_object*)lua_touserdata(lua, -2);
  *
  * @param lua Pointer the Lua state.
@@ -27,49 +32,17 @@
  *
  * @return int Zero on success, non-zero on failure.
  */
-LSB_EXPORT void lsb_add_output_function(lua_State* lua, lua_CFunction fp);
+LSB_EXPORT void lsb_add_output_function(lua_State *lua, lua_CFunction fp);
 
 /**
- * Append a character to the output stream.
+ * Utility function to retrieve a user data output function
  *
- * @param output Pointer the output collector.
- * @param ch Character to append to the output.
+ * @param lua
+ * @param index
  *
- * @return int Zero on success, non-zero if out of memory.
+ * @return lua_CFunction
  */
-LSB_EXPORT int lsb_appendc(lsb_output_data* output, char ch);
-
-/**
- * Append formatted string to the output stream.
- *
- * @param output Pointer the output collector.
- * @param fmt Printf format specifier.
- *
- * @return int Zero on success, non-zero if out of memory.
- */
-LSB_EXPORT int lsb_appendf(lsb_output_data* output, const char* fmt, ...);
-
-/**
- * Append a fixed string to the output stream.
- *
- * @param output Pointer the output collector.
- * @param str String to append to the output.
- * @param len Length of the string to append
- *
- * @return int Zero on success, non-zero if out of memory.
- */
-LSB_EXPORT
-int lsb_appends(lsb_output_data* output, const char* str, size_t len);
-
-/**
- * Resize the output buffer when more space is needed.
- *
- * @param output Output buffer to resize.
- * @param needed Number of additional bytes needed.
- *
- * @return int Zero on success, non-zero on failure.
- */
-LSB_EXPORT int lsb_realloc_output(lsb_output_data* output, size_t needed);
+LSB_EXPORT lua_CFunction lsb_get_output_function(lua_State *lua, int index);
 
 /**
  * Write an array of variables on the Lua stack to the output buffer.
@@ -80,26 +53,23 @@ LSB_EXPORT int lsb_realloc_output(lsb_output_data* output, size_t needed);
  * @param append 0 to overwrite the output buffer, 1 to append the output to it
  *
  */
-LSB_EXPORT void lsb_output(lua_sandbox* lsb, int start, int end, int append);
+LSB_EXPORT void
+lsb_output(lsb_lua_sandbox *lsb, int start, int end, int append);
 
 /**
- * Write a Lua table (in a Heka protobuf structure) to the output buffer.
+ * Retrieve the data in the output buffer and reset the buffer. The returned
+ * output string will remain valid until additional sandbox output is performed.
+ * The output should be copied if the application needs to hold onto it.
  *
  * @param lsb Pointer to the sandbox.
- * @param index Lua stack index of the table.
- * @param append 0 to overwrite the output buffer, 1 to append the output to it
+ * @param len If len is not NULL, it will be set to the length of the string.
  *
- * @return int 0 on success
+ * @return const char* Pointer to the output buffer.
  */
-LSB_EXPORT int lsb_output_protobuf(lua_sandbox* lsb, int index, int append);
+LSB_EXPORT const char* lsb_get_output(lsb_lua_sandbox *lsb, size_t *len);
 
-/**
- * More efficient output of a double to a string
- *
- * @param output Pointer the output collector.
- * @param d Double value to convert to a string.
- *
- * @return int Zero on success, non-zero on failure.
- */
-LSB_EXPORT int lsb_output_double(lsb_output_data* output, double d);
+#ifdef __cplusplus
+}
+#endif
+
 #endif

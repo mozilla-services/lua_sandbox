@@ -14,7 +14,7 @@
 
 #include "luasandbox/lauxlib.h"
 #include "luasandbox/lualib.h"
-#include "lsb_private.h"
+#include "luasandbox_impl.h"
 
 #ifdef _MSC_VER
 #pragma warning( disable : 4056 )
@@ -22,7 +22,7 @@
 
 typedef struct
 {
-  const void* ptr;
+  const void *ptr;
   size_t name_pos;
 } table_ref;
 
@@ -30,19 +30,19 @@ typedef struct
 {
   size_t size;
   size_t pos;
-  table_ref* array;
+  table_ref *array;
 } table_ref_array;
 
 typedef struct
 {
-  FILE* fh;
-  lsb_output_data keys;
+  FILE *fh;
+  lsb_output_buffer keys;
   table_ref_array tables;
-  const void* globals;
+  const void *globals;
 } serialization_data;
 
-static const char* preservation_version = "_PRESERVATION_VERSION";
-static const char* serialize_function = "lsb_serialize";
+static const char *preservation_version = "_PRESERVATION_VERSION";
+static const char *serialize_function = "lsb_serialize";
 
 /**
  * Serializes a Lua table structure.
@@ -54,7 +54,7 @@ static const char* serialize_function = "lsb_serialize";
  * @return int Zero on success, non-zero on failure.
  */
 static int
-serialize_table(lua_sandbox* lsb, serialization_data* data, size_t parent);
+serialize_table(lsb_lua_sandbox *lsb, serialization_data *data, size_t parent);
 
 /**
  * Serializes a Lua data value.
@@ -65,7 +65,9 @@ serialize_table(lua_sandbox* lsb, serialization_data* data, size_t parent);
  *
  * @return int
  */
-static int serialize_data(lua_sandbox* lsb, int index, lsb_output_data* output);
+static int serialize_data(lsb_lua_sandbox *lsb,
+                          int index,
+                          lsb_output_buffer *output);
 
 /**
  * Serializes a table key value pair.
@@ -77,7 +79,7 @@ static int serialize_data(lua_sandbox* lsb, int index, lsb_output_data* output);
  * @return int Zero on success, non-zero on failure.
  */
 static int
-serialize_kvp(lua_sandbox* lsb, serialization_data* data, size_t parent);
+serialize_kvp(lsb_lua_sandbox *lsb, serialization_data *data, size_t parent);
 
 /**
  * Returns the serialization function if the userdata implemented one.
@@ -87,7 +89,7 @@ serialize_kvp(lua_sandbox* lsb, serialization_data* data, size_t parent);
  *
  * @return lua_CFunction NULL if not found
  */
-static lua_CFunction get_serialize_function(lua_State* lua, int index)
+static lua_CFunction get_serialize_function(lua_State *lua, int index)
 {
   lua_CFunction fp = NULL;
   lua_getfenv(lua, index);
@@ -109,8 +111,8 @@ static lua_CFunction get_serialize_function(lua_State* lua, int index)
  * @return int
  */
 static int
-ignore_value_type(lua_sandbox* lsb, serialization_data* data, int index,
-                  lua_CFunction* fp)
+ignore_value_type(lsb_lua_sandbox *lsb, serialization_data *data, int index,
+                  lua_CFunction *fp)
 {
   switch (lua_type(lsb->lua, index)) {
   case LUA_TTABLE:
@@ -147,7 +149,7 @@ ignore_value_type(lua_sandbox* lsb, serialization_data* data, int index,
  *
  * @return table_ref* NULL if not found.
  */
-static table_ref* find_table_ref(table_ref_array* tra, const void* ptr)
+static table_ref* find_table_ref(table_ref_array *tra, const void *ptr)
 {
   for (size_t i = 0; i < tra->pos; ++i) {
     if (ptr == tra->array[i].ptr) {
@@ -168,11 +170,11 @@ static table_ref* find_table_ref(table_ref_array* tra, const void* ptr)
  * @return table_ref* Pointer to the table reference or NULL if out of memory.
  */
 static table_ref*
-add_table_ref(table_ref_array* tra, const void* ptr, size_t name_pos)
+add_table_ref(table_ref_array *tra, const void *ptr, size_t name_pos)
 {
   if (tra->pos == tra->size) {
     size_t newsize = tra->size * 2;
-    void* p = realloc(tra->array, newsize * sizeof(table_ref));
+    void *p = realloc(tra->array, newsize * sizeof(table_ref));
     if (p != NULL) {
       tra->array = p;
       tra->size = newsize;
@@ -193,7 +195,7 @@ add_table_ref(table_ref_array* tra, const void* ptr, size_t name_pos)
  *
  * @return int Version numebr
  */
-static int get_preservation_version(lua_State* lua)
+static int get_preservation_version(lua_State *lua)
 {
   int ver = 0;
   lua_getglobal(lua, preservation_version);
@@ -212,7 +214,7 @@ static int get_preservation_version(lua_State* lua)
 
 
 static int
-serialize_table(lua_sandbox* lsb, serialization_data* data, size_t parent)
+serialize_table(lsb_lua_sandbox *lsb, serialization_data *data, size_t parent)
 {
   int result = 0;
   lua_checkstack(lsb->lua, 2);
@@ -227,7 +229,7 @@ serialize_table(lua_sandbox* lsb, serialization_data* data, size_t parent)
 
 
 static int
-serialize_data(lua_sandbox* lsb, int index, lsb_output_data* output)
+serialize_data(lsb_lua_sandbox *lsb, int index, lsb_output_buffer *output)
 {
   output->pos = 0;
   switch (lua_type(lsb->lua, index)) {
@@ -252,7 +254,7 @@ serialize_data(lua_sandbox* lsb, int index, lsb_output_data* output)
     lua_pushstring(lsb->lua, "%q");
     lua_pushvalue(lsb->lua, index - 3);
     if (lua_pcall(lsb->lua, 2, 1, 0) == 0) {
-      if (lsb_appendf(output, "%s", lua_tostring(lsb->lua, -1))) {
+      if (lsb_outputf(output, "%s", lua_tostring(lsb->lua, -1))) {
         lua_pop(lsb->lua, 1); // Remove the string table.
         return 1;
       }
@@ -270,9 +272,8 @@ serialize_data(lua_sandbox* lsb, int index, lsb_output_data* output)
     lua_pop(lsb->lua, 2); // Remove the pcall result and the string table.
     break;
   case LUA_TBOOLEAN:
-    if (lsb_appendf(output, "%s",
-                    lua_toboolean(lsb->lua, index)
-                    ? "true" : "false")) {
+    if (lsb_outputf(output, "%s", lua_toboolean(lsb->lua, index)
+                     ? "true" : "false")) {
       return 1;
     }
     break;
@@ -287,7 +288,7 @@ serialize_data(lua_sandbox* lsb, int index, lsb_output_data* output)
 
 
 static int
-serialize_kvp(lua_sandbox* lsb, serialization_data* data, size_t parent)
+serialize_kvp(lsb_lua_sandbox *lsb, serialization_data *data, size_t parent)
 {
   int kindex = -2, vindex = -1, result = 0;
   lua_CFunction fp = NULL;
@@ -299,19 +300,19 @@ serialize_kvp(lua_sandbox* lsb, serialization_data* data, size_t parent)
   }
 
   size_t pos = data->keys.pos;
-  if (lsb_appendf(&data->keys, "%s[%s]", data->keys.data + parent,
-                  lsb->output.data)) {
+  if (lsb_outputf(&data->keys, "%s[%s]", data->keys.buf + parent,
+                  lsb->output.buf)) {
     return 1;
   }
 
   if (lua_type(lsb->lua, vindex) == LUA_TTABLE) {
-    const void* ptr = lua_topointer(lsb->lua, vindex);
-    table_ref* seen = find_table_ref(&data->tables, ptr);
+    const void *ptr = lua_topointer(lsb->lua, vindex);
+    table_ref *seen = find_table_ref(&data->tables, ptr);
     if (seen == NULL) {
       seen = add_table_ref(&data->tables, ptr, pos);
       if (seen != NULL) {
         data->keys.pos += 1;
-        fprintf(data->fh, "%s = {}\n", data->keys.data + pos);
+        fprintf(data->fh, "%s = {}\n", data->keys.buf + pos);
         result = serialize_table(lsb, data, pos);
       } else {
         snprintf(lsb->error_message, LSB_ERROR_SIZE,
@@ -319,55 +320,60 @@ serialize_kvp(lua_sandbox* lsb, serialization_data* data, size_t parent)
         return 1;
       }
     } else {
-      fprintf(data->fh, "%s = ", data->keys.data + pos);
+      fprintf(data->fh, "%s = ", data->keys.buf + pos);
       data->keys.pos = pos;
-      fprintf(data->fh, "%s\n", data->keys.data + seen->name_pos);
+      fprintf(data->fh, "%s\n", data->keys.buf + seen->name_pos);
     }
   } else if (lua_type(lsb->lua, vindex) == LUA_TUSERDATA) {
-    void* ud = lua_touserdata(lsb->lua, vindex);
-    table_ref* seen = find_table_ref(&data->tables, ud);
+    void *ud = lua_touserdata(lsb->lua, vindex);
+    table_ref *seen = find_table_ref(&data->tables, ud);
     if (seen == NULL) {
       seen = add_table_ref(&data->tables, ud, pos);
       if (seen != NULL) {
         data->keys.pos += 1;
-        lua_pushlightuserdata(lsb->lua, data->keys.data + pos);
+        lua_pushlightuserdata(lsb->lua, data->keys.buf + pos);
         lua_pushlightuserdata(lsb->lua, &lsb->output);
         lsb->output.pos = 0;
         result = fp(lsb->lua);
         lua_pop(lsb->lua, 2); // remove the key and the output
         if (result == 0) {
-          size_t n = fwrite(lsb->output.data, 1, lsb->output.pos, data->fh);
+          size_t n = fwrite(lsb->output.buf, 1, lsb->output.pos, data->fh);
           if (n != lsb->output.pos) {
             snprintf(lsb->error_message, LSB_ERROR_SIZE,
-                     "lsb_serialize failed %s", data->keys.data + pos);
+                     "lsb_serialize failed %s", data->keys.buf + pos);
             return 1;
           }
         }
       } else {
         snprintf(lsb->error_message, LSB_ERROR_SIZE,
-                 "lsb_serialize out of memory %s", data->keys.data + pos);
+                 "lsb_serialize out of memory %s", data->keys.buf + pos);
         return 1;
       }
     } else {
-      fprintf(data->fh, "%s = ", data->keys.data + pos);
+      fprintf(data->fh, "%s = ", data->keys.buf + pos);
       data->keys.pos = pos;
-      fprintf(data->fh, "%s\n", data->keys.data +
+      fprintf(data->fh, "%s\n", data->keys.buf +
               seen->name_pos);
     }
   } else {
-    fprintf(data->fh, "%s = ", data->keys.data + pos);
+    fprintf(data->fh, "%s = ", data->keys.buf + pos);
     data->keys.pos = pos;
     result = serialize_data(lsb, vindex, &lsb->output);
     if (result == 0) {
-      fprintf(data->fh, "%s\n", lsb->output.data);
+      fprintf(data->fh, "%s\n", lsb->output.buf);
     }
   }
   return result;
 }
 
 
-int lsb_preserve_global_data(lua_sandbox* lsb, const char* data_file)
+int lsb_preserve_global_data(lsb_lua_sandbox *lsb)
 {
+
+  if (!lsb->lua || !lsb->state_file) {
+    return 0;
+  }
+
   // make sure the string library is loaded before we start
   lua_getglobal(lsb->lua, LUA_STRLIBNAME);
   if (!lua_istable(lsb->lua, -1)) {
@@ -384,11 +390,11 @@ int lsb_preserve_global_data(lua_sandbox* lsb, const char* data_file)
 
   lua_pushvalue(lsb->lua, LUA_GLOBALSINDEX);
 
-  FILE* fh = fopen(data_file, "wb");
+  FILE *fh = fopen(lsb->state_file, "wb");
   if (fh == NULL) {
     int len = snprintf(lsb->error_message, LSB_ERROR_SIZE,
                        "lsb_preserve_global_data could not open: %s",
-                       data_file);
+                       lsb->state_file);
     if (len >= LSB_ERROR_SIZE || len < 0) {
       lsb->error_message[LSB_ERROR_SIZE - 1] = 0;
     }
@@ -398,7 +404,6 @@ int lsb_preserve_global_data(lua_sandbox* lsb, const char* data_file)
   int result = 0;
   serialization_data data;
   data.fh = fh;
-  data.keys.maxsize = 0;
 
 // Clear the sandbox limits during preservation.
 #ifdef LUA_JIT
@@ -413,13 +418,10 @@ int lsb_preserve_global_data(lua_sandbox* lsb, const char* data_file)
   lsb->output.maxsize = 0;
 // end clear
 
-  data.keys.size = LSB_OUTPUT_SIZE;
-  data.keys.pos = 0;
-  data.keys.data = malloc(data.keys.size);
   data.tables.size = 64;
   data.tables.pos = 0;
   data.tables.array = malloc(data.tables.size * sizeof(table_ref));
-  if (data.tables.array == NULL || data.keys.data == NULL) {
+  if (data.tables.array == NULL || lsb_init_output_buffer(&data.keys, 0)) {
     snprintf(lsb->error_message, LSB_ERROR_SIZE,
              "lsb_preserve_global_data out of memory");
     result = 1;
@@ -428,7 +430,7 @@ int lsb_preserve_global_data(lua_sandbox* lsb, const char* data_file)
             preservation_version,
             preservation_version,
             get_preservation_version(lsb->lua));
-    lsb_appends(&data.keys, "_G", 2);
+    lsb_outputs(&data.keys, "_G", 2);
     data.keys.pos += 1;
     data.globals = lua_topointer(lsb->lua, -1);
     lua_checkstack(lsb->lua, 2);
@@ -442,10 +444,10 @@ int lsb_preserve_global_data(lua_sandbox* lsb, const char* data_file)
     // was added the stack should only contain table _G.
   }
   free(data.tables.array);
-  free(data.keys.data);
+  lsb_free_output_buffer(&data.keys);
   fclose(fh);
   if (result != 0) {
-    remove(data_file);
+    remove(lsb->state_file);
   }
 
 // Uncomment if we start preserving state when not destroying the sandbox
@@ -477,9 +479,9 @@ int lsb_preserve_global_data(lua_sandbox* lsb, const char* data_file)
 }
 
 
-static int file_exists(const char* fn)
+static int file_exists(const char *fn)
 {
-  FILE* fh = fopen(fn, "r");
+  FILE *fh = fopen(fn, "r");
   if (fh) {
     fclose(fh);
     return 1;
@@ -488,9 +490,9 @@ static int file_exists(const char* fn)
 }
 
 
-int lsb_restore_global_data(lua_sandbox* lsb, const char* data_file)
+int lsb_restore_global_data(lsb_lua_sandbox *lsb)
 {
-  if (!file_exists(data_file)) {
+  if (!lsb || !lsb->state_file || !file_exists(lsb->state_file)) {
     return 0;
   }
 
@@ -504,7 +506,7 @@ int lsb_restore_global_data(lua_sandbox* lsb, const char* data_file)
   lua_sethook(lsb->lua, NULL, 0, 0);
 
   int err = 0;
-  if ((err = luaL_dofile(lsb->lua, data_file)) != 0) {
+  if ((err = luaL_dofile(lsb->lua, lsb->state_file)) != 0) {
     if (LUA_ERRFILE != err) {
       int len = snprintf(lsb->error_message, LSB_ERROR_SIZE,
                          "lsb_restore_global_data %s",
@@ -523,13 +525,13 @@ int lsb_restore_global_data(lua_sandbox* lsb, const char* data_file)
   lua_gc(lsb->lua, LUA_GCCOLLECT, 0);
   lsb->usage[LSB_UT_MEMORY][LSB_US_LIMIT] = limit;
   lsb->usage[LSB_UT_MEMORY][LSB_US_MAXIMUM] =
-    lsb->usage[LSB_UT_MEMORY][LSB_US_CURRENT];
+      lsb->usage[LSB_UT_MEMORY][LSB_US_CURRENT];
 #endif
   return 0;
 }
 
 
-void lsb_add_serialize_function(lua_State* lua, lua_CFunction fp)
+void lsb_add_serialize_function(lua_State *lua, lua_CFunction fp)
 {
   lua_pushstring(lua, serialize_function);
   lua_pushcfunction(lua, fp);
@@ -537,131 +539,42 @@ void lsb_add_serialize_function(lua_State* lua, lua_CFunction fp)
 }
 
 
-int lsb_serialize_binary(const void* src, size_t len, lsb_output_data* output)
+int lsb_serialize_binary(lsb_output_buffer *ob, const void *src, size_t len)
 {
-  const char* uc = (const char*)src;
+  const char *uc = (const char *)src;
   for (unsigned i = 0; i < len; ++i) {
     switch (uc[i]) {
     case '\n':
-      if (lsb_appends(output, "\\n", 2)) return 1;
+      if (lsb_outputs(ob, "\\n", 2)) return 1;
       break;
     case '\r':
-      if (lsb_appends(output, "\\r", 2)) return 1;
+      if (lsb_outputs(ob, "\\r", 2)) return 1;
       break;
     case '"':
-      if (lsb_appends(output, "\\\"", 2)) return 1;
+      if (lsb_outputs(ob, "\\\"", 2)) return 1;
       break;
     case '\\':
-      if (lsb_appends(output, "\\\\", 2)) return 1;
+      if (lsb_outputs(ob, "\\\\", 2)) return 1;
       break;
     default:
-      if (lsb_appendc(output, uc[i])) return 1;
+      if (lsb_outputc(ob, uc[i])) return 1;
       break;
     }
   }
   return 0;
 }
 
-static int fast_double(lsb_output_data* output, double d)
-{
-  if (d > INT_MAX) {
-    return lsb_appendf(output, "%0.17g", d);
-  }
 
-  const int precision = 8;
-  const unsigned magnitude = 100000000;
-  char buffer[20];
-  char* p = buffer;
-  int negative = 0;
-
-  if (d < 0) {
-    negative = 1;
-    d = -d;
-  }
-
-  int number = (int)d;
-  double tmp = (d - number) * magnitude;
-  unsigned fraction = (unsigned)tmp;
-  double diff = tmp - fraction;
-
-  if (diff > 0.5) {
-    ++fraction;
-    if (fraction >= magnitude) {
-      fraction = 0;
-      ++number;
-    }
-  } else if (diff == 0.5 && ((fraction == 0) || (fraction & 1))) {
-    // bankers rounding
-    ++fraction;
-  }
-
-  // output decimal fraction
-  if (fraction != 0) {
-    int nodigits = 1;
-    char c = 0;
-    for (int x = 0; x < precision; ++x) {
-      c = fraction % 10;
-      if (!(c == 0 && nodigits)) {
-        *p++ = c + '0';
-        nodigits = 0;
-      }
-      fraction /= 10;
-    }
-    *p++ = '.';
-  }
-
-  // output number
-  do {
-    *p++ = (number % 10) + '0';
-    number /= 10;
-  }
-  while (number > 0);
-
-  size_t remaining = output->size - output->pos;
-  size_t needed = (p - buffer) + negative;
-  if (needed >= remaining) {
-    if (lsb_realloc_output(output, needed)) return 1;
-  }
-
-  if (negative) {
-    output->data[output->pos++] = '-';
-  }
-  do {
-    --p;
-    output->data[output->pos++] = *p;
-  }
-  while (p != buffer);
-  output->data[output->pos] = 0;
-
-  return 0;
-}
-
-
-int lsb_serialize_double(lsb_output_data* output, double d)
+int lsb_serialize_double(lsb_output_buffer *ob, double d)
 {
   if (isnan(d)) {
-    return lsb_appends(output, "0/0", 3);
+    return lsb_outputs(ob, "0/0", 3);
   }
   if (d == INFINITY) {
-    return lsb_appends(output, "1/0", 3);
+    return lsb_outputs(ob, "1/0", 3);
   }
   if (d == -INFINITY) {
-    return lsb_appends(output, "-1/0", 4);
+    return lsb_outputs(ob, "-1/0", 4);
   }
-  return fast_double(output, d);
-}
-
-
-int lsb_output_double(lsb_output_data* output, double d)
-{
-  if (isnan(d)) {
-    return lsb_appends(output, "nan", 3);
-  }
-  if (d == INFINITY) {
-    return lsb_appends(output, "inf", 3);
-  }
-  if (d == -INFINITY) {
-    return lsb_appends(output, "-inf", 4);
-  }
-  return fast_double(output, d);
+  return lsb_outputfd(ob, d);
 }

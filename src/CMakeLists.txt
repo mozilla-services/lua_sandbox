@@ -4,10 +4,8 @@
 
 set(LUA_SANDBOX_SRC
 luasandbox.c
-lsb_output.c
-lsb_serialize.c
-lsb_serialize_protobuf.c
-lsb_deserialize_protobuf.c
+luasandbox_output.c
+luasandbox_serialize.c
 )
 
 set ( CMAKE_SKIP_BUILD_RPATH FALSE CACHE STRING "" FORCE )
@@ -43,7 +41,7 @@ endif()
 
 set_target_properties(luasandbox PROPERTIES VERSION ${CPACK_PACKAGE_VERSION_MAJOR}.${CPACK_PACKAGE_VERSION_MINOR}.${CPACK_PACKAGE_VERSION_PATCH} SOVERSION 0)
 
-target_link_libraries(luasandbox ${LUA_SANDBOX_LIBS})
+target_link_libraries(luasandbox luasandboxutil ${LUA_SANDBOX_LIBS})
 
 install(TARGETS luasandbox DESTINATION lib COMPONENT core)
 install(DIRECTORY "${EP_BASE}/lib/"  DESTINATION lib COMPONENT core PATTERN "lua" EXCLUDE)
@@ -51,4 +49,6 @@ install(DIRECTORY "${EP_BASE}/lib/lua/" DESTINATION lib/${PROJECT_NAME}/modules 
 install(DIRECTORY "${EP_BASE}/io/lib/lua/" DESTINATION lib/${PROJECT_NAME}/io_modules COMPONENT core)
 install(DIRECTORY "${EP_BASE}/include/" DESTINATION include COMPONENT core)
 
+add_subdirectory(util)
+add_subdirectory(heka_sandbox)
 add_subdirectory(test)

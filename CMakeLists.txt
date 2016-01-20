@@ -22,6 +22,7 @@ if(LUA_JIT)
     add_definitions(-DLUA_JIT)
 endif()
 
+find_library(LIBM_LIBRARY m)
 find_package(Git REQUIRED)
 set(CPACK_RPM_PACKAGE_LICENSE "MPLv2.0")
 set(CPACK_RPM_PACKAGE_PROVIDES "libluasb.so.0()(64bit)")
@@ -31,6 +32,7 @@ include(mozsvc)
 include(externals)
 
 include_directories("${EP_BASE}/include")
+include_directories("${CMAKE_SOURCE_DIR}/include")
 install(DIRECTORY "${CMAKE_SOURCE_DIR}/modules/" DESTINATION lib/${PROJECT_NAME}/modules COMPONENT core)
 install(FILES "${CMAKE_SOURCE_DIR}/README.md" DESTINATION share/doc/${PROJECT_NAME} COMPONENT core)
 

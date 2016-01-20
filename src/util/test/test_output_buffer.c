@@ -1,0 +1,180 @@
+/* -*- Mode: C; tab-width: 8; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
+/* vim: set ts=2 et sw=2 tw=80: */
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+
+/** @brief lsb_output_buffer unit tests @file */
+
+#include <stdio.h>
+#include <string.h>
+
+#include "../../test/mu_test.h"
+#include "util/output_buffer.h"
+#include "util/heka_message.h"
+
+static char* test_stub()
+{
+  return NULL;
+}
+
+static char* test_init_small_buf()
+{
+  size_t size = 512;
+  lsb_output_buffer b;
+  mu_assert(!lsb_init_output_buffer(&b, size), "init failed");
+  mu_assert(b.size == size, "received: %" PRIuSIZE, b.size);
+  mu_assert(b.maxsize == size, "received: %" PRIuSIZE, b.size);
+  lsb_free_output_buffer(&b);
+  return NULL;
+}
+
+
+static char* test_init_large_buf()
+{
+  size_t size = 1024 * 1024;
+  lsb_output_buffer b;
+  mu_assert(!lsb_init_output_buffer(&b, size), "init failed");
+  mu_assert(b.size == LSB_OUTPUT_SIZE, "received: %" PRIuSIZE, b.size);
+  mu_assert(b.maxsize == size , "received: %" PRIuSIZE, b.size);
+  lsb_free_output_buffer(&b);
+  return NULL;
+}
+
+
+static char* test_init_zero_buf()
+{
+  lsb_output_buffer b;
+  mu_assert(!lsb_init_output_buffer(&b, 0), "init failed");
+  mu_assert(b.size == LSB_OUTPUT_SIZE, "received: %" PRIuSIZE, b.size);
+  mu_assert(b.maxsize == 0 , "received: %" PRIuSIZE, b.size);
+  lsb_free_output_buffer(&b);
+  return NULL;
+}
+
+
+static char* test_expand_buf()
+{
+  size_t size = 1024 * 1024;
+  size_t rsize = 1024 * 16;
+  lsb_output_buffer b;
+  mu_assert(!lsb_init_output_buffer(&b, size), "init failed");
+  mu_assert(b.size == LSB_OUTPUT_SIZE, "received: %" PRIuSIZE, b.size);
+
+  mu_assert(!lsb_expand_output_buffer(&b, 1024 * 9), "expand failed");
+  mu_assert(b.size == rsize, "received: %" PRIuSIZE, b.size);
+  mu_assert(b.maxsize == size, "received: %" PRIuSIZE, b.size);
+
+  mu_assert(!lsb_expand_output_buffer(&b, 1024), "expand failed");
+  mu_assert(b.size == rsize, "received: %" PRIuSIZE, b.size);
+  mu_assert(b.maxsize == size, "received: %" PRIuSIZE, b.size);
+
+  lsb_free_output_buffer(&b);
+  return NULL;
+}
+
+
+static char* test_expand_failure()
+{
+  size_t size = 1024;
+  lsb_output_buffer b;
+  mu_assert(!lsb_init_output_buffer(&b, size), "init failed");
+  mu_assert(lsb_expand_output_buffer(&b, size + 1), "expand succeeded");
+  lsb_free_output_buffer(&b);
+  return NULL;
+}
+
+
+static char* test_outputc()
+{
+  lsb_output_buffer b;
+  mu_assert(!lsb_init_output_buffer(&b, 0), "init failed");
+  lsb_outputc(&b, 'a');
+  mu_assert(strcmp("a", b.buf) == 0, "received: %s", b.buf);
+  lsb_outputc(&b, 'b');
+  mu_assert(strcmp("ab", b.buf) == 0, "received: %s", b.buf);
+  lsb_free_output_buffer(&b);
+  return NULL;
+}
+
+
+static char* test_outputf()
+{
+  lsb_output_buffer b;
+  mu_assert(!lsb_init_output_buffer(&b, 0), "init failed");
+  lsb_outputf(&b, "%s", "foo");
+  mu_assert(strcmp("foo", b.buf) == 0, "received: %s", b.buf);
+  lsb_outputf(&b, " %s", "bar");
+  mu_assert(strcmp("foo bar", b.buf) == 0, "received: %s", b.buf);
+  lsb_free_output_buffer(&b);
+  return NULL;
+}
+
+
+static char* test_outputs()
+{
+  lsb_output_buffer b;
+  mu_assert(!lsb_init_output_buffer(&b, 0), "init failed");
+  lsb_outputs(&b, "foo", 3);
+  mu_assert(strcmp("foo", b.buf) == 0, "received: %s", b.buf);
+  lsb_outputf(&b, " bar", 4);
+  mu_assert(strcmp("foo bar", b.buf) == 0, "received: %s", b.buf);
+  lsb_free_output_buffer(&b);
+  return NULL;
+}
+
+
+static char* test_outputd()
+{
+  lsb_output_buffer b;
+  mu_assert(!lsb_init_output_buffer(&b, 0), "init failed");
+  lsb_outputd(&b, 10.1);
+  mu_assert(strcmp("10.1", b.buf) == 0, "received: %s", b.buf);
+  double d = INT_MAX;
+  lsb_outputd(&b, d + 1);
+  mu_assert(strcmp("10.12147483648", b.buf) == 0, "received: %s", b.buf);
+  d = INT_MIN;
+  lsb_outputd(&b, d - 1);
+  mu_assert(strcmp("10.12147483648-2147483649", b.buf) == 0,
+            "received: %s", b.buf);
+  lsb_outputd(&b, 0.0/0.0);
+  mu_assert(strcmp("10.12147483648-2147483649nan", b.buf) == 0,
+            "received: %s", b.buf);
+  lsb_outputd(&b, 1.0/0.0);
+  mu_assert(strcmp("10.12147483648-2147483649naninf", b.buf) == 0,
+            "received: %s", b.buf);
+  lsb_outputd(&b, -1.0/0.0);
+  mu_assert(strcmp("10.12147483648-2147483649naninf-inf", b.buf) == 0,
+            "received: %s", b.buf);
+  lsb_free_output_buffer(&b);
+  return NULL;
+}
+
+
+static char* all_tests()
+{
+  mu_run_test(test_stub);
+  mu_run_test(test_init_small_buf);
+  mu_run_test(test_init_large_buf);
+  mu_run_test(test_init_zero_buf);
+  mu_run_test(test_expand_buf);
+  mu_run_test(test_expand_failure);
+  mu_run_test(test_outputc);
+  mu_run_test(test_outputf);
+  mu_run_test(test_outputs);
+  mu_run_test(test_outputd);
+  return NULL;
+}
+
+
+int main()
+{
+  char *result = all_tests();
+  if (result) {
+    printf("%s\n", result);
+  } else {
+    printf("ALL TESTS PASSED\n");
+  }
+  printf("Tests run: %d\n", mu_tests_run);
+  return result != NULL;
+}
