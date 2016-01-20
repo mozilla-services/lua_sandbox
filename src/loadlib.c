@@ -349,7 +349,8 @@ static const char *findfile (lua_State *L, const char *name,
   lua_getfield(L, -2, pname);
   path = lua_tostring(L, -1);
   if (path == NULL)
-    luaL_error(L, LUA_QL("package.%s") " must be a string", pname);
+    luaL_error(L, "no '%s' configuration was specified for the sandbox; "
+                  "external modules have been disabled", pname);
   lua_pushliteral(L, "");  /* error accumulator */
   while ((path = pushnexttemplate(L, path)) != NULL) {
     const char *filename;
