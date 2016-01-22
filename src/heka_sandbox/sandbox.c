@@ -475,6 +475,11 @@ static int process_message(lsb_heka_sandbox *hsb, lsb_heka_message *msg,
     }
     lsb_terminate(hsb->lsb, err);
     return 1;
+  } else if (status == LSB_HEKA_PM_FAIL) {
+    ++hsb->stats.pm_cnt;
+    ++hsb->stats.pm_failures;
+  } else  if (hsb->type != 'o' || status != LSB_HEKA_PM_RETRY) {
+    ++hsb->stats.pm_cnt;
   }
   return status;
 }
@@ -655,14 +660,27 @@ lsb_heka_sandbox* lsb_heka_create_output(void *parent,
 }
 
 
-void lsb_heka_destroy_sandbox(lsb_heka_sandbox *hsb)
+void lsb_heka_stop_sandbox(lsb_heka_sandbox *hsb)
 {
-  if (!hsb) return;
+  lsb_stop_sandbox(hsb->lsb);
+}
 
-  lsb_destroy(hsb->lsb);
+
+void lsb_heka_terminate_sandbox(lsb_heka_sandbox *hsb, const char *err)
+{
+  lsb_terminate(hsb->lsb, err);
+}
+
+
+char* lsb_heka_destroy_sandbox(lsb_heka_sandbox *hsb)
+{
+  if (!hsb) return NULL;
+  char *msg = lsb_destroy(hsb->lsb);
+
   free(hsb->hostname);
   free(hsb->name);
   free(hsb);
+  return msg;
 }
 
 
@@ -688,7 +706,6 @@ int lsb_heka_process_message_output(lsb_heka_sandbox *hsb,
     nargs = 1;
     lua_pushlightuserdata(lua, sequence_id);
   }
-
   return process_message(hsb, msg, lua, nargs, profile);
 }
 

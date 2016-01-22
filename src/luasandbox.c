@@ -547,6 +547,21 @@ int lsb_init(lsb_lua_sandbox *lsb, const char *state_file)
 }
 
 
+static void stop_hook(lua_State* lua, lua_Debug* ar)
+{
+  (void)ar;  /* unused arg. */
+  lua_sethook(lua, NULL, 0, 0);
+  luaL_error(lua, "shutting down");
+}
+
+
+void lsb_stop_sandbox(lsb_lua_sandbox* lsb)
+{
+  lua_State* lua = lsb_get_lua(lsb);
+  lua_sethook(lua, stop_hook, LUA_MASKCALL | LUA_MASKRET | LUA_MASKCOUNT, 1);
+}
+
+
 char* lsb_destroy(lsb_lua_sandbox *lsb)
 {
   char *err = NULL;

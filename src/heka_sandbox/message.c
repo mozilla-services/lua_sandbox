@@ -833,28 +833,30 @@ int heka_encode_message(lua_State *lua)
     if (strlen(err) == 0) err = "exceeded output_limit";
     return luaL_error(lua, "encode_message() failed: %s", err);
   }
-  lsb->usage[LSB_UT_OUTPUT][LSB_US_CURRENT] = lsb->output.pos;
-  if (lsb->usage[LSB_UT_OUTPUT][LSB_US_CURRENT]
-      > lsb->usage[LSB_UT_OUTPUT][LSB_US_MAXIMUM]) {
-    lsb->usage[LSB_UT_OUTPUT][LSB_US_MAXIMUM] =
-      lsb->usage[LSB_UT_OUTPUT][LSB_US_CURRENT];
-  }
 
   size_t len = 0;
   const char *output = lsb_get_output(lsb, &len);
+  lsb->usage[LSB_UT_OUTPUT][LSB_US_CURRENT] = len;
 
   if (framed) {
     char header[14] = "\x1e\x00\x08"; // up to 10 varint bytes and a \x1f
     int hlen = lsb_pb_output_varint(header + 3, len) + 1;
+    lsb->usage[LSB_UT_OUTPUT][LSB_US_CURRENT] = len + hlen + LSB_HDR_FRAME_SIZE;
     header[1] = (char)hlen;
     header[hlen + 2] = '\x1f';
     luaL_Buffer b;
     luaL_buffinit(lua, &b);
-    luaL_addlstring(&b, (char *)header, hlen + 3);
+    luaL_addlstring(&b, header, hlen + LSB_HDR_FRAME_SIZE);
     luaL_addlstring(&b, output, len);
     luaL_pushresult(&b);
   } else {
     lua_pushlstring(lua, output, len);
+  }
+
+  if (lsb->usage[LSB_UT_OUTPUT][LSB_US_CURRENT]
+      > lsb->usage[LSB_UT_OUTPUT][LSB_US_MAXIMUM]) {
+    lsb->usage[LSB_UT_OUTPUT][LSB_US_MAXIMUM] =
+      lsb->usage[LSB_UT_OUTPUT][LSB_US_CURRENT];
   }
   return 1;
 }

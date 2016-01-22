@@ -15,11 +15,11 @@
 #include "luasandbox/util/running_stats.h"
 
 struct heka_stats {
-  long long im_cnt;
-  long long im_bytes;
+  unsigned long long im_cnt;
+  unsigned long long im_bytes;
 
-  long long pm_cnt;
-  long long pm_failures;
+  unsigned long long pm_cnt;
+  unsigned long long pm_failures;
 
   lsb_running_stats pm;
   lsb_running_stats te;

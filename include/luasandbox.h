@@ -124,6 +124,17 @@ lsb_create(void *parent, const char *lua_file, const char *cfg,
 LSB_EXPORT int lsb_init(lsb_lua_sandbox *lsb, const char *state_file);
 
 /**
+ * Aborts the running sandbox from a different thread of execution. A "shutting
+ * down" termination message is generated.
+ *
+ * @param lsb sandbox to abort
+ *
+ * @return
+ *
+ */
+LSB_EXPORT void lsb_stop_sandbox(lsb_lua_sandbox *lsb);
+
+/**
  * Frees the memory associated with the sandbox.
  *
  * @param lsb        Sandbox pointer to discard.

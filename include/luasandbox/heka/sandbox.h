@@ -19,6 +19,15 @@
 
 #define LSB_HEKA_MAX_MESSAGE_SIZE "max_message_size"
 
+enum lsb_heka_pm_rv {
+  LSB_HEKA_PM_SENT  = 0,
+  LSB_HEKA_PM_FAIL  = -1,
+  LSB_HEKA_PM_SKIP  = -2,
+  LSB_HEKA_PM_RETRY = -3,
+  LSB_HEKA_PM_BATCH = -4,
+  LSB_HEKA_PM_ASYNC = -5
+};
+
 typedef struct lsb_heka_sandbox lsb_heka_sandbox;
 
 #ifdef __cplusplus
@@ -201,15 +210,38 @@ int lsb_heka_process_message_output(lsb_heka_sandbox *hsb,
                                     bool profile);
 
 /**
- * Frees all memory associated with the sandbox; hsb cannont be used after this
- * point and the host should set it to NULL.
+ * Aborts the running sandbox from a different thread of execution. A "shutting
+ * down" termination message is generated. Used to abort long runnning sandboxes
+ * such as an input sandbox.
  *
- * @param hsb Heka sandbox to free
+ * @param hsb Heka sandbox to abort
  *
  * @return
  *
  */
 LSB_EXPORT void
+lsb_heka_stop_sandbox(lsb_heka_sandbox *hsb);
+
+/**
+ * Terminates the sandbox as if it had a fatal error (not thread safe).
+ *
+ * @param hsb Heka sandbox to terminate
+ * @param err Reason for termination
+ */
+LSB_EXPORT void
+lsb_heka_terminate_sandbox(lsb_heka_sandbox *lsb, const char *err);
+
+/**
+ * Frees all memory associated with the sandbox; hsb cannont be used after this
+ * point and the host should set it to NULL.
+ *
+ * @param hsb Heka sandbox to free
+ *
+ * @return NULL on success, pointer to an error message on failure that MUST BE
+ * FREED by the caller.
+ *
+ */
+LSB_EXPORT char *
 lsb_heka_destroy_sandbox(lsb_heka_sandbox *hsb);
 
 /**

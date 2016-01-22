@@ -20,7 +20,8 @@
 
 #define LSB_UUID_SIZE         16
 #define LSB_UUID_STR_SIZE     36
-#define LSB_MAX_HDR_SIZE      (255 + 3)
+#define LSB_HDR_FRAME_SIZE    3
+#define LSB_MAX_HDR_SIZE      (255 + LSB_HDR_FRAME_SIZE)
 
 #define LSB_UUID          "Uuid"
 #define LSB_TIMESTAMP     "Timestamp"
