@@ -9,8 +9,8 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "util/heka_message.h"
-#include "util/protobuf.h"
+#include "luasandbox/util/heka_message.h"
+#include "luasandbox/util/protobuf.h"
 
 #include "../../test/mu_test.h"
 

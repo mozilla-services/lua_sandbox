@@ -6,7 +6,7 @@
 
 /** General purpose utility functions @file */
 
-#include "util/util.h"
+#include "luasandbox/util/util.h"
 
 size_t lsb_lp2(unsigned long long x)
 {

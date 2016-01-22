@@ -11,7 +11,7 @@
 
 #include <stdbool.h>
 
-#include "util/heka_message.h"
+#include "luasandbox/util/heka_message.h"
 
 typedef struct lsb_message_matcher lsb_message_matcher;
 typedef struct lsb_message_match_builder lsb_message_match_builder;

@@ -6,7 +6,7 @@
 
 /** @brief Hindsight/Heka message matcher implementation @file */
 
-#include "heka_sandbox/message_matcher.h"
+#include "luasandbox/heka/message_matcher.h"
 
 #include <stdbool.h>
 #include <stdlib.h>
@@ -15,7 +15,7 @@
 #include "luasandbox/lauxlib.h"
 #include "luasandbox/lua.h"
 #include "luasandbox/lualib.h"
-#include "util/string_matcher.h"
+#include "luasandbox/util/string_matcher.h"
 
 static const char *grammar =
     "local l = require 'lpeg'\n"
@@ -566,6 +566,8 @@ lsb_create_message_matcher(const lsb_message_match_builder *mmb,
 
 void lsb_destroy_message_matcher(lsb_message_matcher *mm)
 {
+  if (!mm) return;
+
   for (int i = 0; i < mm->nodes_size; ++i) {
     free(mm->nodes[i].variable);
     switch (mm->nodes[i].value_type) {

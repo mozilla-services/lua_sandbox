@@ -6,15 +6,15 @@
 
 /** Data stream input buffer implementation @file */
 
-#include "util/input_buffer.h"
+#include "luasandbox/util/input_buffer.h"
 
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
-#include "util/util.h"
-#include "util/heka_message.h"
+#include "luasandbox/util/util.h"
+#include "luasandbox/util/heka_message.h"
 
 int lsb_init_input_buffer(lsb_input_buffer *b, size_t max_message_size)
 {

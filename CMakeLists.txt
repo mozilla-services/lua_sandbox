@@ -2,12 +2,12 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-cmake_minimum_required(VERSION 2.8 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.0 FATAL_ERROR)
 project(luasandbox C)
 set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "Generic Lua sandbox for dynamic data analysis")
 set(CPACK_PACKAGE_VERSION_MAJOR 0)
-set(CPACK_PACKAGE_VERSION_MINOR 10)
-set(CPACK_PACKAGE_VERSION_PATCH 2)
+set(CPACK_PACKAGE_VERSION_MINOR 11)
+set(CPACK_PACKAGE_VERSION_PATCH 0)
 set(CPACK_PACKAGE_CONTACT "Mike Trinkala <trink@mozilla.com>")
 
 set(CPACK_DEB_COMPONENT_INSTALL ON)

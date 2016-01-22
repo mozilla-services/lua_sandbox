@@ -19,9 +19,9 @@
 #include "luasandbox/lauxlib.h"
 #include "luasandbox_output.h"
 #include "sandbox_impl.h"
-#include "util/heka_message.h"
-#include "util/output_buffer.h"
-#include "util/protobuf.h"
+#include "luasandbox/util/heka_message.h"
+#include "luasandbox/util/output_buffer.h"
+#include "luasandbox/util/protobuf.h"
 
 /**
  * Adds missing headers specified in the configuration to the message output.

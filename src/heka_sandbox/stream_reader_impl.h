@@ -11,8 +11,8 @@
 
 #include "luasandbox/lua.h"
 
-#include "util/input_buffer.h"
-#include "util/heka_message.h"
+#include "luasandbox/util/input_buffer.h"
+#include "luasandbox/util/heka_message.h"
 
 extern const char *mozsvc_heka_stream_reader;
 extern const char *mozsvc_heka_stream_reader_table;

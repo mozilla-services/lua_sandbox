@@ -23,7 +23,7 @@
 * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ******************************************************************************/
 
-#include "util/string_matcher.h"
+#include "luasandbox/util/string_matcher.h"
 
 #include <ctype.h>
 

@@ -11,10 +11,7 @@ luasandbox_serialize.c
 set ( CMAKE_SKIP_BUILD_RPATH FALSE CACHE STRING "" FORCE )
 set ( CMAKE_BUILD_WITH_INSTALL_RPATH FALSE CACHE STRING "" FORCE )
 
-add_custom_target(copy_includes
-COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_SOURCE_DIR}/include/luasandbox.h ${EP_BASE}/include
-COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_SOURCE_DIR}/include/luasandbox_output.h ${EP_BASE}/include
-COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_SOURCE_DIR}/include/luasandbox_serialize.h ${EP_BASE}/include)
+add_custom_target(copy_includes COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/include ${EP_BASE}/include)
 add_library(luasandbox SHARED ${LUA_SANDBOX_SRC})
 add_dependencies(luasandbox copy_includes)
 

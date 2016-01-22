@@ -6,7 +6,7 @@
 
 /** String functions @file */
 
-#include "util/string.h"
+#include "luasandbox/util/string.h"
 
 void lsb_init_const_string(lsb_const_string *s)
 {

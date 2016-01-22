@@ -9,7 +9,7 @@
 #include <string.h>
 
 #include "../../test/mu_test.h"
-#include "util/string_matcher.h"
+#include "luasandbox/util/string_matcher.h"
 
 static char* test_stub()
 {

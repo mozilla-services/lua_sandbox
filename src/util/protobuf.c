@@ -6,7 +6,7 @@
 
 /** Generic protobuf utility functions @file */
 
-#include "util/protobuf.h"
+#include "luasandbox/util/protobuf.h"
 
 #include <stdio.h>
 #include <stdlib.h>

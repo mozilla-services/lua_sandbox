@@ -6,14 +6,14 @@
 
 /** @brief Hindsight Heka message implementation @file */
 
-#include "util/heka_message.h"
+#include "luasandbox/util/heka_message.h"
 
 #include <stdlib.h>
 #include <string.h>
 
 #include "../luasandbox_impl.h"
 #include "luasandbox_output.h"
-#include "util/protobuf.h"
+#include "luasandbox/util/protobuf.h"
 
 
 static size_t decode_header(char *buf, size_t len, size_t max_message_size)

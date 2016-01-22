@@ -12,7 +12,7 @@
 #include <stdbool.h>
 
 #include "luasandbox.h"
-#include "util/heka_message.h"
+#include "luasandbox/util/heka_message.h"
 
 // these functions are intentionally not exported
 

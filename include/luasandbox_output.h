@@ -13,7 +13,7 @@
 
 #include "luasandbox.h"
 #include "luasandbox/lua.h"
-#include "util/output_buffer.h"
+#include "luasandbox/util/output_buffer.h"
 
 #ifdef __cplusplus
 extern "C" {

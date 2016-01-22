@@ -10,9 +10,9 @@
 #define luasandbox_heka_sandbox_sandbox_impl_h_
 
 #include "luasandbox.h"
-#include "heka_sandbox/sandbox.h"
-#include "util/heka_message.h"
-#include "util/running_stats.h"
+#include "luasandbox/heka/sandbox.h"
+#include "luasandbox/util/heka_message.h"
+#include "luasandbox/util/running_stats.h"
 
 struct heka_stats {
   long long im_cnt;

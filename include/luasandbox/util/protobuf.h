@@ -14,7 +14,7 @@
 #include <stddef.h>
 #include <stdbool.h>
 
-#include "util/output_buffer.h"
+#include "luasandbox/util/output_buffer.h"
 
 #define LSB_MAX_VARINT_BYTES  10
 

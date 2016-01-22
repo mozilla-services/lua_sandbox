@@ -12,8 +12,8 @@
 #include <string.h>
 #include <time.h>
 
-#include "heka_sandbox/message_matcher.h"
-#include "util/heka_message.h"
+#include "luasandbox/heka/message_matcher.h"
+#include "luasandbox/util/heka_message.h"
 
 #include "test.h"
 

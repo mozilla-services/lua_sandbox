@@ -15,7 +15,7 @@
 #include "luasandbox.h"
 #include "luasandbox/lua.h"
 #include "luasandbox/lauxlib.h"
-#include "util/heka_message.h"
+#include "luasandbox/util/heka_message.h"
 
 #define LSB_HEKA_MAX_MESSAGE_SIZE "max_message_size"
 
@@ -234,6 +234,15 @@ int lsb_heka_timer_event(lsb_heka_sandbox *hsb, time_t t, bool shutdown);
  * @return const char* error message
  */
 LSB_EXPORT const char* lsb_heka_get_error(lsb_heka_sandbox *hsb);
+
+/**
+ * Returns the filename of the Lua source.
+ *
+ * @param hsb Heka sandbox
+ *
+ * @return const char* filename.
+ */
+LSB_EXPORT const char* lsb_heka_get_lua_file(lsb_heka_sandbox *hsb);
 
 // todo need access to the sandbox statistics.  For simplicity it will most
 // likely return a Heka protobuf string with all the info

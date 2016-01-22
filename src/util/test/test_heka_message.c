@@ -12,7 +12,7 @@
 #include <stdio.h>
 
 #include "../../test/mu_test.h"
-#include "util/heka_message.h"
+#include "luasandbox/util/heka_message.h"
 
 #define TEST_UUID "\x0a\x10\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff"
 #define TEST_NS   "\x10\x01"

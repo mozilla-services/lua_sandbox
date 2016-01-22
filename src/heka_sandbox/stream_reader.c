@@ -11,7 +11,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "heka_sandbox/sandbox.h"
+#include "luasandbox/heka/sandbox.h"
 #include "message_impl.h"
 #include "luasandbox/lauxlib.h"
 

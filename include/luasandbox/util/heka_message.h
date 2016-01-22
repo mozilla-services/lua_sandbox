@@ -13,10 +13,10 @@
 #include <stddef.h>
 
 #include "luasandbox.h"
-#include "util/input_buffer.h"
-#include "util/output_buffer.h"
-#include "util/string.h"
-#include "util/util.h"
+#include "luasandbox/util/input_buffer.h"
+#include "luasandbox/util/output_buffer.h"
+#include "luasandbox/util/string.h"
+#include "luasandbox/util/util.h"
 
 #define LSB_UUID_SIZE         16
 #define LSB_UUID_STR_SIZE     36

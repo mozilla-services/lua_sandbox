@@ -9,7 +9,7 @@
 #include <stdio.h>
 
 #include "../../test/mu_test.h"
-#include "util/util.h"
+#include "luasandbox/util/util.h"
 
 static char* test_stub()
 {

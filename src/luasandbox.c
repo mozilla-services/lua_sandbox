@@ -19,7 +19,7 @@
 #include "luasandbox/lauxlib.h"
 #include "luasandbox/lua.h"
 #include "luasandbox/lualib.h"
-#include "util/output_buffer.h"
+#include "luasandbox/util/output_buffer.h"
 #include "luasandbox_impl.h"
 #include "luasandbox_serialize.h"
 

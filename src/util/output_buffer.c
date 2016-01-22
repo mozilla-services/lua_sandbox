@@ -6,14 +6,14 @@
 
 /** Data stream output buffer implementation @file */
 
-#include "util/output_buffer.h"
+#include "luasandbox/util/output_buffer.h"
 
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
-#include "util/util.h"
+#include "luasandbox/util/util.h"
 
 
 int lsb_init_output_buffer(lsb_output_buffer *b, size_t max_message_size)

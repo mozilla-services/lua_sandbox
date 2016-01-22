@@ -6,20 +6,20 @@
 
 /** @brief Heka sandbox implementation @file */
 
-#include "heka_sandbox/sandbox.h"
+#include "luasandbox/heka/sandbox.h"
 
 #include <math.h>
 #include <stdlib.h>
 #include <string.h>
 
-#include "heka_sandbox/message_matcher.h"
+#include "luasandbox/heka/message_matcher.h"
 #include "luasandbox.h"
 #include "luasandbox_output.h"
 #include "message_impl.h"
 #include "sandbox_impl.h"
 #include "stream_reader_impl.h"
-#include "util/protobuf.h"
-#include "util/running_stats.h"
+#include "luasandbox/util/protobuf.h"
+#include "luasandbox/util/running_stats.h"
 
 #ifdef _WIN32
 #include <winsock2.h>
@@ -119,6 +119,8 @@ static int inject_message_input(lua_State *lua)
     return luaL_error(lua, "%s() failed: rejected by the callback",
                       im_func_name);
   }
+  ++hsb->stats.im_cnt;
+  hsb->stats.im_bytes += output.len;
   return 0;
 }
 
@@ -147,6 +149,8 @@ static int inject_message_analysis(lua_State *lua)
     return luaL_error(lua, "%s() failed: rejected by the callback",
                       im_func_name);
   }
+  ++hsb->stats.im_cnt;
+  hsb->stats.im_bytes += output_len;
   return 0;
 }
 
@@ -732,4 +736,11 @@ const char* lsb_heka_get_error(lsb_heka_sandbox *hsb)
 {
   if (!hsb) return "";
   return lsb_get_error(hsb->lsb);
+}
+
+
+const char* lsb_heka_get_lua_file(lsb_heka_sandbox *hsb)
+{
+  if (!hsb) return NULL;
+  return lsb_get_lua_file(hsb->lsb);
 }

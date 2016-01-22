@@ -6,7 +6,7 @@
 
 /** @brief Running stats implementation @file */
 
-#include "util/running_stats.h"
+#include "luasandbox/util/running_stats.h"
 
 #include <math.h>
 

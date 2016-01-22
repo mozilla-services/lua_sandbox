@@ -9,7 +9,7 @@
 #include <math.h>
 
 #include "../../test/mu_test.h"
-#include "util/running_stats.h"
+#include "luasandbox/util/running_stats.h"
 
 static char* test_stub()
 {
