@@ -17,6 +17,7 @@
 #include "luasandbox/lua.h"
 #include "luasandbox_output.h"
 #include "luasandbox/util/util.h"
+#include "../luasandbox_impl.h"
 
 #include "mu_test.h"
 
@@ -1292,7 +1293,7 @@ static char* benchmark_serialize()
 }
 
 
-static char* benchmark_deserialize() // todo need to alter since this now performs the serialization too
+static char* benchmark_deserialize()
 {
   int iter = 1000;
 
@@ -1304,6 +1305,8 @@ static char* benchmark_deserialize() // todo need to alter since this now perfor
     int result = lsb_init(sb, "output/serialize.data");
     mu_assert(result == 0, "lsb_init() received: %d %s", result,
               lsb_get_error(sb));
+    free(sb->state_file);
+    sb->state_file = NULL;
     e = lsb_destroy(sb);
     mu_assert(!e, "lsb_destroy() received: %s", e);
   }

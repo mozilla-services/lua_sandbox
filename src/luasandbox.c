@@ -529,8 +529,7 @@ int lsb_init(lsb_lua_sandbox *lsb, const char *state_file)
     return 2;
   } else {
     lua_gc(lsb->lua, LUA_GCCOLLECT, 0);
-    lsb->usage[LSB_UT_INSTRUCTION][LSB_US_CURRENT] =
-        (unsigned)instruction_usage(lsb);
+    lsb->usage[LSB_UT_INSTRUCTION][LSB_US_CURRENT] = instruction_usage(lsb);
     if (lsb->usage[LSB_UT_INSTRUCTION][LSB_US_CURRENT]
         > lsb->usage[LSB_UT_INSTRUCTION][LSB_US_MAXIMUM]) {
       lsb->usage[LSB_UT_INSTRUCTION][LSB_US_MAXIMUM] =

@@ -30,6 +30,21 @@ enum lsb_heka_pm_rv {
 
 typedef struct lsb_heka_sandbox lsb_heka_sandbox;
 
+typedef struct lsb_heka_stats {
+  unsigned long long mem_cur;
+  unsigned long long mem_max;
+  unsigned long long ins_max;
+  unsigned long long out_max;
+  unsigned long long im_cnt;
+  unsigned long long im_bytes;
+  unsigned long long pm_cnt;
+  unsigned long long pm_failures;
+  double             pm_avg;
+  double             pm_sd;
+  double             te_avg;
+  double             te_sd;
+} lsb_heka_stats;
+
 #ifdef __cplusplus
 extern "C"
 {
@@ -117,7 +132,7 @@ lsb_heka_sandbox* lsb_heka_create_input(void *parent,
  *
  */
 LSB_EXPORT
-int lsb_heka_process_message_input(lsb_heka_sandbox *hsb,
+int lsb_heka_pm_input(lsb_heka_sandbox *hsb,
                                    lsb_heka_message *msg,
                                    double cp_numeric,
                                    const char *cp_string,
@@ -158,7 +173,7 @@ lsb_heka_sandbox* lsb_heka_create_analysis(void *parent,
  *
  */
 LSB_EXPORT
-int lsb_heka_process_message_analysis(lsb_heka_sandbox *hsb,
+int lsb_heka_pm_analysis(lsb_heka_sandbox *hsb,
                                       lsb_heka_message *msg,
                                       bool profile);
 
@@ -204,7 +219,7 @@ lsb_heka_sandbox* lsb_heka_create_output(void *parent,
  *
  */
 LSB_EXPORT
-int lsb_heka_process_message_output(lsb_heka_sandbox *hsb,
+int lsb_heka_pm_output(lsb_heka_sandbox *hsb,
                                     lsb_heka_message *msg,
                                     void *sequence_id,
                                     bool profile);
@@ -241,7 +256,7 @@ lsb_heka_terminate_sandbox(lsb_heka_sandbox *lsb, const char *err);
  * FREED by the caller.
  *
  */
-LSB_EXPORT char *
+LSB_EXPORT char*
 lsb_heka_destroy_sandbox(lsb_heka_sandbox *hsb);
 
 /**
@@ -276,8 +291,24 @@ LSB_EXPORT const char* lsb_heka_get_error(lsb_heka_sandbox *hsb);
  */
 LSB_EXPORT const char* lsb_heka_get_lua_file(lsb_heka_sandbox *hsb);
 
-// todo need access to the sandbox statistics.  For simplicity it will most
-// likely return a Heka protobuf string with all the info
+/**
+ * Retrieve the sandbox profiling/monitoring statistics.  This call accesses
+ * internal data and is not thread safe.
+ *
+ * @param hsb Heka sandbox
+ *
+ * @return lsb_heka_stats A copy of the stats structure
+ */
+LSB_EXPORT lsb_heka_stats lsb_heka_get_stats(lsb_heka_sandbox *hsb);
+
+/**
+ * Queries the state of the sandbox.
+ *
+ * @param hsb Heka sandbox
+ *
+ * @return True if the sandbox has not been terminated
+ */
+LSB_EXPORT bool lsb_heka_is_running(lsb_heka_sandbox *hsb);
 
 #ifdef __cplusplus
 }
