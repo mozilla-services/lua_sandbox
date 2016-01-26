@@ -479,10 +479,10 @@ static const luaL_Reg base_funcs[] = {
 ** =======================================================
 */
 
-#define CO_RUN	0	/* running */
-#define CO_SUS	1	/* suspended */
-#define CO_NOR	2	/* 'normal' (it resumed another coroutine) */
-#define CO_DEAD	3
+#define CO_RUN  0 /* running */
+#define CO_SUS  1 /* suspended */
+#define CO_NOR  2 /* 'normal' (it resumed another coroutine) */
+#define CO_DEAD 3
 
 static const char *const statnames[] =
     {"running", "suspended", "normal", "dead"};
@@ -647,7 +647,11 @@ static void base_open (lua_State *L) {
 
 LUALIB_API int luaopen_base (lua_State *L) {
   base_open(L);
+  return 1;
+}
+
+LUALIB_API int luaopen_coroutine (lua_State *L) {
   luaL_register(L, LUA_COLIBNAME, co_funcs);
-  return 2;
+  return 1;
 }
 
