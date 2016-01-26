@@ -3,7 +3,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 add_executable(test_luasandbox test_luasandbox.c)
-target_link_libraries(test_luasandbox luasandbox)
+target_link_libraries(test_luasandbox luasandbox luasandboxutil)
 
 add_test(NAME test_move_luasandbox_c_modules COMMAND cmake -E copy_directory ${CMAKE_BINARY_DIR}/ep_base/lib/lua ${CMAKE_CURRENT_BINARY_DIR}/modules)
 if(WIN32)

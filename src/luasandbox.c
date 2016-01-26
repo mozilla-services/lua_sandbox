@@ -27,7 +27,8 @@
 static jmp_buf g_jbuf;
 
 static const luaL_Reg preload_module_list[] = {
-  { "", luaopen_base },
+  { LUA_BASELIBNAME, luaopen_base },
+  { LUA_COLIBNAME, luaopen_coroutine },
   { LUA_TABLIBNAME, luaopen_table },
   { LUA_IOLIBNAME, luaopen_io },
   { LUA_OSLIBNAME, luaopen_os },
@@ -495,7 +496,7 @@ int lsb_init(lsb_lua_sandbox *lsb, const char *state_file)
     lsb_terminate(lsb, NULL);
     return 1;
   }
-  lua_pushstring(lsb->lua, "");
+  lua_pushstring(lsb->lua, LUA_BASELIBNAME);
   if (lua_pcall(lsb->lua, 1, 0, 0)) {
     snprintf(lsb->error_message, LSB_ERROR_SIZE,
              "lsb_init %s", lua_tostring(lsb->lua, -1));

@@ -13,6 +13,7 @@
 
 #include "../luasandbox_impl.h"
 #include "luasandbox_output.h"
+#include "luasandbox/util/output_buffer.h"
 #include "luasandbox/util/protobuf.h"
 
 
@@ -490,8 +491,8 @@ bool lsb_read_heka_field(lsb_heka_message *m,
 int lsb_write_heka_uuid(lsb_output_buffer *ob, const char *uuid, size_t len)
 {
   static const size_t needed = 18;
-  ob->pos = 0; // writing a uuid will always clear the buffer since it is the
-               // start of a new message
+  lsb_clear_output_buffer(ob); // writing a uuid will always clear the buffer
+                               //since it is the start of a new message
   int result = lsb_expand_output_buffer(ob, needed);
   if (result) return result;
 

@@ -16,6 +16,7 @@
 #include "luasandbox/lauxlib.h"
 #include "luasandbox/lua.h"
 #include "luasandbox_output.h"
+#include "luasandbox/util/util.h"
 
 #include "mu_test.h"
 
@@ -54,32 +55,6 @@ int file_exists(const char *fn)
     return 1;
   }
   return 0;
-}
-
-
-char* read_file(const char *fn)
-{
-  char *str = NULL;
-  FILE *fh;
-  fh = fopen(fn, "rb");
-  mu_assert(fh != NULL, "fopen() failed");
-
-  int result = fseek(fh, 0, SEEK_END);
-  mu_assert(result == 0, "fseek(SEEK_END) failed %d", result);
-
-  long pos = ftell(fh);
-  mu_assert(pos != -1, "ftell() failed %s", strerror(errno));
-  rewind(fh);
-
-  str = malloc(pos + 1);
-  mu_assert(str != NULL, "malloc failed");
-
-  size_t b = fread(str, 1, pos, fh);
-  mu_assert((long)b == pos, "fread() failed");
-  str[pos] = 0;
-
-  fclose(fh);
-  return str;
 }
 
 
@@ -834,11 +809,11 @@ static char* test_serialize()
   mu_assert(!e, "lsb_destroy() received: %s", e);
 
 #ifdef LUA_JIT
-  char *expected = read_file("output/serialize.data");
+  char *expected = lsb_read_file("output/serialize.data");
 #else
-  char *expected = read_file("output/serialize.lua51.data");
+  char *expected = lsb_read_file("output/serialize.lua51.data");
 #endif
-  char *actual = read_file(output_file);
+  char *actual = lsb_read_file(output_file);
   mu_assert(strcmp(expected, actual) == 0, "serialization mismatch");
   free(expected);
   free(actual);

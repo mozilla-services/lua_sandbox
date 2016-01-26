@@ -115,6 +115,7 @@ static char* test_lsb_pb_write_bool()
   mu_assert(ob.buf[0] == 1, "received: %02hhx", ob.buf[0]);
   mu_assert(lsb_pb_write_bool(&ob, 7), "buffer should be full");
 
+  ob.err = 0;
   ob.pos = 0;
   mu_assert_rv(0, lsb_pb_write_bool(&ob, 0));
   mu_assert(ob.buf[0] == 0, "received: %02hhx", ob.buf[0]);
@@ -157,7 +158,7 @@ static char* test_lsb_pb_write_string()
   ob.pos = ob.maxsize - 3;
   mu_assert_rv(1, lsb_pb_write_string(&ob, 1, foo, len));
 
-  ob.pos = 0;
+  lsb_clear_output_buffer(&ob);
   mu_assert_rv(0, lsb_pb_write_string(&ob, 1, foo, len));
   mu_assert(ob.pos = len + 2, "received: %" PRIuSIZE, ob.pos);
   mu_assert(memcmp("\x0a\x03" "foo", ob.buf, 5) == 0, "received: "
@@ -190,6 +191,7 @@ static char* test_lsb_pb_update_field_length()
   ob.pos = 512;
   mu_assert_rv(1, lsb_pb_update_field_length(&ob, 512));
 
+  ob.err = 0;
   ob.buf[301] = 'x';
   ob.pos = 302;
   mu_assert_rv(0, lsb_pb_update_field_length(&ob, 1));

@@ -16,10 +16,11 @@
 #define LSB_OUTPUT_SIZE 1024
 
 struct lsb_output_buffer {
+  char    *buf;
   size_t  maxsize;
   size_t  size;
   size_t  pos;
-  char    *buf;
+  int     err;
 };
 
 #ifdef __cplusplus
@@ -44,6 +45,13 @@ int lsb_init_output_buffer(lsb_output_buffer *b, size_t max_message_size);
  * @param b Output buffer
  */
 LSB_EXPORT void lsb_free_output_buffer(lsb_output_buffer *b);
+
+/**
+ * Resets the position and error state of the buffer
+ *
+ * @param b Output buffer
+ */
+LSB_EXPORT void lsb_clear_output_buffer(lsb_output_buffer *b);
 
 /**
  * Resize the output buffer when more space is needed.

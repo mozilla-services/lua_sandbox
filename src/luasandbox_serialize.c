@@ -231,7 +231,7 @@ serialize_table(lsb_lua_sandbox *lsb, serialization_data *data, size_t parent)
 static int
 serialize_data(lsb_lua_sandbox *lsb, int index, lsb_output_buffer *output)
 {
-  output->pos = 0;
+  lsb_clear_output_buffer(output);
   switch (lua_type(lsb->lua, index)) {
   case LUA_TNUMBER:
     if (lsb_serialize_double(output, lua_tonumber(lsb->lua, index))) {
@@ -333,7 +333,7 @@ serialize_kvp(lsb_lua_sandbox *lsb, serialization_data *data, size_t parent)
         data->keys.pos += 1;
         lua_pushlightuserdata(lsb->lua, data->keys.buf + pos);
         lua_pushlightuserdata(lsb->lua, &lsb->output);
-        lsb->output.pos = 0;
+        lsb_clear_output_buffer(&lsb->output);
         result = fp(lsb->lua);
         lua_pop(lsb->lua, 2); // remove the key and the output
         if (result == 0) {
@@ -465,7 +465,7 @@ int lsb_preserve_global_data(lsb_lua_sandbox *lsb)
     lsb->usage[LSB_UT_MEMORY][LSB_US_CURRENT];
 #endif
   lsb->output.maxsize = max_output_size;
-  lsb->output.pos = 0;
+  lsb_clear_output_buffer(lsb->output);
   if (lsb->output.size > cur_output_size) {
     void* ptr = realloc(lsb->output.data, cur_output_size);
     if (!ptr) return 1;

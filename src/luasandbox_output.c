@@ -42,7 +42,7 @@ lua_CFunction lsb_get_output_function(lua_State *lua, int index)
 void lsb_output(lsb_lua_sandbox *lsb, int start, int end, int append)
 {
   if (!append) {
-    lsb->output.pos = 0;
+    lsb_clear_output_buffer(&lsb->output);
   }
 
   int result = 0;
@@ -112,8 +112,8 @@ const char* lsb_get_output(lsb_lua_sandbox *lsb, size_t *len)
   if (len) {
     *len = lsb->output.pos;
   }
-  if (lsb->output.pos == 0) return "";
+  if (lsb->output.err || lsb->output.pos == 0) return "";
 
-  lsb->output.pos = 0;
+  lsb_clear_output_buffer(&lsb->output);
   return lsb->output.buf;
 }

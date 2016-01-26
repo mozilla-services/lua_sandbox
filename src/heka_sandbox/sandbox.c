@@ -255,8 +255,8 @@ static void set_restrictions(lua_State *lua, lsb_heka_sandbox *hsb)
   };
 
   static const char *analysis[] = {
-    NULL, "", "collectgarbage", "coroutine", "dofile", "load", "loadfile",
-    "loadstring", "newproxy", "print",
+    NULL, "", "collectgarbage", "dofile", "load", "loadfile", "loadstring",
+    "newproxy", "print",
     NULL, "os", "getenv", "execute", "exit", "remove", "rename", "setlocale",
     "tmpname",
     NULL, "string", "dump"
@@ -278,6 +278,8 @@ static void set_restrictions(lua_State *lua, lsb_heka_sandbox *hsb)
     lua_newtable(lua);
     lua_pushboolean(lua, true);
     lua_setfield(lua, -2, "io");
+    lua_pushboolean(lua, true);
+    lua_setfield(lua, -2, "coroutine");
     lua_setfield(lua, 1, "disable_modules");
     break;
   }
@@ -288,11 +290,14 @@ static void set_restrictions(lua_State *lua, lsb_heka_sandbox *hsb)
       lua_pushstring(lua, list[i]);
       lua_rawseti(lua, -2, j++);
     } else {
+      if (lua_gettop(lua) == 3) lua_pop(lua, 1); // remove the previous list
       lua_newtable(lua);
-      lua_setfield(lua, -2, list[++i]);
+      lua_pushvalue(lua, -1);
+      lua_setfield(lua, -3, list[++i]);
       j = 1;
     }
   }
+  lua_pop(lua, 1); // remove the last list
   lua_setfield(lua, 1, "remove_entries");
 
   lua_getfield(lua, 1, LSB_HEKA_MAX_MESSAGE_SIZE);

@@ -827,7 +827,7 @@ int heka_encode_message(lua_State *lua)
   lsb_heka_sandbox *hsb = lsb_get_parent(lsb);
   set_missing_headers(lua, 1, hsb);
 
-  lsb->output.pos = 0;
+  lsb_clear_output_buffer(&lsb->output);
   if (heka_encode_message_table(lsb, 1)) {
     const char *err = lsb_get_error(lsb);
     if (strlen(err) == 0) err = "exceeded output_limit";
@@ -866,7 +866,7 @@ int heka_encode_message_table(lsb_lua_sandbox *lsb, int idx)
 {
   int result = 0;
   lsb_output_buffer *ob = &lsb->output;
-  ob->pos = 0;
+  lsb_clear_output_buffer(ob);
 
   // use existing or create a type 4 uuid
   lua_getfield(lsb->lua, idx, LSB_UUID);

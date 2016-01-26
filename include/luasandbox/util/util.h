@@ -40,6 +40,17 @@ LSB_EXPORT size_t lsb_lp2(unsigned long long x);
 LSB_EXPORT double lsb_timespec_delta(const struct timespec* s,
                                      const struct timespec* e);
 
+
+/**
+ * Read a file into a string
+ *
+ * @param fn Filename to read
+ *
+ * @return char* NULL on failure otherwise a pointer to the file contents (must
+ *         be freed by the caller).
+ */
+LSB_EXPORT char* lsb_read_file(const char *fn);
+
 #ifdef __cplusplus
 }
 #endif

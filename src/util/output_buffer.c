@@ -26,7 +26,8 @@ int lsb_init_output_buffer(lsb_output_buffer *b, size_t max_message_size)
   b->maxsize = max_message_size;
   b->pos = 0;
   b->buf = malloc(b->size);
-  return b->buf ? 0 : 2;
+  b->err = b->buf ? 0 : 2;
+  return b->err;
 }
 
 
@@ -35,18 +36,26 @@ void lsb_free_output_buffer(lsb_output_buffer *b)
   free(b->buf);
   b->buf = NULL;
   b->size = 0;
+  lsb_clear_output_buffer(b);
+}
+
+
+void lsb_clear_output_buffer(lsb_output_buffer *b)
+{
   b->pos = 0;
+  b->err = 0;
 }
 
 
 int lsb_expand_output_buffer(lsb_output_buffer *b, size_t needed)
 {
-  if (needed <= b->size - b->pos) {
-    return 0;
-  }
+  if (b->err) return b->err;
+
+  if (needed <= b->size - b->pos) return 0;
 
   if (b->maxsize && needed + b->pos > b->maxsize) {
-    return 1;
+    b->err = 1;
+    return b->err;
   }
 
   size_t newsize = lsb_lp2(b->pos + needed);
@@ -55,7 +64,10 @@ int lsb_expand_output_buffer(lsb_output_buffer *b, size_t needed)
   }
 
   void *ptr = realloc(b->buf, newsize);
-  if (!ptr) return 2;
+  if (!ptr) {
+    b->err = 2;
+    return b->err;
+  }
 
   b->buf = ptr;
   b->size = newsize;
@@ -96,7 +108,8 @@ int lsb_outputf(lsb_output_buffer *b, const char *fmt, ...)
       if (b->maxsize
           && (b->size >= b->maxsize
               || b->pos + needed >= b->maxsize)) {
-        return 1; // exceeded max
+        b->err = 1;
+        return b->err; // exceeded max
       }
       size_t newsize = b->size * 2;
       while ((size_t)needed >= newsize - b->pos) {
@@ -112,7 +125,8 @@ int lsb_outputf(lsb_output_buffer *b, const char *fmt, ...)
         b->buf = p;
         b->size = newsize;
       } else {
-        return 2; // malloc failed
+        b->err = 2;
+        return b->err; // malloc failed
       }
     } else {
       b->pos += needed;
