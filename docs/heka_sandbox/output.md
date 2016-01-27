@@ -1,4 +1,4 @@
-## Output Plugins
+## Output Sandbox
 
 ### Required Lua Functions (called by the host)
 
@@ -52,7 +52,7 @@ Provides access to the sandbox configuration variables.
 
 #### read_message
 
-Provides access to the Heka message data. See [read_message](analysis_plugins.md#read_message) for details.
+Provides access to the Heka message data. See [read_message](analysis.md#read_message) for details.
 
 #### decode_message
 

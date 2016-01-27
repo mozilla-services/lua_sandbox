@@ -1,4 +1,4 @@
-## Analysis Plugins
+## Analysis Sandbox
 
 ### Required Lua Functions (called by the host)
 

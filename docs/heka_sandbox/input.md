@@ -1,8 +1,8 @@
-## Input Plugins
+## Input Sandbox
 
 ### Recommendations
 Since he sandbox does not run in isolation there are some expectations of how
-the host infrastructure behaves.  The current recommendation are based on the 
+the host infrastructure behaves.  The current recommendation are based on the
 Hindsight reference implementation.
 
 ### Required Lua Functions (called by the host)
@@ -12,8 +12,8 @@ Hindsight reference implementation.
 Entry point for message creation.
 
 *Arguments*
-* offset (nil number, string) - value of the last offset value passed into
-  `inject_message`
+* checkpoint (nil number, string) - value of the last checkpoint value passed
+  into `inject_message`
 
 *Return*
 * status_code (number)
@@ -49,7 +49,7 @@ Sends a Heka protocol buffer message into the host.
 
 *Arguments*
 * msg ([Heka message table](message.md), [Heka stream reader](stream_reader.md) or Heka protobuf string)
-* offset (optional: string, number) - checkpoint offset to be returned in the `process_message` call
+* checkpoint (optional: number, string) - checkpoint to be returned in the `process_message` call
 
 *Return*
 * none - throws an error on invalid input

@@ -1,6 +1,6 @@
 ### Message Matcher Syntax
 
-The message matcher allows plugins to select which messages they want to consume
+The message matcher allows sandboxes to select which messages they want to consume
 (see [Heka Message Structure](message.md))
 
 #### Examples

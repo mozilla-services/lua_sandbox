@@ -1,7 +1,7 @@
 ## Heka Stream Reader Module
 
 Enables parsing of a framed Heka protobuf stream in a Lua sandbox. See: 
-[Example of a Heka protobuf reader](input_plugins.md#example-of-a-heka-protobuf-stdin-reader)
+[Example of a Heka protobuf reader](input.md#example-of-a-heka-protobuf-stdin-reader)
 
 ### API
 
@@ -60,4 +60,4 @@ Provides access to the Heka message data within the reader object.
 local ts = hsr:read_message("Timestamp")
 
 ```
-See [read_message](analysis_plugins.md#read_message) for details.
+See [read_message](analysis.md#read_message) for details.

@@ -4,14 +4,14 @@
 
 ```lua
 {
-Uuid        = "data",               -- ignored if not 16 byte raw binary UUID
-Logger      = "nginx",              -- ignored by analysis plugins (the plugin name is used instead)
-Hostname    = "example.com",        -- ignored by analysis plugins (the Hindsight hostname name is used instead)
-Timestamp   = 1e9,
-Type        = "TEST",              
+Uuid        = "data",               -- auto generated if not a 16 byte raw binary UUID or a 36 character human readable UUID
+Logger      = "nginx",              -- ignored by analysis sandboxes (the `Logger` configuration is used instead)
+Hostname    = "example.com",        -- ignored by analysis sandboxes (the `Hostname` configuration is used instead)
+Timestamp   = 1e9,                  -- auto generated if not a number
+Type        = "TEST",
 Payload     = "Test Payload",
 EnvVersion  = "0.8",
-Pid         = 1234,                 -- ignored by analysis plugins (the Hindsight PID is used instead)
+Pid         = 1234,
 Severity    = 6,
 Fields      = {
             http_status     = 200,  -- encoded as a double

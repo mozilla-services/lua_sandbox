@@ -129,7 +129,6 @@ typedef enum {
   TYPE_STRING,
   TYPE_NUMERIC,
   TYPE_BOOLEAN,
-  TYPE_STRING_MATCH
 } match_type;
 
 
@@ -268,7 +267,6 @@ static bool eval_node(match_node *mn, lsb_heka_message *m)
 
         switch (mn->value_type) {
         case TYPE_STRING:
-        case TYPE_STRING_MATCH:
           if (lsb_read_heka_field(m, &variable, mn->fi, mn->ai, &val)
               && val.type == LSB_READ_STRING) {
             return string_test(mn, &val.u.s);
@@ -353,10 +351,8 @@ static void load_expression_node(lua_State *L, match_node *mn)
   } else if (strcmp(tmp, "<") == 0) {
     mn->op = OP_LT;
   } else if (strcmp(tmp, "=~") == 0) {
-    mn->value_type = TYPE_STRING_MATCH;
     mn->op = OP_RE;
   } else if (strcmp(tmp, "!~") == 0) {
-    mn->value_type = TYPE_STRING_MATCH;
     mn->op = OP_NRE;
   } else if (strcmp(tmp, "TRUE") == 0) {
     mn->op = OP_TRUE;
@@ -497,26 +493,20 @@ lsb_create_message_matcher(const lsb_message_match_builder *mmb,
 {
   lua_getglobal(mmb->parser, "parse");
   if (!lua_isfunction(mmb->parser, -1)) {
-    // todo logger fprintf(stderr, "message_matcher error: %s",
-    // lua_tostring(mmb->parser, -1));
     return NULL;
   }
   lua_pushstring(mmb->parser, exp);
   if (lua_pcall(mmb->parser, 1, 2, 0)) {
-    // todo logger fprintf(stderr, "message_matcher error: %s",
-    // lua_tostring(mmb->parser, -1));
     return NULL;
   }
 
   if (lua_type(mmb->parser, 1) != LUA_TTABLE) {
-    // todo logger fprintf(stderr, "parse failed");
     return NULL;
   }
   int size = lua_tointeger(mmb->parser, 2);
   lsb_message_matcher *mm = calloc(sizeof(lsb_message_matcher) +
                                    (sizeof(match_node) * size), 1);
   if (!mm) {
-    // todo logger fprintf(stderr, "calloc failed");
     return NULL;
   }
   mm->nodes_size = size;
@@ -533,8 +523,6 @@ lsb_create_message_matcher(const lsb_message_match_builder *mmb,
       break;
     default:
       free(mm);
-      //todo logeer fprintf(stderr,
-      //"message_matcher error: invalid table returned");
       return NULL;
     }
     lua_pop(mmb->parser, 1);
@@ -545,7 +533,6 @@ lsb_create_message_matcher(const lsb_message_match_builder *mmb,
   match_node **stack = calloc(sizeof(match_node *) * size, 1);
   if (!stack) {
     free(mm);
-    // todo logger fprintf(stderr, "message_matcher stack allocation failed");
     return NULL;
   }
 
@@ -572,7 +559,6 @@ void lsb_destroy_message_matcher(lsb_message_matcher *mm)
     free(mm->nodes[i].variable);
     switch (mm->nodes[i].value_type) {
     case TYPE_STRING:
-    case TYPE_STRING_MATCH:
       free(mm->nodes[i].value.s);
       break;
     default:

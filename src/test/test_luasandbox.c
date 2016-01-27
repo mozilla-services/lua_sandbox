@@ -38,11 +38,11 @@ static const char *test_cfg =
     "instruction_limit = 0\n"
     "output_limit = 0\n"
     "remove_entries = {\n"
-    "[''] = {'collectgarbage','coroutine','dofile','load','loadfile'"
-    ",'loadstring','newproxy','print'},\n"
+    "[''] = {'collectgarbage','dofile','load','loadfile','loadstring',"
+    "'newproxy','print'},\n"
     "os = {'getenv','execute','exit','remove','rename','setlocale','tmpname'}\n"
     "}\n"
-    "disable_modules = {io = 1}\n"
+    "disable_modules = {io = 1, coroutine = 1}\n"
     MODULE_PATH
 ;
 
@@ -1306,7 +1306,7 @@ static char* benchmark_deserialize()
     mu_assert(result == 0, "lsb_init() received: %d %s", result,
               lsb_get_error(sb));
     free(sb->state_file);
-    sb->state_file = NULL;
+    sb->state_file = NULL; // poke the internals to prevent serialization
     e = lsb_destroy(sb);
     mu_assert(!e, "lsb_destroy() received: %s", e);
   }
