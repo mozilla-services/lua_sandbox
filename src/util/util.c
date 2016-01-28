@@ -6,10 +6,15 @@
 
 /** General purpose utility functions @file */
 
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
+
+#if defined(__MACH__) && defined(__APPLE__)
+#include <mach/mach.h>
+#include <mach/mach_time.h>
+#endif
 
 #include "luasandbox/util/util.h"
 
@@ -24,18 +29,6 @@ size_t lsb_lp2(unsigned long long x)
   x = x | (x >> 16);
   x = x | (x >> 32);
   return (size_t)(x + 1);
-}
-
-
-double lsb_timespec_delta(const struct timespec* s, const struct timespec* e)
-{
-  double delta;
-  if (e->tv_nsec - s->tv_nsec < 0) {
-    delta = e->tv_sec - s->tv_sec - (e->tv_nsec - s->tv_nsec) / -1e9;
-  } else {
-    delta = e->tv_sec - s->tv_sec + (e->tv_nsec - s->tv_nsec) / 1e9;
-  }
-  return delta;
 }
 
 
@@ -62,4 +55,24 @@ cleanup:
   fclose(fh);
 
   return str;
+}
+
+
+unsigned long long lsb_get_time()
+{
+#ifdef HAVE_CLOCK_GETTIME
+  struct timespec ts;
+  clock_gettime(CLOCK_MONOTONIC, &ts);
+  return ts.tv_sec * 1000000000ULL + ts.tv_nsec;
+#elif defined(__MACH__) && defined(__APPLE__)
+  static unsigned long long convert = 0;
+  if (convert == 0) {
+    mach_timebase_info_data_t tbi;
+    (void) mach_timebase_info(&tbi);
+    convert = tbi.numer / tbi.denom;
+  }
+  return mach_absolute_time() * convert;
+#endif
+// todo add Win support
+  return 0;
 }

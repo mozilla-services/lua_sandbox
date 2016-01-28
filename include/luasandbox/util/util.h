@@ -27,20 +27,6 @@ extern "C" {
  */
 LSB_EXPORT size_t lsb_lp2(unsigned long long x);
 
-
-/**
- * Computes the duration between two timespec structures.
- *
- * @param s Start time
- * @param e End time
- *
- * @return double Time difference in fractional seconds
- *
- */
-LSB_EXPORT double lsb_timespec_delta(const struct timespec* s,
-                                     const struct timespec* e);
-
-
 /**
  * Read a file into a string
  *
@@ -50,6 +36,13 @@ LSB_EXPORT double lsb_timespec_delta(const struct timespec* s,
  *         be freed by the caller).
  */
 LSB_EXPORT char* lsb_read_file(const char *fn);
+
+/**
+ * Retrieves the highest resolution time available converted to nanoseconds
+ *
+ * @return unsigned long long
+ */
+LSB_EXPORT unsigned long long lsb_get_time();
 
 #ifdef __cplusplus
 }

@@ -31,6 +31,12 @@ set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
 include(mozsvc)
 include(externals)
 
+include(CheckFunctionExists)
+check_function_exists(clock_gettime HAVE_CLOCK_GETTIME)
+if(HAVE_CLOCK_GETTIME)
+  add_definitions(-DHAVE_CLOCK_GETTIME)
+endif()
+
 set(LIB_INSTALL_DIR lib/)
 set(INCLUDE_INSTALL_DIR include/)
 

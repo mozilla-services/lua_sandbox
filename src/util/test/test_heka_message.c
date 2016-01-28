@@ -27,7 +27,7 @@ struct log_message {
   char        msg[1024];
 };
 
-static struct log_message log = { 0 };
+static struct log_message log = { .component = NULL, .severity = 0, .msg = {0} };
 
 void logger(const char *component, int severity, const char *fmt, ...)
 {

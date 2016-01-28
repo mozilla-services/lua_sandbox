@@ -20,7 +20,7 @@ static char* test_stub()
 
 static char* test_init_small_buf()
 {
-  size_t size = 1024;
+  size_t size = 300;
   lsb_input_buffer b;
   mu_assert(!lsb_init_input_buffer(&b, size), "init failed");
   mu_assert(b.size == size + LSB_MAX_HDR_SIZE, "received: %" PRIuSIZE,

@@ -410,11 +410,11 @@ lsb_heka_sandbox* lsb_heka_create_input(void *parent,
 static int process_message(lsb_heka_sandbox *hsb, lsb_heka_message *msg,
                            lua_State *lua, int nargs, bool profile)
 {
-  struct timespec ts, ts1;
+  unsigned long long start, end;
 
   hsb->msg = msg;
   if (profile) {
-    clock_gettime(CLOCK_MONOTONIC, &ts); // todo fix on Mac & Win
+    start = lsb_get_time();
   }
   if (lua_pcall(lua, nargs, 2, 0) != 0) {
     char err[LSB_ERROR_SIZE];
@@ -427,8 +427,8 @@ static int process_message(lsb_heka_sandbox *hsb, lsb_heka_message *msg,
     return 1;
   }
   if (profile) {
-    clock_gettime(CLOCK_MONOTONIC, &ts1); // todo fix on Mac & Win
-    lsb_update_running_stats(&hsb->stats.pm, lsb_timespec_delta(&ts, &ts1));
+    end = lsb_get_time();
+    lsb_update_running_stats(&hsb->stats.pm, end - start);
   }
   hsb->msg = NULL;
 
@@ -734,8 +734,8 @@ int lsb_heka_timer_event(lsb_heka_sandbox *hsb, time_t t, bool shutdown)
   lua_pushnumber(lua, t * 1e9);
   lua_pushboolean(lua, shutdown);
 
-  struct timespec ts, ts1;
-  clock_gettime(CLOCK_MONOTONIC, &ts); // todo fix on Mac & Win
+  unsigned long long start, end;
+  start = lsb_get_time();
   if (lua_pcall(lua, 2, 0, 0) != 0) {
     char err[LSB_ERROR_SIZE];
     size_t len = snprintf(err, LSB_ERROR_SIZE, "%s() %s", func_name,
@@ -746,8 +746,8 @@ int lsb_heka_timer_event(lsb_heka_sandbox *hsb, time_t t, bool shutdown)
     lsb_terminate(hsb->lsb, err);
     return 1;
   }
-  clock_gettime(CLOCK_MONOTONIC, &ts1); // todo fix on Mac & Win
-  lsb_update_running_stats(&hsb->stats.te, lsb_timespec_delta(&ts, &ts1));
+  end = lsb_get_time();
+  lsb_update_running_stats(&hsb->stats.te, end - start);
   lsb_pcall_teardown(hsb->lsb);
   lua_gc(lua, LUA_GCCOLLECT, 0);
   return 0;
@@ -770,7 +770,7 @@ const char* lsb_heka_get_lua_file(lsb_heka_sandbox *hsb)
 
 lsb_heka_stats lsb_heka_get_stats(lsb_heka_sandbox *hsb)
 {
-  if (!hsb) return (struct lsb_heka_stats){0};
+  if (!hsb) return (struct lsb_heka_stats){0,0,0,0,0,0,0,0,0,0,0,0};
 
   return (struct lsb_heka_stats){
     .mem_cur      = lsb_usage(hsb->lsb, LSB_UT_MEMORY, LSB_US_CURRENT),

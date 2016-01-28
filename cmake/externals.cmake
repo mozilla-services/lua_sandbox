@@ -65,7 +65,7 @@ else()
     externalproject_add(
         ${LUA_PROJECT}
         GIT_REPOSITORY https://github.com/trink/lua.git
-        GIT_TAG e068a11788a23ea1542ecbd54c9f806a77780db2
+        GIT_TAG 354ec76addd9f161a973d80ddf81c809552fb127
         CMAKE_ARGS ${SANDBOX_CMAKE_ARGS}
         INSTALL_ARGS ${INST_ARGS}
     )
@@ -115,7 +115,7 @@ add_dependencies(lua_socket ${LUA_PROJECT})
 externalproject_add(
     lua_bloom_filter
     GIT_REPOSITORY https://github.com/mozilla-services/lua_bloom_filter.git
-    GIT_TAG c22db3f486a5debc269c7f20ff161f30852a4deb
+    GIT_TAG 255af01bc127fccbd11fc5e57218a5fcc8659c69
     CMAKE_ARGS ${SANDBOX_CMAKE_ARGS}
     INSTALL_ARGS ${INST_ARGS}
 )
@@ -123,7 +123,7 @@ externalproject_add(
 externalproject_add(
     lua_circular_buffer
     GIT_REPOSITORY https://github.com/mozilla-services/lua_circular_buffer.git
-    GIT_TAG b70d98f33f1b7abefab5da1747f4922c6969b634
+    GIT_TAG 85fc04e61e650ed65a7ba12ea02f8d307a5f1eab
     CMAKE_ARGS ${SANDBOX_CMAKE_ARGS}
     INSTALL_ARGS ${INST_ARGS}
 )
@@ -131,7 +131,7 @@ externalproject_add(
 externalproject_add(
     lua_hyperloglog
     GIT_REPOSITORY https://github.com/mozilla-services/lua_hyperloglog.git
-    GIT_TAG 8d86410b27563f678ba0b88661b7975a7506be96
+    GIT_TAG 4111ca2d22f47ed451b5e87dd192d53e9965800f
     CMAKE_ARGS ${SANDBOX_CMAKE_ARGS}
     INSTALL_ARGS ${INST_ARGS}
 )
@@ -139,7 +139,7 @@ externalproject_add(
 externalproject_add(
     lua_cuckoo_filter
     GIT_REPOSITORY https://github.com/mozilla-services/lua_cuckoo_filter.git
-    GIT_TAG eab57dde3d7f8e35e6c42ce5fb4bf606c4064e1a
+    GIT_TAG bc7f406b3997fc9432bb5d1db96cad902bd3283a
     CMAKE_ARGS ${SANDBOX_CMAKE_ARGS}
     INSTALL_ARGS ${INST_ARGS}
 )
@@ -147,7 +147,7 @@ externalproject_add(
 externalproject_add(
     lua_sax
     GIT_REPOSITORY https://github.com/trink/symtseries.git
-    GIT_TAG 028e84132f48431bb01a945392b3a212e1a53a47
+    GIT_TAG bd2426c93d0d55977ca7b21354105463b0470a49
     CMAKE_ARGS ${SANDBOX_CMAKE_ARGS}
     INSTALL_ARGS ${INST_ARGS}
 )

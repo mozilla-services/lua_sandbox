@@ -33,18 +33,30 @@ static char* test_lsb_lp2()
 }
 
 
-static char* test_lsb_timespec_delta()
+static char* benchmark_lsb_get_time()
 {
-  double d;
-  d = lsb_timespec_delta(
-      &(struct timespec){ .tv_sec = 10, .tv_nsec = 600000000L },
-      &(struct timespec){ .tv_sec = 11, .tv_nsec = 800000000L });
-  mu_assert(d == 1.2, "received: %g", d);
+  int iter = 1000000;
+  unsigned long long start, end;
+  clock_t t = clock();
+  for (int x = 0; x < iter; ++x) {
+    lsb_get_time();
+  }
+  t = clock() - t;
+  printf("benchmark_lsb_get_time(%d) - clock %g seconds\n", iter,
+         (double)t / CLOCKS_PER_SEC / iter);
 
-  d = lsb_timespec_delta(
-      &(struct timespec){ .tv_sec = 10, .tv_nsec = 600000000L },
-      &(struct timespec){ .tv_sec = 12, .tv_nsec = 300000000L });
-  mu_assert(d == 1.7, "received: %g", d);
+  start = lsb_get_time();
+  for (int x = 0; x < iter; ++x) {
+    lsb_get_time();
+  }
+  end = lsb_get_time();
+  printf("benchmark_lsb_get_time(%d) - self %g seconds\n", iter,
+         (double)(end - start) / iter / 1e9);
+
+  start = lsb_get_time();
+  lsb_get_time();
+  end = lsb_get_time();
+  printf("benchmark_lsb_get_time(1) %llu\n", end - start);
   return NULL;
 }
 
@@ -53,7 +65,8 @@ static char* all_tests()
 {
   mu_run_test(test_stub);
   mu_run_test(test_lsb_lp2);
-  mu_run_test(test_lsb_timespec_delta);
+
+  mu_run_test(benchmark_lsb_get_time);
   return NULL;
 }
 
