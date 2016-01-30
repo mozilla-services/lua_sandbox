@@ -9,12 +9,18 @@
 #include "luasandbox/util/output_buffer.h"
 
 #include <math.h>
+#include <stdarg.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
 #include "luasandbox/util/util.h"
 
+#ifdef _MSC_VER
+// To silence the +/-INFINITY warning
+#pragma warning( disable : 4756 )
+#pragma warning( disable : 4056 )
+#endif
 
 int lsb_init_output_buffer(lsb_output_buffer *b, size_t max_message_size)
 {

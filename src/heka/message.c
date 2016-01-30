@@ -63,7 +63,7 @@ static const char* read_string(lua_State *lua,
   if (!p || len < 0 || p + len > e) {
     return NULL;
   }
-  lua_pushlstring(lua, p, len);
+  lua_pushlstring(lua, p, (size_t)len);
   p += len;
   return p;
 }
@@ -84,7 +84,7 @@ static const char* process_varint(lua_State *lua,
   if (!p) {
     return NULL;
   }
-  lua_pushnumber(lua, val);
+  lua_pushnumber(lua, (lua_Number)val);
   lua_setfield(lua, stack_index, name);
   return p;
 }
@@ -144,7 +144,7 @@ static const char* process_fields(lua_State *lua, const char *p, const char *e)
         case 0:
           p = lsb_pb_read_varint(p, p + len, &val);
           if (!p) break;
-          lua_pushnumber(lua, val);
+          lua_pushnumber(lua, (lua_Number)val);
           lua_rawseti(lua, 5, ++value_count);
           break;
         case 2:
@@ -880,7 +880,7 @@ int heka_encode_message_table(lsb_lua_sandbox *lsb, int idx)
   lua_getfield(lsb->lua, idx, LSB_TIMESTAMP);
   long long ts;
   if (lua_isnumber(lsb->lua, -1)) {
-    ts = lua_tonumber(lsb->lua, -1);
+    ts = (long long)lua_tonumber(lsb->lua, -1);
   } else {
     ts = time(NULL) * 1000000000LL;
   }
@@ -922,9 +922,9 @@ int heka_read_message(lua_State *lua, lsb_heka_message *m)
   }
   size_t field_len;
   const char *field = luaL_checklstring(lua, 1, &field_len);
-  int fi = luaL_optinteger(lua, 2, 0);
+  int fi = (int)luaL_optinteger(lua, 2, 0);
   luaL_argcheck(lua, fi >= 0, 2, "field index must be >= 0");
-  int ai = luaL_optinteger(lua, 3, 0);
+  int ai = (int)luaL_optinteger(lua, 3, 0);
   luaL_argcheck(lua, ai >= 0, 3, "array index must be >= 0");
 
   if (strcmp(field, LSB_UUID) == 0) {
@@ -934,7 +934,7 @@ int heka_read_message(lua_State *lua, lsb_heka_message *m)
       lua_pushnil(lua);
     }
   } else if (strcmp(field, LSB_TIMESTAMP) == 0) {
-    lua_pushnumber(lua, m->timestamp);
+    lua_pushnumber(lua, (lua_Number)m->timestamp);
   } else if (strcmp(field, LSB_TYPE) == 0) {
     if (m->type.s) {
       lua_pushlstring(lua, m->type.s, m->type.len);
@@ -998,7 +998,7 @@ int heka_read_message(lua_State *lua, lsb_heka_message *m)
         lua_pushnumber(lua, v.u.d);
         break;
       case LSB_READ_BOOL:
-        lua_pushboolean(lua, v.u.d);
+        lua_pushboolean(lua, v.u.d ? 1 : 0);
         break;
       default:
         lua_pushnil(lua);

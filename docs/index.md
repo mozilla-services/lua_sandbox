@@ -9,7 +9,7 @@ infrastructure and make it embeddable into any tool or language.
 
 ### Sandbox User APIs
 * [Sandbox](sandbox.md)
-* [Heka Sandbox](heka_sandox/index.md)
+* [Heka Sandbox](heka/index.md)
 
 ### Sandbox Developer APIs
 * todo - Links to the Doxygen output

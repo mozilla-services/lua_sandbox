@@ -12,7 +12,7 @@
 #include <stdbool.h>
 #include <stddef.h>
 
-#include "luasandbox.h"
+#include "util.h"
 
 typedef struct lsb_input_buffer
 {
@@ -38,15 +38,15 @@ extern "C" {
  *
  * @return int 0 on success
  */
-LSB_EXPORT int lsb_init_input_buffer(lsb_input_buffer *b,
-                                      size_t max_message_size);
+LSB_UTIL_EXPORT int lsb_init_input_buffer(lsb_input_buffer *b,
+                                          size_t max_message_size);
 
 /**
  * Frees the memory internally allocated by the buffer and resets the state
  *
  * @param b Input buffer
  */
-LSB_EXPORT void lsb_free_input_buffer(lsb_input_buffer *b);
+LSB_UTIL_EXPORT void lsb_free_input_buffer(lsb_input_buffer *b);
 
 /**
  * Expands the input buffer (if necessary) to accomadate the requested number of
@@ -58,7 +58,7 @@ LSB_EXPORT void lsb_free_input_buffer(lsb_input_buffer *b);
  *
  * @return int 0 on success
  */
-LSB_EXPORT int lsb_expand_input_buffer(lsb_input_buffer *b, size_t len);
+LSB_UTIL_EXPORT int lsb_expand_input_buffer(lsb_input_buffer *b, size_t len);
 
 #ifdef __cplusplus
 }

@@ -2,16 +2,23 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-set(HEKA_SANDBOX_SRC
+set(HEKA_SRC
 message.c
 message_matcher.c
 sandbox.c
 stream_reader.c
 )
 
-add_library(luasandboxheka SHARED ${HEKA_SANDBOX_SRC})
+add_library(luasandboxheka SHARED ${HEKA_SRC})
 set_target_properties(luasandboxheka PROPERTIES VERSION ${CPACK_PACKAGE_VERSION_MAJOR}.${CPACK_PACKAGE_VERSION_MINOR}.${CPACK_PACKAGE_VERSION_PATCH} SOVERSION 0)
-target_link_libraries(luasandboxheka luasandbox ${LIBM_LIBRARY})
+target_compile_definitions(luasandboxheka PUBLIC -Dluasandboxheka_EXPORTS)
+target_link_libraries(luasandboxheka luasandbox)
+if(WIN32)
+  target_link_libraries(luasandboxheka ws2_32)
+endif()
+if(LIBM_LIBRARY)
+  target_link_libraries(luasandboxheka ${LIBM_LIBRARY})
+endif()
 
-install(TARGETS luasandboxheka DESTINATION lib COMPONENT core)
+install(TARGETS luasandboxheka DESTINATION ${LIB_DIR} COMPONENT core)
 add_subdirectory(test)

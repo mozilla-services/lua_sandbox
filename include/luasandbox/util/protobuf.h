@@ -9,12 +9,11 @@
 #ifndef luasandbox_util_protobuf_h_
 #define luasandbox_util_protobuf_h_
 
-#include "luasandbox.h"
-
 #include <stddef.h>
 #include <stdbool.h>
 
-#include "luasandbox/util/output_buffer.h"
+#include "output_buffer.h"
+#include "util.h"
 
 #define LSB_MAX_VARINT_BYTES  10
 
@@ -41,7 +40,7 @@ extern "C" {
  *
  * @return LSB_EXPORT const char*
  */
-LSB_EXPORT
+LSB_UTIL_EXPORT
 const char* lsb_pb_read_key(const char *p, int *tag, int *wiretype);
 
 /**
@@ -53,7 +52,7 @@ const char* lsb_pb_read_key(const char *p, int *tag, int *wiretype);
  *
  * @return int 0 on success
  */
-LSB_EXPORT int
+LSB_UTIL_EXPORT int
 lsb_pb_write_key(lsb_output_buffer *ob, unsigned char tag,
                  unsigned char wiretype);
 
@@ -66,7 +65,7 @@ lsb_pb_write_key(lsb_output_buffer *ob, unsigned char tag,
  *
  * @return const char* Position in the buffer after the varint
  */
-LSB_EXPORT
+LSB_UTIL_EXPORT
 const char* lsb_pb_read_varint(const char *p, const char *e, long long *vi);
 
 
@@ -78,7 +77,7 @@ const char* lsb_pb_read_varint(const char *p, const char *e, long long *vi);
  *
  * @return int Number of bytes written
  */
-LSB_EXPORT int lsb_pb_output_varint(char* buf, unsigned long long i);
+LSB_UTIL_EXPORT int lsb_pb_output_varint(char *buf, unsigned long long i);
 
 /**
  * Writes a varint encoded number to the output buffer.
@@ -88,7 +87,7 @@ LSB_EXPORT int lsb_pb_output_varint(char* buf, unsigned long long i);
  *
  * @return int 0 on success
  */
-LSB_EXPORT int
+LSB_UTIL_EXPORT int
 lsb_pb_write_varint(lsb_output_buffer *ob, unsigned long long i);
 
 /**
@@ -99,7 +98,7 @@ lsb_pb_write_varint(lsb_output_buffer *ob, unsigned long long i);
  *
  * @return int 0 on success
  */
-LSB_EXPORT int lsb_pb_write_bool(lsb_output_buffer *ob, int i);
+LSB_UTIL_EXPORT int lsb_pb_write_bool(lsb_output_buffer *ob, int i);
 
 /**
  * Writes a double to the output buffer.
@@ -109,7 +108,7 @@ LSB_EXPORT int lsb_pb_write_bool(lsb_output_buffer *ob, int i);
  *
  * @return int 0 on success
  */
-LSB_EXPORT int lsb_pb_write_double(lsb_output_buffer *ob, double i);
+LSB_UTIL_EXPORT int lsb_pb_write_double(lsb_output_buffer *ob, double i);
 
 /**
  * Writes a string to the output buffer.
@@ -121,8 +120,8 @@ LSB_EXPORT int lsb_pb_write_double(lsb_output_buffer *ob, double i);
  *
  * @return int 0 on success
  */
-LSB_EXPORT int
-lsb_pb_write_string(lsb_output_buffer *ob, char tag, const char* s, size_t len);
+LSB_UTIL_EXPORT int
+lsb_pb_write_string(lsb_output_buffer *ob, char tag, const char *s, size_t len);
 
 /**
  * Updates the field length in the output buffer once the size is known, this
@@ -134,7 +133,7 @@ lsb_pb_write_string(lsb_output_buffer *ob, char tag, const char* s, size_t len);
  *
  * @return int 0 on success
  */
-LSB_EXPORT int
+LSB_UTIL_EXPORT int
 lsb_pb_update_field_length(lsb_output_buffer *ob, size_t len_pos);
 
 #ifdef __cplusplus

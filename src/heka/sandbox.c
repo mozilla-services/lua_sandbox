@@ -12,17 +12,18 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "luasandbox/heka/message_matcher.h"
 #include "luasandbox.h"
+#include "luasandbox/heka/message_matcher.h"
+#include "luasandbox/util/protobuf.h"
+#include "luasandbox/util/running_stats.h"
 #include "luasandbox_output.h"
 #include "message_impl.h"
 #include "sandbox_impl.h"
 #include "stream_reader_impl.h"
-#include "luasandbox/util/protobuf.h"
-#include "luasandbox/util/running_stats.h"
 
 #ifdef _WIN32
 #include <winsock2.h>
+#define snprintf _snprintf
 #else
 #include <unistd.h>
 #endif
@@ -227,7 +228,7 @@ static int update_checkpoint(lua_State *lua)
   switch (n) {
   case 2: // async case
     luaL_checktype(lua, 2, LUA_TNUMBER);
-    hsb->stats.pm_failures += lua_tonumber(lua, 2);
+    hsb->stats.pm_failures += (unsigned long long)lua_tonumber(lua, 2);
     // fall thru
   case 1:
     luaL_checktype(lua, 1, LUA_TLIGHTUSERDATA);
@@ -428,7 +429,7 @@ static int process_message(lsb_heka_sandbox *hsb, lsb_heka_message *msg,
   }
   if (profile) {
     end = lsb_get_time();
-    lsb_update_running_stats(&hsb->stats.pm, end - start);
+    lsb_update_running_stats(&hsb->stats.pm, (double)(end - start));
   }
   hsb->msg = NULL;
 
@@ -719,7 +720,9 @@ int lsb_heka_timer_event(lsb_heka_sandbox *hsb, time_t t, bool shutdown)
 {
   static const char *func_name = "timer_event";
 
-  if (!hsb || (hsb->type != 'o' && hsb->type != 'a')) return 1;
+  if (!hsb || (hsb->type != 'o' && hsb->type != 'a')) {
+    return 1;
+  }
 
   lua_State *lua = lsb_get_lua(hsb->lsb);
   if (!lua) return 1;
@@ -747,7 +750,7 @@ int lsb_heka_timer_event(lsb_heka_sandbox *hsb, time_t t, bool shutdown)
     return 1;
   }
   end = lsb_get_time();
-  lsb_update_running_stats(&hsb->stats.te, end - start);
+  lsb_update_running_stats(&hsb->stats.te, (double)(end - start));
   lsb_pcall_teardown(hsb->lsb);
   lua_gc(lua, LUA_GCCOLLECT, 0);
   return 0;

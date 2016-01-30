@@ -11,17 +11,17 @@
 
 #include <stdbool.h>
 
-#include "luasandbox.h"
+#include "util.h"
 
 #define LSB_OUTPUT_SIZE 1024
 
-struct lsb_output_buffer {
+typedef struct lsb_output_buffer {
   char    *buf;
   size_t  maxsize;
   size_t  size;
   size_t  pos;
   int     err;
-};
+} lsb_output_buffer;
 
 #ifdef __cplusplus
 extern "C" {
@@ -36,7 +36,7 @@ extern "C" {
  *
  * @return int 0 on success
  */
-LSB_EXPORT
+LSB_UTIL_EXPORT
 int lsb_init_output_buffer(lsb_output_buffer *b, size_t max_message_size);
 
 /**
@@ -44,14 +44,14 @@ int lsb_init_output_buffer(lsb_output_buffer *b, size_t max_message_size);
  *
  * @param b Output buffer
  */
-LSB_EXPORT void lsb_free_output_buffer(lsb_output_buffer *b);
+LSB_UTIL_EXPORT void lsb_free_output_buffer(lsb_output_buffer *b);
 
 /**
  * Resets the position and error state of the buffer
  *
  * @param b Output buffer
  */
-LSB_EXPORT void lsb_clear_output_buffer(lsb_output_buffer *b);
+LSB_UTIL_EXPORT void lsb_clear_output_buffer(lsb_output_buffer *b);
 
 /**
  * Resize the output buffer when more space is needed.
@@ -61,7 +61,8 @@ LSB_EXPORT void lsb_clear_output_buffer(lsb_output_buffer *b);
  *
  * @return int 0 on success
  */
-LSB_EXPORT int lsb_expand_output_buffer(lsb_output_buffer *b, size_t needed);
+LSB_UTIL_EXPORT int lsb_expand_output_buffer(lsb_output_buffer *b,
+                                             size_t needed);
 
 /**
  * Append a character to the output buffer.
@@ -71,7 +72,7 @@ LSB_EXPORT int lsb_expand_output_buffer(lsb_output_buffer *b, size_t needed);
  *
  * @return int 0 on success, false if out of memory.
  */
-LSB_EXPORT int lsb_outputc(lsb_output_buffer *b, char ch);
+LSB_UTIL_EXPORT int lsb_outputc(lsb_output_buffer *b, char ch);
 
 /**
  * Append a formatted string to the output buffer.
@@ -81,7 +82,7 @@ LSB_EXPORT int lsb_outputc(lsb_output_buffer *b, char ch);
  *
  * @return int 0 on success, false if out of memory.
  */
-LSB_EXPORT int lsb_outputf(lsb_output_buffer *b, const char *fmt, ...);
+LSB_UTIL_EXPORT int lsb_outputf(lsb_output_buffer *b, const char *fmt, ...);
 
 /**
  * Append a fixed string to the output buffer.
@@ -92,9 +93,9 @@ LSB_EXPORT int lsb_outputf(lsb_output_buffer *b, const char *fmt, ...);
  *
  * @return int 0 on success, false if out of memory.
  */
-LSB_EXPORT int lsb_outputs(lsb_output_buffer *b,
-                           const char *str,
-                           size_t len);
+LSB_UTIL_EXPORT int lsb_outputs(lsb_output_buffer *b,
+                                const char *str,
+                                size_t len);
 
 /**
  * More efficient output of a double to a string. NaN/Inf check and then calls
@@ -105,7 +106,7 @@ LSB_EXPORT int lsb_outputs(lsb_output_buffer *b,
  *
  * @return int 0 on success, false if out of memory.
  */
-LSB_EXPORT int lsb_outputd(lsb_output_buffer *output, double d);
+LSB_UTIL_EXPORT int lsb_outputd(lsb_output_buffer *output, double d);
 
 
 /**
@@ -116,7 +117,7 @@ LSB_EXPORT int lsb_outputd(lsb_output_buffer *output, double d);
  *
  * @return int 0 on success, false if out of memory.
  */
-LSB_EXPORT int lsb_outputfd(lsb_output_buffer *ob, double d);
+LSB_UTIL_EXPORT int lsb_outputfd(lsb_output_buffer *ob, double d);
 
 #ifdef __cplusplus
 }

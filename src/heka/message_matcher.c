@@ -242,7 +242,7 @@ static bool eval_node(match_node *mn, lsb_heka_message *m)
   default:
     switch (mn->id) {
     case LSB_PB_TIMESTAMP:
-      return numeric_test(mn, m->timestamp);
+      return numeric_test(mn, (double)m->timestamp);
     case LSB_PB_TYPE:
       return string_test(mn, &m->type);
     case LSB_PB_LOGGER:
@@ -372,11 +372,11 @@ static void load_expression_node(lua_State *L, match_node *mn)
   if (lua_type(L, -1) == LUA_TNUMBER) {
     mn->id = LSB_PB_FIELDS;
   }
-  mn->fi = lua_tointeger(L, -1);
+  mn->fi = (int)lua_tointeger(L, -1);
   lua_pop(L, 1);
 
   lua_getfield(L, -1, "ai");
-  mn->ai = lua_tointeger(L, -1);
+  mn->ai = (int)lua_tointeger(L, -1);
   lua_pop(L, 1);
 
   lua_getfield(L, -1, "variable");
@@ -503,7 +503,7 @@ lsb_create_message_matcher(const lsb_message_match_builder *mmb,
   if (lua_type(mmb->parser, 1) != LUA_TTABLE) {
     return NULL;
   }
-  int size = lua_tointeger(mmb->parser, 2);
+  int size = (int)lua_tointeger(mmb->parser, 2);
   lsb_message_matcher *mm = calloc(sizeof(lsb_message_matcher) +
                                    (sizeof(match_node) * size), 1);
   if (!mm) {

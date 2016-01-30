@@ -9,7 +9,7 @@
 #ifndef luasandbox_util_string_h_
 #define luasandbox_util_string_h_
 
-#include "luasandbox.h"
+#include "util.h"
 
 typedef struct lsb_const_string
 {
@@ -28,7 +28,7 @@ extern "C" {
  * @param s Pointer to the struct
  *
  */
-LSB_EXPORT void lsb_init_const_string(lsb_const_string *s);
+LSB_UTIL_EXPORT void lsb_init_const_string(lsb_const_string *s);
 
 #ifdef __cplusplus
 }

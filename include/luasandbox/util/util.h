@@ -9,10 +9,21 @@
 #ifndef luasandbox_util_util_h_
 #define luasandbox_util_util_h_
 
-#include <time.h>
+#include <stddef.h>
 
-#include "luasandbox.h"
-#include "output_buffer.h"
+#ifdef _WIN32
+#ifdef luasandboxutil_EXPORTS
+#define LSB_UTIL_EXPORT __declspec(dllexport)
+#else
+#define LSB_UTIL_EXPORT __declspec(dllimport)
+#endif
+#else
+#if __GNUC__ >= 4
+#define LSB_UTIL_EXPORT __attribute__ ((visibility ("default")))
+#else
+#define LSB_UTIL_EXPORT
+#endif
+#endif
 
 #ifdef __cplusplus
 extern "C" {
@@ -25,7 +36,7 @@ extern "C" {
  *
  * @return size_t Least power of 2 greater than or equal to x
  */
-LSB_EXPORT size_t lsb_lp2(unsigned long long x);
+LSB_UTIL_EXPORT size_t lsb_lp2(unsigned long long x);
 
 /**
  * Read a file into a string
@@ -35,14 +46,14 @@ LSB_EXPORT size_t lsb_lp2(unsigned long long x);
  * @return char* NULL on failure otherwise a pointer to the file contents (must
  *         be freed by the caller).
  */
-LSB_EXPORT char* lsb_read_file(const char *fn);
+LSB_UTIL_EXPORT char* lsb_read_file(const char *fn);
 
 /**
  * Retrieves the highest resolution time available converted to nanoseconds
  *
  * @return unsigned long long
  */
-LSB_EXPORT unsigned long long lsb_get_time();
+LSB_UTIL_EXPORT unsigned long long lsb_get_time();
 
 #ifdef __cplusplus
 }

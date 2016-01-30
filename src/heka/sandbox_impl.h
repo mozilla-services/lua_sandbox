@@ -6,8 +6,8 @@
 
 /** Hindsight Heka sandbox private implementation @file */
 
-#ifndef luasandbox_heka_sandbox_sandbox_impl_h_
-#define luasandbox_heka_sandbox_sandbox_impl_h_
+#ifndef luasandbox_heka_sandbox_impl_h_
+#define luasandbox_heka_sandbox_impl_h_
 
 #include "luasandbox.h"
 #include "luasandbox/heka/sandbox.h"

@@ -11,6 +11,13 @@
 #include <string.h>
 #include <time.h>
 
+#ifdef _WIN32
+#include <windows.h>
+#include <limits.h>
+#else
+#include <sys/time.h>
+#endif
+
 #if defined(__MACH__) && defined(__APPLE__)
 #include <mach/mach.h>
 #include <mach/mach_time.h>
@@ -35,6 +42,7 @@ size_t lsb_lp2(unsigned long long x)
 char* lsb_read_file(const char *fn)
 {
   char *str = NULL;
+  size_t b;
   FILE *fh = fopen(fn, "rb");
   if (!fh) return str;
 
@@ -46,14 +54,13 @@ char* lsb_read_file(const char *fn)
   str = malloc(pos + 1);
   if (!str) goto cleanup;
 
-  size_t b = fread(str, 1, pos, fh);
+  b = fread(str, 1, pos, fh);
   if ((long)b == pos) {
     str[pos] = 0;
   }
 
 cleanup:
   fclose(fh);
-
   return str;
 }
 
@@ -72,7 +79,22 @@ unsigned long long lsb_get_time()
     convert = tbi.numer / tbi.denom;
   }
   return mach_absolute_time() * convert;
+#elif defined(_WIN32)
+  static unsigned long long qpf = ULLONG_MAX;
+  static_assert(sizeof(LARGE_INTEGER) == sizeof qpf, "size mismatch");
+
+  unsigned long long t;
+  if (qpf == ULLONG_MAX) QueryPerformanceFrequency((LARGE_INTEGER*)&qpf);
+  if (qpf){
+    QueryPerformanceCounter((LARGE_INTEGER*)&t);
+    return (t / qpf * 1000000000ULL) + ((t % qpf) * 1000000000ULL / qpf);
+  } else {
+    GetSystemTimeAsFileTime((FILETIME*)&t);
+    return t * 100ULL;
+  }
+#else
+  struct timeval tv;
+  gettimeofday(&tv, NULL);
+  return tv.tv_sec * 1000000000ULL + tv.tv_usec * 1000ULL;
 #endif
-// todo add Win support
-  return 0;
 }

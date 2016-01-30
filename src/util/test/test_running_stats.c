@@ -11,6 +11,12 @@
 #include "../../test/mu_test.h"
 #include "luasandbox/util/running_stats.h"
 
+#ifdef _MSC_VER
+// To silence the +/-INFINITY warning
+#pragma warning( disable : 4756 )
+#pragma warning( disable : 4056 )
+#endif
+
 static char* test_stub()
 {
   return NULL;

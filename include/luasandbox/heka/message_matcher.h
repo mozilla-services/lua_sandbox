@@ -6,12 +6,13 @@
 
 /** Hindsight/Heka message matcher @file */
 
-#ifndef luasandbox_heka_sandbox_message_matcher_h_
-#define luasandbox_heka_sandbox_message_matcher_h_
+#ifndef luasandbox_heka_message_matcher_h_
+#define luasandbox_heka_message_matcher_h_
 
 #include <stdbool.h>
 
-#include "luasandbox/util/heka_message.h"
+#include "../util/heka_message.h"
+#include "sandbox.h"
 
 typedef struct lsb_message_matcher lsb_message_matcher;
 typedef struct lsb_message_match_builder lsb_message_match_builder;
@@ -31,7 +32,7 @@ extern "C" {
  * match parser in the luasandboxutil lib
  *
  */
-LSB_EXPORT lsb_message_match_builder*
+LSB_HEKA_EXPORT lsb_message_match_builder*
 lsb_create_message_match_builder(const char *lua_path, const char *lua_cpath);
 
 /**
@@ -39,7 +40,7 @@ lsb_create_message_match_builder(const char *lua_path, const char *lua_cpath);
  *
  * @param mmb Message matcher builder
  */
-LSB_EXPORT void
+LSB_HEKA_EXPORT void
 lsb_destroy_message_match_builder(lsb_message_match_builder *mmb);
 
 /**
@@ -50,7 +51,7 @@ lsb_destroy_message_match_builder(lsb_message_match_builder *mmb);
  *
  * @return lsb_message_matcher*
  */
-LSB_EXPORT lsb_message_matcher*
+LSB_HEKA_EXPORT lsb_message_matcher*
 lsb_create_message_matcher(const lsb_message_match_builder *mmb,
                            const char *exp);
 
@@ -59,7 +60,7 @@ lsb_create_message_matcher(const lsb_message_match_builder *mmb,
  *
  * @param mm Message matcher
  */
-LSB_EXPORT void lsb_destroy_message_matcher(lsb_message_matcher *mm);
+LSB_HEKA_EXPORT void lsb_destroy_message_matcher(lsb_message_matcher *mm);
 
 /**
  * Evaluates the message matcher against the provided message
@@ -69,7 +70,7 @@ LSB_EXPORT void lsb_destroy_message_matcher(lsb_message_matcher *mm);
  *
  * @return bool True if the message is a match
  */
-LSB_EXPORT bool lsb_eval_message_matcher(lsb_message_matcher *mm,
+LSB_HEKA_EXPORT bool lsb_eval_message_matcher(lsb_message_matcher *mm,
                                          lsb_heka_message *m);
 
 #ifdef __cplusplus

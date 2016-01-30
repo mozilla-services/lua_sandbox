@@ -15,8 +15,12 @@ util.c
 
 add_library(luasandboxutil SHARED ${UTIL_SRC})
 set_target_properties(luasandboxutil PROPERTIES VERSION ${CPACK_PACKAGE_VERSION_MAJOR}.${CPACK_PACKAGE_VERSION_MINOR}.${CPACK_PACKAGE_VERSION_PATCH} SOVERSION 0)
-target_link_libraries(luasandboxutil ${LIBM_LIBRARY})
+target_compile_definitions(luasandboxutil PUBLIC -Dluasandboxutil_EXPORTS)
 
-install(TARGETS luasandboxutil DESTINATION lib COMPONENT core)
+if(LIBM_LIBRARY)
+  target_link_libraries(luasandboxutil ${LIBM_LIBRARY})
+endif()
+
+install(TARGETS luasandboxutil DESTINATION ${LIB_DIR} COMPONENT core)
 add_subdirectory(test)
 

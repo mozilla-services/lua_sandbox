@@ -28,7 +28,7 @@ static size_t decode_header(char *buf, size_t len, size_t max_message_size)
     long long vi;
     if (lsb_pb_read_varint(p + 1, buf + len, &vi)) {
       if (vi > 0 && vi <= (long long)max_message_size) {
-        return vi;
+        return (size_t)vi;
       }
     }
   }
@@ -49,7 +49,7 @@ read_string(int wiretype, const char *p, const char *e, lsb_const_string *s)
     return NULL;
   }
   s->s = p;
-  s->len = vi;
+  s->len = (size_t)vi;
   return p + vi;
 }
 
@@ -295,7 +295,7 @@ bool lsb_decode_heka_message(lsb_heka_message *m,
 
   if (!cp) {
     if (logger) {
-      logger(__FUNCTION__, 4, "tag:%d wiretype:%d position:%td", tag,
+      logger(__FUNCTION__, 4, "tag:%d wiretype:%d position:%d", tag,
              wiretype, lp - buf);
     }
     return false;

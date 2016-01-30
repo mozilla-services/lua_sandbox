@@ -12,11 +12,11 @@
 #include <stdbool.h>
 #include <stddef.h>
 
-#include "luasandbox.h"
-#include "luasandbox/util/input_buffer.h"
-#include "luasandbox/util/output_buffer.h"
-#include "luasandbox/util/string.h"
-#include "luasandbox/util/util.h"
+#include "../../luasandbox.h"
+#include "input_buffer.h"
+#include "output_buffer.h"
+#include "string.h"
+#include "util.h"
 
 #define LSB_UUID_SIZE         16
 #define LSB_UUID_STR_SIZE     36
@@ -122,7 +122,7 @@ extern "C" {
  * @return int 0 on success
  *
  */
-LSB_EXPORT int lsb_init_heka_message(lsb_heka_message *m, int num_fields);
+LSB_UTIL_EXPORT int lsb_init_heka_message(lsb_heka_message *m, int num_fields);
 
 /**
  * Frees the memory allocated for the message fields
@@ -130,7 +130,7 @@ LSB_EXPORT int lsb_init_heka_message(lsb_heka_message *m, int num_fields);
  * @param m Heka message structure
  *
  */
-LSB_EXPORT void lsb_free_heka_message(lsb_heka_message *m);
+LSB_UTIL_EXPORT void lsb_free_heka_message(lsb_heka_message *m);
 
 /**
  * Resets the message headers and fields zeroing the allocated memory
@@ -138,7 +138,7 @@ LSB_EXPORT void lsb_free_heka_message(lsb_heka_message *m);
  * @param m Heka message structure
  *
  */
-LSB_EXPORT void lsb_clear_heka_message(lsb_heka_message *m);
+LSB_UTIL_EXPORT void lsb_clear_heka_message(lsb_heka_message *m);
 
 /**
  * Locates a framed Heka message in an input buffer
@@ -151,11 +151,11 @@ LSB_EXPORT void lsb_clear_heka_message(lsb_heka_message *m);
  *
  * @return bool True on success
  */
-LSB_EXPORT bool lsb_find_heka_message(lsb_heka_message *m,
-                                      lsb_input_buffer *ib,
-                                      bool decode,
-                                      size_t *discarded_bytes,
-                                      lsb_logger logger);
+LSB_UTIL_EXPORT bool lsb_find_heka_message(lsb_heka_message *m,
+                                           lsb_input_buffer *ib,
+                                           bool decode,
+                                           size_t *discarded_bytes,
+                                           lsb_logger logger);
 
 /**
  * Decodes an array of bytes into a Heka message. The message structure is
@@ -169,10 +169,10 @@ LSB_EXPORT bool lsb_find_heka_message(lsb_heka_message *m,
  * @return bool True on success
  *
  */
-LSB_EXPORT bool lsb_decode_heka_message(lsb_heka_message *m,
-                                        const char *buf,
-                                        size_t len,
-                                        lsb_logger logger);
+LSB_UTIL_EXPORT bool lsb_decode_heka_message(lsb_heka_message *m,
+                                             const char *buf,
+                                             size_t len,
+                                             lsb_logger logger);
 
 /**
  * Reads a dynamic field from the Heka message
@@ -185,11 +185,11 @@ LSB_EXPORT bool lsb_decode_heka_message(lsb_heka_message *m,
  *
  * @return bool True on success
  */
-LSB_EXPORT bool lsb_read_heka_field(lsb_heka_message *m,
-                                       lsb_const_string *name,
-                                       int fi,
-                                       int ai,
-                                       lsb_read_value *val);
+LSB_UTIL_EXPORT bool lsb_read_heka_field(lsb_heka_message *m,
+                                         lsb_const_string *name,
+                                         int fi,
+                                         int ai,
+                                         lsb_read_value *val);
 
 /**
  * Writes a binary UUID to the output buffer
@@ -201,7 +201,7 @@ LSB_EXPORT bool lsb_read_heka_field(lsb_heka_message *m,
  *
  * @return int 0 on success
  */
-LSB_EXPORT int
+LSB_UTIL_EXPORT int
 lsb_write_heka_uuid(lsb_output_buffer *ob, const char *uuid, size_t len);
 
 #ifdef __cplusplus

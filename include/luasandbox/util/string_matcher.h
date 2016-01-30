@@ -12,7 +12,7 @@
 #include <stdbool.h>
 #include <stddef.h>
 
-#include "luasandbox.h"
+#include "util.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -28,7 +28,7 @@ extern "C" {
  *
  * @return bool True if the sting matches the pattern
  */
-LSB_EXPORT bool lsb_string_match(const char* s, size_t len, const char* p);
+LSB_UTIL_EXPORT bool lsb_string_match(const char *s, size_t len, const char *p);
 
 #ifdef __cplusplus
 }

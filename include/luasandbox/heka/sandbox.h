@@ -6,16 +6,30 @@
 
 /** Heka sandbox implementation @file */
 
-#ifndef luasandbox_heka_sandbox_sandbox_h_
-#define luasandbox_heka_sandbox_sandbox_h_
+#ifndef luasandbox_heka_sandbox_h_
+#define luasandbox_heka_sandbox_h_
 
 #include <stdbool.h>
 #include <time.h>
 
-#include "luasandbox.h"
-#include "luasandbox/lua.h"
-#include "luasandbox/lauxlib.h"
-#include "luasandbox/util/heka_message.h"
+#include "../../luasandbox.h"
+#include "../lauxlib.h"
+#include "../lua.h"
+#include "../util/heka_message.h"
+
+#ifdef _WIN32
+#ifdef luasandboxheka_EXPORTS
+#define LSB_HEKA_EXPORT __declspec(dllexport)
+#else
+#define LSB_HEKA_EXPORT __declspec(dllimport)
+#endif
+#else
+#if __GNUC__ >= 4
+#define LSB_HEKA_EXPORT __attribute__ ((visibility ("default")))
+#else
+#define LSB_HEKA_EXPORT
+#endif
+#endif
 
 #define LSB_HEKA_MAX_MESSAGE_SIZE "max_message_size"
 
@@ -107,7 +121,7 @@ typedef int (*lsb_heka_update_checkpoint)(void *parent, void *sequence_id);
  * @param im inject_message call back
  * @return lsb_heka_sandbox* On success a pointer to the sandbox otherwise NULL
  */
-LSB_EXPORT
+LSB_HEKA_EXPORT
 lsb_heka_sandbox* lsb_heka_create_input(void *parent,
                                         const char *lua_file,
                                         const char *state_file,
@@ -131,7 +145,7 @@ lsb_heka_sandbox* lsb_heka_create_input(void *parent,
  *  <0 non-fatal error (status message is logged)
  *
  */
-LSB_EXPORT
+LSB_HEKA_EXPORT
 int lsb_heka_pm_input(lsb_heka_sandbox *hsb,
                                    lsb_heka_message *msg,
                                    double cp_numeric,
@@ -151,7 +165,7 @@ int lsb_heka_pm_input(lsb_heka_sandbox *hsb,
  * @param im inject_message call back
  * @return lsb_heka_sandbox* On success a pointer to the sandbox otherwise NULL
  */
-LSB_EXPORT
+LSB_HEKA_EXPORT
 lsb_heka_sandbox* lsb_heka_create_analysis(void *parent,
                                            const char *lua_file,
                                            const char *state_file,
@@ -172,7 +186,7 @@ lsb_heka_sandbox* lsb_heka_create_analysis(void *parent,
  *  <0 non-fatal error (status message is logged)
  *
  */
-LSB_EXPORT
+LSB_HEKA_EXPORT
 int lsb_heka_pm_analysis(lsb_heka_sandbox *hsb,
                                       lsb_heka_message *msg,
                                       bool profile);
@@ -191,7 +205,7 @@ int lsb_heka_pm_analysis(lsb_heka_sandbox *hsb,
  *
  * @return lsb_heka_sandbox* On success a pointer to the sandbox otherwise NULL
  */
-LSB_EXPORT
+LSB_HEKA_EXPORT
 lsb_heka_sandbox* lsb_heka_create_output(void *parent,
                                          const char *lua_file,
                                          const char *state_file,
@@ -218,7 +232,7 @@ lsb_heka_sandbox* lsb_heka_create_output(void *parent,
  *  -5 async output
  *
  */
-LSB_EXPORT
+LSB_HEKA_EXPORT
 int lsb_heka_pm_output(lsb_heka_sandbox *hsb,
                                     lsb_heka_message *msg,
                                     void *sequence_id,
@@ -234,7 +248,7 @@ int lsb_heka_pm_output(lsb_heka_sandbox *hsb,
  * @return
  *
  */
-LSB_EXPORT void
+LSB_HEKA_EXPORT void
 lsb_heka_stop_sandbox(lsb_heka_sandbox *hsb);
 
 /**
@@ -243,7 +257,7 @@ lsb_heka_stop_sandbox(lsb_heka_sandbox *hsb);
  * @param hsb Heka sandbox to terminate
  * @param err Reason for termination
  */
-LSB_EXPORT void
+LSB_HEKA_EXPORT void
 lsb_heka_terminate_sandbox(lsb_heka_sandbox *lsb, const char *err);
 
 /**
@@ -256,7 +270,7 @@ lsb_heka_terminate_sandbox(lsb_heka_sandbox *lsb, const char *err);
  * FREED by the caller.
  *
  */
-LSB_EXPORT char*
+LSB_HEKA_EXPORT char*
 lsb_heka_destroy_sandbox(lsb_heka_sandbox *hsb);
 
 /**
@@ -269,7 +283,7 @@ lsb_heka_destroy_sandbox(lsb_heka_sandbox *hsb);
  *
  * @return int 0 on success
  */
-LSB_EXPORT
+LSB_HEKA_EXPORT
 int lsb_heka_timer_event(lsb_heka_sandbox *hsb, time_t t, bool shutdown);
 
 
@@ -280,7 +294,7 @@ int lsb_heka_timer_event(lsb_heka_sandbox *hsb, time_t t, bool shutdown);
  *
  * @return const char* error message
  */
-LSB_EXPORT const char* lsb_heka_get_error(lsb_heka_sandbox *hsb);
+LSB_HEKA_EXPORT const char* lsb_heka_get_error(lsb_heka_sandbox *hsb);
 
 /**
  * Returns the filename of the Lua source.
@@ -289,7 +303,7 @@ LSB_EXPORT const char* lsb_heka_get_error(lsb_heka_sandbox *hsb);
  *
  * @return const char* filename.
  */
-LSB_EXPORT const char* lsb_heka_get_lua_file(lsb_heka_sandbox *hsb);
+LSB_HEKA_EXPORT const char* lsb_heka_get_lua_file(lsb_heka_sandbox *hsb);
 
 /**
  * Retrieve the sandbox profiling/monitoring statistics.  This call accesses
@@ -299,7 +313,7 @@ LSB_EXPORT const char* lsb_heka_get_lua_file(lsb_heka_sandbox *hsb);
  *
  * @return lsb_heka_stats A copy of the stats structure
  */
-LSB_EXPORT lsb_heka_stats lsb_heka_get_stats(lsb_heka_sandbox *hsb);
+LSB_HEKA_EXPORT lsb_heka_stats lsb_heka_get_stats(lsb_heka_sandbox *hsb);
 
 /**
  * Queries the state of the sandbox.
@@ -308,7 +322,7 @@ LSB_EXPORT lsb_heka_stats lsb_heka_get_stats(lsb_heka_sandbox *hsb);
  *
  * @return True if the sandbox has not been terminated
  */
-LSB_EXPORT bool lsb_heka_is_running(lsb_heka_sandbox *hsb);
+LSB_HEKA_EXPORT bool lsb_heka_is_running(lsb_heka_sandbox *hsb);
 
 #ifdef __cplusplus
 }

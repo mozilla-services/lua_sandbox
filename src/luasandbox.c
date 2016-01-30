@@ -157,7 +157,7 @@ static int unprotected_panic(lua_State *lua)
 static int get_usage_config(lua_State *lua, int idx, const char *item)
 {
   lua_getfield(lua, idx, item);
-  int i = lua_tointeger(lua, -1);
+  int i = (int)lua_tointeger(lua, -1);
   lua_pop(lua, 1);
   return i;
 }
@@ -276,7 +276,7 @@ static void copy_table(lua_State *sb, lua_State *cfg, lsb_logger logger)
             if (kt == LUA_TSTRING) {
               lua_setfield(sb, -2, lua_tostring(cfg, -2));
             } else {
-              lua_rawseti(sb, -2, lua_tointeger(cfg, -2));
+              lua_rawseti(sb, -2, (int)lua_tointeger(cfg, -2));
             }
           }
         }
@@ -286,7 +286,7 @@ static void copy_table(lua_State *sb, lua_State *cfg, lsb_logger logger)
         if (kt == LUA_TSTRING) {
           lua_setfield(sb, -2, lua_tostring(cfg, -2));
         } else {
-          lua_rawseti(sb, -2, lua_tointeger(cfg, -2));
+          lua_rawseti(sb, -2, (int)lua_tointeger(cfg, -2));
         }
         break;
       case LUA_TBOOLEAN:
@@ -294,7 +294,7 @@ static void copy_table(lua_State *sb, lua_State *cfg, lsb_logger logger)
         if (kt == LUA_TSTRING) {
           lua_setfield(sb, -2, lua_tostring(cfg, -2));
         } else {
-          lua_rawseti(sb, -2, lua_tointeger(cfg, -2));
+          lua_rawseti(sb, -2, (int)lua_tointeger(cfg, -2));
         }
         break;
       case LUA_TTABLE:
@@ -323,7 +323,7 @@ static void copy_table(lua_State *sb, lua_State *cfg, lsb_logger logger)
     lua_setfield(sb, -2, lua_tostring(cfg, -2));
     break;
   case LUA_TNUMBER:
-    lua_rawseti(sb, -2, lua_tointeger(cfg, -2));
+    lua_rawseti(sb, -2, (int)lua_tointeger(cfg, -2));
     break;
   }
 }

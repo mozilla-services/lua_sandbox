@@ -171,7 +171,7 @@ static int hsr_find_message(lua_State* lua)
                            hsr->buf.size - hsr->buf.readpos,
                            fh);
       hsr->buf.readpos += nread;
-      lua_pushnumber(lua, nread);
+      lua_pushnumber(lua, (lua_Number)nread);
     }
   } else { // update bytes needed
     if (found) {

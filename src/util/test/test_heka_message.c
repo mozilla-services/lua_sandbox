@@ -27,15 +27,15 @@ struct log_message {
   char        msg[1024];
 };
 
-static struct log_message log = { .component = NULL, .severity = 0, .msg = {0} };
+static struct log_message lm = { .component = NULL, .severity = 0, .msg = {0} };
 
 void logger(const char *component, int severity, const char *fmt, ...)
 {
-  log.component = component;
-  log.severity = severity;
+  lm.component = component;
+  lm.severity = severity;
   va_list args;
   va_start(args, fmt);
-  vsnprintf(log.msg, sizeof log.msg, fmt, args);
+  vsnprintf(lm.msg, sizeof lm.msg, fmt, args);
   va_end(args);
 }
 
@@ -87,7 +87,7 @@ static char* test_decode()
   mu_assert(!lsb_init_heka_message(&m, 1), "failed");
   for (unsigned i = 0; i < sizeof tests / sizeof(lsb_const_string); ++i){
     bool ok = lsb_decode_heka_message(&m, tests[i].s, tests[i].len, logger);
-    mu_assert(ok, "test: %d failed err: %s", i, log.msg);
+    mu_assert(ok, "test: %d failed err: %s", i, lm.msg);
   }
   lsb_free_heka_message(&m);
   return NULL;
@@ -136,8 +136,8 @@ static char* test_decode_failure()
   for (unsigned i = 0; i < sizeof(tests) / sizeof(struct decode_failure); ++i) {
     bool ok = lsb_decode_heka_message(&m, tests[i].s, strlen(tests[i].s), logger);
     mu_assert(!ok, "test: %u no error generated", i);
-    mu_assert(!strcmp(log.msg, tests[i].e), "test: %u expected: %s received: %s",
-              i, tests[i].e, log.msg);
+    mu_assert(!strcmp(lm.msg, tests[i].e), "test: %u expected: %s received: %s",
+              i, tests[i].e, lm.msg);
   }
   lsb_free_heka_message(&m);
   return NULL;
@@ -152,7 +152,7 @@ static char* test_find_message()
     size_t           d;
   };
 
-#define add_input(str, result, discard) {.s = (lsb_const_string){.s = str, .len = sizeof str - 1}, .b = result, .d = discard},
+#define add_input(str, result, discard) {.s = {.s = str, .len = sizeof str - 1}, .b = result, .d = discard},
   struct find_message tests[] = {
     add_input("\x1e\x02\x08\x14\x1f" TEST_UUID TEST_NS, true, 0) // full message
     add_input("\x1e", false, 0)

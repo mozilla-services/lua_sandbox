@@ -109,7 +109,9 @@ lsb_pb_write_string(lsb_output_buffer *ob, char tag, const char *s, size_t len)
 
 int lsb_pb_update_field_length(lsb_output_buffer *ob, size_t len_pos)
 {
-  if (len_pos >= ob->pos) return 1;
+  if (len_pos >= ob->pos) {
+    return 1;
+  }
 
   size_t len = ob->pos - len_pos - 1;
   if (len < 128) {

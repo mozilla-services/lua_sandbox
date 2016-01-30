@@ -10,7 +10,7 @@
 #ifndef lsb_util_running_stats_h_
 #define lsb_util_running_stats_h_
 
-#include "luasandbox.h"
+#include "util.h"
 
 typedef struct lsb_running_stats
 {
@@ -28,7 +28,7 @@ extern "C" {
  *
  * @param s Stat structure to zero out
  */
-LSB_EXPORT void lsb_init_running_stats(lsb_running_stats *s);
+LSB_UTIL_EXPORT void lsb_init_running_stats(lsb_running_stats *s);
 
 /**
  * Value to add to the running stats
@@ -36,7 +36,7 @@ LSB_EXPORT void lsb_init_running_stats(lsb_running_stats *s);
  * @param s Stat structure
  * @param d Value to add
  */
-LSB_EXPORT void lsb_update_running_stats(lsb_running_stats *s, double d);
+LSB_UTIL_EXPORT void lsb_update_running_stats(lsb_running_stats *s, double d);
 
 /**
  * Return the standard deviation of the stats
@@ -45,7 +45,7 @@ LSB_EXPORT void lsb_update_running_stats(lsb_running_stats *s, double d);
  *
  * @return double Standard deviation of the stats up to this point
  */
-LSB_EXPORT double lsb_sd_running_stats(lsb_running_stats *s);
+LSB_UTIL_EXPORT double lsb_sd_running_stats(lsb_running_stats *s);
 
 #ifdef __cplusplus
 }

@@ -27,7 +27,7 @@ size_t written_data_len = 0;
 
 
 #ifdef _WIN32
-#define MODULE_PATH "path = 'modules\\?.lua';cpath = 'modules\\?.dll'\n"
+#define MODULE_PATH "path = 'modules\\\\?.lua';cpath = 'modules\\\\?.dll'\n"
 #else
 #define MODULE_PATH "path = 'modules/?.lua';cpath = 'modules/?.so'\n"
 #endif
@@ -710,8 +710,8 @@ static char* test_errors()
                                      "instruction_limit = 1000;"
                                      "output_limit = 128;"
 #ifdef _WIN32
-                                     "path = 'lua\\?.lua'"
-                                     "cpath = 'lua\\?.dll'",
+                                     "path = 'lua\\\\?.lua'"
+                                     "cpath = 'lua\\\\?.dll'",
 #else
                                      "path = 'lua/?.lua'"
                                      "cpath = 'lua/?.so'",

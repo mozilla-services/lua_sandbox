@@ -68,7 +68,6 @@ typedef void (*lsb_logger)(const char* component,
                            ...);
 
 typedef struct lsb_lua_sandbox lsb_lua_sandbox;
-typedef struct lsb_output_buffer lsb_output_buffer;
 
 #ifdef __cplusplus
 extern "C" {

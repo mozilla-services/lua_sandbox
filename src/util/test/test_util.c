@@ -7,6 +7,7 @@
 /** @brief lsb_util unit tests @file */
 
 #include <stdio.h>
+#include <time.h>
 
 #include "../../test/mu_test.h"
 #include "luasandbox/util/util.h"

@@ -6,8 +6,8 @@
 
 /** Hindsight Heka stream reader structures @file */
 
-#ifndef luasandbox_heka_sandbox_stream_reader_h_
-#define luasandbox_heka_sandbox_stream_reader_h_
+#ifndef luasandbox_heka_stream_reader_h_
+#define luasandbox_heka_stream_reader_h_
 
 #include "luasandbox/lua.h"
 

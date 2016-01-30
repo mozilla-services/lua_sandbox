@@ -6,12 +6,19 @@
 
 /** @brief lsb_output_buffer unit tests @file */
 
+#include <math.h>
 #include <stdio.h>
 #include <string.h>
 
 #include "../../test/mu_test.h"
 #include "luasandbox/util/output_buffer.h"
 #include "luasandbox/util/heka_message.h"
+
+#ifdef _MSC_VER
+// To silence the +/-INFINITY warning
+#pragma warning( disable : 4756 )
+#pragma warning( disable : 4056 )
+#endif
 
 static char* test_stub()
 {
@@ -137,13 +144,13 @@ static char* test_outputd()
   lsb_outputd(&b, d - 1);
   mu_assert(strcmp("10.12147483648-2147483649", b.buf) == 0,
             "received: %s", b.buf);
-  lsb_outputd(&b, 0.0/0.0);
+  lsb_outputd(&b, NAN);
   mu_assert(strcmp("10.12147483648-2147483649nan", b.buf) == 0,
             "received: %s", b.buf);
-  lsb_outputd(&b, 1.0/0.0);
+  lsb_outputd(&b, INFINITY);
   mu_assert(strcmp("10.12147483648-2147483649naninf", b.buf) == 0,
             "received: %s", b.buf);
-  lsb_outputd(&b, -1.0/0.0);
+  lsb_outputd(&b, -INFINITY);
   mu_assert(strcmp("10.12147483648-2147483649naninf-inf", b.buf) == 0,
             "received: %s", b.buf);
   lsb_free_output_buffer(&b);
