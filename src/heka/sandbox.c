@@ -23,10 +23,11 @@
 
 #ifdef _WIN32
 #include <winsock2.h>
-#define snprintf _snprintf
 #else
 #include <unistd.h>
 #endif
+
+lsb_err_id LSB_ERR_HEKA_INPUT = "invalid input";
 
 static const char *pm_func_name = "process_message";
 static const char *im_func_name = "inject_message";
@@ -342,7 +343,7 @@ lsb_heka_sandbox* lsb_heka_create_input(void *parent,
                                         const char *state_file,
                                         const char *lsb_cfg,
                                         lsb_logger logger,
-                                        lsb_heka_inject_message_input im)
+                                        lsb_heka_im_input im)
 {
   if (!lua_file) {
     if (logger) logger(__FUNCTION__, 3, "lua_file must be specified");
@@ -419,8 +420,11 @@ static int process_message(lsb_heka_sandbox *hsb, lsb_heka_message *msg,
   }
   if (lua_pcall(lua, nargs, 2, 0) != 0) {
     char err[LSB_ERROR_SIZE];
-    size_t len = snprintf(err, LSB_ERROR_SIZE, "%s() %s", pm_func_name,
-                          lua_tostring(lua, -1));
+    const char *em = lua_tostring(lua, -1);
+    if (hsb->type == 'i' && strcmp(em, LSB_SHUTTING_DOWN) == 0) {
+      return 0;
+    }
+    size_t len = snprintf(err, LSB_ERROR_SIZE, "%s() %s", pm_func_name, em);
     if (len >= LSB_ERROR_SIZE) {
       err[LSB_ERROR_SIZE - 1] = 0;
     }
@@ -447,7 +451,6 @@ static int process_message(lsb_heka_sandbox *hsb, lsb_heka_message *msg,
 
   int status = (int)lua_tointeger(lua, 1);
   switch (lua_type(lua, 2)) {
-  case LUA_TNONE:
   case LUA_TNIL:
     lsb_set_error(hsb->lsb, NULL);
     break;
@@ -492,17 +495,20 @@ static int process_message(lsb_heka_sandbox *hsb, lsb_heka_message *msg,
 
 
 int lsb_heka_pm_input(lsb_heka_sandbox *hsb,
-                                   lsb_heka_message *msg,
-                                   double cp_numeric,
-                                   const char *cp_string,
-                                   bool profile)
+                      double cp_numeric,
+                      const char *cp_string,
+                      bool profile)
 {
   if (!hsb || hsb->type != 'i') return 1;
 
-  if (lsb_pcall_setup(hsb->lsb, pm_func_name)) {
-    char err[LSB_ERROR_SIZE];
-    snprintf(err, LSB_ERROR_SIZE, "%s() function was not found", pm_func_name);
-    lsb_terminate(hsb->lsb, err);
+  lsb_err_value ret = lsb_pcall_setup(hsb->lsb, pm_func_name);
+  if (ret) {
+    if (ret != LSB_ERR_TERMINATED) {
+      char err[LSB_ERROR_SIZE];
+      snprintf(err, LSB_ERROR_SIZE, "%s() function was not found",
+               pm_func_name);
+      lsb_terminate(hsb->lsb, err);
+    }
     return 1;
   }
 
@@ -516,7 +522,7 @@ int lsb_heka_pm_input(lsb_heka_sandbox *hsb,
   } else {
     lua_pushnil(lua);
   }
-  return process_message(hsb, msg, lua, 1, profile);
+  return process_message(hsb, NULL, lua, 1, profile);
 }
 
 
@@ -525,7 +531,7 @@ lsb_heka_sandbox* lsb_heka_create_analysis(void *parent,
                                            const char *state_file,
                                            const char *lsb_cfg,
                                            lsb_logger logger,
-                                           lsb_heka_inject_message_analysis im)
+                                           lsb_heka_im_analysis im)
 {
   if (!lua_file) {
     if (logger) logger(__FUNCTION__, 3, "lua_file must be specified");
@@ -585,10 +591,10 @@ lsb_heka_sandbox* lsb_heka_create_analysis(void *parent,
 
 
 int lsb_heka_pm_analysis(lsb_heka_sandbox *hsb,
-                                      lsb_heka_message *msg,
-                                      bool profile)
+                         lsb_heka_message *msg,
+                         bool profile)
 {
-  if (!hsb || hsb->type != 'a') return 1;
+  if (!hsb || !msg || hsb->type != 'a') return 1;
 
   if (lsb_pcall_setup(hsb->lsb, pm_func_name)) {
     char err[LSB_ERROR_SIZE];
@@ -681,8 +687,8 @@ void lsb_heka_terminate_sandbox(lsb_heka_sandbox *hsb, const char *err)
 char* lsb_heka_destroy_sandbox(lsb_heka_sandbox *hsb)
 {
   if (!hsb) return NULL;
-  char *msg = lsb_destroy(hsb->lsb);
 
+  char *msg = lsb_destroy(hsb->lsb);
   free(hsb->hostname);
   free(hsb->name);
   free(hsb);
@@ -691,11 +697,11 @@ char* lsb_heka_destroy_sandbox(lsb_heka_sandbox *hsb)
 
 
 int lsb_heka_pm_output(lsb_heka_sandbox *hsb,
-                                    lsb_heka_message *msg,
-                                    void *sequence_id,
-                                    bool profile)
+                       lsb_heka_message *msg,
+                       void *sequence_id,
+                       bool profile)
 {
-  if (!hsb || hsb->type != 'o') return 1;
+  if (!hsb || !msg || hsb->type != 'o') return 1;
 
   if (lsb_pcall_setup(hsb->lsb, pm_func_name)) {
     char err[LSB_ERROR_SIZE];
@@ -759,21 +765,19 @@ int lsb_heka_timer_event(lsb_heka_sandbox *hsb, time_t t, bool shutdown)
 
 const char* lsb_heka_get_error(lsb_heka_sandbox *hsb)
 {
-  if (!hsb) return "";
-  return lsb_get_error(hsb->lsb);
+  return hsb ? lsb_get_error(hsb->lsb) : "";
 }
 
 
 const char* lsb_heka_get_lua_file(lsb_heka_sandbox *hsb)
 {
-  if (!hsb) return NULL;
-  return lsb_get_lua_file(hsb->lsb);
+  return hsb ? lsb_get_lua_file(hsb->lsb) : NULL;
 }
 
 
 lsb_heka_stats lsb_heka_get_stats(lsb_heka_sandbox *hsb)
 {
-  if (!hsb) return (struct lsb_heka_stats){0,0,0,0,0,0,0,0,0,0,0,0};
+  if (!hsb) return (struct lsb_heka_stats){ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 
   return (struct lsb_heka_stats){
     .mem_cur      = lsb_usage(hsb->lsb, LSB_UT_MEMORY, LSB_US_CURRENT),

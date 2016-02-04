@@ -1,152 +1,156 @@
-Function                                                                       Source                                         Line  FnCov           C/D Coverage
------------------------------------------------------------------------------  ---------------------------------------------------  -----  ---------------------
-lsb_get_parent(lua_sandbox*)                                                   ../src/luasandbox.c                             457  0 / 1       0 /     0       
-circular_buffer_version(lua_State*)                                            .../lua_circular_buffer/lua_circular_buffer.c   858  0 / 1       0 /     0       
-cf_version(lua_State*)                                                         ...urce/lua_cuckoo_filter/lua_cuckoo_filter.c   330  0 / 1       0 /     0       
-hyperloglog_version(lua_State*)                                                ...e/Source/lua_hyperloglog/lua_hyperloglog.c   152  0 / 1       0 /     0       
-lsb_restore_global_data(lua_sandbox*,const char*)                              ../src/lsb_serialize.c                          488  1 / 1       2 /    12 =  16%
-add_table_ref(table_ref_array*,const void*,size_t)                             ../src/lsb_serialize.c                          168  1 / 1       1 /     4 =  25%
-pb_write_double(lsb_output_data*,double)                                       ../src/lsb_serialize_protobuf.c                  58  1 / 1       1 /     4 =  25%
-pb_write_tag(lsb_output_data*,unsigned char,unsigned char)                     ../src/lsb_serialize_protobuf.c                 105  1 / 1       1 /     4 =  25%
-pb_write_string(lsb_output_data*,char,const char*,size_t)                      ../src/lsb_serialize_protobuf.c                 164  1 / 1       3 /     8 =  37%
-MurmurHash64A(const void*,int,unsigned int)                                    ...Source/lua_hyperloglog/redis_hyperloglog.c   264  1 / 1       4 /    10 =  40%
-lsb_appendf(lsb_output_data*,const char*,...)                                  ../src/lsb_output.c                              67  1 / 1       9 /    22 =  40%
-cf_delete(lua_State*)                                                          ...urce/lua_cuckoo_filter/lua_cuckoo_filter.c   262  1 / 1       3 /     7 =  42%
-serialize_data(lua_sandbox*,int,lsb_output_data*)                              ../src/lsb_serialize.c                          227  1 / 1      10 /    22 =  45%
-serialize_bloom_filter(lua_State*)                                             ...Source/lua_bloom_filter/lua_bloom_filter.c   195  1 / 1       8 /    16 =  50%
-serialize_cuckoo_filter(lua_State*)                                            ...urce/lua_cuckoo_filter/lua_cuckoo_filter.c   339  1 / 1       8 /    16 =  50%
-serialize_hyperloglog(lua_State*)                                              ...e/Source/lua_hyperloglog/lua_hyperloglog.c   160  1 / 1       8 /    16 =  50%
-pb_write_bool(lsb_output_data*,int)                                            ../src/lsb_serialize_protobuf.c                  80  1 / 1       3 /     6 =  50%
-output_hyperloglog(lua_State*)                                                 ...e/Source/lua_hyperloglog/lua_hyperloglog.c   183  1 / 1       3 /     6 =  50%
-file_exists(const char*)                                                       ../src/lsb_serialize.c                          477  1 / 1       1 /     2 =  50%
-instruction_manager(lua_State*,lua_Debug*)                                     ../src/luasandbox.c                             123  1 / 1       1 /     2 =  50%
-cf_fromstring(lua_State*)                                                      ...urce/lua_cuckoo_filter/lua_cuckoo_filter.c   316  1 / 1       1 /     2 =  50%
-lsb_serialize_table_as_pb(lua_sandbox*,int)                                    ../src/lsb_serialize_protobuf.c                 581  1 / 1      20 /    38 =  52%
-expand_path(const char*,int,const char*,char*)                                 ../src/luasandbox.c                             165  1 / 1      10 /    18 =  55%
-circular_buffer_set(lua_State*)                                                .../lua_circular_buffer/lua_circular_buffer.c   326  1 / 1      14 /    25 =  56%
-ignore_value_type(lua_sandbox*,serialization_data*,int,lua_CFunction*)         ../src/lsb_serialize.c                          109  1 / 1       8 /    14 =  57%
-lsb_serialize_binary(const void*,size_t,lsb_output_data*)                      ../src/lsb_serialize.c                          535  1 / 1      10 /    17 =  58%
-update_field_length(lsb_output_data*,size_t)                                   ../src/lsb_serialize_protobuf.c                 128  1 / 1       6 /    10 =  60%
-cf_add(lua_State*)                                                             ...urce/lua_cuckoo_filter/lua_cuckoo_filter.c   195  1 / 1       3 /     5 =  60%
-cf_query(lua_State*)                                                           ...urce/lua_cuckoo_filter/lua_cuckoo_filter.c   228  1 / 1       3 /     5 =  60%
-lsb_create_custom(void*,const char*,const char*)                               ../src/luasandbox.c                             226  1 / 1      16 /    26 =  61%
-pb_write_varint(lsb_output_data*,unsigned long long)                           ../src/lsb_serialize_protobuf.c                  29  1 / 1       5 /     8 =  62%
-lsb_pcall_setup(lua_sandbox*,const char*)                                      ../src/luasandbox.c                             493  1 / 1       5 /     8 =  62%
-serialize_circular_buffer(lua_State*)                                          .../lua_circular_buffer/lua_circular_buffer.c  1017  1 / 1      19 /    30 =  63%
-output_circular_buffer_cbufd(lua_State*,circular_buffer*,lsb_output_data*)     .../lua_circular_buffer/lua_circular_buffer.c   889  1 / 1      14 /    22 =  63%
-lsb_create(void*,const char*,const char*,unsigned,unsigned,unsigned)           ../src/luasandbox.c                             182  1 / 1       9 /    14 =  64%
-serialize_circular_buffer_delta(lua_State*,circular_buffer*,lsb_output_data*)  .../lua_circular_buffer/lua_circular_buffer.c   974  1 / 1      13 /    20 =  65%
-encode_fields(lua_sandbox*,lsb_output_data*,char,const char*,int)              ../src/lsb_serialize_protobuf.c                 519  1 / 1      24 /    36 =  66%
-encode_field_array(lua_sandbox*,lsb_output_data*,int,const char*,int)          ../src/lsb_serialize_protobuf.c                 269  1 / 1      20 /    30 =  66%
-hyperloglog_fromstring(lua_State*)                                             ...e/Source/lua_hyperloglog/lua_hyperloglog.c   132  1 / 1       4 /     6 =  66%
-process_fields(lua_State*,unsigned const char*,unsigned const char*)           ../src/lsb_deserialize_protobuf.c               104  1 / 1      51 /    74 =  68%
-nlz(unsigned)                                                                  ...urce/lua_cuckoo_filter/lua_cuckoo_filter.c    70  1 / 1       7 /    10 =  70%
-output_circular_buffer(lua_State*)                                             .../lua_circular_buffer/lua_circular_buffer.c   933  1 / 1      17 /    24 =  70%
-lsb_serialize_double(lsb_output_data*,double)                                  ../src/lsb_serialize.c                          561  1 / 1      27 /    38 =  71%
-encode_field_value(lua_sandbox*,lsb_output_data*,int,const char*,int)          ../src/lsb_serialize_protobuf.c                 336  1 / 1      75 /   105 =  71%
-lsb_init(lua_sandbox*,const char*)                                             ../src/luasandbox.c                             305  1 / 1      20 /    28 =  71%
-circular_buffer_set_header(lua_State*)                                         .../lua_circular_buffer/lua_circular_buffer.c   373  1 / 1      10 /    14 =  71%
-lsb_preserve_global_data(lua_sandbox*,const char*)                             ../src/lsb_serialize.c                          366  1 / 1      19 /    26 =  73%
-serialize_kvp(lua_sandbox*,serialization_data*,size_t)                         ../src/lsb_serialize.c                          287  1 / 1      18 /    24 =  75%
-hllCount(hyperloglog*)                                                         ...Source/lua_hyperloglog/redis_hyperloglog.c   454  1 / 1      12 /    16 =  75%
-read_string(lua_State*,int,unsigned const char*,unsigned const char*)          ../src/lsb_deserialize_protobuf.c                61  1 / 1       6 /     8 =  75%
-lsb_usage(lua_sandbox*,lsb_usage_type,lsb_usage_stat)                          ../src/luasandbox.c                             405  1 / 1       6 /     8 =  75%
-circular_buffer_add_delta(lua_State*,circular_buffer*,double,int,double)       .../lua_circular_buffer/lua_circular_buffer.c   219  1 / 1       6 /     8 =  75%
-process_varint(lua_State*,const char*...ned const char*,unsigned const char*)  ../src/lsb_deserialize_protobuf.c                82  1 / 1       3 /     4 =  75%
-lsb_appendc(lsb_output_data*,char)                                             ../src/lsb_output.c                              55  1 / 1       3 /     4 =  75%
-encode_int(lua_sandbox*,lsb_output_data*,char,const char*,int)                 ../src/lsb_serialize_protobuf.c                 225  1 / 1       3 /     4 =  75%
-output(lua_State*)                                                             ../src/luasandbox.c                             131  1 / 1       3 /     4 =  75%
-lsb_set_error(lua_sandbox*,const char*)                                        ../src/luasandbox.c                             438  1 / 1       3 /     4 =  75%
-lsb_get_output(lua_sandbox*,size_t*)                                           ../src/luasandbox.c                             481  1 / 1       3 /     4 =  75%
-bucket_delete(cuckoo_bucket*,unsigned)                                         ...urce/lua_cuckoo_filter/lua_cuckoo_filter.c   136  1 / 1       3 /     4 =  75%
-circular_buffer_mannwhitneyu(lua_State*)                                       .../lua_circular_buffer/lua_circular_buffer.c   662  1 / 1      23 /    30 =  76%
-compute_max(circular_buffer*,unsigned,unsigned,unsigned,unsigned*)             .../lua_circular_buffer/lua_circular_buffer.c   525  1 / 1       8 /    10 =  80%
-lsb_realloc_output(lsb_output_data*,size_t)                                    ../src/lsb_output.c                             132  1 / 1      13 /    16 =  81%
-bucket_insert(cuckoo_filter*,unsigned,unsigned,unsigned)                       ...urce/lua_cuckoo_filter/lua_cuckoo_filter.c   160  1 / 1      13 /    16 =  81%
-read_double(char**,double*)                                                    .../lua_circular_buffer/lua_circular_buffer.c   781  1 / 1      18 /    22 =  81%
-lsb_decode_protobuf(lua_State*)                                                ../src/lsb_deserialize_protobuf.c               262  1 / 1      54 /    65 =  83%
-lsb_output(lua_sandbox*,int,int,int)                                           ../src/lsb_output.c                             153  1 / 1      25 /    30 =  83%
-lsb_output_protobuf(lua_sandbox*,int,int)                                      ../src/lsb_output.c                             215  1 / 1       5 /     6 =  83%
-compute_sum(circular_buffer*,unsigned,unsigned,unsigned,unsigned*)             .../lua_circular_buffer/lua_circular_buffer.c   415  1 / 1       5 /     6 =  83%
-compute_avg(circular_buffer*,unsigned,unsigned,unsigned,unsigned*)             .../lua_circular_buffer/lua_circular_buffer.c   438  1 / 1       5 /     6 =  83%
-circular_buffer_compute(lua_State*)                                            .../lua_circular_buffer/lua_circular_buffer.c   552  1 / 1      11 /    13 =  84%
-output_circular_buffer_full(circular_buffer*,lsb_output_data*)                 .../lua_circular_buffer/lua_circular_buffer.c   867  1 / 1      12 /    14 =  85%
-compute_variance(circular_buffer*,unsigned,unsigned,unsigned,unsigned*)        .../lua_circular_buffer/lua_circular_buffer.c   463  1 / 1       7 /     8 =  87%
-circular_buffer_delta_fromstring(lua_State*,circular_buffer*,char**)           .../lua_circular_buffer/lua_circular_buffer.c   804  1 / 1       7 /     8 =  87%
-hllDenseSum(uint8_t*,double*,int*)                                             ...Source/lua_hyperloglog/redis_hyperloglog.c   356  1 / 1      34 /    38 =  89%
-read_length(unsigned const char*,unsigned const char*,size_t*)                 ../src/lsb_deserialize_protobuf.c                27  1 / 1       9 /    10 =  90%
-read_varint(unsigned const char*,unsigned const char*,long long*)              ../src/lsb_deserialize_protobuf.c                44  1 / 1       9 /    10 =  90%
-compute_min(circular_buffer*,unsigned,unsigned,unsigned,unsigned*)             .../lua_circular_buffer/lua_circular_buffer.c   498  1 / 1       9 /    10 =  90%
-memory_manager(void*,void*,size_t,size_t)                                      ../src/luasandbox.c                              86  1 / 1      11 /    12 =  91%
-circular_buffer_add(lua_State*)                                                .../lua_circular_buffer/lua_circular_buffer.c   267  1 / 1      11 /    12 =  91%
-lsb_destroy(lua_sandbox*,const char*)                                          ../src/luasandbox.c                             381  1 / 1      13 /    14 =  92%
-read_key(unsigned const char*,int*,int*)                                       ../src/lsb_deserialize_protobuf.c                18  1 / 1       0 /     0       
-update_output_stats(lua_sandbox*)                                              ../src/lsb_output.c                              24  1 / 1       2 /     2 = 100%
-lsb_add_output_function(lua_State*,lua_CFunction)                              ../src/lsb_output.c                              35  1 / 1       0 /     0       
-lsb_get_output_function(lua_State*,int)                                        ../src/lsb_output.c                              43  1 / 1       0 /     0       
-lsb_appends(lsb_output_data*,const char*,size_t)                               ../src/lsb_output.c                             119  1 / 1       4 /     4 = 100%
-get_serialize_function(lua_State*,int)                                         ../src/lsb_serialize.c                           87  1 / 1       0 /     0       
-find_table_ref(table_ref_array*,const void*)                                   ../src/lsb_serialize.c                          147  1 / 1       4 /     4 = 100%
-get_preservation_version(lua_State*)                                           ../src/lsb_serialize.c                          193  1 / 1       4 /     4 = 100%
-serialize_table(lua_sandbox*,serialization_data*,size_t)                       ../src/lsb_serialize.c                          212  1 / 1       6 /     6 = 100%
-lsb_add_serialize_function(lua_State*,lua_CFunction)                           ../src/lsb_serialize.c                          527  1 / 1       0 /     0       
-encode_string(lua_sandbox*,lsb_output_data*,char,const char*,int)              ../src/lsb_serialize_protobuf.c                 196  1 / 1       2 /     2 = 100%
-encode_field_object(lua_sandbox*,lsb_output_data*)                             ../src/lsb_serialize_protobuf.c                 315  1 / 1       4 /     4 = 100%
-libsize(const luaL_Reg*)                                                       ../src/luasandbox.c                              52  1 / 1       2 /     2 = 100%
-preload_modules(lua_State*)                                                    ../src/luasandbox.c                              59  1 / 1       2 /     2 = 100%
-instruction_usage(lua_sandbox*)                                                ../src/luasandbox.c                             117  1 / 1       0 /     0       
-unprotected_panic(lua_State*)                                                  ../src/luasandbox.c                             148  1 / 1       0 /     0       
-get_usage_config(lua_State*,int,const char*)                                   ../src/luasandbox.c                             156  1 / 1       0 /     0       
-lsb_get_error(lua_sandbox*)                                                    ../src/luasandbox.c                             429  1 / 1       2 /     2 = 100%
-lsb_get_lua(lua_sandbox*)                                                      ../src/luasandbox.c                             451  1 / 1       0 /     0       
-lsb_get_state(lua_sandbox*)                                                    ../src/luasandbox.c                             463  1 / 1       2 /     2 = 100%
-lsb_add_function(lua_sandbox*,lua_CFunction,const char*)                       ../src/luasandbox.c                             472  1 / 1       0 /     0       
-lsb_pcall_teardown(lua_sandbox*)                                               ../src/luasandbox.c                             512  1 / 1       2 /     2 = 100%
-lsb_terminate(lua_sandbox*,const char*)                                        ../src/luasandbox.c                             524  1 / 1       4 /     4 = 100%
-bloom_filter_new(lua_State*)                                                   ...Source/lua_bloom_filter/lua_bloom_filter.c    36  1 / 1       0 /     0       
-check_bloom_filter(lua_State*,int)                                             ...Source/lua_bloom_filter/lua_bloom_filter.c    66  1 / 1       0 /     0       
-bloom_filter_add(lua_State*)                                                   ...Source/lua_bloom_filter/lua_bloom_filter.c    76  1 / 1       9 /     9 = 100%
-bloom_filter_query(lua_State*)                                                 ...Source/lua_bloom_filter/lua_bloom_filter.c   115  1 / 1       9 /     9 = 100%
-bloom_filter_count(lua_State*)                                                 ...Source/lua_bloom_filter/lua_bloom_filter.c   147  1 / 1       0 /     0       
-bloom_filter_clear(lua_State*)                                                 ...Source/lua_bloom_filter/lua_bloom_filter.c   155  1 / 1       0 /     0       
-bloom_filter_fromstring(lua_State*)                                            ...Source/lua_bloom_filter/lua_bloom_filter.c   164  1 / 1       4 /     4 = 100%
-bloom_filter_version(lua_State*)                                               ...Source/lua_bloom_filter/lua_bloom_filter.c   186  1 / 1       0 /     0       
-luaopen_bloom_filter(lua_State*)                                               ...Source/lua_bloom_filter/lua_bloom_filter.c   242  1 / 1       0 /     0       
-get_start_time(circular_buffer*)                                               .../lua_circular_buffer/lua_circular_buffer.c    81  1 / 1       0 /     0       
-copy_cleared_row(circular_buffer*,double*,size_t)                              .../lua_circular_buffer/lua_circular_buffer.c    87  1 / 1       4 /     4 = 100%
-clear_rows(circular_buffer*,unsigned)                                          .../lua_circular_buffer/lua_circular_buffer.c   106  1 / 1      10 /    10 = 100%
-circular_buffer_new(lua_State*)                                                .../lua_circular_buffer/lua_circular_buffer.c   130  1 / 1       4 /     4 = 100%
-check_circular_buffer(lua_State*,int)                                          .../lua_circular_buffer/lua_circular_buffer.c   177  1 / 1       0 /     0       
-check_row(circular_buffer*,double,int)                                         .../lua_circular_buffer/lua_circular_buffer.c   187  1 / 1      12 /    12 = 100%
-check_column(lua_State*,circular_buffer*,int)                                  .../lua_circular_buffer/lua_circular_buffer.c   209  1 / 1       0 /     0       
-circular_buffer_get(lua_State*)                                                .../lua_circular_buffer/lua_circular_buffer.c   298  1 / 1       2 /     2 = 100%
-circular_buffer_get_configuration(lua_State*)                                  .../lua_circular_buffer/lua_circular_buffer.c   315  1 / 1       0 /     0       
-circular_buffer_get_header(lua_State*)                                         .../lua_circular_buffer/lua_circular_buffer.c   402  1 / 1       0 /     0       
-compute_sd(circular_buffer*,unsigned,unsigned,unsigned,unsigned*)              .../lua_circular_buffer/lua_circular_buffer.c   490  1 / 1       0 /     0       
-append_values(circular_buffer*,unsigned,unsigned,unsigned,double[])            .../lua_circular_buffer/lua_circular_buffer.c   602  1 / 1       4 /     4 = 100%
-rank_data(double*[],size_t)                                                    .../lua_circular_buffer/lua_circular_buffer.c   618  1 / 1      16 /    16 = 100%
-double_pp_compare(const void*,const void*)                                     .../lua_circular_buffer/lua_circular_buffer.c   647  1 / 1      14 /    14 = 100%
-circular_buffer_current_time(lua_State*)                                       .../lua_circular_buffer/lua_circular_buffer.c   754  1 / 1       0 /     0       
-circular_buffer_format(lua_State*)                                             .../lua_circular_buffer/lua_circular_buffer.c   761  1 / 1       0 /     0       
-read_time_row(char**,circular_buffer*)                                         .../lua_circular_buffer/lua_circular_buffer.c   774  1 / 1       0 /     0       
-circular_buffer_fromstring(lua_State*)                                         .../lua_circular_buffer/lua_circular_buffer.c   830  1 / 1      12 /    12 = 100%
-luaopen_circular_buffer(lua_State*)                                            .../lua_circular_buffer/lua_circular_buffer.c  1102  1 / 1       0 /     0       
-clp2(unsigned)                                                                 ...urce/lua_cuckoo_filter/lua_cuckoo_filter.c    51  1 / 1       0 /     0       
-cf_new(lua_State*)                                                             ...urce/lua_cuckoo_filter/lua_cuckoo_filter.c    85  1 / 1       0 /     0       
-check_cuckoo_filter(lua_State*,int)                                            ...urce/lua_cuckoo_filter/lua_cuckoo_filter.c   110  1 / 1       0 /     0       
-fingerprint(unsigned)                                                          ...urce/lua_cuckoo_filter/lua_cuckoo_filter.c   120  1 / 1       2 /     2 = 100%
-bucket_lookup(cuckoo_bucket*,unsigned)                                         ...urce/lua_cuckoo_filter/lua_cuckoo_filter.c   127  1 / 1       4 /     4 = 100%
-bucket_add(cuckoo_bucket*,unsigned)                                            ...urce/lua_cuckoo_filter/lua_cuckoo_filter.c   148  1 / 1       4 /     4 = 100%
-cf_count(lua_State*)                                                           ...urce/lua_cuckoo_filter/lua_cuckoo_filter.c   299  1 / 1       0 /     0       
-cf_clear(lua_State*)                                                           ...urce/lua_cuckoo_filter/lua_cuckoo_filter.c   307  1 / 1       0 /     0       
-luaopen_cuckoo_filter(lua_State*)                                              ...urce/lua_cuckoo_filter/lua_cuckoo_filter.c   387  1 / 1       0 /     0       
-hyperloglog_new(lua_State*)                                                    ...e/Source/lua_hyperloglog/lua_hyperloglog.c    29  1 / 1       0 /     0       
-check_hyperloglog(lua_State*,int)                                              ...e/Source/lua_hyperloglog/lua_hyperloglog.c    49  1 / 1       0 /     0       
-hyperloglog_add(lua_State*)                                                    ...e/Source/lua_hyperloglog/lua_hyperloglog.c    59  1 / 1       5 /     5 = 100%
-hyperloglog_count(lua_State*)                                                  ...e/Source/lua_hyperloglog/lua_hyperloglog.c    90  1 / 1       2 /     2 = 100%
-hyperloglog_clear(lua_State*)                                                  ...e/Source/lua_hyperloglog/lua_hyperloglog.c   123  1 / 1       0 /     0       
-luaopen_hyperloglog(lua_State*)                                                ...e/Source/lua_hyperloglog/lua_hyperloglog.c   213  1 / 1       0 /     0       
-hllPatLen(unsigned char*,size_t,long*)                                         ...Source/lua_hyperloglog/redis_hyperloglog.c   323  1 / 1       2 /     2 = 100%
-hllDenseAdd(uint8_t*,unsigned char*,size_t)                                    ...Source/lua_hyperloglog/redis_hyperloglog.c   426  1 / 1       2 /     2 = 100%
------------------------------------------------------------------------------  ---------------------------------------------------  -----  ---------------------
-Total                                                                                                                                 97%    1028 /  1419 =  72%
+Function                       Source        Line  FnCov           C/D Coverage
+-----------------------------  ------------------  -----  ---------------------
+add_table_ref...void*,size_t)  ...rialize.c   170  1 / 1       1 /     4 =  25%
+restore_globa...lua_sandbox*)  ...rialize.c   495  1 / 1       7 /    18 =  38%
+lsb_create(vo...*,lsb_logger)  ...sandbox.c   379  1 / 1      11 /    26 =  42%
+serialize_dat...tput_buffer*)  ...rialize.c   229  1 / 1       8 /    18 =  44%
+hsr_new(lua_State*)            ..._reader.c    21  1 / 1       4 /     8 =  50%
+lsb_create_me...,const char*)  ...matcher.c   443  1 / 1       3 /     6 =  50%
+lsb_outputc(l...buffer*,char)  ..._buffer.c    78  1 / 1       2 /     4 =  50%
+instruction_m...*,lua_Debug*)  ...sandbox.c   115  1 / 1       1 /     2 =  50%
+read_config(lua_State*)        ...sandbox.c   139  1 / 1       1 /     2 =  50%
+set_tz()                       ...sandbox.c   336  1 / 1       1 /     2 =  50%
+heka_encode_m...sandbox*,int)  ...message.c   871  1 / 1      14 /    24 =  58%
+set_random_seed()              ...sandbox.c   351  1 / 1       7 /    12 =  58%
+lsb_read_file(const char*)     ...il/util.c    47  1 / 1       6 /    10 =  60%
+lsb_heka_crea...eka_im_input)  ...sandbox.c   341  1 / 1      11 /    18 =  61%
+lsb_heka_crea..._im_analysis)  ...sandbox.c   529  1 / 1      11 /    18 =  61%
+lsb_heka_crea...e_checkpoint)  ...sandbox.c   612  1 / 1      11 /    18 =  61%
+min_expand(Ma...,const char*)  ...matcher.c   171  1 / 1       5 /     8 =  62%
+preserve_glob...lua_sandbox*)  ...rialize.c   366  1 / 1      27 /    42 =  64%
+lsb_init_heka...message*,int)  ...message.c   417  1 / 1       4 /     6 =  66%
+process_field...,const char*)  ...message.c    93  1 / 1      55 /    82 =  67%
+encode_field_...st char*,int)  ...message.c   330  1 / 1      19 /    28 =  67%
+lsb_heka_pm_i... char*,_Bool)  ...sandbox.c   497  1 / 1      11 /    16 =  68%
+read_string(l...,const char*)  ...message.c    52  1 / 1       7 /    10 =  70%
+set_restricti...eka_sandbox*)  ...sandbox.c   251  1 / 1      19 /    27 =  70%
+check_int(lua...st char*,int)  ...sandbox.c   192  1 / 1       5 /     7 =  71%
+encode_field_...st char*,int)  ...message.c   403  1 / 1      78 /   105 =  74%
+process_messa...e*,int,_Bool)  ...sandbox.c   412  1 / 1      29 /    39 =  74%
+encode_fields...st char*,int)  ...message.c   608  1 / 1      27 /    36 =  75%
+serialize_kvp...data*,size_t)  ...rialize.c   286  1 / 1      18 /    24 =  75%
+decode_header...ize_t,size_t)  ...message.c    19  1 / 1      12 /    16 =  75%
+read_message(lua_State*)       ...sandbox.c    35  1 / 1       6 /     8 =  75%
+hsr_decode_me...e(lua_State*)  ..._reader.c    77  1 / 1       6 /     8 =  75%
+process_varin...,const char*)  ...message.c    72  1 / 1       3 /     4 =  75%
+encode_int(ls...st char*,int)  ...message.c   287  1 / 1       3 /     4 =  75%
+load_op_node(...,match_node*)  ...matcher.c   321  1 / 1       3 /     4 =  75%
+lsb_destroy_m...tch_builder*)  ...matcher.c   480  1 / 1       3 /     4 =  75%
+output(lua_State*)             ...sandbox.c   123  1 / 1       3 /     4 =  75%
+lsb_stop_sand...lua_sandbox*)  ...sandbox.c   561  1 / 1       3 /     4 =  75%
+lsb_get_outpu...box*,size_t*)  ..._output.c   110  1 / 1       3 /     4 =  75%
+lsb_clear_hek...eka_message*)  ...message.c   431  1 / 1       3 /     4 =  75%
+lsb_outputs(l...char*,size_t)  ..._buffer.c   144  1 / 1       3 /     4 =  75%
+lsb_outputfd(...ffer*,double)  ..._buffer.c   173  1 / 1      31 /    40 =  77%
+lsb_init(lsb_...,const char*)  ...sandbox.c   461  1 / 1      28 /    36 =  77%
+lsb_pcall_set...,const char*)  ...sandbox.c   676  1 / 1      14 /    18 =  77%
+hsr_find_message(lua_State*)   ..._reader.c   106  1 / 1      25 /    32 =  78%
+read_string(i...onst_string*)  ...message.c    39  1 / 1       8 /    10 =  80%
+read_string_v..._read_value*)  ...message.c    57  1 / 1       8 /    10 =  80%
+read_integer_..._read_value*)  ...message.c    78  1 / 1       8 /    10 =  80%
+check_string(...,const char*)  ...sandbox.c   170  1 / 1       4 /     5 =  80%
+lsb_heka_time...time_t,_Bool)  ...sandbox.c   725  1 / 1      13 /    16 =  81%
+matchbalance(...,const char*)  ...matcher.c   137  1 / 1      13 /    16 =  81%
+lsb_serialize...void*,size_t)  ...rialize.c   547  1 / 1       9 /    11 =  81%
+lsb_outputf(l...st char*,...)  ..._buffer.c    90  1 / 1      23 /    28 =  82%
+lsb_create_me...,const char*)  ...matcher.c   493  1 / 1      24 /    29 =  82%
+heka_decode_m...e(lua_State*)  ...message.c   683  1 / 1      54 /    65 =  83%
+heka_read_mes...eka_message*)  ...message.c   912  1 / 1      45 /    54 =  83%
+set_missing_h...eka_sandbox*)  ...message.c    32  1 / 1      10 /    12 =  83%
+lsb_heka_pm_a...ssage*,_Bool)  ...sandbox.c   593  1 / 1      10 /    12 =  83%
+ignore_value_...a_CFunction*)  ...rialize.c   114  1 / 1      10 /    12 =  83%
+inject_messag...s(lua_State*)  ...sandbox.c   130  1 / 1       5 /     6 =  83%
+lsb_destroy(lsb_lua_sandbox*)  ...sandbox.c   574  1 / 1       5 /     6 =  83%
+lsb_pb_output...ed long long)  ...rotobuf.c    56  1 / 1       5 /     6 =  83%
+lsb_output(ls...,int,int,int)  ..._output.c    42  1 / 1      27 /    32 =  84%
+heka_encode_m...e(lua_State*)  ...message.c   810  1 / 1      11 /    13 =  84%
+match_class(int,int)           ...matcher.c    68  1 / 1      11 /    13 =  84%
+match(MatchSt...,const char*)  ...matcher.c   183  1 / 1      39 /    46 =  84%
+lsb_pb_read_v...*,long long*)  ...rotobuf.c    36  1 / 1      17 /    20 =  85%
+inject_messag...t(lua_State*)  ...sandbox.c    51  1 / 1      18 /    21 =  85%
+lsb_heka_pm_o...,void*,_Bool)  ...sandbox.c   699  1 / 1      12 /    14 =  85%
+lsb_expand_in...ffer*,size_t)  ..._buffer.c    49  1 / 1      12 /    14 =  85%
+numeric_test(...node*,double)  ...matcher.c   213  1 / 1       6 /     7 =  85%
+load_sandbox_...*,lsb_logger)  ...sandbox.c   223  1 / 1      19 /    22 =  86%
+matchbracketc...,const char*)  ...matcher.c    99  1 / 1      19 /    22 =  86%
+eval_tree(mat...eka_message*)  ...matcher.c   297  1 / 1      14 /    16 =  87%
+update_checkpoint(lua_State*)  ...sandbox.c   218  1 / 1       7 /     8 =  87%
+lsb_init_inpu...ffer*,size_t)  ..._buffer.c    20  1 / 1       7 /     8 =  87%
+lsb_outputd(l...ffer*,double)  ..._buffer.c   156  1 / 1       7 /     8 =  87%
+process_field...,const char*)  ...message.c   121  1 / 1      50 /    57 =  87%
+copy_table(lu...*,lsb_logger)  ...sandbox.c   263  1 / 1      22 /    25 =  88%
+load_expressi...,match_node*)  ...matcher.c   335  1 / 1      42 /    47 =  89%
+lsb_decode_he...t,lsb_logger)  ...message.c   201  1 / 1      51 /    57 =  89%
+inject_payload(lua_State*)     ...sandbox.c   160  1 / 1      18 /    20 =  90%
+lsb_add_funct...,const char*)  ...sandbox.c   664  1 / 1       9 /    10 =  90%
+lsb_init_outp...ffer*,size_t)  ..._buffer.c    27  1 / 1       9 /    10 =  90%
+lsb_find_heka...*,lsb_logger)  ...message.c   319  1 / 1      29 /    32 =  90%
+eval_node(mat...eka_message*)  ...matcher.c   235  1 / 1      31 /    34 =  91%
+memory_manage...ize_t,size_t)  ...sandbox.c    78  1 / 1      11 /    12 =  91%
+lsb_read_heka..._read_value*)  ...message.c   462  1 / 1      24 /    26 =  92%
+classend(const char*)          ...matcher.c    43  1 / 1      16 /    17 =  94%
+lsb_expand_ou...ffer*,size_t)  ..._buffer.c    52  1 / 1      17 /    18 =  94%
+string_test(m...onst_string*)  ...matcher.c   167  1 / 1      18 /    19 =  94%
+encode_string...st char*,int)  ...message.c   258  1 / 1       2 /     2 = 100%
+encode_field_...tput_buffer*)  ...message.c   381  1 / 1       4 /     4 = 100%
+lsb_destroy_m...age_matcher*)  ...matcher.c   559  1 / 1       6 /     6 = 100%
+lsb_eval_mess...eka_message*)  ...matcher.c   578  1 / 1       0 /     0       
+lsb_heka_stop...eka_sandbox*)  ...sandbox.c   675  1 / 1       0 /     0       
+lsb_heka_term...,const char*)  ...sandbox.c   681  1 / 1       0 /     0       
+lsb_heka_dest...eka_sandbox*)  ...sandbox.c   687  1 / 1       2 /     2 = 100%
+lsb_heka_get_...eka_sandbox*)  ...sandbox.c   766  1 / 1       2 /     2 = 100%
+lsb_heka_get_...eka_sandbox*)  ...sandbox.c   772  1 / 1       2 /     2 = 100%
+lsb_heka_get_...eka_sandbox*)  ...sandbox.c   778  1 / 1       2 /     2 = 100%
+lsb_heka_is_r...eka_sandbox*)  ...sandbox.c   799  1 / 1       4 /     4 = 100%
+check_hsr(lua_State*,int)      ..._reader.c    68  1 / 1       0 /     0       
+hsr_read_message(lua_State*)   ..._reader.c   196  1 / 1       6 /     6 = 100%
+hsr_gc(lua_State*)             ..._reader.c   208  1 / 1       0 /     0       
+luaopen_heka_...r(lua_State*)  ..._reader.c   230  1 / 1       0 /     0       
+libsize(const luaL_Reg*)       ...sandbox.c    44  1 / 1       2 /     2 = 100%
+preload_modules(lua_State*)    ...sandbox.c    51  1 / 1       2 /     2 = 100%
+instruction_u...lua_sandbox*)  ...sandbox.c   109  1 / 1       0 /     0       
+unprotected_panic(lua_State*)  ...sandbox.c   153  1 / 1       0 /     0       
+get_usage_con...,const char*)  ...sandbox.c   161  1 / 1       0 /     0       
+stop_hook(lua...*,lua_Debug*)  ...sandbox.c   553  1 / 1       0 /     0       
+lsb_usage(lsb...b_usage_stat)  ...sandbox.c   597  1 / 1      10 /    10 = 100%
+lsb_get_error...lua_sandbox*)  ...sandbox.c   621  1 / 1       2 /     2 = 100%
+lsb_set_error...,const char*)  ...sandbox.c   627  1 / 1       4 /     4 = 100%
+lsb_get_lua(lsb_lua_sandbox*)  ...sandbox.c   640  1 / 1       2 /     2 = 100%
+lsb_get_lua_f...lua_sandbox*)  ...sandbox.c   646  1 / 1       2 /     2 = 100%
+lsb_get_paren...lua_sandbox*)  ...sandbox.c   652  1 / 1       2 /     2 = 100%
+lsb_get_state...lua_sandbox*)  ...sandbox.c   658  1 / 1       2 /     2 = 100%
+lsb_pcall_tea...lua_sandbox*)  ...sandbox.c   700  1 / 1       4 /     4 = 100%
+lsb_terminate...,const char*)  ...sandbox.c   714  1 / 1       6 /     6 = 100%
+lsb_add_outpu...ua_CFunction)  ..._output.c    22  1 / 1       0 /     0       
+lsb_get_outpu...a_State*,int)  ..._output.c    30  1 / 1       0 /     0       
+get_serialize...a_State*,int)  ...rialize.c    92  1 / 1       0 /     0       
+find_table_re...,const void*)  ...rialize.c   149  1 / 1       4 /     4 = 100%
+get_preservat...n(lua_State*)  ...rialize.c   195  1 / 1       4 /     4 = 100%
+serialize_tab...data*,size_t)  ...rialize.c   214  1 / 1       6 /     6 = 100%
+file_exists(const char*)       ...rialize.c   484  1 / 1       2 /     2 = 100%
+lsb_add_seria...ua_CFunction)  ...rialize.c   539  1 / 1       0 /     0       
+lsb_serialize...ffer*,double)  ...rialize.c   574  1 / 1       6 /     6 = 100%
+read_double_v..._read_value*)  ...message.c    97  1 / 1       2 /     2 = 100%
+process_varin...*,long long*)  ...message.c   110  1 / 1       4 /     4 = 100%
+lsb_free_heka...eka_message*)  ...message.c   451  1 / 1       2 /     2 = 100%
+lsb_write_hek...char*,size_t)  ...message.c   507  1 / 1      22 /    22 = 100%
+lsb_free_inpu...nput_buffer*)  ..._buffer.c    36  1 / 1       2 /     2 = 100%
+lsb_free_outp...tput_buffer*)  ..._buffer.c    42  1 / 1       2 /     2 = 100%
+lsb_pb_read_k...r*,int*,int*)  ...rotobuf.c    15  1 / 1       8 /     8 = 100%
+lsb_pb_write_...nsigned char)  ...rotobuf.c    25  1 / 1       2 /     2 = 100%
+lsb_pb_write_...ed long long)  ...rotobuf.c    75  1 / 1       2 /     2 = 100%
+lsb_pb_write_..._buffer*,int)  ...rotobuf.c    85  1 / 1       4 /     4 = 100%
+lsb_pb_write_...ffer*,double)  ...rotobuf.c    99  1 / 1       2 /     2 = 100%
+lsb_pb_write_...char*,size_t)  ...rotobuf.c   114  1 / 1       6 /     6 = 100%
+lsb_pb_update...ffer*,size_t)  ...rotobuf.c   127  1 / 1       8 /     8 = 100%
+lsb_init_runn...nning_stats*)  ...g_stats.c    13  1 / 1       0 /     0       
+lsb_update_ru...tats*,double)  ...g_stats.c    21  1 / 1       4 /     4 = 100%
+lsb_sd_runnin...nning_stats*)  ...g_stats.c    37  1 / 1       2 /     2 = 100%
+lsb_init_cons...onst_string*)  .../string.c    11  1 / 1       0 /     0       
+singlematch(i...,const char*)  ...matcher.c   119  1 / 1       4 /     4 = 100%
+max_expand(Ma...,const char*)  ...matcher.c   156  1 / 1      10 /    10 = 100%
+lsb_string_ma...,const char*)  ...matcher.c   261  1 / 1      10 /    10 = 100%
+lsb_lp2(unsigned long long)    ...il/util.c    33  1 / 1       2 /     2 = 100%
+lsb_get_time()                 ...il/util.c    73  1 / 1       0 /     0       
+-----------------------------  ------------------  -----  ---------------------
+Total                                               100%    1567 /  1958 =  80%

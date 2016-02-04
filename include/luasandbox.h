@@ -10,6 +10,7 @@
 #define luasandbox_h_
 
 #include "luasandbox/lua.h"
+#include "luasandbox/error.h"
 
 #ifdef _WIN32
 #ifdef luasandbox_EXPORTS
@@ -25,14 +26,9 @@
 #endif
 #endif
 
-#if defined(_MSC_VER)
-#define PRIuSIZE "Iu"
-#else
-#define PRIuSIZE "zu"
-#endif
-
 #define LSB_ERROR_SIZE 256
 
+#define LSB_SHUTTING_DOWN     "shutting down"
 #define LSB_CONFIG_TABLE      "lsb_config"
 #define LSB_MEMORY_LIMIT      "memory_limit"
 #define LSB_INSTRUCTION_LIMIT "instruction_limit"
@@ -62,15 +58,15 @@ typedef enum {
   LSB_UT_MAX
 } lsb_usage_type;
 
-typedef void (*lsb_logger)(const char* component,
-                           int level,
-                           const char* fmt,
-                           ...);
-
 typedef struct lsb_lua_sandbox lsb_lua_sandbox;
 
+LSB_EXPORT extern lsb_err_id LSB_ERR_INIT;
+LSB_EXPORT extern lsb_err_id LSB_ERR_LUA;
+LSB_EXPORT extern lsb_err_id LSB_ERR_TERMINATED;
+
 #ifdef __cplusplus
-extern "C" {
+extern "C"
+{
 #endif
 
 /**
@@ -118,9 +114,11 @@ lsb_create(void *parent, const char *lua_file, const char *cfg,
  *                   global data schema. If no version is set the check will
  *                   always succeed and a version of zero is assigned.
  *
- * @return int Zero on success, non-zero on failure.
+ * @return lsb_err_value NULL on success error message on failure
+ *
  */
-LSB_EXPORT int lsb_init(lsb_lua_sandbox *lsb, const char *state_file);
+LSB_EXPORT lsb_err_value
+lsb_init(lsb_lua_sandbox *lsb, const char *state_file);
 
 /**
  * Aborts the running sandbox from a different thread of execution. A "shutting
@@ -228,9 +226,10 @@ LSB_EXPORT void lsb_add_function(lsb_lua_sandbox *lsb,
  * @param lsb Pointer to the sandbox.
  * @param func_name Name of the function to load
  *
- * @return int 0 on success
+ * @return lsb_err_value NULL on success error message on failure
  */
-LSB_EXPORT int lsb_pcall_setup(lsb_lua_sandbox *lsb, const char *func_name);
+LSB_EXPORT lsb_err_value
+lsb_pcall_setup(lsb_lua_sandbox *lsb, const char *func_name);
 
 /**
  * Helper function to update the statistics after the call

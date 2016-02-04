@@ -131,7 +131,7 @@ externalproject_add(
 externalproject_add(
     lua_hyperloglog
     GIT_REPOSITORY https://github.com/mozilla-services/lua_hyperloglog.git
-    GIT_TAG 4111ca2d22f47ed451b5e87dd192d53e9965800f
+    GIT_TAG 745756887dd4c277bee0337ab307eae9ea95890e
     CMAKE_ARGS ${SANDBOX_CMAKE_ARGS}
     INSTALL_ARGS ${INST_ARGS}
 )

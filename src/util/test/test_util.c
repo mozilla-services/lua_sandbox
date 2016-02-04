@@ -7,9 +7,11 @@
 /** @brief lsb_util unit tests @file */
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <time.h>
 
 #include "../../test/mu_test.h"
+#include "luasandbox/error.h"
 #include "luasandbox/util/util.h"
 
 static char* test_stub()
@@ -32,6 +34,20 @@ static char* test_lsb_lp2()
   mu_assert(lp2 == 1024, "received: %" PRIuSIZE, lp2);
   return NULL;
 }
+
+
+static char* test_lsb_read_file()
+{
+  char *s = lsb_read_file("Makefile");
+  mu_assert(s, "read file failed");
+  free(s);
+
+  s = lsb_read_file("_foo_bar_");
+  free(s); // if it succeeded don't leak
+  mu_assert(!s, "read file succeeded");
+  return NULL;
+}
+
 
 
 static char* benchmark_lsb_get_time()
@@ -66,6 +82,7 @@ static char* all_tests()
 {
   mu_run_test(test_stub);
   mu_run_test(test_lsb_lp2);
+  mu_run_test(test_lsb_read_file);
 
   mu_run_test(benchmark_lsb_get_time);
   return NULL;

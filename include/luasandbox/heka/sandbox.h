@@ -12,7 +12,7 @@
 #include <stdbool.h>
 #include <time.h>
 
-#include "../../luasandbox.h"
+#include "../error.h"
 #include "../lauxlib.h"
 #include "../lua.h"
 #include "../util/heka_message.h"
@@ -32,6 +32,8 @@
 #endif
 
 #define LSB_HEKA_MAX_MESSAGE_SIZE "max_message_size"
+
+LSB_HEKA_EXPORT extern lsb_err_id LSB_ERR_HEKA_INPUT;
 
 enum lsb_heka_pm_rv {
   LSB_HEKA_PM_SENT  = 0,
@@ -78,11 +80,11 @@ extern "C"
  *
  * @return 0 on success
  */
-typedef int (*lsb_heka_inject_message_input)(void *parent,
-                                             const char *pb,
-                                             size_t pb_len,
-                                             double cp_numeric,
-                                             const char *cp_string);
+typedef int (*lsb_heka_im_input)(void *parent,
+                                 const char *pb,
+                                 size_t pb_len,
+                                 double cp_numeric,
+                                 const char *cp_string);
 
 /**
  * inject_message callback function provided by the host.
@@ -93,9 +95,9 @@ typedef int (*lsb_heka_inject_message_input)(void *parent,
  *
  * @return 0 on success
  */
-typedef int (*lsb_heka_inject_message_analysis)(void *parent,
-                                                const char *pb,
-                                                size_t pb_len);
+typedef int (*lsb_heka_im_analysis)(void *parent,
+                                    const char *pb,
+                                    size_t pb_len);
 
 /**
  * update_checkpoint callback function provided by the host.
@@ -127,14 +129,13 @@ lsb_heka_sandbox* lsb_heka_create_input(void *parent,
                                         const char *state_file,
                                         const char *lsb_cfg,
                                         lsb_logger logger,
-                                        lsb_heka_inject_message_input im);
+                                        lsb_heka_im_input im);
 
 /**
  * Host access to the input sandbox process_message API.  If a numeric
  * checkpoint is set the string checkpoint is ignored.
  *
  * @param hsb Heka input sandbox
- * @param msg Heka message to process
  * @param cp_numeric NAN if no numeric checkpoint
  * @param cp_string NULL if no string checkpoint
  * @param profile Take a timing sample on this execution
@@ -147,10 +148,9 @@ lsb_heka_sandbox* lsb_heka_create_input(void *parent,
  */
 LSB_HEKA_EXPORT
 int lsb_heka_pm_input(lsb_heka_sandbox *hsb,
-                                   lsb_heka_message *msg,
-                                   double cp_numeric,
-                                   const char *cp_string,
-                                   bool profile);
+                      double cp_numeric,
+                      const char *cp_string,
+                      bool profile);
 
 /**
  * Create a sandbox supporting the Heka Analysis Plugin API
@@ -171,7 +171,7 @@ lsb_heka_sandbox* lsb_heka_create_analysis(void *parent,
                                            const char *state_file,
                                            const char *lsb_cfg,
                                            lsb_logger logger,
-                                           lsb_heka_inject_message_analysis im);
+                                           lsb_heka_im_analysis im);
 
 /**
  * Host access to the analysis sandbox process_message API
@@ -188,8 +188,8 @@ lsb_heka_sandbox* lsb_heka_create_analysis(void *parent,
  */
 LSB_HEKA_EXPORT
 int lsb_heka_pm_analysis(lsb_heka_sandbox *hsb,
-                                      lsb_heka_message *msg,
-                                      bool profile);
+                         lsb_heka_message *msg,
+                         bool profile);
 
 /**
  * Create a sandbox supporting the Heka Output Plugin API
@@ -234,9 +234,9 @@ lsb_heka_sandbox* lsb_heka_create_output(void *parent,
  */
 LSB_HEKA_EXPORT
 int lsb_heka_pm_output(lsb_heka_sandbox *hsb,
-                                    lsb_heka_message *msg,
-                                    void *sequence_id,
-                                    bool profile);
+                       lsb_heka_message *msg,
+                       void *sequence_id,
+                       bool profile);
 
 /**
  * Aborts the running sandbox from a different thread of execution. A "shutting
@@ -285,7 +285,6 @@ lsb_heka_destroy_sandbox(lsb_heka_sandbox *hsb);
  */
 LSB_HEKA_EXPORT
 int lsb_heka_timer_event(lsb_heka_sandbox *hsb, time_t t, bool shutdown);
-
 
 /**
  * Return the last error in human readable form.

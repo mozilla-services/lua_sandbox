@@ -23,8 +23,10 @@
 #pragma warning( disable : 4056 )
 #endif
 
-int lsb_init_output_buffer(lsb_output_buffer *b, size_t max_message_size)
+lsb_err_value
+lsb_init_output_buffer(lsb_output_buffer *b, size_t max_message_size)
 {
+  if (!b) return LSB_ERR_UTIL_NULL;
   if (max_message_size && max_message_size < LSB_OUTPUT_SIZE) {
     b->size = max_message_size;
   } else {
@@ -33,36 +35,28 @@ int lsb_init_output_buffer(lsb_output_buffer *b, size_t max_message_size)
   b->maxsize = max_message_size;
   b->pos = 0;
   b->buf = malloc(b->size);
-  b->err = b->buf ? 0 : 2;
-  return b->err;
+  return b->buf ? NULL : LSB_ERR_UTIL_OOM;
 }
 
 
 void lsb_free_output_buffer(lsb_output_buffer *b)
 {
+  if (!b) return;
   free(b->buf);
   b->buf = NULL;
   b->size = 0;
-  lsb_clear_output_buffer(b);
-}
-
-
-void lsb_clear_output_buffer(lsb_output_buffer *b)
-{
   b->pos = 0;
-  b->err = 0;
 }
 
 
-int lsb_expand_output_buffer(lsb_output_buffer *b, size_t needed)
+lsb_err_value lsb_expand_output_buffer(lsb_output_buffer *b, size_t needed)
 {
-  if (b->err) return b->err;
+  if (!b) return LSB_ERR_UTIL_NULL;
 
-  if (needed <= b->size - b->pos) return 0;
+  if (needed <= b->size - b->pos) return NULL;
 
   if (b->maxsize && needed + b->pos > b->maxsize) {
-    b->err = 1;
-    return b->err;
+    return LSB_ERR_UTIL_FULL;
   }
 
   size_t newsize = lsb_lp2(b->pos + needed);
@@ -72,29 +66,33 @@ int lsb_expand_output_buffer(lsb_output_buffer *b, size_t needed)
 
   void *ptr = realloc(b->buf, newsize);
   if (!ptr) {
-    b->err = 2;
-    return b->err;
+    return LSB_ERR_UTIL_OOM;
   }
 
   b->buf = ptr;
   b->size = newsize;
-  return 0;
+  return NULL;
 }
 
 
-int lsb_outputc(lsb_output_buffer *b, char ch)
+lsb_err_value lsb_outputc(lsb_output_buffer *b, char ch)
 {
-  int result = lsb_expand_output_buffer(b, 2);
-  if (result) return result;
+  if (!b) return LSB_ERR_UTIL_NULL;
+  lsb_err_value ret = lsb_expand_output_buffer(b, 2);
+  if (ret) return ret;
 
   b->buf[b->pos++] = ch;
   b->buf[b->pos] = 0;
-  return 0;
+  return NULL;
 }
 
 
-int lsb_outputf(lsb_output_buffer *b, const char *fmt, ...)
+lsb_err_value lsb_outputf(lsb_output_buffer *b, const char *fmt, ...)
 {
+  if (!b || !fmt) {
+    return LSB_ERR_UTIL_NULL;
+  }
+
   va_list args;
   int remaining = 0;
   char *ptr = NULL, *old_ptr = NULL;
@@ -112,11 +110,9 @@ int lsb_outputf(lsb_output_buffer *b, const char *fmt, ...)
       needed = remaining;
     }
     if (needed >= remaining) {
-      if (b->maxsize
-          && (b->size >= b->maxsize
-              || b->pos + needed >= b->maxsize)) {
-        b->err = 1;
-        return b->err; // exceeded max
+      if (b->maxsize && (b->size >= b->maxsize
+                         || b->pos + needed >= b->maxsize)) {
+        return LSB_ERR_UTIL_FULL;
       }
       size_t newsize = b->size * 2;
       while ((size_t)needed >= newsize - b->pos) {
@@ -132,8 +128,7 @@ int lsb_outputf(lsb_output_buffer *b, const char *fmt, ...)
         b->buf = p;
         b->size = newsize;
       } else {
-        b->err = 2;
-        return b->err; // malloc failed
+        return LSB_ERR_UTIL_OOM;
       }
     } else {
       b->pos += needed;
@@ -142,24 +137,26 @@ int lsb_outputf(lsb_output_buffer *b, const char *fmt, ...)
   } while (1);
 
   free(old_ptr);
-  return 0;
+  return NULL;
 }
 
 
-int lsb_outputs(lsb_output_buffer *b, const char *str, size_t len)
+lsb_err_value lsb_outputs(lsb_output_buffer *b, const char *str, size_t len)
 {
-  int result = lsb_expand_output_buffer(b, len + 1);
-  if (result) return result;
+  if (!b) return LSB_ERR_UTIL_NULL;
+  lsb_err_value ret = lsb_expand_output_buffer(b, len + 1);
+  if (ret) return ret;
 
-  memcpy(b->buf + b->pos, str, len);
+  memcpy(b->buf + b->pos, str, len + 1);
   b->pos += len;
-  b->buf[b->pos] = 0;
-  return 0;
+  return ret;
 }
 
 
-int lsb_outputd(lsb_output_buffer *b, double d)
+lsb_err_value lsb_outputd(lsb_output_buffer *b, double d)
 {
+  if (!b) return LSB_ERR_UTIL_NULL;
+
   if (isnan(d)) {
     return lsb_outputs(b, "nan", 3);
   }
@@ -173,8 +170,10 @@ int lsb_outputd(lsb_output_buffer *b, double d)
 }
 
 
-int lsb_outputfd(lsb_output_buffer *b, double d)
+lsb_err_value lsb_outputfd(lsb_output_buffer *b, double d)
 {
+  if (!b) return LSB_ERR_UTIL_NULL;
+
   if (d < INT_MIN || d > INT_MAX) {
     return lsb_outputf(b, "%0.17g", d);
   }
@@ -227,18 +226,18 @@ int lsb_outputfd(lsb_output_buffer *b, double d)
     number /= 10;
   } while (number > 0);
 
-  int result = lsb_expand_output_buffer(b, (p - buffer) + negative);
-  if (result) return result;
+  lsb_err_value ret = lsb_expand_output_buffer(b, (p - buffer) + negative);
+  if (!ret) {
+    if (negative) {
+      b->buf[b->pos++] = '-';
+    }
 
-  if (negative) {
-    b->buf[b->pos++] = '-';
+    do {
+      --p;
+      b->buf[b->pos++] = *p;
+    } while (p != buffer);
+
+    b->buf[b->pos] = 0;
   }
-
-  do {
-    --p;
-    b->buf[b->pos++] = *p;
-  } while (p != buffer);
-
-  b->buf[b->pos] = 0;
-  return 0;
+  return ret;
 }

@@ -43,14 +43,73 @@ for i, v in ipairs(err_msgs) do
 end
 
 -- Stream Reader tests
+require "io"
 require "heka_stream_reader"
 local hsr = heka_stream_reader.new("test")
 ok, err = pcall(inject_message, hsr)
 local eerr = "inject_message() attempted to inject a nil message"
 assert(eerr == err, string.format("expected: %s received: %s", eerr, err))
+ok, err = pcall(hsr.decode_message, hsr, true)
+assert(not ok)
+assert("buffer must be string" == err, string.format("received: %s", err))
+ok, err = pcall(hsr.decode_message, hsr, "")
+assert(not ok)
+assert("empty protobuf string" == err, string.format("received: %s", err))
 
 hsr:decode_message("\010\016\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\016\004")
 inject_message(hsr)
+local ts = hsr:read_message("Timestamp")
+assert(4 == ts, string.format("received: %g", ts))
+
+local framed = "\030\002\008\020\031\010\016\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\016\006"
+local fh = assert(io.open("hekamsg.pb", "w+"))
+fh:write(framed)
+fh:seek("set")
+local found, consumed, read = hsr:find_message(fh)
+assert(not found)
+assert(0 == consumed, string.format("expected: 0 received %d", consumed))
+assert(25 == read, string.format("expected: 25 received: %d", read))
+found, consumed, read = hsr:find_message(fh)
+assert(found)
+assert(25 == consumed, string.format("expected: 25 received %d", consumed))
+assert(0 == read, string.format("expected: >0 received: %d", read))
+fh:close()
+
+local found, consumed, need = hsr:find_message(framed)
+assert(true == found)
+assert(25 == consumed, string.format("expected: 25 received %d", consumed))
+assert(0 < need, string.format("expected: >0 received: %d", need))
+
+local found, consumed, need = hsr:find_message("")
+assert(not found)
+
+ok, err = pcall(hsr.find_message, hsr, assert)
+assert(not ok, "accepted function as second arg")
+
+ok, err = pcall(hsr.find_message, hsr, nil, "str")
+assert(not ok, "accepted string as third arg")
+
+ok, err = pcall(hsr.find_message, hsr, hsr)
+assert(not ok, "accepted non FILE userdata")
+
+fh = assert(io.open("lua/iim.lua"))
+found, consumed, read = hsr:find_message(fh)
+fh:close()
+assert(false == found)
+assert(0 == consumed, string.format("expected: 0 received %d", consumed))
+assert(0 < need, string.format("expected: >0 received: %d", need))
+
+ok, err = pcall(hsr.read_message)
+assert(not ok)
+assert("read_message() incorrect number of arguments" == err, string.format("received: %s", err))
+
+ok, err = pcall(hsr.read_message, hsr, 1, 2, 3, 4)
+assert(not ok)
+assert("read_message() incorrect number of arguments" == err, string.format("received: %s", err))
+
+ok, err = pcall(hsr.read_message, 1, 2)
+assert(not ok)
+assert("bad argument #1 to '?' (mozsvc.heka_stream_reader expected, got number)" == err, string.format("received: %s", err))
 
 -- String tests
 inject_message("\010\016\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\016\005")

@@ -16,10 +16,12 @@
 #include "luasandbox/util/util.h"
 #include "luasandbox/util/heka_message.h"
 
-int lsb_init_input_buffer(lsb_input_buffer *b, size_t max_message_size)
+lsb_err_value
+lsb_init_input_buffer(lsb_input_buffer *b, size_t max_message_size)
 {
+  if (!b) return LSB_ERR_UTIL_NULL;
   b->buf = NULL;
-  if (max_message_size == 0) return 1;
+  if (max_message_size == 0) return LSB_ERR_UTIL_PRANGE;
   max_message_size += LSB_MAX_HDR_SIZE;
   b->size = max_message_size < BUFSIZ ? max_message_size : BUFSIZ;
   b->maxsize = max_message_size;
@@ -27,12 +29,14 @@ int lsb_init_input_buffer(lsb_input_buffer *b, size_t max_message_size)
   b->scanpos = 0;
   b->msglen = 0;
   b->buf = malloc(b->size);
-  return b->buf ? 0 : 2;
+  return b->buf ? NULL : LSB_ERR_UTIL_OOM;
 }
 
 
 void lsb_free_input_buffer(lsb_input_buffer *b)
 {
+  if (!b) return;
+
   free(b->buf);
   b->buf = NULL;
   b->size = 0;
@@ -42,8 +46,10 @@ void lsb_free_input_buffer(lsb_input_buffer *b)
 }
 
 
-int lsb_expand_input_buffer(lsb_input_buffer *b, size_t len)
+lsb_err_value lsb_expand_input_buffer(lsb_input_buffer *b, size_t len)
 {
+  if (!b) return LSB_ERR_UTIL_NULL;
+
   if (b->scanpos != 0) { // shift the data to the beginning of the buffer
     if (b->scanpos == b->readpos) {
       b->scanpos = b->readpos = 0;
@@ -56,7 +62,7 @@ int lsb_expand_input_buffer(lsb_input_buffer *b, size_t len)
 
   if (b->readpos + len > b->size) {
     size_t newsize = b->readpos + len;
-    if (newsize > b->maxsize) return 1;
+    if (newsize > b->maxsize) return LSB_ERR_UTIL_FULL;
 
     newsize = lsb_lp2(newsize);
     if (newsize > b->maxsize) newsize = b->maxsize;;
@@ -65,8 +71,8 @@ int lsb_expand_input_buffer(lsb_input_buffer *b, size_t len)
       b->buf = tmp;
       b->size = newsize;
     } else {
-      return 2;
+      return LSB_ERR_UTIL_OOM;
     }
   }
-  return 0;
+  return NULL;
 }

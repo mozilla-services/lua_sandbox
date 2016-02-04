@@ -16,7 +16,6 @@
 #include "luasandbox/util/output_buffer.h"
 #include "luasandbox/util/protobuf.h"
 
-
 static size_t decode_header(char *buf, size_t len, size_t max_message_size)
 {
   if (*buf != 0x08) {
@@ -204,9 +203,9 @@ bool lsb_decode_heka_message(lsb_heka_message *m,
                              size_t len,
                              lsb_logger logger)
 {
-  if (!buf || len == 0) {
+  if (!m || !buf || len == 0) {
     if (logger) {
-      logger(__FUNCTION__, 4, "invalid buffer");
+      logger(__FUNCTION__, 4, LSB_ERR_UTIL_NULL);
     }
     return false;
   }
@@ -323,6 +322,13 @@ bool lsb_find_heka_message(lsb_heka_message *m,
                            size_t *discarded_bytes,
                            lsb_logger logger)
 {
+  if (!m || !ib || !discarded_bytes) {
+    if (logger) {
+      logger(__FUNCTION__, 4, LSB_ERR_UTIL_NULL);
+    }
+    return false;
+  }
+
   *discarded_bytes = 0;
   if (ib->readpos == ib->scanpos) {
     return false; // empty buffer
@@ -408,21 +414,24 @@ bool lsb_find_heka_message(lsb_heka_message *m,
 }
 
 
-int lsb_init_heka_message(lsb_heka_message *m, int num_fields)
+lsb_err_value lsb_init_heka_message(lsb_heka_message *m, int num_fields)
 {
-  if (num_fields < 1) return 1;
+  if (!m) return LSB_ERR_UTIL_NULL;
+  if (num_fields < 1) return LSB_ERR_UTIL_PRANGE;
 
   m->fields = malloc(num_fields * sizeof(lsb_heka_field));
-  if (!m->fields) return 2;
+  if (!m->fields) return LSB_ERR_UTIL_OOM;
 
   m->fields_size = num_fields;
   lsb_clear_heka_message(m);
-  return 0;
+  return NULL;
 }
 
 
 void lsb_clear_heka_message(lsb_heka_message *m)
 {
+  if (!m) return;
+
   lsb_init_const_string(&m->raw);
   lsb_init_const_string(&m->uuid);
   lsb_init_const_string(&m->type);
@@ -441,6 +450,8 @@ void lsb_clear_heka_message(lsb_heka_message *m)
 
 void lsb_free_heka_message(lsb_heka_message *m)
 {
+  if (!m) return;
+
   free(m->fields);
   m->fields = NULL;
   m->fields_size = 0;
@@ -449,11 +460,15 @@ void lsb_free_heka_message(lsb_heka_message *m)
 
 
 bool lsb_read_heka_field(lsb_heka_message *m,
-                            lsb_const_string *name,
-                            int fi,
-                            int ai,
-                            lsb_read_value *val)
+                         lsb_const_string *name,
+                         int fi,
+                         int ai,
+                         lsb_read_value *val)
 {
+  if (!m || !name || !val) {
+    return false;
+  }
+
   int fcnt = 0;
   const char *p, *e;
   val->type = LSB_READ_NIL;
@@ -488,13 +503,18 @@ bool lsb_read_heka_field(lsb_heka_message *m,
 }
 
 
-int lsb_write_heka_uuid(lsb_output_buffer *ob, const char *uuid, size_t len)
+lsb_err_value
+lsb_write_heka_uuid(lsb_output_buffer *ob, const char *uuid, size_t len)
 {
+  if (!ob) {
+    return LSB_ERR_UTIL_NULL;
+  }
+
   static const size_t needed = 18;
-  lsb_clear_output_buffer(ob); // writing a uuid will always clear the buffer
-                               //since it is the start of a new message
-  int result = lsb_expand_output_buffer(ob, needed);
-  if (result) return result;
+  ob->pos = 0; // writing a uuid will always clear the buffer as it is the
+  // start of a new message
+  lsb_err_value ret = lsb_expand_output_buffer(ob, needed);
+  if (ret) return ret;
 
   ob->buf[ob->pos++] = 2 | (LSB_PB_UUID << 3); // write key
   ob->buf[ob->pos++] = LSB_UUID_SIZE; // write length
@@ -535,5 +555,5 @@ int lsb_write_heka_uuid(lsb_output_buffer *ob, const char *uuid, size_t len)
     ob->buf[8] = (ob->buf[8] & 0x0F) | 0x40;
     ob->buf[10] = (ob->buf[10] & 0x0F) | 0xA0;
   }
-  return 0;
+  return NULL;
 }

@@ -19,24 +19,6 @@ extern "C" {
 #endif
 
 /**
- * Serialize all user global data to disk.
- *
- * @param lsb Pointer to the sandbox.
- *
- * @return int Zero on success, non-zero on failure.
- */
-int lsb_preserve_global_data(lsb_lua_sandbox *lsb);
-
-/**
- * Restores previously serialized data from disk.
- *
- * @param lsb Pointer to the sandbox.
- *
- * @return int Zero on success, non-zero on failure.
- */
-int lsb_restore_global_data(lsb_lua_sandbox *lsb);
-
-/**
  * Add a serialization function to the environment table. The environment table
  * must be on the top of the stack. This function will receive the userdata,
  * fully qualified variable name, and lsb_output_buffer struct as pointers on the
@@ -49,7 +31,7 @@ int lsb_restore_global_data(lsb_lua_sandbox *lsb);
  * @param lua Pointer the Lua state.
  * @param fp Function pointer to the serializer.
  *
- * @return int Zero on success, non-zero on failure.
+ * @return lsb_err_value NULL on success error message on failure
  */
 LSB_EXPORT void
 lsb_add_serialize_function(lua_State *lua, lua_CFunction fp);
@@ -61,9 +43,9 @@ lsb_add_serialize_function(lua_State *lua, lua_CFunction fp);
  * @param src Pointer to the binary data.
  * @param len Length in bytes of the data to output.
  *
- * @return int Zero on success, non-zero on failure.
+ * @return lsb_err_value NULL on success error message on failure
  */
-LSB_EXPORT int
+LSB_EXPORT lsb_err_value
 lsb_serialize_binary(lsb_output_buffer *output, const void *src, size_t len);
 
 /**
@@ -72,9 +54,10 @@ lsb_serialize_binary(lsb_output_buffer *output, const void *src, size_t len);
  * @param output Pointer the output buffer.
  * @param d Double value to convert to a string.
  *
- * @return int Zero on success, non-zero on failure.
+ * @return lsb_err_value NULL on success error message on failure
  */
-LSB_EXPORT int lsb_serialize_double(lsb_output_buffer *output, double d);
+LSB_EXPORT lsb_err_value
+lsb_serialize_double(lsb_output_buffer *output, double d);
 
 #ifdef __cplusplus
 }

@@ -16,15 +16,15 @@
 #define LSB_OUTPUT_SIZE 1024
 
 typedef struct lsb_output_buffer {
-  char    *buf;
-  size_t  maxsize;
-  size_t  size;
-  size_t  pos;
-  int     err;
+  char          *buf;
+  size_t        maxsize;
+  size_t        size;
+  size_t        pos;
 } lsb_output_buffer;
 
 #ifdef __cplusplus
-extern "C" {
+extern "C"
+{
 #endif
 
 /**
@@ -34,10 +34,10 @@ extern "C" {
  * @param max_message_size The maximum message size the buffer will handle
  *                 before erroring
  *
- * @return int 0 on success
+ * @return lsb_err_value NULL on success error message on failure
  */
-LSB_UTIL_EXPORT
-int lsb_init_output_buffer(lsb_output_buffer *b, size_t max_message_size);
+LSB_UTIL_EXPORT lsb_err_value
+lsb_init_output_buffer(lsb_output_buffer *b, size_t max_message_size);
 
 /**
  * Frees the memory internally allocated by the buffer and resets the state
@@ -47,22 +47,15 @@ int lsb_init_output_buffer(lsb_output_buffer *b, size_t max_message_size);
 LSB_UTIL_EXPORT void lsb_free_output_buffer(lsb_output_buffer *b);
 
 /**
- * Resets the position and error state of the buffer
- *
- * @param b Output buffer
- */
-LSB_UTIL_EXPORT void lsb_clear_output_buffer(lsb_output_buffer *b);
-
-/**
  * Resize the output buffer when more space is needed.
  *
  * @param b Output buffer to resize.
  * @param needed Number of additional bytes needed.
  *
- * @return int 0 on success
+ * @return lsb_err_value NULL on success error message on failure
  */
-LSB_UTIL_EXPORT int lsb_expand_output_buffer(lsb_output_buffer *b,
-                                             size_t needed);
+LSB_UTIL_EXPORT lsb_err_value lsb_expand_output_buffer(lsb_output_buffer *b,
+                                                       size_t needed);
 
 /**
  * Append a character to the output buffer.
@@ -70,9 +63,9 @@ LSB_UTIL_EXPORT int lsb_expand_output_buffer(lsb_output_buffer *b,
  * @param b Pointer the b buffer.
  * @param ch Character to append to the b.
  *
- * @return int 0 on success, false if out of memory.
+ * @return lsb_err_value NULL on success error message on failure
  */
-LSB_UTIL_EXPORT int lsb_outputc(lsb_output_buffer *b, char ch);
+LSB_UTIL_EXPORT lsb_err_value lsb_outputc(lsb_output_buffer *b, char ch);
 
 /**
  * Append a formatted string to the output buffer.
@@ -80,9 +73,10 @@ LSB_UTIL_EXPORT int lsb_outputc(lsb_output_buffer *b, char ch);
  * @param b Pointer the b buffer.
  * @param fmt Printf format specifier.
  *
- * @return int 0 on success, false if out of memory.
+ * @return lsb_err_value NULL on success error message on failure
  */
-LSB_UTIL_EXPORT int lsb_outputf(lsb_output_buffer *b, const char *fmt, ...);
+LSB_UTIL_EXPORT lsb_err_value
+lsb_outputf(lsb_output_buffer *b, const char *fmt, ...);
 
 /**
  * Append a fixed string to the output buffer.
@@ -91,11 +85,10 @@ LSB_UTIL_EXPORT int lsb_outputf(lsb_output_buffer *b, const char *fmt, ...);
  * @param str String to append to the b.
  * @param len Length of the string to append
  *
- * @return int 0 on success, false if out of memory.
+ * @return lsb_err_value NULL on success error message on failure
  */
-LSB_UTIL_EXPORT int lsb_outputs(lsb_output_buffer *b,
-                                const char *str,
-                                size_t len);
+LSB_UTIL_EXPORT lsb_err_value
+lsb_outputs(lsb_output_buffer *b, const char *str, size_t len);
 
 /**
  * More efficient output of a double to a string. NaN/Inf check and then calls
@@ -104,9 +97,9 @@ LSB_UTIL_EXPORT int lsb_outputs(lsb_output_buffer *b,
  * @param output Pointer the output buffer.
  * @param d Double value to convert to a string.
  *
- * @return int 0 on success, false if out of memory.
+ * @return lsb_err_value NULL on success error message on failure
  */
-LSB_UTIL_EXPORT int lsb_outputd(lsb_output_buffer *output, double d);
+LSB_UTIL_EXPORT lsb_err_value lsb_outputd(lsb_output_buffer *output, double d);
 
 
 /**
@@ -115,9 +108,9 @@ LSB_UTIL_EXPORT int lsb_outputd(lsb_output_buffer *output, double d);
  * @param output Pointer the output buffer.
  * @param d Double value to convert to a string.
  *
- * @return int 0 on success, false if out of memory.
+ * @return lsb_err_value NULL on success error message on failure
  */
-LSB_UTIL_EXPORT int lsb_outputfd(lsb_output_buffer *ob, double d);
+LSB_UTIL_EXPORT lsb_err_value lsb_outputfd(lsb_output_buffer *ob, double d);
 
 #ifdef __cplusplus
 }

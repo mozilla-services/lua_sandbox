@@ -15,19 +15,19 @@
 #include "message_impl.h"
 #include "luasandbox/lauxlib.h"
 
-const char* mozsvc_heka_stream_reader = "mozsvc.heka_stream_reader";
+const char *mozsvc_heka_stream_reader = "mozsvc.heka_stream_reader";
 const char *mozsvc_heka_stream_reader_table = "heka_stream_reader";
 
-static int hsr_new(lua_State* lua)
+static int hsr_new(lua_State *lua)
 {
   int n = lua_gettop(lua);
   luaL_argcheck(lua, n == 1, 0, "incorrect number of arguments");
   size_t len;
-  const char* name = luaL_checklstring(lua, 1, &len);
+  const char *name = luaL_checklstring(lua, 1, &len);
   luaL_argcheck(lua, len < 255, 1, "name is too long");
 
   size_t nbytes = sizeof(heka_stream_reader);
-  heka_stream_reader* hsr = lua_newuserdata(lua, nbytes);
+  heka_stream_reader *hsr = lua_newuserdata(lua, nbytes);
 
   size_t mms = 0;
   lua_getfield(lua, LUA_REGISTRYINDEX, LSB_CONFIG_TABLE);
@@ -65,33 +65,33 @@ static int hsr_new(lua_State* lua)
 }
 
 
-static heka_stream_reader* check_hsr(lua_State* lua, int args)
+static heka_stream_reader* check_hsr(lua_State *lua, int args)
 {
-  heka_stream_reader* hsr = luaL_checkudata(lua, 1, mozsvc_heka_stream_reader);
+  heka_stream_reader *hsr = luaL_checkudata(lua, 1, mozsvc_heka_stream_reader);
   luaL_argcheck(lua, args == lua_gettop(lua), 0,
                 "incorrect number of arguments");
   return hsr;
 }
 
 
-static int hsr_decode_message(lua_State* lua)
+static int hsr_decode_message(lua_State *lua)
 {
-  heka_stream_reader* hsr = check_hsr(lua, 2);
-  lsb_input_buffer* b = &hsr->buf;
+  heka_stream_reader *hsr = check_hsr(lua, 2);
+  lsb_input_buffer *b = &hsr->buf;
   b->readpos = b->scanpos = b->msglen = 0;
 
   size_t len;
   if (lua_type(lua, 2) == LUA_TSTRING) {
-      const char* s = lua_tolstring(lua, 2, &len);
-      if (len > 0) {
-        if (lsb_expand_input_buffer(b, len)) {
-          return luaL_error(lua, "buffer reallocation failed\tname:%s",
-                            hsr->name);
-        }
-        memcpy(b->buf, s, len);
-      } else {
-        return luaL_error(lua, "empty protobuf string");
+    const char *s = lua_tolstring(lua, 2, &len);
+    if (len > 0) {
+      if (lsb_expand_input_buffer(b, len)) {
+        return luaL_error(lua, "buffer reallocation failed\tname:%s",
+                          hsr->name);
       }
+      memcpy(b->buf, s, len);
+    } else {
+      return luaL_error(lua, "empty protobuf string");
+    }
   } else {
     return luaL_error(lua, "buffer must be string");
   }
@@ -103,22 +103,26 @@ static int hsr_decode_message(lua_State* lua)
 }
 
 
-static int hsr_find_message(lua_State* lua)
+static int hsr_find_message(lua_State *lua)
 {
   int n = lua_gettop(lua);
-  luaL_argcheck(lua, n > 1 && n < 4, 0,"incorrect number of arguments");
+  luaL_argcheck(lua, n > 1 && n < 4, 0, "incorrect number of arguments");
 
-  heka_stream_reader* hsr = luaL_checkudata(lua, 1, mozsvc_heka_stream_reader);
-  lsb_input_buffer* b = &hsr->buf;
-  FILE* fh = NULL;
+  heka_stream_reader *hsr = luaL_checkudata(lua, 1, mozsvc_heka_stream_reader);
+  lsb_input_buffer *b = &hsr->buf;
+  if (hsr->msg.raw.s) {
+    lsb_clear_heka_message(&hsr->msg);
+    b->msglen = b->readpos = b->scanpos = 0;
+  }
 
+  FILE *fh = NULL;
   switch (lua_type(lua, 2)) {
   case LUA_TNIL: // scan the existing buffer
     break;
   case LUA_TSTRING: // add data to the buffer
     {
       size_t len;
-      const char* s = lua_tolstring(lua, 2, &len);
+      const char *s = lua_tolstring(lua, 2, &len);
       if (len > 0) {
         if (lsb_expand_input_buffer(b, len)) {
           return luaL_error(lua, "buffer reallocation failed\tname:%s",
@@ -130,7 +134,7 @@ static int hsr_find_message(lua_State* lua)
     }
     break;
   case LUA_TUSERDATA: // add data from the provided file handle to the buffer
-    fh = *(FILE**)luaL_checkudata(lua, 2, "FILE*");
+    fh = *(FILE **)luaL_checkudata(lua, 2, "FILE*");
     if (!fh) luaL_error(lua, "attempt to use a closed file");
     break;
   default:
@@ -138,7 +142,8 @@ static int hsr_find_message(lua_State* lua)
   }
 
   bool decode = true;
-  if (n == 3 && lua_type(lua, 3) == LUA_TBOOLEAN) {
+  if (n == 3) {
+    luaL_checktype(lua, 3, LUA_TBOOLEAN);
     decode = (bool)lua_toboolean(lua, 3);
   }
 
@@ -147,6 +152,7 @@ static int hsr_find_message(lua_State* lua)
   size_t discarded = 0;
   bool found = lsb_find_heka_message(&hsr->msg, b, decode, &discarded, NULL);
 
+  size_t need = b->size;
   if (found) {
     lua_pushboolean(lua, 1); // found
     lua_pushinteger(lua, b->scanpos - pos_s); // consumed
@@ -157,13 +163,19 @@ static int hsr_find_message(lua_State* lua)
     } else {
       lua_pushinteger(lua, b->scanpos - pos_s);
     }
+    if (b->msglen) {
+      need = b->msglen + (size_t)b->buf[b->scanpos + 1] + LSB_HDR_FRAME_SIZE -
+          b->readpos;
+    } else {
+      need = b->scanpos + b->size - b->readpos;
+    }
   }
 
   if (fh) { // update bytes read
     if (found) {
       lua_pushinteger(lua, 0);
     } else {
-      if (lsb_expand_input_buffer(&hsr->buf, 0)) {
+      if (lsb_expand_input_buffer(&hsr->buf, need)) {
         luaL_error(lua, "%s buffer reallocation failed", hsr->name);
       }
       size_t nread = fread(hsr->buf.buf + hsr->buf.readpos,
@@ -174,39 +186,28 @@ static int hsr_find_message(lua_State* lua)
       lua_pushnumber(lua, (lua_Number)nread);
     }
   } else { // update bytes needed
-    if (found) {
-      if (b->scanpos != b->readpos) {
-        lua_pushinteger(lua, 0);
-      } else {
-        lua_pushinteger(lua, b->size);
-      }
-    } else {
-      if (b->msglen + LSB_MAX_HDR_SIZE > b->size) {
-        lua_pushinteger(lua, b->msglen);
-      } else {
-        lua_pushinteger(lua, b->scanpos + b->size - b->readpos);
-      }
-    }
+    if (found && b->scanpos != b->readpos) need = 0;
+    lua_pushinteger(lua, need);
   }
   return 3;
 }
 
 
-static int hsr_read_message(lua_State* lua)
+static int hsr_read_message(lua_State *lua)
 {
   int n = lua_gettop(lua);
   if (n < 1 || n > 4) {
     return luaL_error(lua, "read_message() incorrect number of arguments");
   }
-  heka_stream_reader* hsr = check_hsr(lua, n);
+  heka_stream_reader *hsr = check_hsr(lua, n);
   lua_remove(lua, 1); // remove the hsr user data
   return heka_read_message(lua, &hsr->msg);
 }
 
 
-static int hsr_gc(lua_State* lua)
+static int hsr_gc(lua_State *lua)
 {
-  heka_stream_reader* hsr = check_hsr(lua, 1);
+  heka_stream_reader *hsr = check_hsr(lua, 1);
   free(hsr->name);
   lsb_free_heka_message(&hsr->msg);
   lsb_free_input_buffer(&hsr->buf);
@@ -216,22 +217,17 @@ static int hsr_gc(lua_State* lua)
 
 static const struct luaL_reg heka_stream_readerlib_f[] =
 {
-  { "new", hsr_new }
-  , { NULL, NULL }
+  { "new", hsr_new }, { NULL, NULL }
 };
 
 
 static const struct luaL_reg heka_stream_readerlib_m[] =
 {
-  { "find_message", hsr_find_message }
-  , { "decode_message", hsr_decode_message }
-  , { "read_message", hsr_read_message }
-  , { "__gc", hsr_gc }
-  , { NULL, NULL }
+  { "find_message", hsr_find_message }, { "decode_message", hsr_decode_message }, { "read_message", hsr_read_message }, { "__gc", hsr_gc }, { NULL, NULL }
 };
 
 
-int luaopen_heka_stream_reader(lua_State* lua)
+int luaopen_heka_stream_reader(lua_State *lua)
 {
   luaL_newmetatable(lua, mozsvc_heka_stream_reader);
   lua_pushvalue(lua, -1);

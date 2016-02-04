@@ -12,6 +12,7 @@
 #include <stdio.h>
 
 #include "../../test/mu_test.h"
+#include "luasandbox/error.h"
 #include "luasandbox/util/heka_message.h"
 
 #define TEST_UUID "\x0a\x10\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff"
@@ -50,6 +51,7 @@ static char* test_init()
   lsb_heka_message m;
   mu_assert(!lsb_init_heka_message(&m, 10), "failed");
   lsb_free_heka_message(&m);
+  lsb_free_heka_message(NULL);
   return NULL;
 }
 
@@ -89,6 +91,9 @@ static char* test_decode()
     bool ok = lsb_decode_heka_message(&m, tests[i].s, tests[i].len, logger);
     mu_assert(ok, "test: %d failed err: %s", i, lm.msg);
   }
+  mu_assert(!lsb_decode_heka_message(NULL, NULL, 0, NULL), "succeeded");
+  mu_assert(!lsb_decode_heka_message(&m, NULL, 0, NULL), "succeeded");
+  mu_assert(!lsb_decode_heka_message(&m, tests[0].s, 0, NULL), "succeeded");
   lsb_free_heka_message(&m);
   return NULL;
 }
@@ -184,6 +189,9 @@ static char* test_find_message()
     mu_assert(tests[i].b == b, "test: %u failed", i);
     mu_assert(tests[i].d == db, "test: %u failed expected: %" PRIuSIZE " received: %" PRIuSIZE, i, tests[i].d, db);
   }
+  mu_assert(!lsb_find_heka_message(NULL, NULL, true, NULL, NULL), "succeeded");
+  mu_assert(!lsb_find_heka_message(&m, NULL, true, NULL, NULL), "succeeded");
+  mu_assert(!lsb_find_heka_message(&m, &ib, true, NULL, NULL), "succeeded");
   lsb_free_input_buffer(&ib);
   lsb_free_heka_message(&m);
   return NULL;
@@ -256,6 +264,9 @@ static char* test_read_heka_field()
   mu_assert(v.type == LSB_READ_BOOL, "%d", v.type);
   mu_assert(v.u.d == 1, "invalid value: %g", v.u.d);
 
+  mu_assert(!lsb_read_heka_field(NULL, NULL, 0, 0, NULL), "succeeded");
+  mu_assert(!lsb_read_heka_field(&m, NULL, 0, 0, NULL), "succeeded");
+  mu_assert(!lsb_read_heka_field(&m, &cs, 0, 0, NULL), "succeeded");
   lsb_free_heka_message(&m);
   return NULL;
 }
@@ -263,45 +274,55 @@ static char* test_read_heka_field()
 
 static char* test_write_heka_uuid()
 {
+  lsb_err_value ret;
   lsb_output_buffer ob;
   lsb_init_output_buffer(&ob, LSB_UUID_SIZE + 2);
 
   const char header[2] = "\x0a\x10";
   const char bin_uuid[LSB_UUID_SIZE] = { 0 };
-  mu_assert_rv(0, lsb_write_heka_uuid(&ob, bin_uuid, LSB_UUID_SIZE));
+  ret = lsb_write_heka_uuid(&ob, bin_uuid, LSB_UUID_SIZE);
+  mu_assert(!ret, "received %s", ret);
   mu_assert(ob.pos == LSB_UUID_SIZE + 2, "received: %" PRIuSIZE, ob.pos);
   mu_assert(memcmp(ob.buf, header, sizeof header) == 0, "invalid header");
   mu_assert(memcmp(ob.buf + 2, bin_uuid, LSB_UUID_SIZE) == 0, "invalid");
 
-  const char str_uuid[LSB_UUID_STR_SIZE] = "00000000-0000-0000-0000-"
+  const char str_uuid[] = "00000000-0000-0000-0000-"
       "000000000000";
-  mu_assert_rv(0, lsb_write_heka_uuid(&ob, str_uuid, LSB_UUID_STR_SIZE));
+  ret = lsb_write_heka_uuid(&ob, str_uuid, LSB_UUID_STR_SIZE);
+  mu_assert(!ret, "received %s", ret);
   mu_assert(ob.pos == LSB_UUID_SIZE + 2, "received: %" PRIuSIZE, ob.pos);
   mu_assert(memcmp(ob.buf, header, sizeof header) == 0, "invalid header");
   mu_assert(memcmp(ob.buf + 2, bin_uuid, LSB_UUID_SIZE) == 0, "invalid");
 
-  const char err_uuid[LSB_UUID_STR_SIZE] = "00000000+0000-0000-0000-"
+  const char err_uuid[] = "00000000+0000-0000-0000-"
       "000000000000";
-  mu_assert_rv(0, lsb_write_heka_uuid(&ob, err_uuid, LSB_UUID_STR_SIZE));
+  ret = lsb_write_heka_uuid(&ob, err_uuid, LSB_UUID_STR_SIZE);
+  mu_assert(!ret, "received %s", ret);
   mu_assert(ob.pos == LSB_UUID_SIZE + 2, "received: %" PRIuSIZE, ob.pos);
   mu_assert(memcmp(ob.buf, header, sizeof header) == 0, "invalid header");
   mu_assert(ob.buf[8] & 0x40, "invalid format should create a type 4 uuid");
 
-  mu_assert_rv(0, lsb_write_heka_uuid(&ob, NULL, 0));
+  ret = lsb_write_heka_uuid(&ob, NULL, 0);
+  mu_assert(!ret, "received %s", ret);
   mu_assert(ob.pos == LSB_UUID_SIZE + 2, "received: %" PRIuSIZE, ob.pos);
   mu_assert(ob.buf[8] & 0x40, "null string should create a type 4 uuid");
   lsb_free_output_buffer(&ob);
 
-  mu_assert_rv(0, lsb_write_heka_uuid(&ob, bin_uuid, 10));
+  ret = lsb_write_heka_uuid(&ob, bin_uuid, 10);
+  mu_assert(!ret, "received %s", ret);
   mu_assert(ob.pos == LSB_UUID_SIZE + 2, "received: %" PRIuSIZE, ob.pos);
   mu_assert(ob.buf[8] & 0x40, "unexpected length should create a type 4 uuid");
   lsb_free_output_buffer(&ob);
 
   lsb_output_buffer sob;
   lsb_init_output_buffer(&sob, LSB_UUID_SIZE);
-  mu_assert_rv(1, lsb_write_heka_uuid(&sob, NULL, 0));
+  ret = lsb_write_heka_uuid(&sob, NULL, 0);
+  mu_assert(ret, "received <no error>");
   mu_assert(sob.pos == 0, "received: %" PRIuSIZE, sob.pos);
   lsb_free_output_buffer(&sob);
+
+  ret = lsb_write_heka_uuid(NULL, bin_uuid, LSB_UUID_SIZE);
+  mu_assert(ret == LSB_ERR_UTIL_NULL, "received %s", lsb_err_string(ret));
 
   return NULL;
 }

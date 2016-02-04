@@ -110,7 +110,8 @@ typedef struct {
 } lsb_read_value;
 
 #ifdef __cplusplus
-extern "C" {
+extern "C"
+{
 #endif
 
 /**
@@ -119,10 +120,11 @@ extern "C" {
  * @param m Heka message structure
  * @param num_fields Preallocated number of fields (must be >0)
  *
- * @return int 0 on success
+ * @return lsb_err_value NULL on success error message on failure
  *
  */
-LSB_UTIL_EXPORT int lsb_init_heka_message(lsb_heka_message *m, int num_fields);
+LSB_UTIL_EXPORT lsb_err_value
+lsb_init_heka_message(lsb_heka_message *m, int num_fields);
 
 /**
  * Frees the memory allocated for the message fields
@@ -199,9 +201,9 @@ LSB_UTIL_EXPORT bool lsb_read_heka_field(lsb_heka_message *m,
  * @param len Length of UUID (16 or 36 anything else will cause a new UUID to be
  *            created).
  *
- * @return int 0 on success
+ * @return lsb_err_value NULL on success error message on failure
  */
-LSB_UTIL_EXPORT int
+LSB_UTIL_EXPORT lsb_err_value
 lsb_write_heka_uuid(lsb_output_buffer *ob, const char *uuid, size_t len);
 
 #ifdef __cplusplus

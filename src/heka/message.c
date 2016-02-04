@@ -252,21 +252,21 @@ static const char* process_fields(lua_State *lua, const char *p, const char *e)
  * @param name Key used for the Lua table entry lookup.
  * @param index Lua stack index of the table.
  *
- * @return int 0 on success
+ * @return lsb_err_value NULL on success error message on failure
  */
-static int
+static lsb_err_value
 encode_string(lsb_lua_sandbox *lsb, lsb_output_buffer *ob, char tag,
               const char *name, int index)
 {
-  int result = 0;
+  lsb_err_value ret = NULL;
   lua_getfield(lsb->lua, index, name);
   if (lua_isstring(lsb->lua, -1)) {
     size_t len;
     const char *s = lua_tolstring(lsb->lua, -1, &len);
-    result = lsb_pb_write_string(ob, tag, s, len);
+    ret = lsb_pb_write_string(ob, tag, s, len);
   }
   lua_pop(lsb->lua, 1);
-  return result;
+  return ret;
 }
 
 
@@ -281,22 +281,21 @@ encode_string(lsb_lua_sandbox *lsb, lsb_output_buffer *ob, char tag,
  * @param name Key used for the Lua table entry lookup.
  * @param index Lua stack index of the table.
  *
- * @return int 0 on success
+ * @return lsb_err_value NULL on success error message on failure
  */
-static int
+static lsb_err_value
 encode_int(lsb_lua_sandbox *lsb, lsb_output_buffer *ob, char tag,
            const char *name, int index)
 {
-  int result = 0;
+  lsb_err_value ret = NULL;
   lua_getfield(lsb->lua, index, name);
   if (lua_isnumber(lsb->lua, -1)) {
     unsigned long long i = (unsigned long long)lua_tonumber(lsb->lua, -1);
-    if ((result = lsb_pb_write_key(ob, tag, LSB_PB_WT_VARINT))) {
-      result = lsb_pb_write_varint(ob, i);
-    }
+    ret = lsb_pb_write_key(ob, tag, LSB_PB_WT_VARINT);
+    if (!ret) ret = lsb_pb_write_varint(ob, i);
   }
   lua_pop(lsb->lua, 1);
-  return result;
+  return ret;
 }
 
 
@@ -310,9 +309,9 @@ encode_int(lsb_lua_sandbox *lsb, lsb_output_buffer *ob, char tag,
  * @param representation String representation of the field i.e., "ms"
  * @param value_type Protobuf value type
  *
- * @return int 0 on success
+ * @return lsb_err_value NULL on success error message on failure
  */
-static int
+static lsb_err_value
 encode_field_value(lsb_lua_sandbox *lsb, lsb_output_buffer *ob, int first,
                    const char *representation, int value_type);
 
@@ -325,24 +324,24 @@ encode_field_value(lsb_lua_sandbox *lsb, lsb_output_buffer *ob, int first,
  * @param t Lua type of the array values.
  * @param representation String representation of the field i.e., "ms"
  *
- * @return int 0 on success
+ * @return lsb_err_value NULL on success error message on failure
  */
-static int
+static lsb_err_value
 encode_field_array(lsb_lua_sandbox *lsb, lsb_output_buffer *ob, int t,
                    const char *representation, int value_type)
 {
-  int result = 0;
+  lsb_err_value ret;
   int first = (int)lua_objlen(lsb->lua, -1);
   int multiple = first > 1 ? first : 0;
   size_t len_pos = 0;
   lua_checkstack(lsb->lua, 2);
   lua_pushnil(lsb->lua);
-  while (result == 0 && lua_next(lsb->lua, -2) != 0) {
+  while (!ret && lua_next(lsb->lua, -2) != 0) {
     if (lua_type(lsb->lua, -1) != t) {
       snprintf(lsb->error_message, LSB_ERROR_SIZE, "array has mixed types");
-      return 3;
+      return LSB_ERR_HEKA_INPUT;
     }
-    result = encode_field_value(lsb, ob, first, representation, value_type);
+    ret = encode_field_value(lsb, ob, first, representation, value_type);
     if (first) {
       len_pos = ob->pos;
       first = 0;
@@ -350,7 +349,7 @@ encode_field_array(lsb_lua_sandbox *lsb, lsb_output_buffer *ob, int t,
     lua_pop(lsb->lua, 1); // Remove the value leaving the key on top for
                           // the next interation.
   }
-  if (multiple && value_type == LSB_PB_INTEGER) {
+  if (!ret && multiple && value_type == LSB_PB_INTEGER) {
     // fix up the varint packed length
     size_t i = len_pos - 2;
     int y = 0;
@@ -359,14 +358,14 @@ encode_field_array(lsb_lua_sandbox *lsb, lsb_output_buffer *ob, int t,
       --i;
       ++y;
     }
-    result = lsb_pb_update_field_length(ob, i);
-    if (y == LSB_MAX_VARINT_BYTES || result) {
+    if (y == LSB_MAX_VARINT_BYTES) {
       snprintf(lsb->error_message, LSB_ERROR_SIZE,
                "unable set the length of the packed integer array");
-      return 1;
+      return LSB_ERR_LUA;
     }
+    ret = lsb_pb_update_field_length(ob, i);
   }
-  return result;
+  return ret;
 }
 
 
@@ -376,9 +375,10 @@ encode_field_array(lsb_lua_sandbox *lsb, lsb_output_buffer *ob, int t,
  * @param lsb  Pointer to the sandbox.
  * @param ob  Pointer to the output data buffer.
  *
- * @return int 0 on success
+ * @return lsb_err_value NULL on success error message on failure
  */
-static int encode_field_object(lsb_lua_sandbox *lsb, lsb_output_buffer *ob)
+static lsb_err_value
+encode_field_object(lsb_lua_sandbox *lsb, lsb_output_buffer *ob)
 {
   const char *representation = NULL;
   lua_getfield(lsb->lua, -1, "representation");
@@ -393,17 +393,17 @@ static int encode_field_object(lsb_lua_sandbox *lsb, lsb_output_buffer *ob)
   }
 
   lua_getfield(lsb->lua, -3, "value");
-  int result = encode_field_value(lsb, ob, 1, representation, value_type);
+  lsb_err_value ret = encode_field_value(lsb, ob, 1, representation, value_type);
   lua_pop(lsb->lua, 3); // remove representation, value_type and  value
-  return result;
+  return ret;
 }
 
 
-static int
+static lsb_err_value
 encode_field_value(lsb_lua_sandbox *lsb, lsb_output_buffer *ob, int first,
                    const char *representation, int value_type)
 {
-  int result = 0;
+  lsb_err_value ret = NULL;
   size_t len;
   const char *s;
 
@@ -419,27 +419,28 @@ encode_field_value(lsb_lua_sandbox *lsb, lsb_output_buffer *ob, int first,
     default:
       snprintf(lsb->error_message, LSB_ERROR_SIZE,
                "invalid string value_type: %d", value_type);
-      return 3;
+      return LSB_ERR_HEKA_INPUT;
     }
     if (first) { // this uglyness keeps the protobuf fields in order without
                  // additional lookups
       if (value_type == LSB_PB_BYTES) {
-        result = lsb_pb_write_key(ob, LSB_PB_VALUE_TYPE, LSB_PB_WT_VARINT);
-        if (result) return result;
-        result = lsb_pb_write_varint(ob, value_type);
-        if (result) return result;
+        ret = lsb_pb_write_key(ob, LSB_PB_VALUE_TYPE, LSB_PB_WT_VARINT);
+        if (!ret) ret = lsb_pb_write_varint(ob, value_type);
+        if (ret) return ret;
       }
       if (representation) {
-        result = lsb_pb_write_string(ob, LSB_PB_REPRESENTATION, representation,
-                                     strlen(representation));
-        if (result) return result;
+        ret = lsb_pb_write_string(ob, LSB_PB_REPRESENTATION, representation,
+                                  strlen(representation));
+        if (ret) return ret;
       }
     }
     s = lua_tolstring(lsb->lua, -1, &len);
     if (value_type == LSB_PB_BYTES) {
-      result = lsb_pb_write_string(ob, LSB_PB_VALUE_BYTES, s, len);
+      ret = lsb_pb_write_string(ob, LSB_PB_VALUE_BYTES, s, len);
+      if (ret) return ret;
     } else {
-      result = lsb_pb_write_string(ob, LSB_PB_VALUE_STRING, s, len);
+      ret = lsb_pb_write_string(ob, LSB_PB_VALUE_STRING, s, len);
+      if (ret) return ret;
     }
     break;
   case LUA_TNUMBER:
@@ -452,76 +453,69 @@ encode_field_value(lsb_lua_sandbox *lsb, lsb_output_buffer *ob, int first,
     default:
       snprintf(lsb->error_message, LSB_ERROR_SIZE,
                "invalid numeric value_type: %d", value_type);
-      return 3;
+      return LSB_ERR_HEKA_INPUT;
     }
     if (first) {
-      result = lsb_pb_write_key(ob, LSB_PB_VALUE_TYPE, LSB_PB_WT_VARINT);
-      if (result) return result;
-
-      result = lsb_pb_write_varint(ob, value_type);
-      if (result) return result;
+      ret = lsb_pb_write_key(ob, LSB_PB_VALUE_TYPE, LSB_PB_WT_VARINT);
+      if (!ret) ret = lsb_pb_write_varint(ob, value_type);
+      if (ret) return ret;
 
       if (representation) {
-        result = lsb_pb_write_string(ob, LSB_PB_REPRESENTATION, representation,
-                                     strlen(representation));
-        if (result) return result;
+        ret = lsb_pb_write_string(ob, LSB_PB_REPRESENTATION, representation,
+                                  strlen(representation));
+        if (ret) return ret;
       }
       if (1 == first) {
         if (value_type == LSB_PB_INTEGER) {
-          result = lsb_pb_write_key(ob, LSB_PB_VALUE_INTEGER, LSB_PB_WT_VARINT);
-          if (result) return result;
+          ret = lsb_pb_write_key(ob, LSB_PB_VALUE_INTEGER, LSB_PB_WT_VARINT);
         } else {
-          result = lsb_pb_write_key(ob, LSB_PB_VALUE_DOUBLE, LSB_PB_WT_FIXED64);
-          if (result) return result;
+          ret = lsb_pb_write_key(ob, LSB_PB_VALUE_DOUBLE, LSB_PB_WT_FIXED64);
         }
+        if (ret) return ret;
       } else { // pack array
         if (value_type == LSB_PB_INTEGER) {
-          result = lsb_pb_write_key(ob, LSB_PB_VALUE_INTEGER, LSB_PB_WT_LENGTH);
-          if (result) return result;
-          result = lsb_pb_write_varint(ob, 0); // length tbd later
-          if (result) return result;
+          ret = lsb_pb_write_key(ob, LSB_PB_VALUE_INTEGER, LSB_PB_WT_LENGTH);
+          if (!ret) ret = lsb_pb_write_varint(ob, 0); // length tbd later
         } else {
-          result = lsb_pb_write_key(ob, LSB_PB_VALUE_DOUBLE, LSB_PB_WT_LENGTH);
-          if (result) return result;
-          result = lsb_pb_write_varint(ob, first * sizeof(double));
-          if (result) return result;
+          ret = lsb_pb_write_key(ob, LSB_PB_VALUE_DOUBLE, LSB_PB_WT_LENGTH);
+          if (!ret) ret = lsb_pb_write_varint(ob, first * sizeof(double));
         }
+        if (ret) return ret;
       }
     }
     if (value_type == LSB_PB_INTEGER) {
-      result = lsb_pb_write_varint(ob, lua_tointeger(lsb->lua, -1));
+      ret = lsb_pb_write_varint(ob, lua_tointeger(lsb->lua, -1));
     } else {
-      result = lsb_pb_write_double(ob, lua_tonumber(lsb->lua, -1));
+      ret = lsb_pb_write_double(ob, lua_tonumber(lsb->lua, -1));
     }
+    if (ret) return ret;
     break;
 
   case LUA_TBOOLEAN:
     if (value_type != -1 && value_type != LSB_PB_BOOL) {
       snprintf(lsb->error_message, LSB_ERROR_SIZE,
                "invalid boolean value_type: %d", value_type);
-      return 3;
+      return LSB_ERR_HEKA_INPUT;
     }
     if (first) {
-      result = lsb_pb_write_key(ob, LSB_PB_VALUE_TYPE, LSB_PB_WT_VARINT);
-      if (result) return result;
-      result = lsb_pb_write_varint(ob, LSB_PB_BOOL);
-      if (result) return result;
+      ret = lsb_pb_write_key(ob, LSB_PB_VALUE_TYPE, LSB_PB_WT_VARINT);
+      if (!ret) ret = lsb_pb_write_varint(ob, LSB_PB_BOOL);
+      if (ret) return ret;
+
       if (representation) {
-        result = lsb_pb_write_string(ob, LSB_PB_REPRESENTATION, representation,
-                                     strlen(representation));
-        if (result) return result;
+        ret = lsb_pb_write_string(ob, LSB_PB_REPRESENTATION, representation,
+                                  strlen(representation));
+        if (ret) return ret;
       }
       if (1 == first) {
-        result = lsb_pb_write_key(ob, LSB_PB_VALUE_BOOL, LSB_PB_WT_VARINT);
-        if (result) return result;
+        ret = lsb_pb_write_key(ob, LSB_PB_VALUE_BOOL, LSB_PB_WT_VARINT);
       } else {
-        result = lsb_pb_write_key(ob, LSB_PB_VALUE_BOOL, LSB_PB_WT_LENGTH);
-        if (result) return result;
-        result = lsb_pb_write_varint(ob, first);
-        if (result) return result;
+        ret = lsb_pb_write_key(ob, LSB_PB_VALUE_BOOL, LSB_PB_WT_LENGTH);
+        if (!ret) ret = lsb_pb_write_varint(ob, first);
       }
+      if (ret) return ret;
     }
-    result = lsb_pb_write_bool(ob, lua_toboolean(lsb->lua, -1));
+    ret = lsb_pb_write_bool(ob, lua_toboolean(lsb->lua, -1));
     break;
 
   case LUA_TTABLE:
@@ -531,18 +525,17 @@ encode_field_value(lsb_lua_sandbox *lsb, lsb_output_buffer *ob, int first,
       lua_pop(lsb->lua, 1); // remove the array test value
       switch (t) {
       case LUA_TNIL:
-        result = encode_field_object(lsb, ob);
+        ret = encode_field_object(lsb, ob);
         break;
       case LUA_TNUMBER:
       case LUA_TSTRING:
       case LUA_TBOOLEAN:
-        result = encode_field_array(lsb, ob, t, representation, value_type);
+        ret = encode_field_array(lsb, ob, t, representation, value_type);
         break;
       default:
         snprintf(lsb->error_message, LSB_ERROR_SIZE,
                  "unsupported array type: %s", lua_typename(lsb->lua, t));
-        result = 3;
-        break;
+        return LSB_ERR_LUA;
       }
     }
     break;
@@ -554,40 +547,48 @@ encode_field_value(lsb_lua_sandbox *lsb, lsb_output_buffer *ob, int first,
       if (!fp) {
         snprintf(lsb->error_message, LSB_ERROR_SIZE,
                  "user data object does not implement lsb_output");
-        return 3;
+        return LSB_ERR_LUA;
       }
       if (first) {
-        result = lsb_pb_write_key(ob, LSB_PB_VALUE_TYPE, LSB_PB_WT_VARINT);
-        if (result) return result;
+        ret = lsb_pb_write_key(ob, LSB_PB_VALUE_TYPE, LSB_PB_WT_VARINT);
+        if (ret) return ret;
+
         // encode userdata as a byte array
-        result = lsb_pb_write_varint(ob, LSB_PB_BYTES);
-        if (result) return result;
+        ret = lsb_pb_write_varint(ob, LSB_PB_BYTES);
+        if (ret) return ret;
+
         if (representation) {
-          result = lsb_pb_write_string(ob, LSB_PB_REPRESENTATION, representation,
-                                       strlen(representation));
-          if (result) return result;
+          ret = lsb_pb_write_string(ob, LSB_PB_REPRESENTATION, representation,
+                                    strlen(representation));
+          if (ret) return ret;
         }
       }
 
-      result = lsb_pb_write_key(ob, LSB_PB_VALUE_BYTES, LSB_PB_WT_LENGTH);
-      if (result) return result;
+      ret = lsb_pb_write_key(ob, LSB_PB_VALUE_BYTES, LSB_PB_WT_LENGTH);
+      if (ret) return ret;
+
       len_pos = ob->pos;
-      result = lsb_pb_write_varint(ob, 0);  // length tbd later
-      if (result) return result;
+      ret = lsb_pb_write_varint(ob, 0);  // length tbd later
+      if (ret) return ret;
+
       lua_pushlightuserdata(lsb->lua, ob);
-      if (fp(lsb->lua)) return 3;
+      int result = fp(lsb->lua);
       lua_pop(lsb->lua, 1); // remove output function
-      result = lsb_pb_update_field_length(ob, len_pos);
+      if (result) {
+        snprintf(lsb->error_message, LSB_ERROR_SIZE,
+                 "user data output callback failed: %d", result);
+        return LSB_ERR_LUA;
+      }
+      ret = lsb_pb_update_field_length(ob, len_pos);
     }
     break;
 
   default:
     snprintf(lsb->error_message, LSB_ERROR_SIZE, "unsupported type: %s",
              lua_typename(lsb->lua, t));
-    result = 3;
-    break;
+    return LSB_ERR_LUA;
   }
-  return result;
+  return ret;
 }
 
 
@@ -601,16 +602,16 @@ encode_field_value(lsb_lua_sandbox *lsb, lsb_output_buffer *ob, int first,
  * @param name Key used for the Lua table entry lookup.
  * @param index Lua stack index of the table.
  *
- * @return int 0 on success
+ * @return lsb_err_value NULL on success error message on failure
  */
-static int
+static lsb_err_value
 encode_fields(lsb_lua_sandbox *lsb, lsb_output_buffer *ob, char tag,
               const char *name, int index)
 {
-  int result = 0;
+  lsb_err_value ret = NULL;
   lua_getfield(lsb->lua, index, name);
   if (!lua_istable(lsb->lua, -1)) {
-    return result;
+    return ret;
   }
 
   lua_rawgeti(lsb->lua, -1, 1); // test for the array notation
@@ -618,60 +619,64 @@ encode_fields(lsb_lua_sandbox *lsb, lsb_output_buffer *ob, char tag,
   if (lua_istable(lsb->lua, -1)) {
     int i = 1;
     do {
-      result = lsb_pb_write_key(ob, tag, LSB_PB_WT_LENGTH);
-      if (result) return result;
+      ret = lsb_pb_write_key(ob, tag, LSB_PB_WT_LENGTH);
+      if (ret) return ret;
+
       len_pos = ob->pos;
-      result = lsb_pb_write_varint(ob, 0);  // length tbd later
-      if (result) return result;
+      ret = lsb_pb_write_varint(ob, 0);  // length tbd later
+      if (ret) return ret;
+
       lua_getfield(lsb->lua, -1, "name");
       if (lua_isstring(lsb->lua, -1)) {
         const char *s = lua_tolstring(lsb->lua, -1, &len);
-        result = lsb_pb_write_string(ob, LSB_PB_NAME, s, len);
-        if (result) return result;
+        ret = lsb_pb_write_string(ob, LSB_PB_NAME, s, len);
       } else {
         snprintf(lsb->error_message, LSB_ERROR_SIZE,
                  "field name must be a string");
-        return 3;
+        ret = LSB_ERR_HEKA_INPUT;
       }
       lua_pop(lsb->lua, 1); // remove the name
+      if (ret) return ret;
 
-      result = encode_field_object(lsb, ob);
-      if (result) return result;
-      result = lsb_pb_update_field_length(ob, len_pos);
-      if (result) return result;
+      ret = encode_field_object(lsb, ob);
+      if (!ret) ret = lsb_pb_update_field_length(ob, len_pos);
+      if (ret) return ret;
 
       lua_pop(lsb->lua, 1); // remove the current field object
       lua_rawgeti(lsb->lua, -1, ++i); // grab the next field object
-    } while (!lua_isnil(lsb->lua, -1));
+    } while (!ret && !lua_isnil(lsb->lua, -1));
   } else {
     lua_pop(lsb->lua, 1); // remove the array test value
     lua_checkstack(lsb->lua, 2);
     lua_pushnil(lsb->lua);
-    while (result == 0 && lua_next(lsb->lua, -2) != 0) {
-      result = lsb_pb_write_key(ob, tag, LSB_PB_WT_LENGTH);
-      if (result) return result;
+    while (lua_next(lsb->lua, -2) != 0) {
+      ret = lsb_pb_write_key(ob, tag, LSB_PB_WT_LENGTH);
+      if (ret) return ret;
+
       len_pos = ob->pos;
-      result = lsb_pb_write_varint(ob, 0);  // length tbd later
-      if (result) return result;
+      ret = lsb_pb_write_varint(ob, 0);  // length tbd later
+      if (ret) return ret;
+
       if (lua_isstring(lsb->lua, -2)) {
         const char *s = lua_tolstring(lsb->lua, -2, &len);
-        result = lsb_pb_write_string(ob, LSB_PB_NAME, s, len);
-        if (result) return result;
+        ret = lsb_pb_write_string(ob, LSB_PB_NAME, s, len);
       } else {
         snprintf(lsb->error_message, LSB_ERROR_SIZE,
                  "field name must be a string");
-        return 3;
+        ret = LSB_ERR_HEKA_INPUT;
       }
-      result = encode_field_value(lsb, ob, 1, NULL, -1);
-      if (result) return result;
-      result = lsb_pb_update_field_length(ob, len_pos);
-      if (result) return result;
+      if (ret) return ret;
+
+      ret = encode_field_value(lsb, ob, 1, NULL, -1);
+      if (!ret) ret = lsb_pb_update_field_length(ob, len_pos);
+      if (ret) return ret;
+
       lua_pop(lsb->lua, 1); // Remove the value leaving the key on top for
                             // the next interation.
     }
   }
   lua_pop(lsb->lua, 1); // remove the fields table
-  return result;
+  return ret;
 }
 
 
@@ -788,7 +793,7 @@ int heka_decode_message(lua_State *lua)
                       wiretype, (const char *)lp - pbstr);
   }
 
-  if (!(has_uuid && has_timestamp)) {
+  if (!has_uuid || !has_timestamp) {
     return luaL_error(lua, "missing required field uuid: %s timestamp: %s",
                       has_uuid ? "found" : "not found",
                       has_timestamp ? "found" : "not found");
@@ -827,10 +832,11 @@ int heka_encode_message(lua_State *lua)
   lsb_heka_sandbox *hsb = lsb_get_parent(lsb);
   set_missing_headers(lua, 1, hsb);
 
-  lsb_clear_output_buffer(&lsb->output);
-  if (heka_encode_message_table(lsb, 1)) {
+  lsb->output.pos = 0;
+  lsb_err_value ret = heka_encode_message_table(lsb, 1);
+  if (ret) {
     const char *err = lsb_get_error(lsb);
-    if (strlen(err) == 0) err = "exceeded output_limit";
+    if (strlen(err) == 0) err = ret;
     return luaL_error(lua, "encode_message() failed: %s", err);
   }
 
@@ -856,25 +862,25 @@ int heka_encode_message(lua_State *lua)
   if (lsb->usage[LSB_UT_OUTPUT][LSB_US_CURRENT]
       > lsb->usage[LSB_UT_OUTPUT][LSB_US_MAXIMUM]) {
     lsb->usage[LSB_UT_OUTPUT][LSB_US_MAXIMUM] =
-      lsb->usage[LSB_UT_OUTPUT][LSB_US_CURRENT];
+        lsb->usage[LSB_UT_OUTPUT][LSB_US_CURRENT];
   }
   return 1;
 }
 
 
-int heka_encode_message_table(lsb_lua_sandbox *lsb, int idx)
+lsb_err_value heka_encode_message_table(lsb_lua_sandbox *lsb, int idx)
 {
-  int result = 0;
+  lsb_err_value ret = NULL;
   lsb_output_buffer *ob = &lsb->output;
-  lsb_clear_output_buffer(ob);
+  ob->pos = 0;
 
   // use existing or create a type 4 uuid
   lua_getfield(lsb->lua, idx, LSB_UUID);
   size_t len;
   const char *uuid = lua_tolstring(lsb->lua, -1, &len);
-  result = lsb_write_heka_uuid(ob, uuid, len);
-  if (result) return result;
+  ret = lsb_write_heka_uuid(ob, uuid, len);
   lua_pop(lsb->lua, 1); // remove uuid
+  if (ret) return ret;
 
   // use existing or create a timestamp
   lua_getfield(lsb->lua, idx, LSB_TIMESTAMP);
@@ -886,31 +892,20 @@ int heka_encode_message_table(lsb_lua_sandbox *lsb, int idx)
   }
   lua_pop(lsb->lua, 1); // remove timestamp
 
-  result = lsb_pb_write_key(ob, LSB_PB_TIMESTAMP, LSB_PB_WT_VARINT);
-  if (result) return result;
-  result = lsb_pb_write_varint(ob, ts);
-  if (result) return result;
-  result = encode_string(lsb, ob, LSB_PB_TYPE, LSB_TYPE, idx);
-  if (result) return result;
-  result = encode_string(lsb, ob, LSB_PB_LOGGER, LSB_LOGGER, idx);
-  if (result) return result;
-  result = encode_int(lsb, ob, LSB_PB_SEVERITY, LSB_SEVERITY, idx);
-  if (result) return result;
-  result = encode_string(lsb, ob, LSB_PB_PAYLOAD, LSB_PAYLOAD, idx);
-  if (result) return result;
-  result = encode_string(lsb, ob, LSB_PB_ENV_VERSION, LSB_ENV_VERSION, idx);
-  if (result) return result;
-  result = encode_int(lsb, ob, LSB_PB_PID, LSB_PID, idx);
-  if (result) return result;
-  result = encode_string(lsb, ob, LSB_PB_HOSTNAME, LSB_HOSTNAME, idx);
-  if (result) return result;
-  result = encode_fields(lsb, ob, LSB_PB_FIELDS, LSB_FIELDS, idx);
-  if (result) return result;
-  result = lsb_expand_output_buffer(ob, 1);
-  if (result) return result;
-  ob->buf[ob->pos] = 0; // NULL terminate incase someone tries to treat this
-                        // as a string
-  return result;
+  ret = lsb_pb_write_key(ob, LSB_PB_TIMESTAMP, LSB_PB_WT_VARINT);
+  if (!ret) ret = lsb_pb_write_varint(ob, ts);
+  if (!ret) ret = encode_string(lsb, ob, LSB_PB_TYPE, LSB_TYPE, idx);
+  if (!ret) ret = encode_string(lsb, ob, LSB_PB_LOGGER, LSB_LOGGER, idx);
+  if (!ret) ret = encode_int(lsb, ob, LSB_PB_SEVERITY, LSB_SEVERITY, idx);
+  if (!ret) ret = encode_string(lsb, ob, LSB_PB_PAYLOAD, LSB_PAYLOAD, idx);
+  if (!ret) ret = encode_string(lsb, ob, LSB_PB_ENV_VERSION, LSB_ENV_VERSION,
+                                idx);
+  if (!ret) ret = encode_int(lsb, ob, LSB_PB_PID, LSB_PID, idx);
+  if (!ret) ret = encode_string(lsb, ob, LSB_PB_HOSTNAME, LSB_HOSTNAME, idx);
+  if (!ret) ret = encode_fields(lsb, ob, LSB_PB_FIELDS, LSB_FIELDS, idx);
+  if (!ret) ret = lsb_expand_output_buffer(ob, 1);
+  ob->buf[ob->pos] = 0; // prevent possible overrun if treated as a string
+  return ret;
 }
 
 

@@ -1,8 +1,8 @@
 -- This Source Code Form is subject to the terms of the Mozilla Public
 -- License, v. 2.0. If a copy of the MPL was not distributed with this
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
-
-local msg = {Timestamp = 8}
+require "string"
+msg = {Timestamp = 8}
 
 function process_message(cp)
     if cp == 0 then
@@ -11,6 +11,14 @@ function process_message(cp)
         return -1, "failed"
     elseif cp == 2 then
         return 0, "ok"
+    elseif cp == 3 then
+        error("boom")
+    elseif cp == 4 then
+        return 0, msg
+    elseif cp == 5 then
+        return msg
+    elseif cp == 6 then
+        error(string.rep("a", 255))
     elseif cp == "string" then
         return 0, "string"
     end

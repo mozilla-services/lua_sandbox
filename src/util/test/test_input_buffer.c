@@ -10,6 +10,7 @@
 #include <string.h>
 
 #include "../../test/mu_test.h"
+#include "luasandbox/error.h"
 #include "luasandbox/util/input_buffer.h"
 #include "luasandbox/util/heka_message.h"
 
@@ -22,12 +23,17 @@ static char* test_init_small_buf()
 {
   size_t size = 100;
   lsb_input_buffer b;
+
+  lsb_err_value ret = lsb_init_input_buffer(NULL, size);
+  mu_assert(ret == LSB_ERR_UTIL_NULL, "received: %s", lsb_err_string(ret));
+
   mu_assert(!lsb_init_input_buffer(&b, size), "init failed");
   mu_assert(b.size == size + LSB_MAX_HDR_SIZE, "received: %" PRIuSIZE,
             b.size);
   mu_assert(b.maxsize == size + LSB_MAX_HDR_SIZE, "received: %" PRIuSIZE,
             b.size);
   lsb_free_input_buffer(&b);
+  lsb_free_input_buffer(NULL);
   return NULL;
 }
 
@@ -48,7 +54,8 @@ static char* test_init_large_buf()
 static char* test_init_zero_buf()
 {
   lsb_input_buffer b;
-  mu_assert(lsb_init_input_buffer(&b, 0), "init succeeded");
+  lsb_err_value ret = lsb_init_input_buffer(&b, 0);
+  mu_assert(ret == LSB_ERR_UTIL_PRANGE, "received: %s", lsb_err_string(ret));
   lsb_free_input_buffer(&b);
   return NULL;
 }
@@ -61,6 +68,9 @@ static char* test_expand_buf()
   lsb_input_buffer b;
   mu_assert(!lsb_init_input_buffer(&b, size), "init failed");
   mu_assert(b.size == BUFSIZ, "received: %" PRIuSIZE, b.size);
+
+  lsb_err_value ret = lsb_expand_input_buffer(NULL, 0);
+  mu_assert(LSB_ERR_UTIL_NULL == ret, "received: %s", lsb_err_string(ret));
 
   mu_assert(!lsb_expand_input_buffer(&b, 1024 * 9), "expand failed");
   mu_assert(b.size == rsize, "received: %" PRIuSIZE, b.size);
@@ -82,7 +92,8 @@ static char* test_expand_failure()
   size_t size = 1024;
   lsb_input_buffer b;
   mu_assert(!lsb_init_input_buffer(&b, size), "init failed");
-  mu_assert_rv(1, lsb_expand_input_buffer(&b, size  + LSB_MAX_HDR_SIZE + 1));
+  lsb_err_value ret = lsb_expand_input_buffer(&b, size  + LSB_MAX_HDR_SIZE + 1);
+  mu_assert(LSB_ERR_UTIL_FULL == ret, "received: %s", lsb_err_string(ret));
   lsb_free_input_buffer(&b);
   return NULL;
 }

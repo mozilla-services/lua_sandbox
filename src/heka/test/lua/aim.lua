@@ -38,3 +38,19 @@ ok, err = pcall(inject_payload, "txt", "name", add_to_payload)
 if ok then error("cannot output functions") end
 eerr = "bad argument #3 to '?' (unsupported type)"
 assert(eerr == err, string.format("expected: %s received: %s", eerr, err))
+
+ok, err = pcall(inject_payload, true, "name", "data")
+assert(not ok)
+assert("inject_payload() payload_type argument must be a string" == err, string.format("received: %s", err))
+
+ok, err = pcall(inject_payload, "txt", true, "data")
+assert(not ok)
+assert("inject_payload() payload_name argument must be a string" == err, string.format("received: %s", err))
+
+ok, err = pcall(inject_message, {Fields = {foo = {value = {"s", true}}}})
+assert(not ok)
+assert("inject_message() failed: array has mixed types" == err, string.format("received: %s", err))
+
+ok, err = pcall(inject_message, {})
+assert(not ok)
+assert("inject_message() failed: rejected by the callback" == err, string.format("received: %s", err))

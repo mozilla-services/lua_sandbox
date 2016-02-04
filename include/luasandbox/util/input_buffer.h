@@ -36,10 +36,10 @@ extern "C" {
  *                 before erroring (the internal buffer will contain extra space
  *                 for the header)
  *
- * @return int 0 on success
+ * @return lsb_err_value NULL on success error message on failure
  */
-LSB_UTIL_EXPORT int lsb_init_input_buffer(lsb_input_buffer *b,
-                                          size_t max_message_size);
+LSB_UTIL_EXPORT lsb_err_value
+lsb_init_input_buffer(lsb_input_buffer *b, size_t max_message_size);
 
 /**
  * Frees the memory internally allocated by the buffer and resets the state
@@ -56,9 +56,10 @@ LSB_UTIL_EXPORT void lsb_free_input_buffer(lsb_input_buffer *b);
  * @param b Input buffer
  * @param len The length of the data being added to the buffer
  *
- * @return int 0 on success
+ * @return lsb_err_value NULL on success error message on failure
  */
-LSB_UTIL_EXPORT int lsb_expand_input_buffer(lsb_input_buffer *b, size_t len);
+LSB_UTIL_EXPORT lsb_err_value
+lsb_expand_input_buffer(lsb_input_buffer *b, size_t len);
 
 #ifdef __cplusplus
 }

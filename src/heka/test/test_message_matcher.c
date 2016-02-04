@@ -29,6 +29,20 @@ static char* test_stub()
 }
 
 
+static char* test_api_assertion()
+{
+  mu_assert(NULL == lsb_create_message_matcher(NULL, "TRUE"), "not null");
+  lsb_destroy_message_match_builder(NULL);
+  lsb_destroy_message_matcher(NULL);
+
+  lsb_message_match_builder *mmb = lsb_create_message_match_builder(TEST_LUA_PATH, TEST_LUA_CPATH);
+  mu_assert(mmb, "failed to create mmb");
+  mu_assert(NULL == lsb_create_message_matcher(mmb, NULL), "not null");
+  lsb_destroy_message_match_builder(mmb);
+  return NULL;
+}
+
+
 static char* test_true_matcher()
 {
   char* tests[] = {
@@ -277,6 +291,7 @@ static char* benchmark_match()
 static char* all_tests()
 {
   mu_run_test(test_stub);
+  mu_run_test(test_api_assertion);
   mu_run_test(test_true_matcher);
   mu_run_test(test_false_matcher);
   mu_run_test(test_malformed_matcher);

@@ -15,7 +15,7 @@
 #define snprintf _snprintf
 #endif
 
-#ifdef _MSC_VER
+#if defined(_MSC_VER)
 #define PRIuSIZE "Iu"
 #else
 #define PRIuSIZE "zu"

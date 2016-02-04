@@ -29,10 +29,15 @@ static char* test_init_small_buf()
 {
   size_t size = 512;
   lsb_output_buffer b;
+
+  lsb_err_value ret = lsb_init_output_buffer(NULL, size);
+  mu_assert(ret == LSB_ERR_UTIL_NULL, "received: %s", lsb_err_string(ret));
+
   mu_assert(!lsb_init_output_buffer(&b, size), "init failed");
   mu_assert(b.size == size, "received: %" PRIuSIZE, b.size);
   mu_assert(b.maxsize == size, "received: %" PRIuSIZE, b.size);
   lsb_free_output_buffer(&b);
+  lsb_free_output_buffer(NULL);
   return NULL;
 }
 
@@ -67,6 +72,9 @@ static char* test_expand_buf()
   lsb_output_buffer b;
   mu_assert(!lsb_init_output_buffer(&b, size), "init failed");
   mu_assert(b.size == LSB_OUTPUT_SIZE, "received: %" PRIuSIZE, b.size);
+
+  lsb_err_value ret = lsb_expand_output_buffer(NULL, 0);
+  mu_assert(LSB_ERR_UTIL_NULL == ret, "received: %s", lsb_err_string(ret));
 
   mu_assert(!lsb_expand_output_buffer(&b, 1024 * 9), "expand failed");
   mu_assert(b.size == rsize, "received: %" PRIuSIZE, b.size);
@@ -107,12 +115,29 @@ static char* test_outputc()
 
 static char* test_outputf()
 {
+  lsb_err_value ret;
   lsb_output_buffer b;
-  mu_assert(!lsb_init_output_buffer(&b, 0), "init failed");
+  mu_assert(!lsb_init_output_buffer(&b, 10), "init failed");
   lsb_outputf(&b, "%s", "foo");
   mu_assert(strcmp("foo", b.buf) == 0, "received: %s", b.buf);
   lsb_outputf(&b, " %s", "bar");
   mu_assert(strcmp("foo bar", b.buf) == 0, "received: %s", b.buf);
+  ret = lsb_outputf(&b, " %s", "exceed the buffer");
+  mu_assert(ret == LSB_ERR_UTIL_FULL, "received: %s", lsb_err_string(ret));
+  ret = lsb_outputf(NULL, "%s", "bar");
+  mu_assert(ret == LSB_ERR_UTIL_NULL, "received: %s", lsb_err_string(ret));
+  ret = lsb_outputf(&b, NULL, "bar");
+  mu_assert(ret == LSB_ERR_UTIL_NULL, "received: %s", lsb_err_string(ret));
+  lsb_free_output_buffer(&b);
+
+  size_t len = 2000;
+  mu_assert(!lsb_init_output_buffer(&b, len), "init failed");
+  for (size_t i = 0; i < len - 1; ++i) {
+    ret = lsb_outputf(&b, "%c", 'a');
+    mu_assert(!ret, "received: %s", ret);
+  }
+  ret = lsb_outputf(&b, "%c", 'a');
+  mu_assert(ret == LSB_ERR_UTIL_FULL, "received: %s", lsb_err_string(ret));
   lsb_free_output_buffer(&b);
   return NULL;
 }

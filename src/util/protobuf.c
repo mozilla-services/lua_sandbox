@@ -12,27 +12,33 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define check_rv(fn) { int rv = fn; if (rv) return rv; };
-
 const char* lsb_pb_read_key(const char *p, int *tag, int *wiretype)
 {
+  if (!p || !tag || !wiretype) return NULL;
+
   *wiretype = 7 & (unsigned char)*p;
   *tag = (unsigned char)*p >> 3;
   return ++p;
 }
 
 
-int lsb_pb_write_key(lsb_output_buffer *ob, unsigned char tag,
+lsb_err_value lsb_pb_write_key(lsb_output_buffer *ob, unsigned char tag,
                      unsigned char wiretype)
 {
-  check_rv(lsb_expand_output_buffer(ob, 1));
-  ob->buf[ob->pos++] = wiretype | (tag << 3);
-  return 0;
+  lsb_err_value ret = lsb_expand_output_buffer(ob, 1);
+  if (!ret) {
+    ob->buf[ob->pos++] = wiretype | (tag << 3);
+  }
+  return ret;
 }
 
 
 const char* lsb_pb_read_varint(const char *p, const char *e, long long *vi)
 {
+  if (!p || !e) {
+    return NULL;
+  }
+
   *vi = 0;
   int i, shift = 0;
   for (i = 0; p != e && i < LSB_MAX_VARINT_BYTES; ++i, ++p) {
@@ -50,6 +56,8 @@ const char* lsb_pb_read_varint(const char *p, const char *e, long long *vi)
 int lsb_pb_output_varint(char *buf, unsigned long long i)
 {
   int pos = 0;
+  if (!buf) return pos;
+
   if (i == 0) {
     buf[pos++] = 0;
     return pos;
@@ -64,59 +72,68 @@ int lsb_pb_output_varint(char *buf, unsigned long long i)
 }
 
 
-int lsb_pb_write_varint(lsb_output_buffer *ob, unsigned long long i)
+lsb_err_value lsb_pb_write_varint(lsb_output_buffer *ob, unsigned long long i)
 {
-  check_rv(lsb_expand_output_buffer(ob, LSB_MAX_VARINT_BYTES));
-  ob->pos += lsb_pb_output_varint(ob->buf + ob->pos, i);
-  return 0;
-}
-
-
-int lsb_pb_write_bool(lsb_output_buffer *ob, int i)
-{
-  check_rv(lsb_expand_output_buffer(ob, 1));
-  if (i) {
-    ob->buf[ob->pos++] = 1;
-  } else {
-    ob->buf[ob->pos++] = 0;
+  lsb_err_value ret = lsb_expand_output_buffer(ob, LSB_MAX_VARINT_BYTES);
+  if (!ret) {
+    ob->pos += lsb_pb_output_varint(ob->buf + ob->pos, i);
   }
-  return 0;
+  return ret;
 }
 
 
-int lsb_pb_write_double(lsb_output_buffer *ob, double i)
+lsb_err_value lsb_pb_write_bool(lsb_output_buffer *ob, int i)
+{
+  lsb_err_value ret = lsb_expand_output_buffer(ob, 1);
+  if (!ret) {
+    if (i) {
+      ob->buf[ob->pos++] = 1;
+    } else {
+      ob->buf[ob->pos++] = 0;
+    }
+  }
+  return ret;
+}
+
+
+lsb_err_value lsb_pb_write_double(lsb_output_buffer *ob, double i)
 {
   static const size_t needed = sizeof(double);
-  check_rv(lsb_expand_output_buffer(ob, needed));
-  // todo add big endian support if necessary
-  memcpy(&ob->buf[ob->pos], &i, needed);
-  ob->pos += needed;
-  return 0;
+
+  lsb_err_value ret = lsb_expand_output_buffer(ob, needed);
+  if (!ret) {
+    // todo add big endian support if necessary
+    memcpy(&ob->buf[ob->pos], &i, needed);
+    ob->pos += needed;
+  }
+  return ret;
 }
 
 
-int
+lsb_err_value
 lsb_pb_write_string(lsb_output_buffer *ob, char tag, const char *s, size_t len)
 {
-  check_rv(lsb_pb_write_key(ob, tag, LSB_PB_WT_LENGTH));
-  check_rv(lsb_pb_write_varint(ob, len));
-  check_rv(lsb_expand_output_buffer(ob, len));
-  memcpy(&ob->buf[ob->pos], s, len);
-  ob->pos += len;
-  return 0;
+  lsb_err_value ret = lsb_pb_write_key(ob, tag, LSB_PB_WT_LENGTH);
+  if (!ret) ret = lsb_pb_write_varint(ob, len);
+  if (!ret) ret = lsb_expand_output_buffer(ob, len);
+  if (!ret) {
+    memcpy(&ob->buf[ob->pos], s, len);
+    ob->pos += len;
+  }
+  return ret;
 }
 
 
-int lsb_pb_update_field_length(lsb_output_buffer *ob, size_t len_pos)
+lsb_err_value lsb_pb_update_field_length(lsb_output_buffer *ob, size_t len_pos)
 {
   if (len_pos >= ob->pos) {
-    return 1;
+    return LSB_ERR_UTIL_PRANGE;
   }
 
   size_t len = ob->pos - len_pos - 1;
   if (len < 128) {
     ob->buf[len_pos] = (char)len;
-    return 0;
+    return NULL;
   }
   size_t l = len, cnt = 0;
   while (l) {
@@ -124,9 +141,11 @@ int lsb_pb_update_field_length(lsb_output_buffer *ob, size_t len_pos)
     ++cnt;  // compute the number of bytes needed for the varint length
   }
   size_t needed = cnt - 1;
-  check_rv(lsb_expand_output_buffer(ob, needed));
-  ob->pos += needed;
-  memmove(&ob->buf[len_pos + cnt], &ob->buf[len_pos + 1], len);
-  lsb_pb_output_varint(ob->buf + len_pos, len);
-  return 0;
+  lsb_err_value ret = lsb_expand_output_buffer(ob, needed);
+  if (!ret) {
+    ob->pos += needed;
+    memmove(&ob->buf[len_pos + cnt], &ob->buf[len_pos + 1], len);
+    lsb_pb_output_varint(ob->buf + len_pos, len);
+  }
+  return ret;
 }

@@ -479,6 +479,8 @@ lsb_create_message_match_builder(const char *lua_path, const char *lua_cpath)
 
 void lsb_destroy_message_match_builder(lsb_message_match_builder *mmb)
 {
+  if (!mmb) return;
+
   if (mmb->parser) {
     lua_close(mmb->parser);
     mmb->parser = NULL;
@@ -491,6 +493,9 @@ lsb_message_matcher*
 lsb_create_message_matcher(const lsb_message_match_builder *mmb,
                           const char *exp)
 {
+  if (!mmb || !exp) {
+    return NULL;
+  }
   lua_getglobal(mmb->parser, "parse");
   if (!lua_isfunction(mmb->parser, -1)) {
     return NULL;

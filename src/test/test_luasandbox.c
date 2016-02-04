@@ -34,6 +34,7 @@ size_t written_data_len = 0;
 
 
 static const char *test_cfg =
+    "userflag = true\n"
     "memory_limit = 0\n"
     "instruction_limit = 0\n"
     "output_limit = 0\n"
@@ -56,6 +57,17 @@ int file_exists(const char *fn)
     return 1;
   }
   return 0;
+}
+
+void dlog(const char *component, int level, const char *fmt, ...)
+{
+  va_list args;
+  va_start(args, fmt);
+  fprintf(stderr, "%lld [%d] %s ", (long long)time(NULL), level,
+          component ? component : "unnamed");
+  vfprintf(stderr, fmt, args);
+  fwrite("\n", 1, 1, stderr);
+  va_end(args);
 }
 
 
@@ -162,10 +174,73 @@ int write_output(lua_State *lua)
 }
 
 
+static char* test_api_assertion()
+{
+  lsb_lua_sandbox *sb = lsb_create(NULL, "lua/counter.lua", "", NULL);
+  lsb_err_value ret = lsb_init(sb, NULL);
+  mu_assert(!ret, "lsb_init() received: %s", ret);
+
+  lsb_stop_sandbox(NULL);
+  mu_assert(lsb_destroy(NULL) == NULL, "not null");
+  mu_assert(lsb_usage(NULL, 0, 0) == 0, "not 0");
+  mu_assert(lsb_usage(sb, LSB_UT_MAX, 0) == 0, "not 0");
+  mu_assert(lsb_usage(sb, 0, LSB_US_MAX) == 0, "not 0");
+  mu_assert(strcmp(lsb_get_error(NULL), "") == 0, "not empty");
+  lsb_set_error(NULL, "foo");
+  mu_assert(lsb_get_lua(NULL) == NULL, "not null");
+  mu_assert(lsb_get_lua_file(NULL) == NULL, "not null");
+  mu_assert(lsb_get_parent(NULL) == NULL, "not null");
+  mu_assert(lsb_get_state(NULL) == LSB_UNKNOWN, "not unknown");
+  lsb_add_function(NULL, write_output, "foo");
+  lsb_add_function(sb, NULL, "foo");
+  lsb_add_function(sb, write_output, NULL);
+  mu_assert(lsb_pcall_setup(NULL, "foo") == LSB_ERR_UTIL_NULL, "not null");
+  mu_assert(lsb_pcall_setup(sb, NULL) == LSB_ERR_UTIL_NULL, "not null");
+  lsb_add_function(NULL, NULL, NULL);
+  lsb_pcall_teardown(NULL);
+  lsb_terminate(NULL, NULL);
+
+  e = lsb_destroy(sb);
+  mu_assert(!e, "lsb_destroy() received: %s", e);
+  return NULL;
+}
+
+
+static char* test_create()
+{
+  static char *cfg = "function foo() return 0 end\nt = {[true] = 1}\n";
+  lsb_lua_sandbox *sb = lsb_create(NULL, "lua/counter.lua", cfg, dlog);
+  mu_assert(sb, "lsb_create() failed");
+  lsb_destroy(sb);
+  sb = lsb_create(NULL, "lua/counter.lua", cfg, NULL);
+  mu_assert(sb, "lsb_create() failed");
+  lsb_destroy(sb);
+  return NULL;
+}
+
+
 static char* test_create_error()
 {
   lsb_lua_sandbox *sb = lsb_create(NULL, NULL, NULL, NULL);
   mu_assert(!sb, "lsb_create() null lua_file");
+
+  sb = lsb_create(NULL, "lua/counter.lua", "output_limit = 'aaa'", NULL);
+  mu_assert(!sb, "lsb_create() invalid config");
+
+  sb = lsb_create(NULL, "lua/counter.lua", "memory_limit = 'aaa'", NULL);
+  mu_assert(!sb, "lsb_create() invalid config");
+
+  sb = lsb_create(NULL, "lua/counter.lua", "instruction_limit = 'aaa'", NULL);
+  mu_assert(!sb, "lsb_create() invalid config");
+
+  sb = lsb_create(NULL, "lua/counter.lua", "path = 1", NULL);
+  mu_assert(!sb, "lsb_create() invalid config");
+
+  sb = lsb_create(NULL, "lua/counter.lua", "cpath = 1", NULL);
+  mu_assert(!sb, "lsb_create() invalid config");
+
+  sb = lsb_create(NULL, "lua/counter.lua", "test = {", dlog);
+  mu_assert(!sb, "lsb_create() invalid config");
 
   return NULL;
 }
@@ -174,16 +249,15 @@ static char* test_create_error()
 static char* test_read_config()
 {
   const char *cfg = "memory_limit = 65765\n"
-    "instruction_limit = 1000\n"
-    "output_limit = 1024\n"
-    "array = {'foo', 99}\n"
-    "hash  = {foo = 'bar', hash1 = {subfoo = 'subbar'}}\n"
-    MODULE_PATH;
+      "instruction_limit = 1000\n"
+      "output_limit = 1024\n"
+      "array = {'foo', 99}\n"
+      "hash  = {foo = 'bar', hash1 = {subfoo = 'subbar'}}\n"
+      MODULE_PATH;
 
   lsb_lua_sandbox *sb = lsb_create(NULL, "lua/read_config.lua", cfg, NULL);
-  int result = lsb_init(sb, NULL);
-  mu_assert(result == 0, "lsb_init() received: %d %s", result,
-            lsb_get_error(sb));
+  lsb_err_value ret = lsb_init(sb, NULL);
+  mu_assert(!ret, "lsb_init() received: %s", ret);
 
   e = lsb_destroy(sb);
   mu_assert(!e, "lsb_destroy() received: %s", e);
@@ -195,15 +269,14 @@ static char* test_read_config()
 static char* test_init_error()
 {
   // null sandbox
-  int result = lsb_init(NULL, NULL);
-  mu_assert(result == 1, "lsb_init() null sandbox ptr");
+  lsb_err_value ret = lsb_init(NULL, NULL);
+  mu_assert(ret == LSB_ERR_UTIL_NULL, "lsb_init() null sandbox ptr");
 
   // load error
   lsb_lua_sandbox *sb = lsb_create(NULL, "lua/simple1.lua", test_cfg, NULL);
   mu_assert(sb, "lsb_create() received: NULL");
-  result = lsb_init(sb, NULL);
-  mu_assert(result == 2, "lsb_init() received: %d %s", result,
-            lsb_get_error(sb));
+  ret = lsb_init(sb, NULL);
+  mu_assert(ret == LSB_ERR_LUA, "lsb_init() received: %s", lsb_err_string(ret));
   lsb_state s = lsb_get_state(sb);
   mu_assert(s == LSB_TERMINATED, "lsb_get_state() received: %d", s);
   e = lsb_destroy(sb);
@@ -212,9 +285,8 @@ static char* test_init_error()
   // out of memory
   sb = lsb_create(NULL, "lua/simple.lua", "memory_limit = 6000", NULL);
   mu_assert(sb, "lsb_create() received: NULL");
-  result = lsb_init(sb, NULL);
-  mu_assert(result == 2, "lsb_init() received: %d %s", result,
-            lsb_get_error(sb));
+  ret = lsb_init(sb, NULL);
+  mu_assert(ret == LSB_ERR_LUA, "lsb_init() received: %s", lsb_err_string(ret));
   e = lsb_destroy(sb);
   mu_assert(!e, "lsb_destroy() received: %s\n", e);
 
@@ -222,10 +294,10 @@ static char* test_init_error()
   mu_assert(sb, "lsb_create() received: NULL");
 
   // disabled external modules
-  result = lsb_init(sb, NULL);
-  mu_assert(result == 2, "lsb_init() received: %d %s", result,
-            lsb_get_error(sb));
-  const char *expected = "lua/lpeg_date_time.lua:7: module 'date_time' not found:";
+  ret = lsb_init(sb, NULL);
+  mu_assert(ret == LSB_ERR_LUA, "lsb_init() received: %s", lsb_err_string(ret));
+  const char *expected = "lua/lpeg_date_time.lua:7: module 'date_time' not "
+      "found:";
   mu_assert(strcmp(lsb_get_error(sb), expected) == 0,
             "lsb_get_error() received: %s", lsb_get_error(sb));
 
@@ -238,16 +310,15 @@ static char* test_init_error()
 
 static char* test_destroy_error()
 {
-  const char *expected = "lsb_preserve_global_data could not open: "
+  const char *expected = "preserve_global_data could not open: "
       "invaliddir/simple.preserve";
   e = lsb_destroy(NULL);
   mu_assert(!e, "lsb_destroy() received: %s", e);
 
   lsb_lua_sandbox *sb = lsb_create(NULL, "lua/simple.lua", test_cfg, NULL);
   mu_assert(sb, "lsb_create() received: NULL");
-  int result = lsb_init(sb, "invaliddir/simple.preserve");
-  mu_assert(result == 0, "lsb_init() received: %d %s", result,
-            lsb_get_error(sb));
+  lsb_err_value ret = lsb_init(sb, "invaliddir/simple.preserve");
+  mu_assert(!ret, "lsb_init() received: %s", ret);
   e = lsb_destroy(sb);
   mu_assert(e, "lsb_destroy() received NULL");
   mu_assert(strcmp(e, expected) == 0,
@@ -284,14 +355,21 @@ static char* test_usage_error()
   return NULL;
 }
 
-static char* test_misc()
+
+static char* test_stop()
 {
-  lsb_state s = lsb_get_state(NULL);
-  mu_assert(s == LSB_UNKNOWN, "lsb_get_state() received: %d", s);
-
-  const char *le = lsb_get_error(NULL);
-  mu_assert(strlen(le) == 0, "lsb_get_error() received: %s", le);
-
+  lsb_lua_sandbox *sb = lsb_create(NULL, "lua/counter.lua", test_cfg, NULL);
+  mu_assert(sb, "lsb_create() received: NULL");
+  lsb_err_value ret = lsb_init(sb, NULL);
+  mu_assert(!ret, "lsb_init() received: %s", ret);
+  lsb_stop_sandbox(sb);
+  lua_getglobal(sb->lua, "process");
+  lua_pushnumber(sb->lua, 0);
+  mu_assert_rv(2, lua_pcall(sb->lua, 1, 2, 0));
+  const char *msg = lua_tostring(sb->lua, -1);
+  mu_assert(strcmp(LSB_SHUTTING_DOWN, msg) == 0, "received: %s", msg);
+  e = lsb_destroy(sb);
+  mu_assert(!e, "lsb_destroy() received: %s", e);
   return NULL;
 }
 
@@ -304,9 +382,8 @@ static char* test_simple()
                                    "output_limit = 1024;", NULL);
   mu_assert(sb, "lsb_create() received: NULL");
 
-  int result = lsb_init(sb, "simple.preserve");
-  mu_assert(result == 0, "lsb_init() received: %d %s", result,
-            lsb_get_error(sb));
+  lsb_err_value ret = lsb_init(sb, "simple.preserve");
+  mu_assert(!ret, "lsb_init() received: %s", ret);
 
   size_t u = lsb_usage(sb, LSB_UT_MEMORY, LSB_US_CURRENT);
   mu_assert(u > 0, "Current memory usage received: %" PRIuSIZE, u);
@@ -358,11 +435,10 @@ static char* test_simple_error()
   lsb_lua_sandbox *sb = lsb_create(NULL, "lua/simple.lua", test_cfg, NULL);
   mu_assert(sb, "lsb_create() received: NULL");
 
-  int result = lsb_init(sb, NULL);
-  mu_assert(result == 0, "lsb_init() received: %d %s", result,
-            lsb_get_error(sb));
+  lsb_err_value ret = lsb_init(sb, NULL);
+  mu_assert(!ret, "lsb_init() received: %s", ret);
 
-  result = process(sb, 1);
+  int result = process(sb, 1);
   mu_assert(result == 0, "process() received: %d %s", result,
             lsb_get_error(sb));
 
@@ -398,13 +474,12 @@ static char* test_output()
   lsb_lua_sandbox *sb = lsb_create(NULL, "lua/output.lua", test_cfg, NULL);
   mu_assert(sb, "lsb_create() received: NULL");
 
-  int result = lsb_init(sb, "circular_buffer.preserve");
-  mu_assert(result == 0, "lsb_init() received: %d %s", result,
-            lsb_get_error(sb));
+  lsb_err_value ret = lsb_init(sb, "circular_buffer.preserve");
+  mu_assert(!ret, "lsb_init() received: %s", ret);
   lsb_add_function(sb, &write_output, "write_output");
 
   for (int x = 0; outputs[x]; ++x) {
-    result = process(sb, x);
+    int result = process(sb, x);
     mu_assert(!result, "process() test: %d failed: %d %s", x, result,
               lsb_get_error(sb));
     if (outputs[x][0]) {
@@ -437,12 +512,11 @@ static char* test_output_errors()
                                      MODULE_PATH "output_limit = 128", NULL);
     mu_assert(sb, "lsb_create() received: NULL");
 
-    int result = lsb_init(sb, NULL);
-    mu_assert(result == 0, "lsb_init() received: %d %s", result,
-              lsb_get_error(sb));
+    lsb_err_value ret = lsb_init(sb, NULL);
+    mu_assert(!ret, "lsb_init() received: %s", ret);
     lsb_add_function(sb, &write_output, "write_output");
 
-    result = process(sb, i);
+    int result = process(sb, i);
     mu_assert(result == 1, "test: %d received: %d", i, result);
 
     const char *le = lsb_get_error(sb);
@@ -470,11 +544,11 @@ static char* test_cbuf_errors()
                                      MODULE_PATH "memory_limit = 32767", NULL);
     mu_assert(sb, "lsb_create() received: NULL");
 
-    int result = lsb_init(sb, NULL);
-    mu_assert(result == 0, "lsb_init() received: %d %s", result,
+    lsb_err_value ret = lsb_init(sb, NULL);
+    mu_assert(!ret, "lsb_init() received: %s %s", ret,
               lsb_get_error(sb));
 
-    result = process(sb, i);
+    int result = process(sb, i);
     mu_assert(result == 1, "test: %d received: %d", i, result);
 
     const char *le = lsb_get_error(sb);
@@ -496,9 +570,8 @@ static char* test_cbuf_core()
                                    test_cfg, NULL);
   mu_assert(sb, "lsb_create() received: NULL");
 
-  int result = lsb_init(sb, "");
-  mu_assert(result == 0, "lsb_init() received: %d %s", result,
-            lsb_get_error(sb));
+  lsb_err_value ret = lsb_init(sb, "");
+  mu_assert(!ret, "lsb_init() received: %s", ret);
   e = lsb_destroy(sb);
   mu_assert(!e, "lsb_destroy() received: %s", e);
 
@@ -521,12 +594,11 @@ static char* test_cbuf()
   lsb_lua_sandbox *sb = lsb_create(NULL, "lua/circular_buffer.lua", test_cfg, NULL);
   mu_assert(sb, "lsb_create() received: NULL");
 
-  int result = lsb_init(sb, output_file);
-  mu_assert(result == 0, "lsb_init() received: %d %s", result,
-            lsb_get_error(sb));
+  lsb_err_value ret = lsb_init(sb, output_file);
+  mu_assert(!ret, "lsb_init() received: %s", ret);
   lsb_add_function(sb, &write_output, "write_output");
 
-  result = report(sb, 0);
+  int result = report(sb, 0);
   mu_assert(result == 0, "report() received: %d", result);
   mu_assert(lsb_get_state(sb) == LSB_RUNNING, "error %s",
             lsb_get_error(sb));
@@ -594,9 +666,8 @@ static char* test_cbuf_delta()
                                    test_cfg, NULL);
   mu_assert(sb, "lsb_create() received: NULL");
 
-  int result = lsb_init(sb, output_file);
-  mu_assert(result == 0, "lsb_init() received: %d %s", result,
-            lsb_get_error(sb));
+  lsb_err_value ret = lsb_init(sb, output_file);
+  mu_assert(!ret, "lsb_init() received: %s", ret);
   lsb_add_function(sb, &write_output, "write_output");
 
   process(sb, 0);
@@ -605,7 +676,7 @@ static char* test_cbuf_delta()
   process(sb, 2e9);
   process(sb, 2e9);
   process(sb, 2e9);
-  result = report(sb, 0);
+  int result = report(sb, 0);
   mu_assert(result == 0, "report() received: %d", result);
   mu_assert(strcmp(outputs[0], written_data) == 0, "received: %s",
             written_data);
@@ -636,11 +707,10 @@ static char* test_cjson()
                                    MODULE_PATH "output_limit = 64", NULL);
   mu_assert(sb, "lsb_create() received: NULL");
 
-  int result = lsb_init(sb, NULL);
-  mu_assert(result == 0, "lsb_init() received: %d %s", result,
-            lsb_get_error(sb));
+  lsb_err_value ret = lsb_init(sb, NULL);
+  mu_assert(!ret, "lsb_init() received: %s", ret);
 
-  result = process(sb, 0);
+  int result = process(sb, 0);
   mu_assert(result == 0, "process() received: %d %s", result,
             lsb_get_error(sb));
 
@@ -656,12 +726,11 @@ static char* test_cjson_unlimited()
   lsb_lua_sandbox *sb = lsb_create(NULL, "lua/cjson_unlimited.lua", test_cfg, NULL);
   mu_assert(sb, "lsb_create() received: NULL");
 
-  int result = lsb_init(sb, NULL);
-  mu_assert(result == 0, "lsb_init() received: %d %s", result,
-            lsb_get_error(sb));
+  lsb_err_value ret = lsb_init(sb, NULL);
+  mu_assert(!ret, "lsb_init() received: %s", ret);
   lsb_add_function(sb, &write_output, "write_output");
 
-  result = process(sb, 0);
+  int result = process(sb, 0);
   mu_assert(result == 0, "process() received: %d %s", result,
             lsb_get_error(sb));
 
@@ -719,11 +788,10 @@ static char* test_errors()
                                      NULL);
     mu_assert(sb, "lsb_create() received: NULL");
 
-    int result = lsb_init(sb, NULL);
-    mu_assert(result == 0, "lsb_init() received: %d %s", result,
-              lsb_get_error(sb));
+    lsb_err_value ret = lsb_init(sb, NULL);
+    mu_assert(!ret, "lsb_init() received: %s", ret);
 
-    result = process(sb, i);
+    int result = process(sb, i);
     mu_assert(result == 1, "test: %d received: %d", i, result);
 
     const char *le = lsb_get_error(sb);
@@ -758,11 +826,10 @@ static char* test_lpeg()
     lsb_lua_sandbox *sb = lsb_create(NULL, tests[i], test_cfg, NULL);
     mu_assert(sb, "lsb_create() received: NULL");
 
-    int result = lsb_init(sb, NULL);
-    mu_assert(result == 0, "lsb_init() received: %d %s", result,
-              lsb_get_error(sb));
+    lsb_err_value ret = lsb_init(sb, NULL);
+    mu_assert(!ret, "lsb_init() received: %s", ret);
 
-    result = process(sb, 0);
+    int result = process(sb, 0);
     mu_assert(result == 0, "process() received: %d %s", result,
               lsb_get_error(sb));
 
@@ -780,11 +847,10 @@ static char* test_util()
   lsb_lua_sandbox *sb = lsb_create(NULL, "lua/util_test.lua", test_cfg, NULL);
   mu_assert(sb, "lsb_create() received: NULL");
 
-  int result = lsb_init(sb, NULL);
-  mu_assert(result == 0, "lsb_init() received: %d %s", result,
-            lsb_get_error(sb));
+  lsb_err_value ret = lsb_init(sb, NULL);
+  mu_assert(!ret, "lsb_init() received: %s", ret);
 
-  result = process(sb, 0);
+  int result = process(sb, 0);
   mu_assert(result == 0, "process() received: %d %s", result,
             lsb_get_error(sb));
 
@@ -803,9 +869,8 @@ static char* test_serialize()
   lsb_lua_sandbox *sb = lsb_create(NULL, "lua/serialize.lua", test_cfg, NULL);
   mu_assert(sb, "lsb_create() received: NULL");
 
-  int result = lsb_init(sb, output_file);
-  mu_assert(result == 0, "lsb_init() received: %d %s", result,
-            lsb_get_error(sb));
+  lsb_err_value ret = lsb_init(sb, output_file);
+  mu_assert(!ret, "lsb_init() received: %s", ret);
   e = lsb_destroy(sb);
   mu_assert(!e, "lsb_destroy() received: %s", e);
 
@@ -830,11 +895,10 @@ static char* test_restore()
   remove(output_file);
   lsb_lua_sandbox *sb = lsb_create(NULL, "lua/restore.lua", test_cfg, NULL);
   mu_assert(sb, "lsb_create() received: NULL");
-  int result = lsb_init(sb, output_file);
-  mu_assert(result == 0, "lsb_init() received: %d %s", result,
-            lsb_get_error(sb));
+  lsb_err_value ret = lsb_init(sb, output_file);
+  mu_assert(!ret, "lsb_init() received: %s", ret);
   lsb_add_function(sb, &write_output, "write_output");
-  result = process(sb, 0);
+  int result = process(sb, 0);
   mu_assert(result == 0, "process() received: %d %s", result,
             lsb_get_error(sb));
   mu_assert(strcmp("101", written_data) == 0, "test: initial load received: %s",
@@ -845,9 +909,8 @@ static char* test_restore()
   // re-load to test the preserved data
   sb = lsb_create(NULL, "lua/restore.lua", test_cfg, NULL);
   mu_assert(sb, "lsb_create() received: NULL");
-  result = lsb_init(sb, output_file);
-  mu_assert(result == 0, "lsb_init() received: %d %s", result,
-            lsb_get_error(sb));
+  ret = lsb_init(sb, output_file);
+  mu_assert(!ret, "lsb_init() received: %s", ret);
   lsb_add_function(sb, &write_output, "write_output");
   result = process(sb, 0);
   mu_assert(result == 0, "process() received: %d %s", result,
@@ -862,9 +925,8 @@ static char* test_restore()
   // re-load to test the preserved data with a version change
   sb = lsb_create(NULL, "lua/restore.lua", test_cfg, NULL);
   mu_assert(sb, "lsb_create() received: NULL");
-  result = lsb_init(sb, output_file);
-  mu_assert(result == 0, "lsb_init() received: %d %s", result,
-            lsb_get_error(sb));
+  ret = lsb_init(sb, output_file);
+  mu_assert(!ret, "lsb_init() received: %s", ret);
   lsb_add_function(sb, &write_output, "write_output");
   result = process(sb, 0);
   mu_assert(result == 0, "process() received: %d %s", result,
@@ -888,9 +950,8 @@ static char* test_serialize_failure()
                                    "lua/serialize_failure.lua", test_cfg, NULL);
   mu_assert(sb, "lsb_create() received: NULL");
 
-  int result = lsb_init(sb, output_file);
-  mu_assert(result == 0, "lsb_init() received: %d %s", result,
-            lsb_get_error(sb));
+  lsb_err_value ret = lsb_init(sb, output_file);
+  mu_assert(!ret, "lsb_init() received: %s", ret);
   e = lsb_destroy(sb);
   mu_assert(e, "lsb_destroy() received: no error");
   mu_assert(strcmp(e, expected) == 0, "lsb_destroy() received: %s", e);
@@ -909,9 +970,8 @@ static char* test_bloom_filter_core()
                                    test_cfg, NULL);
   mu_assert(sb, "lsb_create() received: NULL");
 
-  int result = lsb_init(sb, NULL);
-  mu_assert(result == 0, "lsb_init() received: %d %s", result,
-            lsb_get_error(sb));
+  lsb_err_value ret = lsb_init(sb, NULL);
+  mu_assert(!ret, "lsb_init() received: %s", ret);
   e = lsb_destroy(sb);
   mu_assert(!e, "lsb_destroy() received: %s", e);
 
@@ -933,14 +993,13 @@ static char* test_bloom_filter()
   lsb_lua_sandbox *sb = lsb_create(NULL, "lua/bloom_filter.lua", test_cfg, NULL);
   mu_assert(sb, "lsb_create() received: NULL");
 
-  int result = lsb_init(sb, output_file);
-  mu_assert(result == 0, "lsb_init() received: %d %s", result,
-            lsb_get_error(sb));
+  lsb_err_value ret = lsb_init(sb, output_file);
+  mu_assert(!ret, "lsb_init() received: %s", ret);
   lsb_add_function(sb, &write_output, "write_output");
 
   int i = 0;
   for (; tests[i]; ++i) {
-    result = process(sb, i);
+    int result = process(sb, i);
     mu_assert(result == 0, "process() received: %d %s", result,
               lsb_get_error(sb));
     result = report(sb, 0);
@@ -949,7 +1008,7 @@ static char* test_bloom_filter()
               written_data);
   }
 
-  result = process(sb, 0);
+  int result = process(sb, 0);
   mu_assert(result == 0, "process() received: %d %s", result,
             lsb_get_error(sb));
   result = report(sb, 0);
@@ -964,9 +1023,8 @@ static char* test_bloom_filter()
   sb = lsb_create(NULL, "lua/bloom_filter.lua", test_cfg, NULL);
   mu_assert(sb, "lsb_create() received: NULL");
 
-  result = lsb_init(sb, output_file);
-  mu_assert(result == 0, "lsb_init() received: %d %s", result,
-            lsb_get_error(sb));
+  ret = lsb_init(sb, output_file);
+  mu_assert(!ret, "lsb_init() received: %s", ret);
   lsb_add_function(sb, &write_output, "write_output");
 
   report(sb, 0);
@@ -1004,9 +1062,8 @@ static char* test_hyperloglog_core()
                                    test_cfg, NULL);
   mu_assert(sb, "lsb_create() received: NULL");
 
-  int result = lsb_init(sb, NULL);
-  mu_assert(result == 0, "lsb_init() received: %d %s", result,
-            lsb_get_error(sb));
+  lsb_err_value ret = lsb_init(sb, NULL);
+  mu_assert(!ret, "lsb_init() received: %s", ret);
   e = lsb_destroy(sb);
   mu_assert(!e, "lsb_destroy() received: %s", e);
 
@@ -1021,19 +1078,18 @@ static char* test_hyperloglog()
   lsb_lua_sandbox *sb = lsb_create(NULL, "lua/hyperloglog.lua", test_cfg, NULL);
   mu_assert(sb, "lsb_create() received: NULL");
 
-  int result = lsb_init(sb, output_file);
-  mu_assert(result == 0, "lsb_init() received: %d %s", result,
-            lsb_get_error(sb));
+  lsb_err_value ret = lsb_init(sb, output_file);
+  mu_assert(!ret, "lsb_init() received: %s", ret);
   lsb_add_function(sb, &write_output, "write_output");
 
 
   for (int i = 0; i < 100000; ++i) {
-    result = process(sb, i);
+    int result = process(sb, i);
     mu_assert(result == 0, "process() received: %d %s", result,
               lsb_get_error(sb));
   }
 
-  result = report(sb, 0);
+  int result = report(sb, 0);
   mu_assert(result == 0, "report() received: %d", result);
   mu_assert(strcmp("100070", written_data) == 0, "test: initial received: %s",
             written_data); // count should remain the same
@@ -1050,9 +1106,8 @@ static char* test_hyperloglog()
   sb = lsb_create(NULL, "lua/hyperloglog.lua", test_cfg, NULL);
   mu_assert(sb, "lsb_create() received: NULL");
 
-  result = lsb_init(sb, output_file);
-  mu_assert(result == 0, "lsb_init() received: %d %s", result,
-            lsb_get_error(sb));
+  ret = lsb_init(sb, output_file);
+  mu_assert(!ret, "lsb_init() received: %s", ret);
   lsb_add_function(sb, &write_output, "write_output");
 
   result = report(sb, 0);
@@ -1089,11 +1144,10 @@ static char* test_struct()
   lsb_lua_sandbox *sb = lsb_create(NULL, "lua/struct.lua", test_cfg, NULL);
   mu_assert(sb, "lsb_create() received: NULL");
 
-  int result = lsb_init(sb, NULL);
-  mu_assert(result == 0, "lsb_init() received: %d %s", result,
-            lsb_get_error(sb));
+  lsb_err_value ret = lsb_init(sb, NULL);
+  mu_assert(!ret, "lsb_init() received: %s", ret);
 
-  result = process(sb, 0);
+  int result = process(sb, 0);
   mu_assert(result == 0, "process() received: %d %s", result, lsb_get_error(sb));
 
   e = lsb_destroy(sb);
@@ -1108,9 +1162,8 @@ static char* test_sandbox_config()
   lsb_lua_sandbox *sb = lsb_create(NULL, "lua/sandbox_config.lua", test_cfg, NULL);
   mu_assert(sb, "lsb_create() received: NULL");
 
-  int result = lsb_init(sb, NULL);
-  mu_assert(result == 0, "lsb_init() received: %d %s", result,
-            lsb_get_error(sb));
+  lsb_err_value ret = lsb_init(sb, NULL);
+  mu_assert(!ret, "lsb_init() received: %s", ret);
 
   e = lsb_destroy(sb);
   mu_assert(!e, "lsb_destroy() received: %s", e);
@@ -1133,14 +1186,13 @@ static char* test_cuckoo_filter()
   lsb_lua_sandbox *sb = lsb_create(NULL, "lua/cuckoo_filter.lua", test_cfg, NULL);
   mu_assert(sb, "lsb_create() received: NULL");
 
-  int result = lsb_init(sb, output_file);
-  mu_assert(result == 0, "lsb_init() received: %d %s", result,
-            lsb_get_error(sb));
+  lsb_err_value ret = lsb_init(sb, output_file);
+  mu_assert(!ret, "lsb_init() received: %s", ret);
   lsb_add_function(sb, &write_output, "write_output");
 
   int i = 0;
   for (; tests[i]; ++i) {
-    result = process(sb, i);
+    int result = process(sb, i);
     mu_assert(result == 0, "process() received: %d %s", result,
               lsb_get_error(sb));
     result = report(sb, 0);
@@ -1149,7 +1201,7 @@ static char* test_cuckoo_filter()
               written_data);
   }
 
-  result = process(sb, 0);
+  int result = process(sb, 0);
   mu_assert(result == 0, "process() received: %d %s", result,
             lsb_get_error(sb));
   result = report(sb, 0);
@@ -1164,9 +1216,8 @@ static char* test_cuckoo_filter()
   sb = lsb_create(NULL, "lua/cuckoo_filter.lua", test_cfg, NULL);
   mu_assert(sb, "lsb_create() received: NULL");
 
-  result = lsb_init(sb, output_file);
-  mu_assert(result == 0, "lsb_init() received: %d %s", result,
-            lsb_get_error(sb));
+  ret = lsb_init(sb, output_file);
+  mu_assert(!ret, "lsb_init() received: %s", ret);
   lsb_add_function(sb, &write_output, "write_output");
 
   report(sb, 0);
@@ -1208,12 +1259,11 @@ static char* test_sax()
   lsb_lua_sandbox *sb = lsb_create(NULL, "lua/sax.lua", test_cfg, NULL);
   mu_assert(sb, "lsb_create() received: NULL");
 
-  int result = lsb_init(sb, output_file);
-  mu_assert(result == 0, "lsb_init() received: %d %s", result,
-            lsb_get_error(sb));
+  lsb_err_value ret = lsb_init(sb, output_file);
+  mu_assert(!ret, "lsb_init() received: %s", ret);
   lsb_add_function(sb, &write_output, "write_output");
 
-  result = report(sb, 0);
+  int result = report(sb, 0);
   mu_assert(result == 0, "report() received: %d %s", result, lsb_get_error(sb));
   mu_assert(strcmp("### CDC ##### #####", written_data) == 0, "received: %s", written_data);
 
@@ -1230,9 +1280,8 @@ static char* test_sax()
   sb = lsb_create(NULL, "lua/sax.lua", test_cfg, NULL);
   mu_assert(sb, "lsb_create() received: NULL");
 
-  result = lsb_init(sb, output_file);
-  mu_assert(result == 0, "lsb_init() received: %d %s", result,
-            lsb_get_error(sb));
+  ret = lsb_init(sb, output_file);
+  mu_assert(!ret, "lsb_init() received: %s", ret);
   lsb_add_function(sb, &write_output, "write_output");
 
   report(sb, 0);
@@ -1251,9 +1300,8 @@ static char* benchmark_counter()
 
   lsb_lua_sandbox *sb = lsb_create(NULL, "lua/counter.lua", test_cfg, NULL);
   mu_assert(sb, "lsb_create() received: NULL");
-  int result = lsb_init(sb, NULL);
-  mu_assert(result == 0, "lsb_init() received: %d %s", result,
-            lsb_get_error(sb));
+  lsb_err_value ret = lsb_init(sb, NULL);
+  mu_assert(!ret, "lsb_init() received: %s", ret);
   clock_t t = clock();
   for (int x = 0; x < iter; ++x) {
     process(sb, 0);
@@ -1279,9 +1327,8 @@ static char* benchmark_serialize()
     lsb_lua_sandbox *sb = lsb_create(NULL, "lua/serialize.lua", test_cfg, NULL);
     mu_assert(sb, "lsb_create() received: NULL");
 
-    int result = lsb_init(sb, output_file);
-    mu_assert(result == 0, "lsb_init() received: %d %s", result,
-              lsb_get_error(sb));
+    lsb_err_value ret = lsb_init(sb, output_file);
+    mu_assert(!ret, "lsb_init() received: %s", ret);
     e = lsb_destroy(sb);
     mu_assert(!e, "lsb_destroy() received: %s", e);
   }
@@ -1302,9 +1349,8 @@ static char* benchmark_deserialize()
     lsb_lua_sandbox *sb = lsb_create(NULL, "lua/serialize.lua", test_cfg, NULL);
     mu_assert(sb, "lsb_create() received: NULL");
 
-    int result = lsb_init(sb, "output/serialize.data");
-    mu_assert(result == 0, "lsb_init() received: %d %s", result,
-              lsb_get_error(sb));
+    lsb_err_value ret = lsb_init(sb, "output/serialize.data");
+    mu_assert(!ret, "lsb_init() received: %s", ret);
     free(sb->state_file);
     sb->state_file = NULL; // poke the internals to prevent serialization
     e = lsb_destroy(sb);
@@ -1325,9 +1371,8 @@ static char* benchmark_lua_types_output()
 
   lsb_lua_sandbox *sb = lsb_create(NULL, "lua/output.lua", test_cfg, NULL);
   mu_assert(sb, "lsb_create() received: NULL");
-  int result = lsb_init(sb, NULL);
-  mu_assert(result == 0, "lsb_init() received: %d %s", result,
-            lsb_get_error(sb));
+  lsb_err_value ret = lsb_init(sb, NULL);
+  mu_assert(!ret, "lsb_init() received: %s", ret);
   lsb_add_function(sb, &write_output, "write_output");
 
   clock_t t = clock();
@@ -1350,9 +1395,8 @@ static char* benchmark_cbuf_output()
 
   lsb_lua_sandbox *sb = lsb_create(NULL, "lua/output.lua", test_cfg, NULL);
   mu_assert(sb, "lsb_create() received: NULL");
-  int result = lsb_init(sb, NULL);
-  mu_assert(result == 0, "lsb_init() received: %d %s", result,
-            lsb_get_error(sb));
+  lsb_err_value ret = lsb_init(sb, NULL);
+  mu_assert(!ret, "lsb_init() received: %s", ret);
   lsb_add_function(sb, &write_output, "write_output");
 
   clock_t t = clock();
@@ -1376,9 +1420,8 @@ static char* benchmark_cbuf_add()
   lsb_lua_sandbox *sb = lsb_create(NULL,
                                    "lua/circular_buffer_add.lua", test_cfg, NULL);
   mu_assert(sb, "lsb_create() received: NULL");
-  int result = lsb_init(sb, NULL);
-  mu_assert(result == 0, "lsb_init() received: %d %s", result,
-            lsb_get_error(sb));
+  lsb_err_value ret = lsb_init(sb, NULL);
+  mu_assert(!ret, "lsb_init() received: %s", ret);
 
   double ts = 0;
   clock_t t = clock();
@@ -1405,9 +1448,8 @@ static char* benchmark_bloom_filter_add()
   lsb_lua_sandbox *sb = lsb_create(NULL,
                                    "lua/bloom_filter_benchmark.lua", test_cfg, NULL);
   mu_assert(sb, "lsb_create() received: NULL");
-  int result = lsb_init(sb, NULL);
-  mu_assert(result == 0, "lsb_init() received: %d %s", result,
-            lsb_get_error(sb));
+  lsb_err_value ret = lsb_init(sb, NULL);
+  mu_assert(!ret, "lsb_init() received: %s", ret);
   lsb_add_function(sb, &write_output, "write_output");
 
   clock_t t = clock();
@@ -1434,9 +1476,8 @@ static char* benchmark_hyperloglog_add()
 
   lsb_lua_sandbox *sb = lsb_create(NULL, "lua/hyperloglog.lua", test_cfg, NULL);
   mu_assert(sb, "lsb_create() received: NULL");
-  int result = lsb_init(sb, NULL);
-  mu_assert(result == 0, "lsb_init() received: %d %s", result,
-            lsb_get_error(sb));
+  lsb_err_value ret = lsb_init(sb, NULL);
+  mu_assert(!ret, "lsb_init() received: %s", ret);
   lsb_add_function(sb, &write_output, "write_output");
 
   clock_t t = clock();
@@ -1465,9 +1506,8 @@ static char* benchmark_cuckoo_filter_add()
                                    "lua/cuckoo_filter_benchmark.lua", test_cfg,
                                    NULL);
   mu_assert(sb, "lsb_create() received: NULL");
-  int result = lsb_init(sb, NULL);
-  mu_assert(result == 0, "lsb_init() received: %d %s", result,
-            lsb_get_error(sb));
+  lsb_err_value ret = lsb_init(sb, NULL);
+  mu_assert(!ret, "lsb_init() received: %s", ret);
   lsb_add_function(sb, &write_output, "write_output");
 
   clock_t t = clock();
@@ -1494,9 +1534,8 @@ static char* benchmark_sax_add()
 
   lsb_lua_sandbox *sb = lsb_create(NULL, "lua/sax_benchmark.lua", test_cfg, NULL);
   mu_assert(sb, "lsb_create() received: NULL");
-  int result = lsb_init(sb, NULL);
-  mu_assert(result == 0, "lsb_init() received: %d %s", result,
-            lsb_get_error(sb));
+  lsb_err_value ret = lsb_init(sb, NULL);
+  mu_assert(!ret, "lsb_init() received: %s", ret);
   lsb_add_function(sb, &write_output, "write_output");
 
   clock_t t = clock();
@@ -1519,12 +1558,14 @@ static char* benchmark_sax_add()
 
 static char* all_tests()
 {
-  mu_run_test(test_read_config);
+  mu_run_test(test_api_assertion);
+  mu_run_test(test_create);
   mu_run_test(test_create_error);
+  mu_run_test(test_read_config);
   mu_run_test(test_init_error);
   mu_run_test(test_destroy_error);
   mu_run_test(test_usage_error);
-  mu_run_test(test_misc);
+  mu_run_test(test_stop);
   mu_run_test(test_simple);
   mu_run_test(test_simple_error);
   mu_run_test(test_output);

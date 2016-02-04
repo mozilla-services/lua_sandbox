@@ -26,7 +26,6 @@ typedef enum {
   LSB_PB_WT_FIXED32 = 5
 } lsb_pb_wire_types;
 
-
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -50,9 +49,9 @@ const char* lsb_pb_read_key(const char *p, int *tag, int *wiretype);
  * @param tag Field identifier.
  * @param wiretype Field wire type.
  *
- * @return int 0 on success
+ * @return lsb_err_value NULL on success error message on failure
  */
-LSB_UTIL_EXPORT int
+LSB_UTIL_EXPORT lsb_err_value
 lsb_pb_write_key(lsb_output_buffer *ob, unsigned char tag,
                  unsigned char wiretype);
 
@@ -85,9 +84,9 @@ LSB_UTIL_EXPORT int lsb_pb_output_varint(char *buf, unsigned long long i);
  * @param ob Pointer to the output data buffer.
  * @param i Number to be encoded.
  *
- * @return int 0 on success
+ * @return lsb_err_value NULL on success error message on failure
  */
-LSB_UTIL_EXPORT int
+LSB_UTIL_EXPORT lsb_err_value
 lsb_pb_write_varint(lsb_output_buffer *ob, unsigned long long i);
 
 /**
@@ -96,9 +95,9 @@ lsb_pb_write_varint(lsb_output_buffer *ob, unsigned long long i);
  * @param ob Pointer to the output data buffer.
  * @param i Number to be encoded.
  *
- * @return int 0 on success
+ * @return lsb_err_value NULL on success error message on failure
  */
-LSB_UTIL_EXPORT int lsb_pb_write_bool(lsb_output_buffer *ob, int i);
+LSB_UTIL_EXPORT lsb_err_value lsb_pb_write_bool(lsb_output_buffer *ob, int i);
 
 /**
  * Writes a double to the output buffer.
@@ -106,9 +105,10 @@ LSB_UTIL_EXPORT int lsb_pb_write_bool(lsb_output_buffer *ob, int i);
  * @param ob Pointer to the output data buffer.
  * @param i Double to be encoded.
  *
- * @return int 0 on success
+ * @return lsb_err_value NULL on success error message on failure
  */
-LSB_UTIL_EXPORT int lsb_pb_write_double(lsb_output_buffer *ob, double i);
+LSB_UTIL_EXPORT lsb_err_value
+lsb_pb_write_double(lsb_output_buffer *ob, double i);
 
 /**
  * Writes a string to the output buffer.
@@ -118,9 +118,9 @@ LSB_UTIL_EXPORT int lsb_pb_write_double(lsb_output_buffer *ob, double i);
  * @param s  String to output.
  * @param len Length of s.
  *
- * @return int 0 on success
+ * @return lsb_err_value NULL on success error message on failure
  */
-LSB_UTIL_EXPORT int
+LSB_UTIL_EXPORT lsb_err_value
 lsb_pb_write_string(lsb_output_buffer *ob, char tag, const char *s, size_t len);
 
 /**
@@ -131,9 +131,9 @@ lsb_pb_write_string(lsb_output_buffer *ob, char tag, const char *s, size_t len);
  * @param len_pos Position in the output buffer where the length should be
  *                written.
  *
- * @return int 0 on success
+ * @return lsb_err_value NULL on success error message on failure
  */
-LSB_UTIL_EXPORT int
+LSB_UTIL_EXPORT lsb_err_value
 lsb_pb_update_field_length(lsb_output_buffer *ob, size_t len_pos);
 
 #ifdef __cplusplus

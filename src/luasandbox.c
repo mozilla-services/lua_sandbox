@@ -24,6 +24,10 @@
 #include "luasandbox_serialize.h"
 
 
+lsb_err_id LSB_ERR_INIT = "already initialized";
+lsb_err_id LSB_ERR_LUA  = "lua error"; // use lsb_get_error for more detail
+lsb_err_id LSB_ERR_TERMINATED  = "sandbox already terminated";
+
 static jmp_buf g_jbuf;
 
 static const luaL_Reg preload_module_list[] = {
@@ -373,9 +377,9 @@ static void set_random_seed()
 
 
 lsb_lua_sandbox* lsb_create(void *parent,
-                        const char *lua_file,
-                        const char *cfg,
-                        lsb_logger logger)
+                            const char *lua_file,
+                            const char *cfg,
+                            lsb_logger logger)
 {
   if (!lua_file) {
     if (logger) logger(__FUNCTION__, 3, "lua_file must be specified");
@@ -454,22 +458,22 @@ lsb_lua_sandbox* lsb_create(void *parent,
 }
 
 
-int lsb_init(lsb_lua_sandbox *lsb, const char *state_file)
+lsb_err_value lsb_init(lsb_lua_sandbox *lsb, const char *state_file)
 {
   if (!lsb) {
-    return 1;
+    return LSB_ERR_UTIL_NULL;
   }
 
   if (lsb->state != LSB_UNKNOWN) {
-    lsb_terminate(lsb, "already initialized");
-    return 1;
+    lsb_terminate(lsb, LSB_ERR_INIT);
+    return LSB_ERR_INIT;
   }
 
   if (state_file && strlen(state_file) > 0) {
     lsb->state_file = malloc(strlen(state_file) + 1);
     if (!lsb->state_file) {
-      lsb_terminate(lsb, "memory allocation failure");
-      return 1;
+      lsb_terminate(lsb, LSB_ERR_UTIL_OOM);
+      return LSB_ERR_UTIL_OOM;
     }
     strcpy(lsb->state_file, state_file);
   }
@@ -492,16 +496,16 @@ int lsb_init(lsb_lua_sandbox *lsb, const char *state_file)
   lua_getglobal(lsb->lua, "require");
   if (!lua_iscfunction(lsb->lua, -1)) {
     snprintf(lsb->error_message, LSB_ERROR_SIZE,
-             "lsb_init 'require' not found");
+             "lsb_init() 'require' not found");
     lsb_terminate(lsb, NULL);
-    return 1;
+    return LSB_ERR_LUA;
   }
   lua_pushstring(lsb->lua, LUA_BASELIBNAME);
   if (lua_pcall(lsb->lua, 1, 0, 0)) {
     snprintf(lsb->error_message, LSB_ERROR_SIZE,
              "lsb_init %s", lua_tostring(lsb->lua, -1));
     lsb_terminate(lsb, NULL);
-    return 1;
+    return LSB_ERR_LUA;
   }
 
   if (lsb->usage[LSB_UT_INSTRUCTION][LSB_US_LIMIT] != 0) {
@@ -526,7 +530,7 @@ int lsb_init(lsb_lua_sandbox *lsb, const char *state_file)
       lsb->error_message[LSB_ERROR_SIZE - 1] = 0;
     }
     lsb_terminate(lsb, NULL);
-    return 2;
+    return LSB_ERR_LUA;
   } else {
     lua_gc(lsb->lua, LUA_GCCOLLECT, 0);
     lsb->usage[LSB_UT_INSTRUCTION][LSB_US_CURRENT] = instruction_usage(lsb);
@@ -536,29 +540,34 @@ int lsb_init(lsb_lua_sandbox *lsb, const char *state_file)
           lsb->usage[LSB_UT_INSTRUCTION][LSB_US_CURRENT];
     }
     lsb->state = LSB_RUNNING;
-    if (lsb->state_file != NULL) {
-      if (lsb_restore_global_data(lsb)) {
-        return 3;
-      }
+    if (lsb->state_file) {
+      lsb_err_value ret = restore_global_data(lsb);
+      if (ret) return ret;
     }
   }
   lua_atpanic(lsb->lua, pf);
-  return 0;
+  return NULL;
 }
 
 
-static void stop_hook(lua_State* lua, lua_Debug* ar)
+static void stop_hook(lua_State *lua, lua_Debug *ar)
 {
   (void)ar;  /* unused arg. */
   lua_sethook(lua, NULL, 0, 0);
-  luaL_error(lua, "shutting down");
+  luaL_error(lua, LSB_SHUTTING_DOWN);
 }
 
 
-void lsb_stop_sandbox(lsb_lua_sandbox* lsb)
+void lsb_stop_sandbox(lsb_lua_sandbox *lsb)
 {
-  lua_State* lua = lsb_get_lua(lsb);
-  lua_sethook(lua, stop_hook, LUA_MASKCALL | LUA_MASKRET | LUA_MASKCOUNT, 1);
+  if (!lsb) {
+    return;
+  }
+
+  lua_State *lua = lsb_get_lua(lsb);
+  if (lua) {
+    lua_sethook(lua, stop_hook, LUA_MASKCALL | LUA_MASKRET | LUA_MASKCOUNT, 1);
+  }
 }
 
 
@@ -569,7 +578,7 @@ char* lsb_destroy(lsb_lua_sandbox *lsb)
     return err;
   }
 
-  if (lsb_preserve_global_data(lsb) != 0) {
+  if (preserve_global_data(lsb)) {
     size_t len = strlen(lsb->error_message);
     err = malloc(len + 1);
     if (err != NULL) {
@@ -588,7 +597,7 @@ char* lsb_destroy(lsb_lua_sandbox *lsb)
 size_t lsb_usage(lsb_lua_sandbox *lsb, lsb_usage_type utype,
                  lsb_usage_stat ustat)
 {
-  if (!lsb || utype >= LSB_UT_MAX || ustat >= LSB_US_MAX) {
+  if (!lsb || !lsb->lua || utype >= LSB_UT_MAX || ustat >= LSB_US_MAX) {
     return 0;
   }
 #ifdef LUA_JIT
@@ -611,10 +620,7 @@ size_t lsb_usage(lsb_lua_sandbox *lsb, lsb_usage_type utype,
 
 const char* lsb_get_error(lsb_lua_sandbox *lsb)
 {
-  if (lsb) {
-    return lsb->error_message;
-  }
-  return "";
+  return lsb ? lsb->error_message : "";
 }
 
 
@@ -633,42 +639,45 @@ void lsb_set_error(lsb_lua_sandbox *lsb, const char *err)
 
 lua_State* lsb_get_lua(lsb_lua_sandbox *lsb)
 {
-  return lsb->lua;
+  return lsb ? lsb->lua : NULL;
 }
 
 
 const char* lsb_get_lua_file(lsb_lua_sandbox *lsb)
 {
-  return lsb->lua_file;
+  return lsb ? lsb->lua_file : NULL;
 }
 
 
 void* lsb_get_parent(lsb_lua_sandbox *lsb)
 {
-  return lsb->parent;
+  return lsb ? lsb->parent : NULL;
 }
 
 
 lsb_state lsb_get_state(lsb_lua_sandbox *lsb)
 {
-  if (lsb) {
-    return lsb->state;
-  }
-  return LSB_UNKNOWN;
+  return lsb ? lsb->state : LSB_UNKNOWN;
 }
 
 
 void lsb_add_function(lsb_lua_sandbox *lsb, lua_CFunction func,
                       const char *func_name)
 {
+  if (!lsb || !func || !func_name) return;
+  if (!lsb->lua) return;
+
   lua_pushlightuserdata(lsb->lua, (void *)lsb);
   lua_pushcclosure(lsb->lua, func, 1);
   lua_setglobal(lsb->lua, func_name);
 }
 
 
-int lsb_pcall_setup(lsb_lua_sandbox *lsb, const char *func_name)
+lsb_err_value lsb_pcall_setup(lsb_lua_sandbox *lsb, const char *func_name)
 {
+  if (!lsb || !func_name) return LSB_ERR_UTIL_NULL;
+  if (!lsb->lua) return LSB_ERR_TERMINATED;
+
   if (lsb->usage[LSB_UT_INSTRUCTION][LSB_US_LIMIT] != 0) {
     lua_sethook(lsb->lua, instruction_manager, LUA_MASKCOUNT,
                 (int)lsb->usage[LSB_UT_INSTRUCTION][LSB_US_LIMIT]);
@@ -677,20 +686,21 @@ int lsb_pcall_setup(lsb_lua_sandbox *lsb, const char *func_name)
   }
   lua_getglobal(lsb->lua, func_name);
   if (!lua_isfunction(lsb->lua, -1)) {
-    int len = snprintf(lsb->error_message, LSB_ERROR_SIZE,
-                       "%s() function was not found",
+    int len = snprintf(lsb->error_message, LSB_ERROR_SIZE, "%s() not found",
                        func_name);
     if (len >= LSB_ERROR_SIZE || len < 0) {
       lsb->error_message[LSB_ERROR_SIZE - 1] = 0;
     }
-    return 1;
+    return LSB_ERR_LUA;
   }
-  return 0;
+  return NULL;
 }
 
 
 void lsb_pcall_teardown(lsb_lua_sandbox *lsb)
 {
+  if (!lsb) return;
+
   lsb->usage[LSB_UT_INSTRUCTION][LSB_US_CURRENT] =
       (unsigned)instruction_usage(lsb);
   if (lsb->usage[LSB_UT_INSTRUCTION][LSB_US_CURRENT]
@@ -703,6 +713,8 @@ void lsb_pcall_teardown(lsb_lua_sandbox *lsb)
 
 void lsb_terminate(lsb_lua_sandbox *lsb, const char *err)
 {
+  if (!lsb) return;
+
   if (err) {
     strncpy(lsb->error_message, err, LSB_ERROR_SIZE);
     lsb->error_message[LSB_ERROR_SIZE - 1] = 0;

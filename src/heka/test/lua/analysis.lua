@@ -17,6 +17,9 @@ function timer_event(ns, shutdown)
         return
     end
 
+    local uuid = read_message("Uuid")
+    assert(not uuid)
+
     if ns == 2e9 then error("boom") end
 
     if shutdown then error("should not have a shutdown signal") end

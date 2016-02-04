@@ -11,6 +11,8 @@
 
 #include <stddef.h>
 
+#include "../error.h"
+
 #ifdef _WIN32
 #ifdef luasandboxutil_EXPORTS
 #define LSB_UTIL_EXPORT __declspec(dllexport)
@@ -24,6 +26,11 @@
 #define LSB_UTIL_EXPORT
 #endif
 #endif
+
+LSB_UTIL_EXPORT extern lsb_err_id LSB_ERR_UTIL_NULL;
+LSB_UTIL_EXPORT extern lsb_err_id LSB_ERR_UTIL_OOM;
+LSB_UTIL_EXPORT extern lsb_err_id LSB_ERR_UTIL_FULL;
+LSB_UTIL_EXPORT extern lsb_err_id LSB_ERR_UTIL_PRANGE;
 
 #ifdef __cplusplus
 extern "C" {

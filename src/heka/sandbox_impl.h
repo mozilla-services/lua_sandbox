@@ -33,8 +33,8 @@ struct lsb_heka_sandbox {
   char                              *name;
   char                              *hostname;
   union {
-    lsb_heka_inject_message_input     iim;
-    lsb_heka_inject_message_analysis  aim;
+    lsb_heka_im_input     iim;
+    lsb_heka_im_analysis  aim;
     lsb_heka_update_checkpoint        ucp;
   } cb;
   char                              type;

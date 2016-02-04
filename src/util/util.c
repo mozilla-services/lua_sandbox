@@ -25,6 +25,11 @@
 
 #include "luasandbox/util/util.h"
 
+lsb_err_id LSB_ERR_UTIL_NULL    = "pointer is NULL";
+lsb_err_id LSB_ERR_UTIL_OOM     = "memory allocation failed";
+lsb_err_id LSB_ERR_UTIL_FULL    = "buffer full";
+lsb_err_id LSB_ERR_UTIL_PRANGE  = "parameter out of range";
+
 size_t lsb_lp2(unsigned long long x)
 {
   if (x == 0) return 0;
