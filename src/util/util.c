@@ -6,6 +6,8 @@
 
 /** General purpose utility functions @file */
 
+#include "luasandbox/util/util.h"
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -22,8 +24,6 @@
 #include <mach/mach.h>
 #include <mach/mach_time.h>
 #endif
-
-#include "luasandbox/util/util.h"
 
 lsb_err_id LSB_ERR_UTIL_NULL    = "pointer is NULL";
 lsb_err_id LSB_ERR_UTIL_OOM     = "memory allocation failed";

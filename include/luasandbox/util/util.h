@@ -27,14 +27,14 @@
 #endif
 #endif
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 LSB_UTIL_EXPORT extern lsb_err_id LSB_ERR_UTIL_NULL;
 LSB_UTIL_EXPORT extern lsb_err_id LSB_ERR_UTIL_OOM;
 LSB_UTIL_EXPORT extern lsb_err_id LSB_ERR_UTIL_FULL;
 LSB_UTIL_EXPORT extern lsb_err_id LSB_ERR_UTIL_PRANGE;
-
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 /**
  * Hacker's Delight - Henry S. Warren, Jr. page 48

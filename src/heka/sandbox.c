@@ -23,6 +23,7 @@
 
 #ifdef _WIN32
 #include <winsock2.h>
+#define snprintf _snprintf
 #else
 #include <unistd.h>
 #endif
@@ -499,7 +500,9 @@ int lsb_heka_pm_input(lsb_heka_sandbox *hsb,
                       const char *cp_string,
                       bool profile)
 {
-  if (!hsb || hsb->type != 'i') return 1;
+  if (!hsb || hsb->type != 'i') {
+    return 1;
+  }
 
   lsb_err_value ret = lsb_pcall_setup(hsb->lsb, pm_func_name);
   if (ret) {

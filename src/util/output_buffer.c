@@ -77,7 +77,9 @@ lsb_err_value lsb_expand_output_buffer(lsb_output_buffer *b, size_t needed)
 
 lsb_err_value lsb_outputc(lsb_output_buffer *b, char ch)
 {
-  if (!b) return LSB_ERR_UTIL_NULL;
+  if (!b) {
+    return LSB_ERR_UTIL_NULL;
+  }
   lsb_err_value ret = lsb_expand_output_buffer(b, 2);
   if (ret) return ret;
 
@@ -143,7 +145,9 @@ lsb_err_value lsb_outputf(lsb_output_buffer *b, const char *fmt, ...)
 
 lsb_err_value lsb_outputs(lsb_output_buffer *b, const char *str, size_t len)
 {
-  if (!b) return LSB_ERR_UTIL_NULL;
+  if (!b) {
+    return LSB_ERR_UTIL_NULL;
+  }
   lsb_err_value ret = lsb_expand_output_buffer(b, len + 1);
   if (ret) return ret;
 

@@ -33,8 +33,6 @@
 
 #define LSB_HEKA_MAX_MESSAGE_SIZE "max_message_size"
 
-LSB_HEKA_EXPORT extern lsb_err_id LSB_ERR_HEKA_INPUT;
-
 enum lsb_heka_pm_rv {
   LSB_HEKA_PM_SENT  = 0,
   LSB_HEKA_PM_FAIL  = -1,
@@ -65,6 +63,8 @@ typedef struct lsb_heka_stats {
 extern "C"
 {
 #endif
+
+LSB_HEKA_EXPORT extern lsb_err_id LSB_ERR_HEKA_INPUT;
 
 /**
  * inject_message callback function provided by the host. Only one (or neither)

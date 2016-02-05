@@ -60,14 +60,14 @@ typedef enum {
 
 typedef struct lsb_lua_sandbox lsb_lua_sandbox;
 
-LSB_EXPORT extern lsb_err_id LSB_ERR_INIT;
-LSB_EXPORT extern lsb_err_id LSB_ERR_LUA;
-LSB_EXPORT extern lsb_err_id LSB_ERR_TERMINATED;
-
 #ifdef __cplusplus
 extern "C"
 {
 #endif
+
+LSB_EXPORT extern lsb_err_id LSB_ERR_INIT;
+LSB_EXPORT extern lsb_err_id LSB_ERR_LUA;
+LSB_EXPORT extern lsb_err_id LSB_ERR_TERMINATED;
 
 /**
  * Allocates and initializes the structure around the Lua sandbox allowing

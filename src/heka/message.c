@@ -330,7 +330,7 @@ static lsb_err_value
 encode_field_array(lsb_lua_sandbox *lsb, lsb_output_buffer *ob, int t,
                    const char *representation, int value_type)
 {
-  lsb_err_value ret;
+  lsb_err_value ret = NULL;
   int first = (int)lua_objlen(lsb->lua, -1);
   int multiple = first > 1 ? first : 0;
   size_t len_pos = 0;

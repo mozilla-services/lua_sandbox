@@ -23,10 +23,9 @@
 #include "luasandbox_impl.h"
 #include "luasandbox_serialize.h"
 
-
-lsb_err_id LSB_ERR_INIT = "already initialized";
-lsb_err_id LSB_ERR_LUA  = "lua error"; // use lsb_get_error for more detail
-lsb_err_id LSB_ERR_TERMINATED  = "sandbox already terminated";
+lsb_err_id LSB_ERR_INIT       = "already initialized";
+lsb_err_id LSB_ERR_LUA        = "lua error"; // use lsb_get_error for details
+lsb_err_id LSB_ERR_TERMINATED = "sandbox already terminated";
 
 static jmp_buf g_jbuf;
 

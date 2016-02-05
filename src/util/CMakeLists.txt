@@ -15,7 +15,7 @@ util.c
 
 add_library(luasandboxutil SHARED ${UTIL_SRC})
 set_target_properties(luasandboxutil PROPERTIES VERSION ${CPACK_PACKAGE_VERSION_MAJOR}.${CPACK_PACKAGE_VERSION_MINOR}.${CPACK_PACKAGE_VERSION_PATCH} SOVERSION 0)
-target_compile_definitions(luasandboxutil PUBLIC -Dluasandboxutil_EXPORTS)
+target_compile_definitions(luasandboxutil PRIVATE -Dluasandboxutil_EXPORTS)
 
 if(LIBM_LIBRARY)
   target_link_libraries(luasandboxutil ${LIBM_LIBRARY})

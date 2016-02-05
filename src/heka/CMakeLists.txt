@@ -11,7 +11,7 @@ stream_reader.c
 
 add_library(luasandboxheka SHARED ${HEKA_SRC})
 set_target_properties(luasandboxheka PROPERTIES VERSION ${CPACK_PACKAGE_VERSION_MAJOR}.${CPACK_PACKAGE_VERSION_MINOR}.${CPACK_PACKAGE_VERSION_PATCH} SOVERSION 0)
-target_compile_definitions(luasandboxheka PUBLIC -Dluasandboxheka_EXPORTS)
+target_compile_definitions(luasandboxheka PRIVATE -Dluasandboxheka_EXPORTS)
 target_link_libraries(luasandboxheka luasandbox)
 if(WIN32)
   target_link_libraries(luasandboxheka ws2_32)

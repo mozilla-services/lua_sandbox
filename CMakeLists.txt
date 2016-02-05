@@ -42,7 +42,6 @@ set(LIB_INSTALL_DIR lib/)
 set(INCLUDE_INSTALL_DIR include/)
 
 include_directories("${EP_BASE}/include")
-include_directories("${CMAKE_SOURCE_DIR}/include")
 install(DIRECTORY "${CMAKE_SOURCE_DIR}/modules/" DESTINATION ${LIB_INSTALL_DIR}${PROJECT_NAME}/modules COMPONENT core)
 install(FILES "${CMAKE_SOURCE_DIR}/README.md" DESTINATION share/doc/${PROJECT_NAME} COMPONENT core)
 
@@ -63,3 +62,6 @@ install(FILES ${CMAKE_CURRENT_BINARY_DIR}/luasandboxConfig.cmake ${CMAKE_CURRENT
         DESTINATION ${INSTALL_CMAKE_DIR} COMPONENT core)
 
 add_subdirectory(src)
+add_custom_target(copy_includes
+COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/include ${EP_BASE}/include)
+add_dependencies(luasandboxutil copy_includes)

@@ -11,8 +11,8 @@
 
 // See Identify your Errors better with char[]
 // http://accu.org/index.php/journals/2184
-typedef char const lsb_err_id[];
-typedef char const *lsb_err_value;
+typedef const char lsb_err_id[];
+typedef const char *lsb_err_value;
 #define lsb_err_string(s) s ? s : "<no error>"
 
 typedef void (*lsb_logger)(const char *component,
