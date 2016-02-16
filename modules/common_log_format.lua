@@ -24,7 +24,7 @@ local unreserved    = l.alnum + l.S"-._~"
 local sub_delims    = l.S"!$&'()*+,;="
 
 local last_literal  = l.space
-local integer       = l.digit^1 / tonumber
+local integer       = l.P"-"^-1 * l.digit^1 / tonumber
 local double        = l.digit^1 * "." * l.digit^1 / tonumber
 local msec_time     = double / dt.seconds_to_ns
 local host          = l.Ct(l.Cg(ip.v4, "value") * l.Cg(l.Cc"ipv4", "representation"))
