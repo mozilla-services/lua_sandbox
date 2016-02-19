@@ -4,7 +4,16 @@
 
 require "string"
 require "bloom_filter";
+require "heka_json"
 local bf = bloom_filter.new(10, 0.01)
+
+local json = [[{"foo":"bar"}]]
+local doc = heka_json.parse(json)
+local doc1 = heka_json.parse(json)
+assert(doc)
+local large_json = string.format('{"foo":"%s"}', string.rep("x", 66000))
+local large_doc = heka_json.parse(large_json)
+assert(large_doc)
 
 -- Table tests
 local msgs = {
@@ -12,6 +21,7 @@ local msgs = {
     {{Timestamp = 1, Uuid = "00000000-0000-0000-0000-000000000000"}, nil},
     {{Timestamp = 2, Uuid = "00000000-0000-0000-0000-000000000000", Logger = "logger", Hostname = "hostname", Type = "type", Payload = "payload", EnvVersion = "envversion", Pid = 99, Severity = 5}, 99},
     {{Timestamp = 3, Uuid = "00000000-0000-0000-0000-000000000000", Fields = {number=1,numbers={value={1,2,3}, representation="count"},string="string",strings={"s1","s2","s3"}, bool=true, bools={true,false,false}}}, "foo.log:123"},
+    {{Timestamp = 4, Uuid = "00000000-0000-0000-0000-000000000000", Fields = {json = doc:make_field()}}, nil},
 }
 
 local err_msgs = {
@@ -29,7 +39,10 @@ local err_msgs = {
     {msg = {Timestamp = 1e9, Fields = {counts={value=true, value_type=1}}}, err = "inject_message() failed: invalid boolean value_type: 1"},
     {msg = {Timestamp = 1e9, Fields = {counts={value=true, value_type=2}}}, err = "inject_message() failed: invalid boolean value_type: 2"},
     {msg = {Timestamp = 1e9, Fields = {counts={value=true, value_type=2}}}, err = "inject_message() failed: invalid boolean value_type: 2"},
-    {msg = {Timestamp = 1e9, Fields = {bf = {value=bf, representation="bf"}}}, err = "inject_message() failed: user data object does not implement lsb_output"},
+    {msg = {Timestamp = 1e9, Fields = {bf = {value=bf, representation="bf"}}}, err = "inject_message() failed: userdata object does not implement lsb_output"},
+    {msg = {Timestamp = 1e9, Fields = {json = {value = doc:find()}}}, err = "inject_message() failed: a lightuserdata output must also specify a userdata value"},
+    {msg = {Timestamp = 1e9, Fields = {json = {value = doc1:find(), userdata = doc}}}, err = "inject_message() failed: userdata output callback failed: 1"},
+    {msg = {Timestamp = 1e9, Fields = {json = large_doc:make_field()}}, err = "inject_message() failed: userdata output callback failed: 1"},
 }
 
 for i, v in ipairs(msgs) do
@@ -111,6 +124,7 @@ ok, err = pcall(hsr.read_message, 1, 2)
 assert(not ok)
 assert("bad argument #1 to '?' (mozsvc.heka_stream_reader expected, got number)" == err, string.format("received: %s", err))
 
+
 -- String tests
 inject_message("\010\016\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\016\005")
 
@@ -123,5 +137,3 @@ ok, err = pcall(inject_message, {})
 if ok then error(string.format("test should have failed")) end
 eerr = "inject_message() failed: rejected by the callback"
 assert(eerr == err, string.format("expected: %s received: %s", eerr, err))
-
-

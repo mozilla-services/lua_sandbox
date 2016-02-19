@@ -17,6 +17,9 @@
 extern const char *mozsvc_heka_stream_reader;
 extern const char *mozsvc_heka_stream_reader_table;
 
+extern const char *mozsvc_heka_json;
+extern const char *mozsvc_heka_json_table;
+
 typedef struct heka_stream_reader
 {
   char             *name;

@@ -62,6 +62,21 @@ LSB_UTIL_EXPORT char* lsb_read_file(const char *fn);
  */
 LSB_UTIL_EXPORT unsigned long long lsb_get_time();
 
+#ifdef HAVE_ZLIB
+
+/**
+ * Ungzip the provided string into a new string
+ *
+ * @param s String to ungzip
+ * @param s_len Length of the string to ungzip
+ * @param r_len Length of the returned string
+ *
+ * @return char* Returned string (MUST be freed by the caller), NULL on failure
+ */
+LSB_UTIL_EXPORT char* lsb_ungzip(const char *s, size_t s_len, size_t *r_len);
+
+#endif
+
 #ifdef __cplusplus
 }
 #endif

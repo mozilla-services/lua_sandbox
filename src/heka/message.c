@@ -540,13 +540,22 @@ encode_field_value(lsb_lua_sandbox *lsb, lsb_output_buffer *ob, int first,
     }
     break;
 
+  case LUA_TLIGHTUSERDATA:
+    lua_getfield(lsb->lua, -4, "userdata");
+    if (lua_type(lsb->lua, -1) != LUA_TUSERDATA) {
+      snprintf(lsb->error_message, LSB_ERROR_SIZE,
+               "a lightuserdata output must also specify a userdata value");
+      return LSB_ERR_LUA;
+    }
+    // fall thru
+
   case LUA_TUSERDATA:
     {
       lua_CFunction fp = lsb_get_output_function(lsb->lua, -1);
       size_t len_pos = 0;
       if (!fp) {
         snprintf(lsb->error_message, LSB_ERROR_SIZE,
-                 "user data object does not implement lsb_output");
+                 "userdata object does not implement lsb_output");
         return LSB_ERR_LUA;
       }
       if (first) {
@@ -576,11 +585,12 @@ encode_field_value(lsb_lua_sandbox *lsb, lsb_output_buffer *ob, int first,
       lua_pop(lsb->lua, 1); // remove output function
       if (result) {
         snprintf(lsb->error_message, LSB_ERROR_SIZE,
-                 "user data output callback failed: %d", result);
+                 "userdata output callback failed: %d", result);
         return LSB_ERR_LUA;
       }
       ret = lsb_pb_update_field_length(ob, len_pos);
     }
+    if (t == LUA_TLIGHTUSERDATA) lua_pop(lsb->lua, 1); // remove the userdata
     break;
 
   default:

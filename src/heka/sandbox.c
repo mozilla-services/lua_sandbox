@@ -20,6 +20,7 @@
 #include "message_impl.h"
 #include "sandbox_impl.h"
 #include "stream_reader_impl.h"
+#include "rapidjson_impl.h"
 
 #ifdef _WIN32
 #include <winsock2.h>
@@ -391,6 +392,12 @@ lsb_heka_sandbox* lsb_heka_create_input(void *parent,
   lua_pushstring(lua, mozsvc_heka_stream_reader_table);
   lua_pushcfunction(lua, luaopen_heka_stream_reader);
   lua_rawset(lua, -3);
+// preload Heka JSON with a pointer back to the sandbox
+  lua_pushstring(lua, mozsvc_heka_json_table);
+  lua_pushlightuserdata(lua, (void *)hsb->lsb);
+  lua_pushcclosure(lua, luaopen_heka_json, 1);
+  lua_rawset(lua, -3);
+
   lua_pop(lua, 1); // remove the preloaded table
 
   if (lsb_init(hsb->lsb, state_file)) {
@@ -657,6 +664,15 @@ lsb_heka_sandbox* lsb_heka_create_output(void *parent,
   lsb_add_function(hsb->lsb, heka_decode_message, "decode_message");
   lsb_add_function(hsb->lsb, heka_encode_message, "encode_message");
   lsb_add_function(hsb->lsb, update_checkpoint, "update_checkpoint");
+
+// preload Heka JSON with a pointer back to the sandbox
+  luaL_findtable(lua, LUA_REGISTRYINDEX, "_PRELOADED", 1);
+  lua_pushstring(lua, mozsvc_heka_json_table);
+  lua_pushlightuserdata(lua, (void *)hsb->lsb);
+  lua_pushcclosure(lua, luaopen_heka_json, 1);
+  lua_rawset(lua, -3);
+
+  lua_pop(lua, 1); // remove the preloaded table
 
   if (lsb_init(hsb->lsb, state_file)) {
     if (logger) logger(hsb->name, 3, lsb_get_error(hsb->lsb));

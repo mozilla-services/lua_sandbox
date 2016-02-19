@@ -13,6 +13,10 @@
 #include <string.h>
 #include <time.h>
 
+#ifdef HAVE_ZLIB
+#include <zlib.h>
+#endif
+
 #ifdef _WIN32
 #include <windows.h>
 #include <limits.h>
@@ -80,7 +84,7 @@ unsigned long long lsb_get_time()
   static unsigned long long convert = 0;
   if (convert == 0) {
     mach_timebase_info_data_t tbi;
-    (void) mach_timebase_info(&tbi);
+    (void)mach_timebase_info(&tbi);
     convert = tbi.numer / tbi.denom;
   }
   return mach_absolute_time() * convert;
@@ -89,12 +93,12 @@ unsigned long long lsb_get_time()
   static_assert(sizeof(LARGE_INTEGER) == sizeof qpf, "size mismatch");
 
   unsigned long long t;
-  if (qpf == ULLONG_MAX) QueryPerformanceFrequency((LARGE_INTEGER*)&qpf);
-  if (qpf){
-    QueryPerformanceCounter((LARGE_INTEGER*)&t);
+  if (qpf == ULLONG_MAX) QueryPerformanceFrequency((LARGE_INTEGER *)&qpf);
+  if (qpf) {
+    QueryPerformanceCounter((LARGE_INTEGER *)&t);
     return (t / qpf * 1000000000ULL) + ((t % qpf) * 1000000000ULL / qpf);
   } else {
-    GetSystemTimeAsFileTime((FILETIME*)&t);
+    GetSystemTimeAsFileTime((FILETIME *)&t);
     return t * 100ULL;
   }
 #else
@@ -103,3 +107,58 @@ unsigned long long lsb_get_time()
   return tv.tv_sec * 1000000000ULL + tv.tv_usec * 1000ULL;
 #endif
 }
+
+
+#ifdef HAVE_ZLIB
+char* lsb_ungzip(const char *s, size_t s_len, size_t *r_len)
+{
+  if (!s || !r_len) {
+    return NULL;
+  }
+  *r_len = 0;
+  size_t buf_len = 2 * s_len;
+  unsigned char *buf = malloc(buf_len);
+  if (!buf) {
+    return NULL;
+  }
+
+  z_stream strm;
+  strm.zalloc     = Z_NULL;
+  strm.zfree      = Z_NULL;
+  strm.opaque     = Z_NULL;
+  strm.avail_in   = s_len;
+  strm.next_in    = (unsigned char *)s;
+  strm.avail_out  = buf_len;
+  strm.next_out   = buf;
+
+  int ret = inflateInit2(&strm, 16 + MAX_WBITS);
+  if (ret != Z_OK) {
+    free(buf);
+    return NULL;
+  }
+
+  do {
+    if (ret == Z_BUF_ERROR) {
+      buf_len *= 2;
+      unsigned char *tmp = realloc(buf, buf_len);
+      if (!tmp) {
+        free(buf);
+        return NULL;
+      } else {
+        buf = tmp;
+        strm.avail_out = buf_len - strm.total_out;
+        strm.next_out = buf + strm.total_out;
+      }
+    }
+    ret = inflate(&strm, Z_FINISH);
+  } while (ret == Z_BUF_ERROR && strm.avail_in > 0);
+
+  inflateEnd(&strm);
+  if (ret != Z_STREAM_END) {
+    free(buf);
+    return NULL;
+  }
+  *r_len = strm.total_out;
+  return (char *)buf;
+}
+#endif

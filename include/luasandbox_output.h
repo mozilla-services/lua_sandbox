@@ -12,12 +12,13 @@
 #include <stdio.h>
 
 #include "luasandbox.h"
-#include "luasandbox/lua.h"
 #include "luasandbox/util/output_buffer.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+#include "luasandbox/lua.h"
 
 /**
  * Add a output function to the environment table. The environment table must be

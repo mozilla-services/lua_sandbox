@@ -11,12 +11,13 @@
 
 #include <stdio.h>
 
-#include "luasandbox/lua.h"
 #include "luasandbox_output.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+#include "luasandbox/lua.h"
 
 /**
  * Add a serialization function to the environment table. The environment table

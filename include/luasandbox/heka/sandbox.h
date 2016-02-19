@@ -13,8 +13,6 @@
 #include <time.h>
 
 #include "../error.h"
-#include "../lauxlib.h"
-#include "../lua.h"
 #include "../util/heka_message.h"
 
 #ifdef _WIN32
@@ -63,6 +61,9 @@ typedef struct lsb_heka_stats {
 extern "C"
 {
 #endif
+
+#include "../lauxlib.h"
+#include "../lua.h"
 
 LSB_HEKA_EXPORT extern lsb_err_id LSB_ERR_HEKA_INPUT;
 

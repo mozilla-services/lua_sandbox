@@ -21,6 +21,10 @@ if(LIBM_LIBRARY)
   target_link_libraries(luasandboxutil ${LIBM_LIBRARY})
 endif()
 
+if(ZLIB_FOUND)
+  target_link_libraries(luasandboxutil ${ZLIB_LIBRARIES})
+endif()
+
 install(TARGETS luasandboxutil DESTINATION ${LIB_DIR} COMPONENT core)
 add_subdirectory(test)
 

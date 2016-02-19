@@ -5,6 +5,7 @@
 set(HEKA_SRC
 message.c
 message_matcher.c
+rapidjson.cpp
 sandbox.c
 stream_reader.c
 )

@@ -9,7 +9,6 @@
 #ifndef luasandbox_h_
 #define luasandbox_h_
 
-#include "luasandbox/lua.h"
 #include "luasandbox/error.h"
 
 #ifdef _WIN32
@@ -64,6 +63,8 @@ typedef struct lsb_lua_sandbox lsb_lua_sandbox;
 extern "C"
 {
 #endif
+
+#include "luasandbox/lua.h"
 
 LSB_EXPORT extern lsb_err_id LSB_ERR_INIT;
 LSB_EXPORT extern lsb_err_id LSB_ERR_LUA;

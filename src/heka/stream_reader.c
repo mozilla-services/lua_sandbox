@@ -217,13 +217,18 @@ static int hsr_gc(lua_State *lua)
 
 static const struct luaL_reg heka_stream_readerlib_f[] =
 {
-  { "new", hsr_new }, { NULL, NULL }
+  { "new", hsr_new },
+  { NULL, NULL }
 };
 
 
 static const struct luaL_reg heka_stream_readerlib_m[] =
 {
-  { "find_message", hsr_find_message }, { "decode_message", hsr_decode_message }, { "read_message", hsr_read_message }, { "__gc", hsr_gc }, { NULL, NULL }
+  { "find_message", hsr_find_message },
+  { "decode_message", hsr_decode_message },
+  { "read_message", hsr_read_message },
+  { "__gc", hsr_gc },
+  { NULL, NULL }
 };
 
 

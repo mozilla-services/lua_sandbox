@@ -3,10 +3,10 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 cmake_minimum_required(VERSION 3.0 FATAL_ERROR)
-project(luasandbox C)
+project(luasandbox C CXX)
 set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "Generic Lua sandbox for dynamic data analysis")
 set(CPACK_PACKAGE_VERSION_MAJOR 0)
-set(CPACK_PACKAGE_VERSION_MINOR 13)
+set(CPACK_PACKAGE_VERSION_MINOR 14)
 set(CPACK_PACKAGE_VERSION_PATCH 0)
 set(CPACK_PACKAGE_CONTACT "Mike Trinkala <trink@mozilla.com>")
 
@@ -23,6 +23,12 @@ if(LUA_JIT)
 endif()
 
 find_library(LIBM_LIBRARY m)
+
+find_package(ZLIB)
+
+if (ZLIB_FOUND)
+  add_definitions(-DHAVE_ZLIB)
+endif()
 
 find_package(Git REQUIRED)
 set(CPACK_RPM_PACKAGE_LICENSE "MPLv2.0")
