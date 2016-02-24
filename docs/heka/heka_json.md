@@ -85,21 +85,6 @@ assert(ok, err)
 * ok (bool) - true if valid
 * err (string) - error message on failure
 
-#### type
-
-Returns the type of the value in the JSON structure.
-
-```lua
-local t = doc:type()
-assert(t == "object", t)
-
-```
-*Arguments*
-* value (lightuserdata) - optional, when not specified the function is applied to document
-
-*Return*
-* type (string) - "string", "number", "boolean", "object", "array" or "null"
-
 #### find
 
 Searches for and returns a value in the JSON structure.
@@ -117,6 +102,25 @@ assert(v, "not found")
 *Return*
 * value (lightuserdata) - handle to be passed to other methods, nil if not found
 
+#### remove
+
+Searches for and NULL's out the resulting value in the JSON structure returning the
+extracted Heka JSON document.
+
+```lua
+local rv = doc:remove("obj", "arr")
+assert(rv, "not found")
+rv:size() -- number of elements in the extracted array
+
+```
+*Arguments*
+* value (lightuserdata) - optional, when not specified the function is applied to document
+* key (string, number) - object key, or array index
+* keyN (string, number) - final object key, or array index
+
+*Return*
+* doc (userdata) - the object removed from the original JSON or nil
+
 #### value
 
 Returns the primitive value of the JSON element.
@@ -128,10 +132,28 @@ assert("bar" == str, tostring(str))
 
 ```
 *Arguments*
-* value (lightuserdata) - optional, when not specified the function is applied to document
+* value (lightuserdata, nil) - optional, when not specified the function is applied to document
+  (accepts nil for easier nesting without having to test the inner expression)
+  e.g., str = doc:value(doc:find("foo")) or "my default"
 
 *Return*
 * primitive - string, number, bool, nil or throws an error if not convertable (object, array)
+
+#### type
+
+Returns the type of the value in the JSON structure.
+
+```lua
+local t = doc:type()
+assert(t == "object", t)
+
+```
+*Arguments*
+* value (lightuserdata, nil) - optional, when not specified the function is applied to document
+  (accepts nil for easier nesting without having to test the inner expression)
+
+*Return*
+* type (string, nil) - "string", "number", "boolean", "object", "array" or "null"
 
 #### iter
 
@@ -144,10 +166,11 @@ for i,v in doc:iter(v) do
 end
 ```
 *Arguments*
-* value (lightuserdata) - optional, when not specified the function is applied to document
+* value (lightuserdata, nil) - optional, when not specified the function is applied to document
+  (accepts nil for API consistency)
 
 *Return*
-* iter (function) - iterator function returning an index/value for arrays or a key/value for
+* iter (function, nil) - iterator function returning an index/value for arrays or a key/value for
   objects.  Throws an error on primitive types.
 
 #### size
@@ -159,10 +182,11 @@ local n = doc:size(v)
 
 ```
 *Arguments*
-* value (lightuserdata) - optional, when not specified the function is applied to document
+* value (lightuserdata, nil) - optional, when not specified the function is applied to document
+  (accepts nil for easier nesting without having to test the inner expression)
 
 *Return*
-* size (number) - Number of element in an array/object or the length of the string.
+* size (number, nil) - Number of element in an array/object or the length of the string.
   Throws an error on numeric, boolean and null types.
 
 #### make_field
@@ -177,26 +201,8 @@ inject_message(msg)
 
 ```
 *Arguments*
-* value (lightuserdata) - optional, when not specified the function is applied to document
+* value (lightuserdata, nil) - optional, when not specified the function is applied to document
+  (accepts nil for easier nesting without having to test the inner expression)
 
 *Return*
-* table - shorthand for `{value = v, userdata = doc}`
-
-#### remove
-
-Searches for and NULL's out the resulting value in the JSON structure returning the
-extracted Heka JSON document.
-
-```lua
-local rv = doc:remove("obj", "arr")
-assert(rv, "not found")
-rv:size() -- size of the extracted array
-
-```
-*Arguments*
-* value (lightuserdata) - optional, when not specified the function is applied to document
-* key (string, number) - object key, or array index
-* keyN (string, number) - final object key, or array index
-
-*Return*
-* doc (userdata) - the object removed from the original JSON or nil
+* field (table, nil) - i.e., `{value = v, userdata = doc}`

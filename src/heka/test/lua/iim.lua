@@ -9,8 +9,9 @@ local bf = bloom_filter.new(10, 0.01)
 
 local json = [[{"foo":"bar"}]]
 local doc = heka_json.parse(json)
-local doc1 = heka_json.parse(json)
 assert(doc)
+local doc1 = heka_json.parse(json)
+local doc2 = heka_json.parse(json)
 local large_json = string.format('{"foo":"%s"}', string.rep("x", 66000))
 local large_doc = heka_json.parse(large_json)
 assert(large_doc)
@@ -21,7 +22,9 @@ local msgs = {
     {{Timestamp = 1, Uuid = "00000000-0000-0000-0000-000000000000"}, nil},
     {{Timestamp = 2, Uuid = "00000000-0000-0000-0000-000000000000", Logger = "logger", Hostname = "hostname", Type = "type", Payload = "payload", EnvVersion = "envversion", Pid = 99, Severity = 5}, 99},
     {{Timestamp = 3, Uuid = "00000000-0000-0000-0000-000000000000", Fields = {number=1,numbers={value={1,2,3}, representation="count"},string="string",strings={"s1","s2","s3"}, bool=true, bools={true,false,false}}}, "foo.log:123"},
-    {{Timestamp = 4, Uuid = "00000000-0000-0000-0000-000000000000", Fields = {json = doc:make_field()}}, nil},
+    {{Timestamp = 4, Uuid = "00000000-0000-0000-0000-000000000000", Fields = {json = doc:make_field()}}, nil}, -- use the lightuserdata
+    {{Timestamp = 4, Uuid = "00000000-0000-0000-0000-000000000000", Fields = {json = doc}}, nil}, -- use the full userdata
+    {{Timestamp = 4, Uuid = "00000000-0000-0000-0000-000000000000", Fields = {json = doc2:remove()}}, nil}, -- use the removed item
 }
 
 local err_msgs = {
@@ -92,6 +95,11 @@ local found, consumed, need = hsr:find_message(framed)
 assert(true == found)
 assert(25 == consumed, string.format("expected: 25 received %d", consumed))
 assert(0 < need, string.format("expected: >0 received: %d", need))
+
+found, consumed, need = hsr:find_message("\0\0\0\0\0\030\002\008\020\031")
+assert(false == found)
+assert(5 == consumed, string.format("expected: 5 received %d", consumed))
+assert(20 == need, string.format("expected: 20 received: %d", need))
 
 local found, consumed, need = hsr:find_message("")
 assert(not found)

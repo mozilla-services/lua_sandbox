@@ -65,7 +65,7 @@ lsb_err_value lsb_expand_input_buffer(lsb_input_buffer *b, size_t len)
     if (newsize > b->maxsize) return LSB_ERR_UTIL_FULL;
 
     newsize = lsb_lp2(newsize);
-    if (newsize > b->maxsize) newsize = b->maxsize;;
+    if (newsize > b->maxsize) newsize = b->maxsize;
     char *tmp = realloc(b->buf, newsize);
     if (tmp) {
       b->buf = tmp;

@@ -165,7 +165,7 @@ static int hsr_find_message(lua_State *lua)
     }
     if (b->msglen) {
       need = b->msglen + (size_t)b->buf[b->scanpos + 1] + LSB_HDR_FRAME_SIZE -
-          b->readpos;
+          (b->readpos - b->scanpos);
     } else {
       need = b->scanpos + b->size - b->readpos;
     }
@@ -176,7 +176,8 @@ static int hsr_find_message(lua_State *lua)
       lua_pushinteger(lua, 0);
     } else {
       if (lsb_expand_input_buffer(&hsr->buf, need)) {
-        luaL_error(lua, "%s buffer reallocation failed", hsr->name);
+        return luaL_error(lua, "buffer reallocation failed\tname:%s",
+                          hsr->name);
       }
       size_t nread = fread(hsr->buf.buf + hsr->buf.readpos,
                            1,

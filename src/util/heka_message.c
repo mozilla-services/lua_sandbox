@@ -346,7 +346,7 @@ bool lsb_find_heka_message(lsb_heka_message *m,
       return false; // header length is not buf
     }
 
-    size_t hlen = ib->buf[ib->scanpos + 1];
+    size_t hlen = (unsigned char)ib->buf[ib->scanpos + 1];
     size_t hend = ib->scanpos + hlen + 3;
     if (hend > ib->readpos) {
       return false; // header is not in buf

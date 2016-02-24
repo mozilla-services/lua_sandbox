@@ -27,6 +27,7 @@ typedef struct heka_json
 {
   rj::Document          *doc;
   rj::Value             *val;
+  char                  *insitu;
   std::set<rj::Value *> *refs;
 } heka_json;
 
@@ -59,8 +60,14 @@ static rj::Value* check_value(lua_State *lua)
       (luaL_checkudata(lua, 1, mozsvc_heka_json));
   rj::Value *v = static_cast<rj::Value *>(lua_touserdata(lua, 2));
   if (!v) {
-    luaL_checktype(lua, 2, LUA_TNONE); // only default it when it is not set
-    v = hj->doc ? hj->doc : hj->val;
+    int t = lua_type(lua, 2);
+    if (t == LUA_TNONE) {
+      v = hj->doc ? hj->doc : hj->val;
+    } else if (t == LUA_TNIL) {
+      v = NULL;
+    } else {
+      luaL_checktype(lua, 2, LUA_TLIGHTUSERDATA);
+    }
   } else if (hj->refs->find(v) == hj->refs->end()) {
     luaL_error(lua, "invalid value");
   }
@@ -93,6 +100,7 @@ static int hj_gc(lua_State *lua)
   delete(hj->refs);
   delete(hj->doc);
   delete(hj->val);
+  free(hj->insitu);
   return 0;
 }
 
@@ -129,6 +137,7 @@ static int hj_parse(lua_State *lua)
   heka_json *hj = static_cast<heka_json *>(lua_newuserdata(lua, sizeof*hj));
   hj->doc = new rj::Document;
   hj->val = NULL;
+  hj->insitu = NULL;
   hj->refs = new std::set<rj::Value *>;
   luaL_getmetatable(lua, mozsvc_heka_json);
   lua_setmetatable(lua, -2);
@@ -237,6 +246,10 @@ static int hj_find(lua_State *lua)
 static int hj_type(lua_State *lua)
 {
   rj::Value *v = check_value(lua);
+  if (!v) {
+    lua_pushnil(lua);
+    return 1;
+  }
 
   switch (v->GetType()) {
   case rj::kStringType:
@@ -266,6 +279,10 @@ static int hj_type(lua_State *lua)
 static int hj_size(lua_State *lua)
 {
   rj::Value *v = check_value(lua);
+  if (!v) {
+    lua_pushnil(lua);
+    return 1;
+  }
 
   switch (v->GetType()) {
   case rj::kStringType:
@@ -292,6 +309,10 @@ static int hj_size(lua_State *lua)
 static int hj_make_field(lua_State *lua)
 {
   rj::Value *v = check_value(lua);
+  if (!v) {
+    lua_pushnil(lua);
+    return 1;
+  }
 
   lua_createtable(lua, 0, 2);
   lua_pushlightuserdata(lua, (void *)v);
@@ -359,6 +380,10 @@ static int hj_array_iter(lua_State *lua)
 static int hj_value(lua_State *lua)
 {
   rj::Value *v = check_value(lua);
+  if (!v) {
+    lua_pushnil(lua);
+    return 1;
+  }
 
   switch (v->GetType()) {
   case rj::kStringType:
@@ -388,6 +413,10 @@ static int hj_value(lua_State *lua)
 static int hj_iter(lua_State *lua)
 {
   rj::Value *v = check_value(lua);
+  if (!v) {
+    lua_pushnil(lua);
+    return 1;
+  }
 
   switch (v->GetType()) {
   case rj::kObjectType:
@@ -480,15 +509,14 @@ static int hj_parse_message(lua_State *lua)
   lsb_const_string json = read_message(lua, idx, msg);
   if (!json.s) return luaL_error(lua, "field not found");
 
-#ifdef HAVE_ZLIB
   char *inflated = NULL;
+#ifdef HAVE_ZLIB
   // automatically handle gzipped strings (optimization for Mozilla telemetry
   // messages)
   if (json.len > 2) {
     if (json.s[0] == 0x1f && (unsigned char)json.s[1] == 0x8b) {
-      inflated = lsb_ungzip(json.s, json.len, &json.len);
+      inflated = lsb_ungzip(json.s, json.len, NULL);
       if (!inflated) return luaL_error(lua, "lsb_ungzip failed");
-      json.s = inflated;
     }
   }
 #endif
@@ -496,6 +524,7 @@ static int hj_parse_message(lua_State *lua)
   heka_json *hj = static_cast<heka_json *>(lua_newuserdata(lua, sizeof*hj));
   hj->doc = new rj::Document;
   hj->val = NULL;
+  hj->insitu = inflated;
   hj->refs =  new std::set<rj::Value *>;
   luaL_getmetatable(lua, mozsvc_heka_json);
   lua_setmetatable(lua, -2);
@@ -506,7 +535,15 @@ static int hj_parse_message(lua_State *lua)
   }
 
   bool err = false;
-  { // allows ms to be destroyed before the longjmp
+  if (hj->insitu) {
+    if (hj->doc->ParseInsitu<rj::kParseStopWhenDoneFlag>(hj->insitu)
+        .HasParseError()) {
+      err = true;
+      lua_pushfstring(lua, "failed to parse offset:%f %s",
+                      (lua_Number)hj->doc->GetErrorOffset(),
+                      rj::GetParseError_En(hj->doc->GetParseError()));
+    }
+  } else {
     rj::MemoryStream ms(json.s, json.len);
     if (hj->doc->ParseStream<0, rj::UTF8<> >(ms).HasParseError()) {
       err = true;
@@ -515,10 +552,6 @@ static int hj_parse_message(lua_State *lua)
                       rj::GetParseError_En(hj->doc->GetParseError()));
     }
   }
-
-#ifdef HAVE_ZLIB
-  if (inflated) free(inflated);
-#endif
 
   if (err) return lua_error(lua);
   hj->refs->insert(hj->doc);
@@ -531,7 +564,7 @@ public:
   typedef char Ch;
   OutputBufferWrapper(lsb_output_buffer *ob) : ob_(ob), err_(NULL) { }
 #if _BullseyeCoverage
-    #pragma BullseyeCoverage off
+#pragma BullseyeCoverage off
 #endif
   Ch Peek() const { assert(false); return '\0'; }
   Ch Take() { assert(false); return '\0'; }
@@ -539,7 +572,7 @@ public:
   Ch* PutBegin() { assert(false); return 0; }
   size_t PutEnd(Ch *) { assert(false); return 0; }
 #if _BullseyeCoverage
-    #pragma BullseyeCoverage on
+#pragma BullseyeCoverage on
 #endif
   void Put(Ch c)
   {
@@ -562,11 +595,15 @@ static int output_heka_json(lua_State *lua)
       (lua_touserdata(lua, -1));
   heka_json *hj = static_cast<heka_json *>(lua_touserdata(lua, -2));
   rj::Value *v = static_cast<rj::Value *>(lua_touserdata(lua, -3));
-  if (!(ob && hj && v)) {
+  if (!(ob && hj)) {
     return 1;
   }
-  if (hj->refs->find(v) == hj->refs->end()) {
-    return 1;
+  if (!v) {
+    v = hj->doc ? hj->doc : hj->val;
+  } else {
+    if (hj->refs->find(v) == hj->refs->end()) {
+      return 1;
+    }
   }
   OutputBufferWrapper obw(ob);
   rapidjson::Writer<OutputBufferWrapper> writer(obw);
@@ -590,6 +627,7 @@ static int hj_remove(lua_State *lua)
   heka_json *nv = static_cast<heka_json *>(lua_newuserdata(lua, sizeof*nv));
   nv->doc = NULL;
   nv->val = new rj::Value;
+  nv->insitu = NULL;
   nv->refs = new std::set<rj::Value *>;
   luaL_getmetatable(lua, mozsvc_heka_json);
   lua_setmetatable(lua, -2);

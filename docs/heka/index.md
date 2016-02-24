@@ -51,6 +51,7 @@ There are a few intentional changes between tho original Heka sandbox and this v
 #### Output Sandbox
 
 1. [update_checkpoint](output.md#update_checkpoint) was added for batch and asynchronous processing.
+1. A [Heka JSON](heka_json.md) Lua module was added.
 
 ### Removals
 

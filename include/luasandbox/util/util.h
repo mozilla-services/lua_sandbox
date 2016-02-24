@@ -69,7 +69,7 @@ LSB_UTIL_EXPORT unsigned long long lsb_get_time();
  *
  * @param s String to ungzip
  * @param s_len Length of the string to ungzip
- * @param r_len Length of the returned string
+ * @param r_len (optional) Length of the returned string
  *
  * @return char* Returned string (MUST be freed by the caller), NULL on failure
  */

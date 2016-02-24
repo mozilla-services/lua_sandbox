@@ -151,3 +151,12 @@ externalproject_add(
     CMAKE_ARGS ${SANDBOX_CMAKE_ARGS}
     INSTALL_ARGS ${INST_ARGS}
 )
+
+externalproject_add(
+    rapidjson
+    GIT_REPOSITORY https://github.com/miloyip/rapidjson.git
+    GIT_TAG ed7efe6289cfa1fafc354aaa8a29fcd31c1607fd
+    BUILD_COMMAND ${CMAKE_COMMAND} -E echo "no build"
+    INSTALL_COMMAND ${CMAKE_COMMAND} -E echo "no install"
+)
+include_directories("${EP_BASE}/Source/rapidjson/include")

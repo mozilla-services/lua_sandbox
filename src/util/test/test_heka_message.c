@@ -157,9 +157,11 @@ static char* test_find_message()
     size_t           d;
   };
 
+#define ONE_TWENTY_SIX "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
 #define add_input(str, result, discard) {.s = {.s = str, .len = sizeof str - 1}, .b = result, .d = discard},
   struct find_message tests[] = {
     add_input("\x1e\x02\x08\x14\x1f" TEST_UUID TEST_NS, true, 0) // full message
+    add_input("\x1e\x80\x08\x14" ONE_TWENTY_SIX "\x1f" TEST_UUID TEST_NS, true, 0) // large header
     add_input("\x1e", false, 0)
     add_input("\x02", false, 0)
     add_input("\x08", false, 0)

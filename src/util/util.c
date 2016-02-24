@@ -112,10 +112,9 @@ unsigned long long lsb_get_time()
 #ifdef HAVE_ZLIB
 char* lsb_ungzip(const char *s, size_t s_len, size_t *r_len)
 {
-  if (!s || !r_len) {
+  if (!s) {
     return NULL;
   }
-  *r_len = 0;
   size_t buf_len = 2 * s_len;
   unsigned char *buf = malloc(buf_len);
   if (!buf) {
@@ -158,7 +157,7 @@ char* lsb_ungzip(const char *s, size_t s_len, size_t *r_len)
     free(buf);
     return NULL;
   }
-  *r_len = strm.total_out;
+  if (r_len) *r_len = strm.total_out;
   return (char *)buf;
 }
 #endif
