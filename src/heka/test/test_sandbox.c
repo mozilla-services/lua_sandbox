@@ -604,6 +604,7 @@ static char* test_heka_json()
 {
   lsb_heka_sandbox *hsb;
   hsb = lsb_heka_create_input(NULL, "lua/heka_json.lua", NULL,
+                              "max_message_size = 8196\n"
                               "path = [[" TEST_LUA_PATH "]]\n"
                               "cpath = [[" TEST_LUA_CPATH "]]\n", dlog, iim);
   mu_assert(hsb, "lsb_heka_create_input failed");

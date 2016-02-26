@@ -14,9 +14,9 @@ extern "C"
 {
 #endif
 
-#include "lua.h"
+#include "luasandbox/lauxlib.h"
+#include "luasandbox/lua.h"
 #include "luasandbox/util/heka_message.h"
-#include "lauxlib.h"
 
 extern const char *mozsvc_heka_json;
 extern const char *mozsvc_heka_json_table;

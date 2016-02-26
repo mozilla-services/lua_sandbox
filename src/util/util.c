@@ -110,12 +110,15 @@ unsigned long long lsb_get_time()
 
 
 #ifdef HAVE_ZLIB
-char* lsb_ungzip(const char *s, size_t s_len, size_t *r_len)
+char* lsb_ungzip(const char *s, size_t s_len, size_t max_len, size_t *r_len)
 {
-  if (!s) {
+  if (!s || (max_len && s_len > max_len)) {
     return NULL;
   }
   size_t buf_len = 2 * s_len;
+  if (max_len && buf_len > max_len) {
+    buf_len = max_len;
+  }
   unsigned char *buf = malloc(buf_len);
   if (!buf) {
     return NULL;
@@ -138,7 +141,14 @@ char* lsb_ungzip(const char *s, size_t s_len, size_t *r_len)
 
   do {
     if (ret == Z_BUF_ERROR) {
+      if (max_len && buf_len == max_len) {
+        free(buf);
+        return NULL;
+      }
       buf_len *= 2;
+      if (max_len && buf_len > max_len) {
+        buf_len = max_len;
+      }
       unsigned char *tmp = realloc(buf, buf_len);
       if (!tmp) {
         free(buf);

@@ -515,7 +515,8 @@ static int hj_parse_message(lua_State *lua)
   // messages)
   if (json.len > 2) {
     if (json.s[0] == 0x1f && (unsigned char)json.s[1] == 0x8b) {
-      inflated = lsb_ungzip(json.s, json.len, NULL);
+      size_t mms = (size_t)lua_tointeger(lua, lua_upvalueindex(2));
+      inflated = lsb_ungzip(json.s, json.len, mms, NULL);
       if (!inflated) return luaL_error(lua, "lsb_ungzip failed");
     }
   }
@@ -705,10 +706,16 @@ int luaopen_heka_json(lua_State *lua)
   luaL_register(lua, NULL, hjlib_m);
   luaL_register(lua, mozsvc_heka_json_table, hjlib_f);
   // special case parse_message since it needs access to the sandbox
+  lua_getfield(lua, LUA_REGISTRYINDEX, LSB_CONFIG_TABLE);
+  if (lua_type(lua, -1) != LUA_TTABLE) {
+    return luaL_error(lua, LSB_CONFIG_TABLE " is missing");
+  }
   lsb_lua_sandbox *lsb = static_cast<lsb_lua_sandbox *>
       (lua_touserdata(lua, lua_upvalueindex(1)));
   lua_pushlightuserdata(lua, static_cast<void *>(lsb));
-  lua_pushcclosure(lua, hj_parse_message, 1);
-  lua_setfield(lua, -2, "parse_message");
+  lua_getfield(lua, -2, LSB_HEKA_MAX_MESSAGE_SIZE);
+  lua_pushcclosure(lua, hj_parse_message, 2);
+  lua_setfield(lua, -3, "parse_message");
+  lua_pop(lua, 1); // remove LSB_CONFIG_TABLE
   return 1;
 }

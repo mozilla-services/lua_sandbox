@@ -273,6 +273,11 @@ assert(ok, json)
 values = json:find("payload", "values")
 assert(values)
 
+gz_too_large = "\10\16\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\16\99\50\51\31\139\8\0\0\0\0\0\0\3\237\193\49\13\0\0\8\3\176\31\25\147\129\178\201\71\7\73\219\52\155\2\0\0\0\0\0\0\0\0\255\100\14\116\172\116\102\0\36\0\0"
+hsr:decode_message(gz_too_large)
+ok, json = pcall(heka_json.parse_message, hsr, "Payload")
+assert("lsb_ungzip failed" == json,  json)
+
 gz_corrupt = "\10\16\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\16\99\50\66\31\139foobar\0\3\171\86\202\77\204\204\83\178\170\86\202\53\84\178\50\172\213\81\80\42\72\172\204\201\79\76\1\137\149\37\230\148\166\22\43\89\69\27\234\24\233\24\199\214\214\114\1\0\64\251\6\210\48\0\0\0"
 hsr:decode_message(gz_corrupt)
 ok, json = pcall(heka_json.parse_message, hsr, "Payload")
