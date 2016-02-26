@@ -107,13 +107,8 @@ static int hsr_find_message(lua_State *lua)
 {
   int n = lua_gettop(lua);
   luaL_argcheck(lua, n > 1 && n < 4, 0, "incorrect number of arguments");
-
   heka_stream_reader *hsr = luaL_checkudata(lua, 1, mozsvc_heka_stream_reader);
   lsb_input_buffer *b = &hsr->buf;
-  if (hsr->msg.raw.s) {
-    lsb_clear_heka_message(&hsr->msg);
-    b->msglen = b->readpos = b->scanpos = 0;
-  }
 
   FILE *fh = NULL;
   switch (lua_type(lua, 2)) {
@@ -175,15 +170,15 @@ static int hsr_find_message(lua_State *lua)
     if (found) {
       lua_pushinteger(lua, 0);
     } else {
-      if (lsb_expand_input_buffer(&hsr->buf, need)) {
+      if (lsb_expand_input_buffer(b, need)) {
         return luaL_error(lua, "buffer reallocation failed\tname:%s",
                           hsr->name);
       }
-      size_t nread = fread(hsr->buf.buf + hsr->buf.readpos,
+      size_t nread = fread(b->buf + b->readpos,
                            1,
-                           hsr->buf.size - hsr->buf.readpos,
+                           b->size - b->readpos,
                            fh);
-      hsr->buf.readpos += nread;
+      b->readpos += nread;
       lua_pushnumber(lua, (lua_Number)nread);
     }
   } else { // update bytes needed
