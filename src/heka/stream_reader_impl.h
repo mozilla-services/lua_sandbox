@@ -9,8 +9,12 @@
 #ifndef luasandbox_heka_stream_reader_h_
 #define luasandbox_heka_stream_reader_h_
 
-#include "luasandbox/lua.h"
+#ifdef __cplusplus
+extern "C"
+{
+#endif
 
+#include "luasandbox/lua.h"
 #include "luasandbox/util/input_buffer.h"
 #include "luasandbox/util/heka_message.h"
 
@@ -28,5 +32,9 @@ typedef struct heka_stream_reader
 } heka_stream_reader;
 
 int luaopen_heka_stream_reader(lua_State *lua);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

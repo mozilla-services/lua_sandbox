@@ -10,7 +10,7 @@ if(MSVC)
     set(CMAKE_C_FLAGS           "/W3 /WX")
 
     # enable C++ exception handling
-    set(CMAKE_CXX_FLAGS         "${CMAKE_C_FLAGS} /EHsc")
+    set(CMAKE_CXX_FLAGS         "${CMAKE_C_FLAGS} /EHs")
 
     # debug multi threaded dll runtime, complete debugging info, runtime error checking
     set(CMAKE_C_FLAGS_DEBUG     "/MDd /Zi /RTC1")

@@ -142,8 +142,8 @@ char* lsb_ungzip(const char *s, size_t s_len, size_t max_len, size_t *r_len)
   do {
     if (ret == Z_BUF_ERROR) {
       if (max_len && buf_len == max_len) {
-        free(buf);
-        return NULL;
+        ret = Z_MEM_ERROR;
+        break;
       }
       buf_len *= 2;
       if (max_len && buf_len > max_len) {
@@ -151,8 +151,8 @@ char* lsb_ungzip(const char *s, size_t s_len, size_t max_len, size_t *r_len)
       }
       unsigned char *tmp = realloc(buf, buf_len);
       if (!tmp) {
-        free(buf);
-        return NULL;
+        ret = Z_MEM_ERROR;
+        break;
       } else {
         buf = tmp;
         strm.avail_out = buf_len - strm.total_out;

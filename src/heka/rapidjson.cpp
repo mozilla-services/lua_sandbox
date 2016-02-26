@@ -338,7 +338,7 @@ static int hj_object_iter(lua_State *lua)
     rj::Value *next = &(*hoi->it)->value;
     hj->refs->insert(next);
     lua_pushlstring(lua, (*hoi->it)->name.GetString(),
-                    (lua_Number)(*hoi->it)->name.GetStringLength());
+                    (size_t)(*hoi->it)->name.GetStringLength());
     lua_pushlightuserdata(lua, next);
     ++*hoi->it;
   } else {
