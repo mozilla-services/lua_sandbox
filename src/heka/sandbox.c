@@ -382,7 +382,6 @@ lsb_heka_sandbox* lsb_heka_create_input(void *parent,
 
 // todo link print to the logger or a no-op
   lsb_add_function(hsb->lsb, heka_decode_message, "decode_message");
-  lsb_add_function(hsb->lsb, read_message, "read_message");
   lsb_add_function(hsb->lsb, inject_message_input, "inject_message");
 // inject_payload is intentionally excluded from input plugins
 // you can construct whatever you need with inject_message
@@ -661,6 +660,7 @@ lsb_heka_sandbox* lsb_heka_create_output(void *parent,
   set_restrictions(lua, hsb);
 
 // todo link print to the logger or a no-op
+  lsb_add_function(hsb->lsb, read_message, "read_message");
   lsb_add_function(hsb->lsb, heka_decode_message, "decode_message");
   lsb_add_function(hsb->lsb, heka_encode_message, "encode_message");
   lsb_add_function(hsb->lsb, update_checkpoint, "update_checkpoint");

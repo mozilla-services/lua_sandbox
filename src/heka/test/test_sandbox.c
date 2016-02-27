@@ -346,7 +346,7 @@ static char* test_timer_event()
 
   e = lsb_heka_destroy_sandbox(hsb);
 
-  hsb = lsb_heka_create_analysis(NULL, "lua/input.lua", NULL, NULL, NULL, aim);
+  hsb = lsb_heka_create_analysis(NULL, "lua/pm_no_return.lua", NULL, NULL, NULL, aim);
   mu_assert(hsb, "lsb_heka_create_analysis succeeded");
   mu_assert_rv(1, lsb_heka_timer_event(hsb, 0, false));
   const char *err = lsb_heka_get_error(hsb);
@@ -420,10 +420,10 @@ static char* test_pm_error()
   };
 
   struct pm_result results[] = {
-    { .ncp = 3, .scp = NULL, .rv = 1,  .err = "process_message() lua/input.lua:15: boom" },
+    { .ncp = 3, .scp = NULL, .rv = 1,  .err = "process_message() lua/input.lua:25: boom" },
     { .ncp = 4, .scp = NULL, .rv = 1,  .err = "process_message() must return a nil or string error message" },
     { .ncp = 5, .scp = NULL, .rv = 1,  .err = "process_message() must return a numeric status code" },
-    { .ncp = 6, .scp = NULL, .rv = 1,  .err = "process_message() lua/input.lua:21: aaaaaaaaaaaaaaaaaaaaaaaaa"
+    { .ncp = 6, .scp = NULL, .rv = 1,  .err = "process_message() lua/input.lua:31: aaaaaaaaaaaaaaaaaaaaaaaaa"
       "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
       "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
     }, // >max error message

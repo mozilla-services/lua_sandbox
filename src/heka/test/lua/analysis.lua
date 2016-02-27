@@ -2,6 +2,15 @@
 -- License, v. 2.0. If a copy of the MPL was not distributed with this
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+assert(read_config)
+assert(read_message)
+assert(decode_message)
+assert(inject_message)
+assert(add_to_payload)
+assert(inject_payload)
+assert(not encode_message)
+assert(not update_checkpoint)
+
 function process_message()
     return 0
 end

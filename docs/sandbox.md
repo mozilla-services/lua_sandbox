@@ -127,5 +127,5 @@ The best place to start is with some examples:
 
 ### Heka Sandbox
 
-[Heka Sandbox](heka/index.html)
+[Heka Sandbox](heka/index.md)
 

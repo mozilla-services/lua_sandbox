@@ -4,6 +4,15 @@
 
 local sid
 
+assert(read_config)
+assert(read_message)
+assert(decode_message)
+assert(encode_message)
+assert(update_checkpoint)
+assert(not inject_message)
+assert(not add_to_payload)
+assert(not inject_payload)
+
 function process_message(sequence_id)
     if not sequence_id then
         update_checkpoint()

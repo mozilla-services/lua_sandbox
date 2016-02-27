@@ -1,6 +1,16 @@
 -- This Source Code Form is subject to the terms of the Mozilla Public
 -- License, v. 2.0. If a copy of the MPL was not distributed with this
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+assert(read_config)
+assert(decode_message)
+assert(inject_message)
+assert(not read_message)
+assert(not encode_message)
+assert(not update_checkpoint)
+assert(not add_to_payload)
+assert(not inject_payload)
+
 require "string"
 msg = {Timestamp = 8}
 
