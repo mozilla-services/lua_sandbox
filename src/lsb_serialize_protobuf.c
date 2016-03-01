@@ -613,7 +613,14 @@ int lsb_serialize_table_as_pb(lua_sandbox* lsb, int index)
   if (lua_isnumber(lsb->lua, -1)) {
     ts = (unsigned long long)lua_tonumber(lsb->lua, -1);
   } else {
+#ifdef __linux__
+    struct timespec now;
+    if (clock_gettime(CLOCK_REALTIME, &now) != 0) return 1;
+    ts = (unsigned long long)(now.tv_sec) * 1e9;
+    ts += (unsigned long long)(now.tv_nsec);
+#else
     ts = (unsigned long long)(time(NULL) * 1e9);
+#endif
   }
   lua_pop(lsb->lua, 1); // remove timestamp
 
