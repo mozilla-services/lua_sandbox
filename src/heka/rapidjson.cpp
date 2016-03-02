@@ -485,7 +485,7 @@ static int hj_parse_message(lua_State *lua)
   lsb_lua_sandbox *lsb = static_cast<lsb_lua_sandbox *>
       (lua_touserdata(lua, lua_upvalueindex(1)));
   if (!lsb) {
-    return luaL_error(lua, "%s() invalid lightuserdata", __FUNCTION__);
+    return luaL_error(lua, "%s() invalid lightuserdata", __func__);
   }
   int n = lua_gettop(lua);
   int idx = 1;

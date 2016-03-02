@@ -165,7 +165,7 @@ static int inject_payload(lua_State *lua)
 
   lsb_lua_sandbox *lsb = lua_touserdata(lua, lua_upvalueindex(1));
   if (!lsb) {
-    return luaL_error(lua, "%s invalid lightuserdata", __FUNCTION__);
+    return luaL_error(lua, "%s invalid lightuserdata", __func__);
   }
 
   int n = lua_gettop(lua);
@@ -180,14 +180,14 @@ static int inject_payload(lua_State *lua)
   if (n > 0) {
     if (lua_type(lua, 1) != LUA_TSTRING) {
       return luaL_error(lua, "%s() payload_type argument must be a string",
-                        __FUNCTION__);
+                        __func__);
     }
   }
 
   if (n > 1) {
     if (lua_type(lua, 2) != LUA_TSTRING) {
       return luaL_error(lua, "%s() payload_name argument must be a string",
-                        __FUNCTION__);
+                        __func__);
     }
   }
 
@@ -348,19 +348,19 @@ lsb_heka_sandbox* lsb_heka_create_input(void *parent,
                                         lsb_heka_im_input im)
 {
   if (!lua_file) {
-    if (logger) logger(__FUNCTION__, 3, "lua_file must be specified");
+    if (logger) logger(__func__, 3, "lua_file must be specified");
     return NULL;
   }
 
   if (!im) {
-    if (logger) logger(__FUNCTION__, 3, "inject_message callback must be "
+    if (logger) logger(__func__, 3, "inject_message callback must be "
                        "specified");
     return NULL;
   }
 
   lsb_heka_sandbox *hsb = calloc(1, sizeof(lsb_heka_sandbox));
   if (!hsb) {
-    if (logger) logger(__FUNCTION__, 3, "memory allocation failed");
+    if (logger) logger(__func__, 3, "memory allocation failed");
     return NULL;
   }
 
@@ -543,12 +543,12 @@ lsb_heka_sandbox* lsb_heka_create_analysis(void *parent,
                                            lsb_heka_im_analysis im)
 {
   if (!lua_file) {
-    if (logger) logger(__FUNCTION__, 3, "lua_file must be specified");
+    if (logger) logger(__func__, 3, "lua_file must be specified");
     return NULL;
   }
 
   if (!im) {
-    if (logger) logger(__FUNCTION__, 3, "inject_message callback must be "
+    if (logger) logger(__func__, 3, "inject_message callback must be "
                        "specified");
     return NULL;
   }
@@ -556,7 +556,7 @@ lsb_heka_sandbox* lsb_heka_create_analysis(void *parent,
 
   lsb_heka_sandbox *hsb = calloc(1, sizeof(lsb_heka_sandbox));
   if (!hsb) {
-    if (logger) logger(__FUNCTION__, 3, "memory allocation failed");
+    if (logger) logger(__func__, 3, "memory allocation failed");
     return NULL;
   }
 
@@ -626,12 +626,12 @@ lsb_heka_sandbox* lsb_heka_create_output(void *parent,
                                          lsb_heka_update_checkpoint ucp)
 {
   if (!lua_file) {
-    if (logger) logger(__FUNCTION__, 3, "lua_file must be specified");
+    if (logger) logger(__func__, 3, "lua_file must be specified");
     return NULL;
   }
 
   if (!ucp) {
-    if (logger) logger(__FUNCTION__, 3, "update_checkpoint callback must be "
+    if (logger) logger(__func__, 3, "update_checkpoint callback must be "
                        "specified");
     return NULL;
   }
@@ -639,7 +639,7 @@ lsb_heka_sandbox* lsb_heka_create_output(void *parent,
 
   lsb_heka_sandbox *hsb = calloc(1, sizeof(lsb_heka_sandbox));
   if (!hsb) {
-    if (logger) logger(__FUNCTION__, 3, "memory allocation failed");
+    if (logger) logger(__func__, 3, "memory allocation failed");
     return NULL;
   }
 
