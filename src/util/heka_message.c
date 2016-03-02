@@ -205,7 +205,7 @@ bool lsb_decode_heka_message(lsb_heka_message *m,
 {
   if (!m || !buf || len == 0) {
     if (logger) {
-      logger(__FUNCTION__, 4, LSB_ERR_UTIL_NULL);
+      logger(__func__, 4, LSB_ERR_UTIL_NULL);
     }
     return false;
   }
@@ -275,7 +275,7 @@ bool lsb_decode_heka_message(lsb_heka_message *m,
         lsb_heka_field *tmp = realloc(m->fields,
                                       m->fields_size * sizeof(lsb_heka_field));
         if (!tmp) {
-          if (logger) logger(__FUNCTION__, 0, "fields reallocation failed");
+          if (logger) logger(__func__, 0, "fields reallocation failed");
           return false;
         }
         m->fields = tmp;
@@ -294,19 +294,19 @@ bool lsb_decode_heka_message(lsb_heka_message *m,
 
   if (!cp) {
     if (logger) {
-      logger(__FUNCTION__, 4, "tag:%d wiretype:%d position:%d", tag,
+      logger(__func__, 4, "tag:%d wiretype:%d position:%d", tag,
              wiretype, lp - buf);
     }
     return false;
   }
 
   if (!m->uuid.s) {
-    if (logger) logger(__FUNCTION__, 4, "missing " LSB_UUID);
+    if (logger) logger(__func__, 4, "missing " LSB_UUID);
     return false;
   }
 
   if (!timestamp) {
-    if (logger) logger(__FUNCTION__, 4, "missing " LSB_TIMESTAMP);
+    if (logger) logger(__func__, 4, "missing " LSB_TIMESTAMP);
     return false;
   }
 
@@ -324,7 +324,7 @@ bool lsb_find_heka_message(lsb_heka_message *m,
 {
   if (!m || !ib || !discarded_bytes) {
     if (logger) {
-      logger(__FUNCTION__, 4, LSB_ERR_UTIL_NULL);
+      logger(__func__, 4, LSB_ERR_UTIL_NULL);
     }
     return false;
   }
