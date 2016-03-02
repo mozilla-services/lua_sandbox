@@ -223,7 +223,7 @@ static lua_State* load_sandbox_config(const char *cfg, lsb_logger logger)
 {
   lua_State *L = luaL_newstate();
   if (!L) {
-    if (logger) logger(__FUNCTION__, 3, "lua_State creation failed");
+    if (logger) logger(__func__, 3, "lua_State creation failed");
     return NULL;
   }
 
@@ -250,7 +250,7 @@ static lua_State* load_sandbox_config(const char *cfg, lsb_logger logger)
 cleanup:
   if (ret) {
     if (logger) {
-      logger(__FUNCTION__, 3, "config error: %s", lua_tostring(L, -1));
+      logger(__func__, 3, "config error: %s", lua_tostring(L, -1));
     }
     lua_close(L);
     return NULL;
@@ -305,7 +305,7 @@ static void copy_table(lua_State *sb, lua_State *cfg, lsb_logger logger)
         break;
       default:
         if (logger) {
-          logger(__FUNCTION__, 4, "skipping config value type: %s",
+          logger(__func__, 4, "skipping config value type: %s",
                  lua_typename(cfg, vt));
         }
         break;
@@ -313,7 +313,7 @@ static void copy_table(lua_State *sb, lua_State *cfg, lsb_logger logger)
       break;
     default:
       if (logger) {
-        logger(__FUNCTION__, 4, "skipping config key type: %s",
+        logger(__func__, 4, "skipping config key type: %s",
                lua_typename(cfg, kt));
       }
       break;
@@ -381,12 +381,12 @@ lsb_lua_sandbox* lsb_create(void *parent,
                             lsb_logger logger)
 {
   if (!lua_file) {
-    if (logger) logger(__FUNCTION__, 3, "lua_file must be specified");
+    if (logger) logger(__func__, 3, "lua_file must be specified");
     return NULL;
   }
 
   if (!set_tz()) {
-    if (logger) logger(__FUNCTION__, 3, "fail to set the TZ to UTC");
+    if (logger) logger(__func__, 3, "fail to set the TZ to UTC");
     return NULL;
   }
 
@@ -394,7 +394,7 @@ lsb_lua_sandbox* lsb_create(void *parent,
 
   lsb_lua_sandbox *lsb = malloc(sizeof*lsb);
   if (!lsb) {
-    if (logger) logger(__FUNCTION__, 3, "memory allocation failed");
+    if (logger) logger(__func__, 3, "memory allocation failed");
     return NULL;
   }
   memset(lsb->usage, 0, sizeof(lsb->usage));
@@ -406,7 +406,7 @@ lsb_lua_sandbox* lsb_create(void *parent,
 #endif
 
   if (!lsb->lua) {
-    if (logger) logger(__FUNCTION__, 3, "lua state creation failed");
+    if (logger) logger(__func__, 3, "lua state creation failed");
     free(lsb);
     return NULL;
   }
@@ -444,7 +444,7 @@ lsb_lua_sandbox* lsb_create(void *parent,
   lsb->state_file = NULL;
 
   if (!lsb->lua_file || lsb_init_output_buffer(&lsb->output, ol)) {
-    if (logger) logger(__FUNCTION__, 3, "memory allocation failed failed");
+    if (logger) logger(__func__, 3, "memory allocation failed failed");
     lsb_free_output_buffer(&lsb->output);
     free(lsb->lua_file);
     lua_close(lsb->lua);
