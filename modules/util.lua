@@ -6,20 +6,33 @@
 local pairs = pairs
 local type = type
 local string = require "string"
+local cjson = require "cjson"
 
 local M = {}
 setfenv(1, M) -- Remove external access to contain everything in the module
 
 -- Flattens a Lua table so it can be encoded as a protobuf fields object.
-function table_to_fields(t, fields, parent)
+function table_to_fields(t, fields, parent, char, max_depth)
+    if type(char) ~= "string" then
+        char = "."
+    end
+
     for k,v in pairs(t) do
         if parent then
-            full_key = string.format("%s.%s", parent, k)
+            full_key = string.format("%s%s%s", parent, char, k)
         else
             full_key = k
         end
+
         if type(v) == "table" then
-            table_to_fields(v, fields, full_key)
+            local _, sep_count = string.gsub(full_key, char, "")
+            local depth = sep_count + 1
+
+            if type(max_depth) == "number" and depth >= max_depth then
+                fields[full_key] = cjson.encode(v)
+            else
+                table_to_fields(v, fields, full_key, char, max_depth)
+            end
         else
             if type(v) ~= "userdata" then
                 fields[full_key] = v
