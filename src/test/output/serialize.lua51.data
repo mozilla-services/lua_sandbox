@@ -5,6 +5,9 @@ _G["dataRef"]:set_header(1, "Column_1", "count", "sum")
 _G["dataRef"]:set_header(2, "Column_2", "count", "sum")
 _G["dataRef"]:set_header(3, "Column_3", "count", "sum")
 _G["dataRef"]:fromstring("2 2 nan nan nan nan nan nan nan nan nan")
+if _G["delta"] == nil then _G["delta"] = circular_buffer.new(2, 1, 1, true) end
+_G["delta"]:set_header(1, "Column_1", "count", "sum")
+_G["delta"]:fromstring("1 1 2 nan 0 2")
 _G["rate"] = 0.12345678
 _G["kvp"] = {}
 _G["kvp"]["a"] = "foo"
@@ -16,9 +19,7 @@ _G["kvp"]["r"][4] = 92.002
 _G["kvp"]["r"][5] = 91.10001
 _G["kvp"]["r"]["key"] = "val"
 _G["kvp"]["b"] = "bar"
-if _G["delta"] == nil then _G["delta"] = circular_buffer.new(2, 1, 1, true) end
-_G["delta"]:set_header(1, "Column_1", "count", "sum")
-_G["delta"]:fromstring("1 1 2 nan 0 2")
+_G["data"] = _G["dataRef"]
 _G["uuids"] = {}
 _G["uuids"][1] = {}
 _G["uuids"][1]["type"] = "test"
@@ -28,7 +29,6 @@ _G["uuids"][2]["type"] = "test1"
 _G["uuids"][2]["uuid"] = "BD48B609-8922-4E59-A358-C242075CE089"
 _G["inf"] = 1/0
 _G["rates"] = _G["kvp"]["r"]
-_G["data"] = _G["dataRef"]
 _G["cycleb"] = {}
 _G["cycleb"]["a"] = {}
 _G["cycleb"]["a"]["b"] = _G["cycleb"]
