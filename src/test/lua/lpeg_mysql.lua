@@ -31,6 +31,24 @@ SET last_insert_id=999,timestamp=1399500744;
 /* [queryName=FIND_ITEMS] */ SELECT *
 FROM widget
 WHERE id = 10;
+]],
+[[
+# Time: 140507 18:14:18
+# User@Host: sync.rw[sync.rw] @ db01.example.com [127.0.0.1]
+# Query_time: 2.964652  Lock_time: 0.000050 Rows_sent: 251  Rows_examined: 9773
+SET timestamp=1399500744;
+/* [queryName=FIND_ITEMS] */ SELECT *
+FROM widget
+WHERE id = 10;
+]],
+[[
+# Time: 140507 18:14:18
+# User@Host: sync_rw[sync_rw] @ db-01.example.com [127.0.0.1]
+# Query_time: 2.964652  Lock_time: 0.000050 Rows_sent: 251  Rows_examined: 9773
+SET timestamp=1399500744;
+/* [queryName=FIND_ITEMS] */ SELECT *
+FROM widget
+WHERE id = 10;
 ]]
 }
 
