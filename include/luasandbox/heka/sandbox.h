@@ -30,6 +30,7 @@
 #endif
 
 #define LSB_HEKA_MAX_MESSAGE_SIZE "max_message_size"
+#define LSB_HEKA_UPDATE_CHECKPOINT "update_checkpoint"
 
 enum lsb_heka_pm_rv {
   LSB_HEKA_PM_SENT  = 0,

@@ -10,6 +10,10 @@ sandbox.c
 stream_reader.c
 )
 
+if(LIBRTKAFKA_LIBRARY)
+  set(HEKA_SRC ${HEKA_SRC} kafka.c)
+endif()
+
 add_library(luasandboxheka SHARED ${HEKA_SRC})
 set_target_properties(luasandboxheka PROPERTIES VERSION ${CPACK_PACKAGE_VERSION_MAJOR}.${CPACK_PACKAGE_VERSION_MINOR}.${CPACK_PACKAGE_VERSION_PATCH} SOVERSION 0)
 target_compile_definitions(luasandboxheka PRIVATE -Dluasandboxheka_EXPORTS)
@@ -17,8 +21,13 @@ target_link_libraries(luasandboxheka luasandbox)
 if(WIN32)
   target_link_libraries(luasandboxheka ws2_32)
 endif()
+
 if(LIBM_LIBRARY)
   target_link_libraries(luasandboxheka ${LIBM_LIBRARY})
+endif()
+
+if(LIBRTKAFKA_LIBRARY)
+  target_link_libraries(luasandboxheka ${LIBRTKAFKA_LIBRARY})
 endif()
 
 install(TARGETS luasandboxheka DESTINATION ${LIB_DIR} COMPONENT core)

@@ -13,11 +13,13 @@ of that infrastructure has been created to replace it called
 
 * [Message Matcher](message_matcher.md)
 * [Input Sandbox](input.md)
-  * [Heka Stream Reader](heka_stream_reader.md)
+  * [Heka Stream Reader](stream_reader.md)
   * [Heka JSON](heka_json.md)
+  * [Heka Kafka Consumer](kafka_consumer.md)
 * [Analysis Sandbox](analysis.md)
 * [Output Sandbox](output.md)
   * [Heka JSON](heka_json.md)
+  * [Heka Kafka Producer](kafka_producer.md)
 
 ## Sandbox API Changes from the Go Heka Sandbox
 
