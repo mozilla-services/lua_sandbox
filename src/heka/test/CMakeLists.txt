@@ -16,6 +16,12 @@ add_executable(test_message_matcher test_message_matcher.c)
 target_link_libraries(test_message_matcher luasandboxheka luasandboxutil)
 add_test(NAME test_message_matcher COMMAND test_message_matcher)
 
+if(LIBRTKAFKA_LIBRARY)
+	add_executable(test_kafka test_kafka.c)
+	target_link_libraries(test_kafka luasandboxheka luasandbox)
+	add_test(NAME test_kafka COMMAND test_kafka CONFIGURATIONS integration)
+endif()
+
 if(WIN32)
    STRING(REPLACE ";" "\\\\;" LIBRARY_PATHS "${LIBRARY_PATHS}")
    set_tests_properties(test_heka_sandbox PROPERTIES ENVIRONMENT PATH=${LIBRARY_PATHS})

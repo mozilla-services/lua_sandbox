@@ -21,6 +21,9 @@
 #include "sandbox_impl.h"
 #include "stream_reader_impl.h"
 #include "rapidjson_impl.h"
+#ifdef HAVE_KAFKA
+#include "kafka_impl.h"
+#endif
 
 #ifdef _WIN32
 #include <winsock2.h>
@@ -219,7 +222,7 @@ static int inject_payload(lua_State *lua)
 
 static int update_checkpoint(lua_State *lua)
 {
-  static const char *func_name = "update_checkpoint";
+  static const char *func_name = LSB_HEKA_UPDATE_CHECKPOINT;
 
   lsb_lua_sandbox *lsb = lua_touserdata(lua, lua_upvalueindex(1));
   if (!lsb) {
@@ -396,6 +399,12 @@ lsb_heka_sandbox* lsb_heka_create_input(void *parent,
   lua_pushlightuserdata(lua, (void *)hsb->lsb);
   lua_pushcclosure(lua, luaopen_heka_json, 1);
   lua_rawset(lua, -3);
+#ifdef HAVE_KAFKA
+// preload the Heka Kafka consumer
+  lua_pushstring(lua, mozsvc_heka_kafka_consumer_table);
+  lua_pushcfunction(lua, luaopen_heka_kafka_consumer);
+  lua_rawset(lua, -3);
+#endif
 
   lua_pop(lua, 1); // remove the preloaded table
 
@@ -631,8 +640,8 @@ lsb_heka_sandbox* lsb_heka_create_output(void *parent,
   }
 
   if (!ucp) {
-    if (logger) logger(__func__, 3, "update_checkpoint callback must be "
-                       "specified");
+    if (logger) logger(__func__, 3, LSB_HEKA_UPDATE_CHECKPOINT
+                       " callback must be specified");
     return NULL;
   }
 
@@ -663,14 +672,20 @@ lsb_heka_sandbox* lsb_heka_create_output(void *parent,
   lsb_add_function(hsb->lsb, read_message, "read_message");
   lsb_add_function(hsb->lsb, heka_decode_message, "decode_message");
   lsb_add_function(hsb->lsb, heka_encode_message, "encode_message");
-  lsb_add_function(hsb->lsb, update_checkpoint, "update_checkpoint");
-
+  lsb_add_function(hsb->lsb, update_checkpoint, LSB_HEKA_UPDATE_CHECKPOINT);
 // preload Heka JSON with a pointer back to the sandbox
   luaL_findtable(lua, LUA_REGISTRYINDEX, "_PRELOADED", 1);
   lua_pushstring(lua, mozsvc_heka_json_table);
   lua_pushlightuserdata(lua, (void *)hsb->lsb);
   lua_pushcclosure(lua, luaopen_heka_json, 1);
   lua_rawset(lua, -3);
+#ifdef HAVE_KAFKA
+// preload the Heka Kafka producer
+  lua_pushstring(lua, mozsvc_heka_kafka_producer_table);
+  lua_pushlightuserdata(lua, (void *)hsb->lsb);
+  lua_pushcclosure(lua, luaopen_heka_kafka_producer, 1);
+  lua_rawset(lua, -3);
+#endif
 
   lua_pop(lua, 1); // remove the preloaded table
 
