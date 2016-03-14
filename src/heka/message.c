@@ -988,6 +988,8 @@ int heka_read_message(lua_State *lua, lsb_heka_message *m)
       luaL_addlstring(&b, m->raw.s, m->raw.len);
       luaL_pushresult(&b);
     }
+  } else if (strcmp(field, "size") == 0) {
+    lua_pushnumber(lua, (lua_Number)m->raw.len);
   } else {
     if (field_len >= 8
         && memcmp(field, LSB_FIELDS "[", 7) == 0

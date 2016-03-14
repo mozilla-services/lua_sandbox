@@ -15,6 +15,7 @@ local tests = {
     {"Severity", 9},
     {"Pid", 0},
     {"raw", 208},
+    {"size", 208},
     {"framed", 214},
     {"Fields[string]", "string"},
     {"Fields[notfound]", nil},
@@ -41,6 +42,8 @@ function process_message()
         local r = read_message(v[1])
         if v[1] == "raw" or v[1] == "framed" then
             assert(v[2] == string.len(r), string.format("test: %d expected: %d received: %d", i, string.len(v[2]), string.len(r)))
+        elseif v[1] == "size" then
+            assert(v[2] == r, string.format("test: %d expected: %d received: %d", i, v[2], r))
         else
             assert(v[2] == r, string.format("test: %d expected: %s received: %s", i, tostring(v[2]), tostring(r)))
         end

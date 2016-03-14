@@ -53,6 +53,7 @@ Provides access to the Heka message data. Note that both fieldIndex and arrayInd
 * variableName (string)
   * framed (returns the Heka message protobuf string including the framing header)
   * raw (returns the Heka message protobuf string)
+  * size (returns the size of the raw Heka message protobuf string)
   * Uuid
   * Type
   * Logger
