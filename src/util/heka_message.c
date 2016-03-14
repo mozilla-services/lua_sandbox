@@ -38,7 +38,7 @@ static size_t decode_header(char *buf, size_t len, size_t max_message_size)
 static const char*
 read_string(int wiretype, const char *p, const char *e, lsb_const_string *s)
 {
-  if (wiretype != 2) {
+  if (wiretype != LSB_PB_WT_LENGTH) {
     return NULL;
   }
 
