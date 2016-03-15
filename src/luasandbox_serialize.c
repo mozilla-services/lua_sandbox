@@ -250,7 +250,8 @@ serialize_data(lsb_lua_sandbox *lsb, int index, lsb_output_buffer *ob)
     lua_pushstring(lsb->lua, "%q");
     lua_pushvalue(lsb->lua, index - 3);
     if (lua_pcall(lsb->lua, 2, 1, 0) == 0) {
-      ret = lsb_outputf(ob, "%s", lua_tostring(lsb->lua, -1));
+      const char* em = lua_tostring(lsb->lua, -1);
+      ret = lsb_outputf(ob, "%s", em ? em : LSB_NIL_ERROR);
       if (ret) {
         lua_pop(lsb->lua, 1); // Remove the string table.
         return ret;

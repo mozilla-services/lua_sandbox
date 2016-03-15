@@ -34,6 +34,7 @@
 #define LSB_OUTPUT_LIMIT      "output_limit"
 #define LSB_LUA_PATH          "path"
 #define LSB_LUA_CPATH         "cpath"
+#define LSB_NIL_ERROR         "<nil error message>"
 
 typedef enum {
   LSB_UNKNOWN     = 0,

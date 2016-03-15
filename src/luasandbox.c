@@ -501,8 +501,9 @@ lsb_err_value lsb_init(lsb_lua_sandbox *lsb, const char *state_file)
   }
   lua_pushstring(lsb->lua, LUA_BASELIBNAME);
   if (lua_pcall(lsb->lua, 1, 0, 0)) {
+    const char *em = lua_tostring(lsb->lua, -1);
     snprintf(lsb->error_message, LSB_ERROR_SIZE,
-             "lsb_init %s", lua_tostring(lsb->lua, -1));
+             "lsb_init %s", em ? em : LSB_NIL_ERROR);
     lsb_terminate(lsb, NULL);
     return LSB_ERR_LUA;
   }

@@ -437,10 +437,11 @@ static int process_message(lsb_heka_sandbox *hsb, lsb_heka_message *msg,
   if (lua_pcall(lua, nargs, 2, 0) != 0) {
     char err[LSB_ERROR_SIZE];
     const char *em = lua_tostring(lua, -1);
-    if (hsb->type == 'i' && strcmp(em, LSB_SHUTTING_DOWN) == 0) {
+    if (hsb->type == 'i' && em && strcmp(em, LSB_SHUTTING_DOWN) == 0) {
       return 0;
     }
-    size_t len = snprintf(err, LSB_ERROR_SIZE, "%s() %s", pm_func_name, em);
+    size_t len = snprintf(err, LSB_ERROR_SIZE, "%s() %s", pm_func_name,
+                          em ? em : LSB_NIL_ERROR);
     if (len >= LSB_ERROR_SIZE) {
       err[LSB_ERROR_SIZE - 1] = 0;
     }
@@ -781,8 +782,9 @@ int lsb_heka_timer_event(lsb_heka_sandbox *hsb, time_t t, bool shutdown)
   start = lsb_get_time();
   if (lua_pcall(lua, 2, 0, 0) != 0) {
     char err[LSB_ERROR_SIZE];
+    const char *em = lua_tostring(lua, -1);
     size_t len = snprintf(err, LSB_ERROR_SIZE, "%s() %s", func_name,
-                          lua_tostring(lua, -1));
+                          em ? em : LSB_NIL_ERROR);
     if (len >= LSB_ERROR_SIZE) {
       err[LSB_ERROR_SIZE - 1] = 0;
     }

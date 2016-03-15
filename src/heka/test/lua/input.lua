@@ -31,6 +31,8 @@ function process_message(cp)
         error(string.rep("a", 255))
     elseif cp == "string" then
         return 0, "string"
+    elseif cp == 7 then
+        error(nil)
     end
     return 0, "no cp"
 end

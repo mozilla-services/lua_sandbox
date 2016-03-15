@@ -82,8 +82,9 @@ int process(lsb_lua_sandbox *lsb, double ts)
   lua_pushnumber(lua, ts);
   if (lua_pcall(lua, 1, 2, 0) != 0) {
     char err[LSB_ERROR_SIZE];
+    const char *em = lua_tostring(lua, -1);
     int len = snprintf(err, LSB_ERROR_SIZE, "%s() %s", func_name,
-                       lua_tostring(lua, -1));
+                       em ? em : LSB_NIL_ERROR);
     if (len >= LSB_ERROR_SIZE || len < 0) {
       err[LSB_ERROR_SIZE - 1] = 0;
     }
@@ -143,8 +144,9 @@ int report(lsb_lua_sandbox *lsb, double tc)
   lua_pushnumber(lua, tc);
   if (lua_pcall(lua, 1, 0, 0) != 0) {
     char err[LSB_ERROR_SIZE];
+    const char *em = lua_tostring(lua, -1);
     int len = snprintf(err, LSB_ERROR_SIZE, "%s() %s", func_name,
-                       lua_tostring(lua, -1));
+                       em ? em : LSB_NIL_ERROR);
     if (len >= LSB_ERROR_SIZE || len < 0) {
       err[LSB_ERROR_SIZE - 1] = 0;
     }
