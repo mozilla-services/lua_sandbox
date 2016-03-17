@@ -12,6 +12,7 @@ message_matcher = "TRUE"
 --]]
 
 local write  = require "io".write
+local flush  = require "io".flush
 local floor  = require "math".floor
 local date   = require "os".date
 local byte   = require "string".byte
@@ -57,6 +58,7 @@ function process_message()
         end
     end
     write("\n")
+    flush()
     return 0
 end
 
