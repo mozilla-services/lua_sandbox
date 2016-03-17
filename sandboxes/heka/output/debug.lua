@@ -41,7 +41,7 @@ function process_message()
     write(":Pid: ", msg.Pid or "<nil>", "\n")
     write(":Hostname: ", msg.Hostname or "<nil>", "\n")
     write(":Fields:\n")
-    for i, v in ipairs(msg.Fields) do
+    for i, v in ipairs(msg.Fields or {}) do
         write("    | name:", v.name,
               " type:", v.value_type or 0,
               " representation:", v.representation or "<nil>",
