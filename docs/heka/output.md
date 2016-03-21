@@ -335,7 +335,7 @@ function timer_event(ns, shutdown)
     if buffer_len > 1 and (shutdown or last_load + ticker_interval <= ns / 1e9)then
         local err = bulk_load()
         if not err then
-            batch_checkpoint_update()
+            update_checkpoint()
         end
     end
 end
