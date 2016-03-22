@@ -634,11 +634,25 @@ static int ll_module (lua_State *L) {
 }
 
 
+static int ll_seeall (lua_State *L) {
+  luaL_checktype(L, 1, LUA_TTABLE);
+  if (!lua_getmetatable(L, 1)) {
+    lua_createtable(L, 0, 1); /* create new metatable */
+    lua_pushvalue(L, -1);
+    lua_setmetatable(L, 1);
+  }
+  lua_pushvalue(L, LUA_GLOBALSINDEX);
+  lua_setfield(L, -2, "__index");  /* mt.__index = _G */
+  return 0;
+}
+
+
 /* }====================================================== */
 
 
 
 static const luaL_Reg pk_funcs[] = {
+  {"seeall", ll_seeall},
   {NULL, NULL}
 };
 
@@ -682,7 +696,6 @@ LUALIB_API int luaopen_package (lua_State *L) {
   luaL_register(L, NULL, ll_funcs);
   lua_pop(L, 1);
 
-  /* create an empty `package' table */
   luaL_register(L, LUA_LOADLIBNAME, pk_funcs);
   return 1;  /* return 'package' table */
 }
