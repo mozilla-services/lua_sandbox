@@ -98,7 +98,10 @@ local tests = {
         }
     },
 
-    {name = "package", t = package, values = {}},
+    {name = "package", t = package, values = {
+        seeall=1,
+        }
+    },
 
     {name = "string", t = string, values = {
         byte=1,
