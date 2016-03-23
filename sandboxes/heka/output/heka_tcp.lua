@@ -13,6 +13,16 @@ address = "127.0.0.1"
 port    = 5565
 timeout = 10
 
+ssl_params = {
+  mode = "client",
+  protocol = "tlsv1",
+  key = "/etc/hindsight/certs/clientkey.pem",
+  certificate = "/etc/hindsight/certs/client.pem",
+  cafile = "/etc/hindsight/certs/CA.pem",
+  verify = "peer",
+  options = {"all", "no_sslv3"}
+}
+
 --]]
 
 local socket = require "socket"
@@ -20,6 +30,13 @@ local socket = require "socket"
 local address = read_config("address") or "127.0.0.1"
 local port = read_config("port") or 5565
 local timeout = read_config("timeout") or 10
+local ssl_params = read_config("ssl_params")
+
+local ssl_ctx = nil
+if ssl_params then
+    require "ssl"
+    ssl_ctx = assert(ssl.newcontext(ssl_params))
+end
 
 local function create_client()
     local c, err = socket.connect(address, port)
@@ -27,6 +44,12 @@ local function create_client()
         c:setoption("tcp-nodelay", true)
         c:setoption("keepalive", true)
         c:settimeout(timeout)
+        if ssl_ctx then
+            c, err = ssl.wrap(c, ssl_ctx)
+            if c then
+                c:dohandshake()
+            end
+        end
     end
     return c, err
 end
