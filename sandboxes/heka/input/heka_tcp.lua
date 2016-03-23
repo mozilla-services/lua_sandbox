@@ -12,6 +12,16 @@ instruction_limit = 0
 address = "127.0.0.1"
 port    = 5565
 
+ssl_params = {
+  mode = "server",
+  protocol = "tlsv1",
+  key = "/etc/hindsight/certs/serverkey.pem",
+  certificate = "/etc/hindsight/certs/server.pem",
+  cafile = "/etc/hindsight/certs/CA.pem",
+  verify = {"peer", "fail_if_no_peer_cert"},
+  options = {"all", "no_sslv3"}
+}
+
 --]]
 
 require "coroutine"
@@ -22,19 +32,19 @@ require "table"
 
 local address = read_config("address") or "127.0.0.1"
 local port = read_config("port") or 5565
+local ssl_params = read_config("ssl_params")
+local ssl_ctx = nil
+if ssl_params then
+    require "ssl"
+    ssl_ctx = assert(ssl.newcontext(ssl_params))
+end
 local server = assert(socket.bind(address, port))
 server:settimeout(0)
 local threads = {}
 local sockets = {server}
 
-local function handle_client(client)
+local function handle_client(client, caddr, cport)
     local found, consumed, need = false, 0, 8192 * 4
-    local caddr, cport = client:getpeername()
-    if not caddr then
-        caddr = "unknown"
-        cport = 0
-    end
-
     local hsr = heka_stream_reader.new(
         string.format("%s:%d -> %s:%d", caddr, cport, address, port))
     client:settimeout(0)
@@ -63,9 +73,18 @@ function process_message()
                 if s == server then
                     local client = s:accept()
                     if client then
+                        local caddr, cport = client:getpeername()
+                        if not caddr then
+                            caddr = "unknown"
+                            cport = 0
+                        end
+                        if ssl_ctx then
+                            client = ssl.wrap(client, ssl_ctx)
+                            client:dohandshake()
+                        end
                         sockets[#sockets + 1] = client
                         threads[client] = coroutine.create(
-                            function() handle_client(client) end)
+                            function() handle_client(client, caddr, cport) end)
                     end
                 else
                     if threads[s] then
