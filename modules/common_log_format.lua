@@ -222,6 +222,7 @@ local apache_format_arguments = {
    , p = port_format
    , P = pid_format
    , t = time_format
+   , x = function(a) return string.gsub(string.lower(a), "-", "_") end -- already prefixed by SSL_
 }
 
 local function apache_lookup_variable(var)

@@ -264,6 +264,8 @@ local function apache_formats()
     ,{"%{%s}t"                  ,"time"                 ,"1392050801"                   ,1392050801000000000}
     ,{'"%r"'                    , "request"             ,'"test \\"item\\""'            ,'test \\"item\\"'}
     ,{'"%{Test-item}o"'         ,"sent_http_test_item"  ,'"test \\"item\\""'            ,'test \\"item\\"'}
+    ,{"%{SSL_PROTOCOL}x"        ,"ssl_protocol"         ,"TLSv1.2"                      ,"TLSv1.2"}
+    ,{'"%{SSL_CIPHER}x"'        ,"ssl_cipher"           ,'"ECDHE-RSA-AES256-SHA"'       ,"ECDHE-RSA-AES256-SHA"}
     }
 
     if os.date("%c"):find("^%d") then -- windows
