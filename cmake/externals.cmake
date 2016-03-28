@@ -161,11 +161,13 @@ externalproject_add(
 )
 include_directories("${EP_BASE}/Source/rapidjson/include")
 
-externalproject_add(
-    lua_sec
-    GIT_REPOSITORY https://github.com/LuaDist/luasec.git
-    GIT_TAG 329a8789f142bbbfef4fd7ed506285a25c3c0e0e
-    UPDATE_COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_LIST_DIR}/FindLua.cmake <SOURCE_DIR>/cmake
-    CMAKE_ARGS ${SANDBOX_CMAKE_ARGS} -DCMAKE_INSTALL_PREFIX=${EP_BASE}/io
-    INSTALL_ARGS ${INST_ARGS}
-)
+if (OPENSSL_FOUND)
+    externalproject_add(
+        lua_sec
+        GIT_REPOSITORY https://github.com/LuaDist/luasec.git
+        GIT_TAG 329a8789f142bbbfef4fd7ed506285a25c3c0e0e
+        UPDATE_COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_LIST_DIR}/FindLua.cmake <SOURCE_DIR>/cmake
+        CMAKE_ARGS ${SANDBOX_CMAKE_ARGS} -DCMAKE_INSTALL_PREFIX=${EP_BASE}/io
+        INSTALL_ARGS ${INST_ARGS}
+    )
+endif()

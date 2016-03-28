@@ -37,6 +37,11 @@ else()
   message(STATUS "The Kafka module will not be built")
 endif()
 
+find_package(OpenSSL)
+if (NOT OPENSSL_FOUND)
+  message(STATUS "OpenSSL was not found, the LuaSec module will not be built")
+endif()
+
 find_package(Git REQUIRED)
 set(CPACK_RPM_PACKAGE_LICENSE "MPLv2.0")
 set(CPACK_RPM_PACKAGE_PROVIDES "libluasb.so.0()(64bit)")
