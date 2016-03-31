@@ -256,7 +256,7 @@ static int update_checkpoint(lua_State *lua)
 static void set_restrictions(lua_State *lua, lsb_heka_sandbox *hsb)
 {
   static const char *io[] = {
-    NULL, "", "dofile", "load", "loadfile", "loadstring", "newproxy", "print",
+    NULL, "", "dofile", "load", "loadfile", "loadstring", "newproxy",
     NULL, "os", "getenv", "exit", "setlocale",
     NULL, "string", "dump"
   };
@@ -383,7 +383,6 @@ lsb_heka_sandbox* lsb_heka_create_input(void *parent,
   lua_State *lua = lsb_get_lua(hsb->lsb);
   set_restrictions(lua, hsb);
 
-// todo link print to the logger or a no-op
   lsb_add_function(hsb->lsb, heka_decode_message, "decode_message");
   lsb_add_function(hsb->lsb, inject_message_input, "inject_message");
 // inject_payload is intentionally excluded from input plugins
@@ -586,7 +585,6 @@ lsb_heka_sandbox* lsb_heka_create_analysis(void *parent,
   lua_State *lua = lsb_get_lua(hsb->lsb);
   set_restrictions(lua, hsb);
 
-// todo link print to the logger or a no-op
   lsb_add_function(hsb->lsb, heka_decode_message, "decode_message");
   lsb_add_function(hsb->lsb, read_message, "read_message");
   lsb_add_function(hsb->lsb, inject_message_analysis, "inject_message");
@@ -669,7 +667,6 @@ lsb_heka_sandbox* lsb_heka_create_output(void *parent,
   lua_State *lua = lsb_get_lua(hsb->lsb);
   set_restrictions(lua, hsb);
 
-// todo link print to the logger or a no-op
   lsb_add_function(hsb->lsb, read_message, "read_message");
   lsb_add_function(hsb->lsb, heka_decode_message, "decode_message");
   lsb_add_function(hsb->lsb, heka_encode_message, "encode_message");

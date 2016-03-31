@@ -38,6 +38,7 @@ local tests = {
         package=1,
         pairs=1,
         pcall=1,
+        print=1,
         rawequal=1,
         rawget=1,
         rawset=1,

@@ -21,6 +21,7 @@ Sandbox API
         string = {"dump"}
     }
     ```
+* **log_level** - Integer specifying the syslog severity level, when set to debug (7) the print function will be wired to the specified logger
 * *user defined*  any other variable (string, bool, number, table) is passed through as-is and available via [read_config](#read_config)
 
 ### Lua functions exposed to C by the core sandbox
@@ -91,13 +92,27 @@ Provides access to the sandbox configuration variables.
 * value (string, number, bool, table)
 
 #### output
-Appends  data to the output buffer, which cannot exceed the output_limit
-configuration parameter. See lsb_get_output() to connect the output to the
-host application.
+Receives any number of arguments and appends data to the output buffer, which
+cannot exceed the output_limit configuration parameter. See lsb_get_output() to
+connect the output to the host application.
 
 *Arguments*
 - arg (number, string, bool, nil, userdata implementing output support) - Lua 
   variable or literal to be appended the output buffer
+
+*Return*
+- none
+
+#### print
+Receives any number of arguments and sends a debug message to the host's logger
+function as a tab delimited message. The function clears and then uses the
+output buffer so if pending output has been queued and not flushed it will be
+lost (the same output_limit restrictions apply).  Non-printable characters
+are replaced with spaces to preserve the host's log integrity and any embedded
+NULs terminate each argument.
+
+*Arguments*
+- arg (anything that can be converted to a string with the tostring function)
 
 *Return*
 - none

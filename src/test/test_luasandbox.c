@@ -24,6 +24,7 @@
 char *e = NULL;
 const char *written_data = NULL;
 size_t written_data_len = 0;
+static char print_out[2048] = {0};
 
 
 #ifdef _WIN32
@@ -67,6 +68,17 @@ void dlog(const char *component, int level, const char *fmt, ...)
           component ? component : "unnamed");
   vfprintf(stderr, fmt, args);
   fwrite("\n", 1, 1, stderr);
+  va_end(args);
+}
+
+
+void print(const char *component, int level, const char *fmt, ...)
+{
+  va_list args;
+  va_start(args, fmt);
+  int n = snprintf(print_out, sizeof print_out, "%d %s ", level,
+                     component ? component : "unnamed");
+  n = vsnprintf(print_out + n, sizeof print_out - n, fmt, args);
   va_end(args);
 }
 
@@ -1296,6 +1308,89 @@ static char* test_sax()
 }
 
 
+static char* test_print()
+{
+  const char *tests[] =
+  {
+    ""
+    , "7 lua/print.lua foo \t10\ttrue"
+    , "7 lua/print.lua f \t10\ttrue"
+    , ""
+    , NULL
+  };
+  lsb_lua_sandbox *sb = lsb_create(NULL, "lua/print.lua", "log_level = 7;", print);
+  mu_assert(sb, "lsb_create() received: NULL");
+
+  lsb_err_value ret = lsb_init(sb, NULL);
+  mu_assert(!ret, "lsb_init() received: %s", ret);
+
+  for (int i = 0; tests[i]; ++i) {
+    print_out[0] = 0;
+    int result = process(sb, i);
+    mu_assert(result == 0, "test: %d received: %d error: %s", i, result, lsb_get_error(sb));
+    mu_assert(strcmp(tests[i], print_out) == 0, "test: %d expected: %s received: %s", i, tests[i], print_out);
+  }
+
+  e = lsb_destroy(sb);
+  mu_assert(!e, "lsb_destroy() received: %s", e);
+  return NULL;
+}
+
+
+static char* test_print_disabled()
+{
+  const char *tests[] =
+  {
+    ""
+    , ""
+    , NULL
+  };
+  lsb_lua_sandbox *sb = lsb_create(NULL, "lua/print.lua", "log_level = 6;", print);
+  mu_assert(sb, "lsb_create() received: NULL");
+
+  lsb_err_value ret = lsb_init(sb, NULL);
+  mu_assert(!ret, "lsb_init() received: %s", ret);
+
+  for (int i = 0; tests[i]; ++i) {
+    print_out[0] = 0;
+    int result = process(sb, i);
+    mu_assert(result == 0, "test: %d received: %d error: %s", i, result, lsb_get_error(sb));
+    mu_assert(strcmp(tests[i], print_out) == 0, "test: %d expected: %s received: %s", i, tests[i], print_out);
+  }
+
+  e = lsb_destroy(sb);
+  mu_assert(!e, "lsb_destroy() received: %s", e);
+  return NULL;
+}
+
+
+static char* test_print_logger()
+{
+  const char *tests[] =
+  {
+    ""
+    , "7 test.print foo \t10\ttrue"
+    , NULL
+  };
+  lsb_lua_sandbox *sb = lsb_create(NULL, "lua/print.lua", "log_level = 7;Logger = 'test.print';", print);
+  mu_assert(sb, "lsb_create() received: NULL");
+
+  lsb_err_value ret = lsb_init(sb, NULL);
+  mu_assert(!ret, "lsb_init() received: %s", ret);
+
+  for (int i = 0; tests[i]; ++i) {
+    print_out[0] = 0;
+    int result = process(sb, i);
+    mu_assert(result == 0, "test: %d received: %d error: %s", i, result, lsb_get_error(sb));
+    mu_assert(strcmp(tests[i], print_out) == 0, "test: %d expected: %s received: %s", i, tests[i], print_out);
+  }
+
+  e = lsb_destroy(sb);
+  mu_assert(!e, "lsb_destroy() received: %s", e);
+  return NULL;
+}
+
+
 static char* benchmark_counter()
 {
   int iter = 10000000;
@@ -1592,6 +1687,9 @@ static char* all_tests()
   mu_run_test(test_sandbox_config);
   mu_run_test(test_cuckoo_filter);
   mu_run_test(test_sax);
+  mu_run_test(test_print);
+  mu_run_test(test_print_disabled);
+  mu_run_test(test_print_logger);
 
   mu_run_test(benchmark_counter);
   mu_run_test(benchmark_serialize);

@@ -22,6 +22,7 @@ struct lsb_lua_sandbox {
   void              *parent;
   char              *lua_file;
   char              *state_file;
+  lsb_logger        logger;
   lsb_state         state;
   lsb_output_buffer output;
   size_t            usage[LSB_UT_MAX][LSB_US_MAX];

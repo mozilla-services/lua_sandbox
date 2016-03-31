@@ -122,7 +122,7 @@ static void instruction_manager(lua_State *lua, lua_Debug *ar)
 static int output(lua_State *lua)
 {
   lsb_lua_sandbox *lsb = lua_touserdata(lua, lua_upvalueindex(1));
-  if (NULL == lsb) {
+  if (!lsb) {
     return luaL_error(lua, "output() invalid lightuserdata");
   }
 
@@ -131,6 +131,62 @@ static int output(lua_State *lua)
     return luaL_argerror(lsb->lua, 0, "must have at least one argument");
   }
   lsb_output(lsb, 1, n, 1);
+  return 0;
+}
+
+
+static int output_print(lua_State *lua)
+{
+  lsb_lua_sandbox *lsb = lua_touserdata(lua, lua_upvalueindex(1));
+  if (!lsb) {
+    return luaL_error(lua, "print() invalid lightuserdata");
+  }
+  lsb->output.pos = 0; // clear the buffer
+
+  int n = lua_gettop(lua);
+  if (!lsb->logger || n == 0) {
+    return 0;
+  }
+
+  lua_getglobal(lua, "tostring");
+  for (int i = 1; i <= n; ++i) {
+    lua_pushvalue(lua, -1);  // tostring
+    lua_pushvalue(lua, i);   // value
+    lua_call(lua, 1, 1);
+    const char *s = lua_tostring(lua, -1);
+    if (s == NULL) {
+      return luaL_error(lua, LUA_QL("tostring") " must return a string to "
+                        LUA_QL("print"));
+    }
+    if (i > 1) {
+      lsb_outputc(&lsb->output, '\t');
+    }
+
+    while (*s) {
+      if (isprint(*s)) {
+        lsb_outputc(&lsb->output, *s);
+      } else {
+        lsb_outputc(&lsb->output, ' ');
+      }
+      ++s;
+    }
+    lua_pop(lua, 1);
+  }
+
+  const char *component = NULL;
+  lua_getfield(lua, LUA_REGISTRYINDEX, LSB_CONFIG_TABLE);
+  if (lua_type(lua, -1) == LUA_TTABLE) {
+    // this makes an assumptions by looking for a Heka sandbox specific cfg
+    // variable but will fall back to the lua filename in the generic case
+    lua_getfield(lua, -1, "Logger");
+    component = lua_tostring(lua, -1);
+    if (!component) {
+      component = lsb->lua_file;
+    }
+  }
+
+  lsb->logger(component, 7, "%s", lsb->output.buf);
+  lsb->output.pos = 0;
   return 0;
 }
 
@@ -157,7 +213,7 @@ static int unprotected_panic(lua_State *lua)
 }
 
 
-static int get_usage_config(lua_State *lua, int idx, const char *item)
+static int get_int(lua_State *lua, int idx, const char *item)
 {
   lua_getfield(lua, idx, item);
   int i = (int)lua_tointeger(lua, -1);
@@ -423,9 +479,10 @@ lsb_lua_sandbox* lsb_create(void *parent,
   copy_table(lsb->lua, lua_cfg, logger);
   lua_pop(lua_cfg, 2);
   lua_close(lua_cfg);
-  size_t ml = get_usage_config(lsb->lua, -1, "memory_limit");
-  size_t il = get_usage_config(lsb->lua, -1, "instruction_limit");
-  size_t ol = get_usage_config(lsb->lua, -1, "output_limit");
+  size_t ml = get_int(lsb->lua, -1, "memory_limit");
+  size_t il = get_int(lsb->lua, -1, "instruction_limit");
+  size_t ol = get_int(lsb->lua, -1, "output_limit");
+  int log_level = get_int(lsb->lua, -1, "log_level");
   lua_setfield(lsb->lua, LUA_REGISTRYINDEX, LSB_CONFIG_TABLE);
   lua_pushcclosure(lsb->lua, &read_config, 0);
   lua_setglobal(lsb->lua, "read_config");
@@ -442,6 +499,9 @@ lsb_lua_sandbox* lsb_create(void *parent,
   lsb->error_message[0] = 0;
   lsb->lua_file = malloc(strlen(lua_file) + 1);
   lsb->state_file = NULL;
+  lsb->logger = log_level == 7 ? logger : NULL; // give the sandbox access to
+                                                // the logger (print) when
+                                                // debugging
 
   if (!lsb->lua_file || lsb_init_output_buffer(&lsb->output, ol)) {
     if (logger) logger(__func__, 3, "memory allocation failed failed");
@@ -507,6 +567,7 @@ lsb_err_value lsb_init(lsb_lua_sandbox *lsb, const char *state_file)
     lsb_terminate(lsb, NULL);
     return LSB_ERR_LUA;
   }
+  lsb_add_function(lsb, output_print, "print");
 
   if (lsb->usage[LSB_UT_INSTRUCTION][LSB_US_LIMIT] != 0) {
     lua_sethook(lsb->lua, instruction_manager, LUA_MASKCOUNT,
