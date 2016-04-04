@@ -99,7 +99,7 @@ ticker_interval     = 60
 --]]
 
 local function sanitize_dimension(d)
-    if d then
+    if d ~= nil then
         return string.gsub(tostring(d), "[^a-zA-Z0-9_.]", "_")
     end
 end
