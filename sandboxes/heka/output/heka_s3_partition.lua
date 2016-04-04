@@ -85,7 +85,7 @@ max_file_handles    = 1000
 max_file_size       = 1024 * 1024 * 500
 
 -- Specifies how long (in seconds) to wait before it is copied to s3
--- (default 1 hour).  Idle files are only checked every tickec_interval seconds.
+-- (default 1 hour).  Idle files are only checked every ticker_interval seconds.
 max_file_age        = 60 * 60
 
 -- Specifies that all local files will be copied S3 before exiting (default false).
@@ -99,8 +99,8 @@ ticker_interval     = 60
 --]]
 
 local function sanitize_dimension(d)
-    if type(d) == "string" then
-        return string.gsub(d, "[^a-zA-Z0-9_.]", "_")
+    if d then
+        return string.gsub(tostring(d), "[^a-zA-Z0-9_.]", "_")
     end
 end
 
@@ -251,7 +251,7 @@ function process_message()
             dims[i] = "UNKNOWN"
         end
     end
-    local path = table.concat(dims, "+")
+    local path = table.concat(dims, "+") -- the plus will be converted to a path separator '/' on copy
     local entry = get_entry(path)
     local fh = entry[2]
     fh:write(read_message("framed"))
