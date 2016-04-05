@@ -5,7 +5,7 @@
 --[[
 ## Elasticsearch Encoder for Heka Payload-only Messages
 The message payload must be pre-formatted JSON in an ElasticSearch compatible
-fromat.
+format.
 
 ### Module Configuration Table
 
