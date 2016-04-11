@@ -12,7 +12,6 @@
 #include <stdbool.h>
 #include <stddef.h>
 
-#include "../../luasandbox.h"
 #include "input_buffer.h"
 #include "output_buffer.h"
 #include "string.h"
