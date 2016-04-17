@@ -224,14 +224,14 @@ end
 local function header()
     local t = mysql.slow_query_grammar:match(slow_query_log[1])
     if not t then return error("no match") end
-    if t.Hostname ~= "127.0.0.1" then return error("Address: " .. t.Hostname) end
+    if t.Hostname ~= "127.0.0.1" then return error("Hostname: " .. t.Hostname) end
     validate(fields, t)
 end
 
 local function standard()
     local t = mysql.slow_query_grammar:match(slow_query_log[2])
     if not t then return error("no match") end
-    if t.Hostname ~= "127.0.0.1" then return error("Address: " .. t.Hostname) end
+    if t.Hostname ~= "127.0.0.1" then return error("Hostname: " .. t.Hostname) end
     validate(fields, t)
 end
 
@@ -244,7 +244,7 @@ end
 local function mariadb_standard()
     local t = mysql.mariadb_slow_query_grammar:match(mariadb_slow_query_log[1])
     if not t then return error("no match") end
-    if t.Hostname ~= "127.0.0.1" then return error("Address: " .. t.Hostname) end
+    if t.Hostname ~= "127.0.0.1" then return error("Hostname: " .. t.Hostname) end
     validate(mariadb_fields, t)
 end
 
@@ -257,21 +257,21 @@ end
 local function mariadb_verbose()
     local t = mysql.mariadb_slow_query_grammar:match(mariadb_slow_query_log[3])
     if not t then return error("no match") end
-    if t.Hostname ~= "127.0.0.1" then return error("Address: " .. t.Hostname) end
+    if t.Hostname ~= "127.0.0.1" then return error("Hostname: " .. t.Hostname) end
     validate(mariadb_verbose_fields, t)
 end
 
 local function percona_standard()
     local t = mysql.percona_slow_query_grammar:match(percona_slow_query_log[1])
     if not t then return error("no match") end
-    if t.Hostname ~= "127.0.0.1" then return error("Address: " .. t.Hostname) end
+    if t.Hostname ~= "127.0.0.1" then return error("Hostname: " .. t.Hostname) end
     validate(percona_fields, t)
 end
 
 local function percona_verbose()
     local t = mysql.percona_slow_query_grammar:match(percona_slow_query_log[2])
     if not t then return error("no match") end
-    if t.Hostname ~= "127.0.0.1" then return error("Address: " .. t.Hostname) end
+    if t.Hostname ~= "127.0.0.1" then return error("Hostname: " .. t.Hostname) end
     validate(percona_verbose_fields, t)
 end
 

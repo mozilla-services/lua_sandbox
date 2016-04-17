@@ -43,7 +43,7 @@ local use_db        = l.P"use " * line
 
 local last_insert   = l.P"last_insert_id=" * l.Cg(integer, "Last_insert") * ","
 local insert        = l.P"insert_id=" * l.Cg(integer, "Insert_id") * ","
-local timestamp     = l.P"timestamp=" * l.Cg(integer / "%0000000000", "Timestamp")
+local timestamp     = l.P"timestamp=" * l.Cg((l.digit^1 / "%0000000000"), "Timestamp")
 local set           = l.P"SET " * last_insert^0 * insert^0 * timestamp * ";" * sep
 
 local admin         = l.P"# administrator command: " * line
