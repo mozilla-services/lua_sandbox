@@ -6,8 +6,8 @@
 
 /** Hindsight Heka stream reader structures @file */
 
-#ifndef luasandbox_heka_stream_reader_h_
-#define luasandbox_heka_stream_reader_h_
+#ifndef luasandbox_heka_stream_reader_impl_h_
+#define luasandbox_heka_stream_reader_impl_h_
 
 #ifdef __cplusplus
 extern "C"
@@ -20,9 +20,6 @@ extern "C"
 
 extern const char *mozsvc_heka_stream_reader;
 extern const char *mozsvc_heka_stream_reader_table;
-
-extern const char *mozsvc_heka_json;
-extern const char *mozsvc_heka_json_table;
 
 typedef struct heka_stream_reader
 {

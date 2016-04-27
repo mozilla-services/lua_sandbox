@@ -6,6 +6,7 @@
 
 /** @brief Hindsight/Heka message matcher implementation @file */
 
+#include "message_matcher_impl.h"
 #include "luasandbox/heka/message_matcher.h"
 
 #include <stdbool.h>
@@ -17,6 +18,7 @@
 #include "luasandbox/lua.h"
 #include "luasandbox/lualib.h"
 #include "luasandbox/util/string_matcher.h"
+#include "sandbox_impl.h"
 
 static const char *grammar =
     "local l = require 'lpeg'\n"
@@ -454,7 +456,7 @@ lsb_create_message_match_builder(const char *lua_path, const char *lua_cpath)
   }
 #endif
 
-  lsb_message_match_builder *mmb = malloc(sizeof *mmb);
+  lsb_message_match_builder *mmb = malloc(sizeof*mmb);
   mmb->parser = luaL_newstate();
   if (!mmb->parser) {
     free(mmb);
@@ -492,11 +494,13 @@ void lsb_destroy_message_match_builder(lsb_message_match_builder *mmb)
 
 lsb_message_matcher*
 lsb_create_message_matcher(const lsb_message_match_builder *mmb,
-                          const char *exp)
+                           const char *exp)
 {
   if (!mmb || !exp) {
     return NULL;
   }
+  lua_pop(mmb->parser, lua_gettop(mmb->parser));
+
   lua_getglobal(mmb->parser, "parse");
   if (!lua_isfunction(mmb->parser, -1)) {
     return NULL;
@@ -579,4 +583,149 @@ void lsb_destroy_message_matcher(lsb_message_matcher *mm)
 bool lsb_eval_message_matcher(lsb_message_matcher *mm, lsb_heka_message *m)
 {
   return eval_tree(mm->nodes, m);
+}
+
+// add a lua wrapper so outputs can do some dynamic filtering
+const char *mozsvc_heka_message_match_builder =
+    "mozsvc.heka_message_match_builder";
+const char *mozsvc_heka_message_match_builder_table =
+    "heka_message_match_builder";
+const char *mozsvc_heka_message_matcher = "mozsvc.heka_message_matcher";
+
+static lsb_message_match_builder* check_mmb(lua_State *lua)
+{
+  lsb_message_match_builder **pmmb =
+      luaL_checkudata(lua, 1, mozsvc_heka_message_match_builder);
+  return *pmmb;
+}
+
+
+static lsb_message_matcher* check_mm(lua_State *lua)
+{
+  lsb_message_matcher **pmm = luaL_checkudata(lua, 1,
+                                              mozsvc_heka_message_matcher);
+  return *pmm;
+}
+
+
+static int mmb_new(lua_State *lua)
+{
+  const char *path = NULL;
+  const char *cpath = NULL;
+  lua_getfield(lua, LUA_REGISTRYINDEX, LSB_CONFIG_TABLE);
+  if (lua_type(lua, -1) == LUA_TTABLE) {
+    lua_getfield(lua, -1, LSB_LUA_PATH);
+    path = lua_tostring(lua, -1);
+    lua_getfield(lua, -2, LSB_LUA_CPATH);
+    cpath = lua_tostring(lua, -1);
+  } else {
+    return luaL_error(lua, LSB_CONFIG_TABLE " is missing");
+  }
+
+  lsb_message_match_builder **pmmb = lua_newuserdata(lua, sizeof**pmmb);
+  luaL_getmetatable(lua, mozsvc_heka_message_match_builder);
+  lua_setmetatable(lua, -2);
+
+
+  *pmmb = lsb_create_message_match_builder(path, cpath);
+  if (!*pmmb) {
+    return luaL_error(lua, "message_match_builder could not be created");
+  }
+  return 1;
+}
+
+
+static int mmb_create_matcher(lua_State *lua)
+{
+  lsb_message_match_builder *mmb = check_mmb(lua);
+  const char *exp = luaL_checkstring(lua, 2);
+
+  lsb_message_matcher **pmm = lua_newuserdata(lua, sizeof**pmm);
+  luaL_getmetatable(lua, mozsvc_heka_message_matcher);
+  lua_setmetatable(lua, -2);
+
+  *pmm = lsb_create_message_matcher(mmb, exp);
+  if (!*pmm) {
+    return luaL_error(lua, "invalid message matcher expression");
+  }
+  return 1;
+}
+
+
+static int mmb_gc(lua_State *lua)
+{
+  lsb_message_match_builder *mmb = check_mmb(lua);
+  lsb_destroy_message_match_builder(mmb);
+  return 0;
+}
+
+
+static int mm_eval(lua_State *lua)
+{
+  lsb_lua_sandbox *lsb = lua_touserdata(lua, lua_upvalueindex(1));
+  if (!lsb) {
+    return luaL_error(lua, "%s() invalid lightuserdata", __func__);
+  }
+  lsb_message_matcher *mm = check_mm(lua);
+  lsb_heka_sandbox *hsb = lsb_get_parent(lsb);
+  if (!hsb->msg || !hsb->msg->raw.s) {
+    return luaL_error(lua, "no active message");
+  }
+  lua_pushboolean(lua, lsb_eval_message_matcher(mm, hsb->msg));
+  return 1;
+}
+
+
+static int mm_gc(lua_State *lua)
+{
+  lsb_message_matcher *mm = check_mm(lua);
+  lsb_destroy_message_matcher(mm);
+  return 0;
+}
+
+
+static const struct luaL_reg mmlib_m[] =
+{
+  { "__gc", mm_gc },
+  { NULL, NULL }
+};
+
+static const struct luaL_reg mmblib_f[] =
+{
+  { "new", mmb_new },
+  { NULL, NULL }
+};
+
+
+static const struct luaL_reg mmblib_m[] =
+{
+  { "create_matcher", mmb_create_matcher },
+  { "__gc", mmb_gc },
+  { NULL, NULL }
+};
+
+
+int luaopen_heka_message_match_builder(lua_State *lua)
+{
+  luaL_newmetatable(lua, mozsvc_heka_message_matcher);
+  lua_pushvalue(lua, -1);
+  lua_setfield(lua, -2, "__index");
+  luaL_register(lua, NULL, mmlib_m);
+  // special case parse_message since it needs access to the sandbox
+  lua_getfield(lua, LUA_REGISTRYINDEX, LSB_CONFIG_TABLE);
+  if (lua_type(lua, -1) != LUA_TTABLE) {
+    return luaL_error(lua, LSB_CONFIG_TABLE " is missing");
+  }
+  lsb_lua_sandbox *lsb = lua_touserdata(lua, lua_upvalueindex(1));
+  lua_pushlightuserdata(lua, (void *)lsb);
+  lua_pushcclosure(lua, mm_eval, 1);
+  lua_setfield(lua, -3, "eval");
+  lua_pop(lua, 2); // remove LSB_CONFIG_TABLE and metatable
+
+  luaL_newmetatable(lua, mozsvc_heka_message_match_builder);
+  lua_pushvalue(lua, -1);
+  lua_setfield(lua, -2, "__index");
+  luaL_register(lua, NULL, mmblib_m);
+  luaL_register(lua, mozsvc_heka_message_match_builder_table, mmblib_f);
+  return 1;
 }

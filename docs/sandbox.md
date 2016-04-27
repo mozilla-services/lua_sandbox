@@ -11,16 +11,16 @@ Sandbox API
 * **cpath** - The path used by require to search for a C loader (same notes as above)
 * **disabled_modules** - Hash specifying which modules should be completely inaccessible.  The existence of the key in the table will
   disable the module.
-  ```lua
-  disabled_modules = {io = 1}
-  ```
+```lua
+disabled_modules = {io = 1}
+```
 * **remove_entries** - Hash specifying which functions within a module should be inaccessible.
-    ```lua
-    remove_entries = {
-        os = {"getenv", "execute"},
-        string = {"dump"}
-    }
-    ```
+```lua
+remove_entries = {
+    os = {"getenv", "execute"},
+    string = {"dump"}
+}
+```
 * **log_level** - Integer specifying the syslog severity level, when set to debug (7) the print function will be wired to the specified logger
 * *user defined*  any other variable (string, bool, number, table) is passed through as-is and available via [read_config](#read_config)
 

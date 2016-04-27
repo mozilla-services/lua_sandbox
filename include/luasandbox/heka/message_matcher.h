@@ -18,7 +18,8 @@ typedef struct lsb_message_matcher lsb_message_matcher;
 typedef struct lsb_message_match_builder lsb_message_match_builder;
 
 #ifdef __cplusplus
-extern "C" {
+extern "C"
+{
 #endif
 
 /**
@@ -71,7 +72,7 @@ LSB_HEKA_EXPORT void lsb_destroy_message_matcher(lsb_message_matcher *mm);
  * @return bool True if the message is a match
  */
 LSB_HEKA_EXPORT bool lsb_eval_message_matcher(lsb_message_matcher *mm,
-                                         lsb_heka_message *m);
+                                              lsb_heka_message *m);
 
 #ifdef __cplusplus
 }

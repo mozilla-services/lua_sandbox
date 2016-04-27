@@ -29,10 +29,12 @@ struct log_message {
   char        msg[1024];
 };
 
-static struct log_message lm = { .component = NULL, .severity = 0, .msg = {0} };
+static struct log_message lm = { .component = NULL, .severity = 0, .msg = { 0 } };
 
-void logger(const char *component, int severity, const char *fmt, ...)
+void log_cb(void *context, const char *component, int severity, const char *fmt,
+            ...)
 {
+  (void)context;
   lm.component = component;
   lm.severity = severity;
   va_list args;
@@ -40,6 +42,7 @@ void logger(const char *component, int severity, const char *fmt, ...)
   vsnprintf(lm.msg, sizeof lm.msg, fmt, args);
   va_end(args);
 }
+static lsb_logger logger = { .context = NULL, .cb = log_cb };
 
 static char* test_stub()
 {
@@ -89,7 +92,7 @@ static char* test_decode()
   lsb_heka_message m;
   mu_assert(!lsb_init_heka_message(&m, 1), "failed");
   for (unsigned i = 0; i < sizeof tests / sizeof(lsb_const_string); ++i){
-    bool ok = lsb_decode_heka_message(&m, tests[i].s, tests[i].len, logger);
+    bool ok = lsb_decode_heka_message(&m, tests[i].s, tests[i].len, &logger);
     mu_assert(ok, "test: %d failed err: %s", i, lm.msg);
   }
   mu_assert(!lsb_decode_heka_message(NULL, NULL, 0, NULL), "succeeded");
@@ -140,7 +143,7 @@ static char* test_decode_failure()
   lsb_heka_message m;
   mu_assert(!lsb_init_heka_message(&m, 10), "failed");
   for (unsigned i = 0; i < sizeof(tests) / sizeof(struct decode_failure); ++i) {
-    bool ok = lsb_decode_heka_message(&m, tests[i].s, strlen(tests[i].s), logger);
+    bool ok = lsb_decode_heka_message(&m, tests[i].s, strlen(tests[i].s), &logger);
     mu_assert(!ok, "test: %u no error generated", i);
     mu_assert(!strcmp(lm.msg, tests[i].e), "test: %u expected: %s received: %s",
               i, tests[i].e, lm.msg);

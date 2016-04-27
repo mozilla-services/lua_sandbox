@@ -200,11 +200,11 @@ process_fields(lsb_heka_field *f, const char *p, const char *e)
 bool lsb_decode_heka_message(lsb_heka_message *m,
                              const char *buf,
                              size_t len,
-                             lsb_logger logger)
+                             lsb_logger *logger)
 {
   if (!m || !buf || len == 0) {
-    if (logger) {
-      logger(__func__, 4, LSB_ERR_UTIL_NULL);
+    if (logger && logger->cb) {
+      logger->cb(logger->context, __func__, 4, LSB_ERR_UTIL_NULL);
     }
     return false;
   }
@@ -274,7 +274,9 @@ bool lsb_decode_heka_message(lsb_heka_message *m,
         lsb_heka_field *tmp = realloc(m->fields,
                                       m->fields_size * sizeof(lsb_heka_field));
         if (!tmp) {
-          if (logger) logger(__func__, 0, "fields reallocation failed");
+          if (logger && logger->cb) {
+            logger->cb(logger->context, __func__, 0, "fields reallocation failed");
+          }
           return false;
         }
         m->fields = tmp;
@@ -292,20 +294,24 @@ bool lsb_decode_heka_message(lsb_heka_message *m,
   } while (cp && cp < ep);
 
   if (!cp) {
-    if (logger) {
-      logger(__func__, 4, "tag:%d wiretype:%d position:%d", tag,
-             wiretype, lp - buf);
+    if (logger && logger->cb) {
+      logger->cb(logger->context, __func__, 4, "tag:%d wiretype:%d position:%d",
+                 tag, wiretype, lp - buf);
     }
     return false;
   }
 
   if (!m->uuid.s) {
-    if (logger) logger(__func__, 4, "missing " LSB_UUID);
+    if (logger && logger->cb) {
+      logger->cb(logger->context, __func__, 4, "missing " LSB_UUID);
+    }
     return false;
   }
 
   if (!timestamp) {
-    if (logger) logger(__func__, 4, "missing " LSB_TIMESTAMP);
+    if (logger && logger->cb) {
+      logger->cb(logger->context, __func__, 4, "missing " LSB_TIMESTAMP);
+    }
     return false;
   }
 
@@ -319,11 +325,11 @@ bool lsb_find_heka_message(lsb_heka_message *m,
                            lsb_input_buffer *ib,
                            bool decode,
                            size_t *discarded_bytes,
-                           lsb_logger logger)
+                           lsb_logger *logger)
 {
   if (!m || !ib || !discarded_bytes) {
-    if (logger) {
-      logger(__func__, 4, LSB_ERR_UTIL_NULL);
+    if (logger && logger->cb) {
+      logger->cb(logger->context, __func__, 4, LSB_ERR_UTIL_NULL);
     }
     return false;
   }
@@ -511,7 +517,7 @@ lsb_write_heka_uuid(lsb_output_buffer *ob, const char *uuid, size_t len)
 
   static const size_t needed = 18;
   ob->pos = 0; // writing a uuid will always clear the buffer as it is the
-  // start of a new message
+               // start of a new message
   lsb_err_value ret = lsb_expand_output_buffer(ob, needed);
   if (ret) return ret;
 

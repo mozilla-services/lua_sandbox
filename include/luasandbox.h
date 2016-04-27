@@ -94,12 +94,12 @@ LSB_EXPORT extern lsb_err_id LSB_ERR_TERMINATED;
  * @param cfg Lua structure defining the full sandbox restrictions (may contain
  *            optional host configuration options, everything is available to
  *            the sandbox through the read_config API.
- * @param logger Optional logger function pointer for error reporting
+ * @param logger Struct for error reporting/debug printing (NULL to disable)
  * @return lsb_lua_sandbox Sandbox pointer or NULL on failure.
  */
 LSB_EXPORT lsb_lua_sandbox*
 lsb_create(void *parent, const char *lua_file, const char *cfg,
-           lsb_logger logger);
+           lsb_logger *logger);
 
 /**
  * Initializes the Lua sandbox and loads/runs the Lua script that was specified

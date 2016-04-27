@@ -15,9 +15,15 @@ typedef const char lsb_err_id[];
 typedef const char *lsb_err_value;
 #define lsb_err_string(s) s ? s : "<no error>"
 
-typedef void (*lsb_logger)(const char *component,
-                           int level,
-                           const char *fmt,
-                           ...);
+typedef void (*lsb_logger_cb)(void *context,
+                              const char *component,
+                              int level,
+                              const char *fmt,
+                              ...);
+
+typedef struct lsb_logger {
+  void          *context;
+  lsb_logger_cb cb;
+} lsb_logger;
 
 #endif

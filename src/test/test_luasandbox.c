@@ -24,7 +24,7 @@
 char *e = NULL;
 const char *written_data = NULL;
 size_t written_data_len = 0;
-static char print_out[2048] = {0};
+static char print_out[2048] = { 0 };
 
 
 #ifdef _WIN32
@@ -60,27 +60,31 @@ int file_exists(const char *fn)
   return 0;
 }
 
-void dlog(const char *component, int level, const char *fmt, ...)
+void dlog(void *context, const char *component, int level, const char *fmt, ...)
 {
+  (void)context;
   va_list args;
-  va_start(args, fmt);
   fprintf(stderr, "%lld [%d] %s ", (long long)time(NULL), level,
           component ? component : "unnamed");
-  vfprintf(stderr, fmt, args);
-  fwrite("\n", 1, 1, stderr);
-  va_end(args);
-}
-
-
-void print(const char *component, int level, const char *fmt, ...)
-{
-  va_list args;
   va_start(args, fmt);
+  vfprintf(stderr, fmt, args);
+  va_end(args);
+  fwrite("\n", 1, 1, stderr);
+}
+static lsb_logger logger = { .context = NULL, .cb = dlog };
+
+
+void print(void *context, const char *component, int level, const char *fmt, ...)
+{
+  (void)context;
+  va_list args;
   int n = snprintf(print_out, sizeof print_out, "%d %s ", level,
-                     component ? component : "unnamed");
+                   component ? component : "unnamed");
+  va_start(args, fmt);
   n = vsnprintf(print_out + n, sizeof print_out - n, fmt, args);
   va_end(args);
 }
+static lsb_logger printer = { .context = NULL, .cb = print };
 
 
 int process(lsb_lua_sandbox *lsb, double ts)
@@ -223,7 +227,7 @@ static char* test_api_assertion()
 static char* test_create()
 {
   static char *cfg = "function foo() return 0 end\nt = {[true] = 1}\n";
-  lsb_lua_sandbox *sb = lsb_create(NULL, "lua/counter.lua", cfg, dlog);
+  lsb_lua_sandbox *sb = lsb_create(NULL, "lua/counter.lua", cfg, &logger);
   mu_assert(sb, "lsb_create() failed");
   lsb_destroy(sb);
   sb = lsb_create(NULL, "lua/counter.lua", cfg, NULL);
@@ -253,7 +257,7 @@ static char* test_create_error()
   sb = lsb_create(NULL, "lua/counter.lua", "cpath = 1", NULL);
   mu_assert(!sb, "lsb_create() invalid config");
 
-  sb = lsb_create(NULL, "lua/counter.lua", "test = {", dlog);
+  sb = lsb_create(NULL, "lua/counter.lua", "test = {", &logger);
   mu_assert(!sb, "lsb_create() invalid config");
 
   return NULL;
@@ -1318,7 +1322,7 @@ static char* test_print()
     , ""
     , NULL
   };
-  lsb_lua_sandbox *sb = lsb_create(NULL, "lua/print.lua", "log_level = 7;", print);
+  lsb_lua_sandbox *sb = lsb_create(NULL, "lua/print.lua", "log_level = 7;", &printer);
   mu_assert(sb, "lsb_create() received: NULL");
 
   lsb_err_value ret = lsb_init(sb, NULL);
@@ -1345,7 +1349,7 @@ static char* test_print_disabled()
     , ""
     , NULL
   };
-  lsb_lua_sandbox *sb = lsb_create(NULL, "lua/print.lua", "log_level = 6;", print);
+  lsb_lua_sandbox *sb = lsb_create(NULL, "lua/print.lua", "log_level = 6;", &printer);
   mu_assert(sb, "lsb_create() received: NULL");
 
   lsb_err_value ret = lsb_init(sb, NULL);
@@ -1372,7 +1376,7 @@ static char* test_print_logger()
     , "7 test.print foo \t10\ttrue"
     , NULL
   };
-  lsb_lua_sandbox *sb = lsb_create(NULL, "lua/print.lua", "log_level = 7;Logger = 'test.print';", print);
+  lsb_lua_sandbox *sb = lsb_create(NULL, "lua/print.lua", "log_level = 7;Logger = 'test.print';", &printer);
   mu_assert(sb, "lsb_create() received: NULL");
 
   lsb_err_value ret = lsb_init(sb, NULL);

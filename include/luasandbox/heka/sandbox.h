@@ -121,8 +121,8 @@ typedef int (*lsb_heka_update_checkpoint)(void *parent, void *sequence_id);
  *                   (NULL if no preservation is required)
  * @param lsb_cfg Full configuration string as a Lua table (NULL for lsb
  *                defaults)
- * @param logger Logger call back (NULL to disable logging)
- * @param im inject_message call back
+ * @param logger Struct for error reporting/debug printing (NULL to disable)
+ * @param im inject_message callback
  * @return lsb_heka_sandbox* On success a pointer to the sandbox otherwise NULL
  */
 LSB_HEKA_EXPORT
@@ -130,7 +130,7 @@ lsb_heka_sandbox* lsb_heka_create_input(void *parent,
                                         const char *lua_file,
                                         const char *state_file,
                                         const char *lsb_cfg,
-                                        lsb_logger logger,
+                                        lsb_logger *logger,
                                         lsb_heka_im_input im);
 
 /**
@@ -163,8 +163,8 @@ int lsb_heka_pm_input(lsb_heka_sandbox *hsb,
  *                   (NULL if no preservation is required)
  * @param lsb_cfg Full configuration string as a Lua table (NULL for lsb
  *                defaults)
- * @param logger Logger call back (NULL to disable logging)
- * @param im inject_message call back
+ * @param logger Struct for error reporting/debug printing (NULL to disable)
+ * @param im inject_message callback
  * @return lsb_heka_sandbox* On success a pointer to the sandbox otherwise NULL
  */
 LSB_HEKA_EXPORT
@@ -172,7 +172,7 @@ lsb_heka_sandbox* lsb_heka_create_analysis(void *parent,
                                            const char *lua_file,
                                            const char *state_file,
                                            const char *lsb_cfg,
-                                           lsb_logger logger,
+                                           lsb_logger *logger,
                                            lsb_heka_im_analysis im);
 
 /**
@@ -202,8 +202,8 @@ int lsb_heka_pm_analysis(lsb_heka_sandbox *hsb,
  *                   (NULL if no preservation is required)
  * @param lsb_cfg Full configuration string as a Lua table (NULL for lsb
  *                defaults)
- * @param logger Logger call back (NULL to disable logging)
- * @param upc checkpoint_updated call back when using batch or async output
+ * @param logger Struct for error reporting/debug printing (NULL to disable)
+ * @param upc checkpoint_updated callback when using batch or async output
  *
  * @return lsb_heka_sandbox* On success a pointer to the sandbox otherwise NULL
  */
@@ -212,7 +212,7 @@ lsb_heka_sandbox* lsb_heka_create_output(void *parent,
                                          const char *lua_file,
                                          const char *state_file,
                                          const char *lsb_cfg,
-                                         lsb_logger logger,
+                                         lsb_logger *logger,
                                          lsb_heka_update_checkpoint ucp);
 
 /**

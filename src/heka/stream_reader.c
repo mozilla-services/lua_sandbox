@@ -207,7 +207,7 @@ static int hsr_gc(lua_State *lua)
   free(hsr->name);
   lsb_free_heka_message(&hsr->msg);
   lsb_free_input_buffer(&hsr->buf);
-  return 1;
+  return 0;
 }
 
 

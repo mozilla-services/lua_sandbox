@@ -30,7 +30,17 @@ function process_message(sequence_id)
             sid = sequence_id
             return -5
         else
-            local ok, err = pcall(update_checkpoint, sequence_id)
+            require "heka_message_match_builder"
+            local mmb = heka_message_match_builder.new()
+            local mm = mmb:create_matcher("Type == 'type'")
+            assert(mm:eval())
+            mm = mmb:create_matcher("Type == 'foo'")
+            assert(not mm:eval())
+
+            local ok, err = pcall(mmb.create_matcher, mmb, "Widget == 'foo'")
+            assert(not ok)
+
+            ok, err = pcall(update_checkpoint, sequence_id)
             assert(not ok)
             return -3 -- retry
         end
@@ -38,5 +48,10 @@ function process_message(sequence_id)
     return 0
 end
 
-function timer_event(ns)
+function timer_event(ns, shutdown)
+    require "heka_message_match_builder"
+    local mmb = heka_message_match_builder.new()
+    local mm = mmb:create_matcher("Type == 'foo'")
+    ok, err = pcall(mm.eval, mm)
+    assert(err == "no active message")
 end

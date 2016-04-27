@@ -18,9 +18,10 @@
 #include "luasandbox/util/running_stats.h"
 #include "luasandbox_output.h"
 #include "message_impl.h"
+#include "message_matcher_impl.h"
+#include "rapidjson_impl.h"
 #include "sandbox_impl.h"
 #include "stream_reader_impl.h"
-#include "rapidjson_impl.h"
 #ifdef HAVE_KAFKA
 #include "kafka_impl.h"
 #endif
@@ -347,23 +348,29 @@ lsb_heka_sandbox* lsb_heka_create_input(void *parent,
                                         const char *lua_file,
                                         const char *state_file,
                                         const char *lsb_cfg,
-                                        lsb_logger logger,
+                                        lsb_logger *logger,
                                         lsb_heka_im_input im)
 {
   if (!lua_file) {
-    if (logger) logger(__func__, 3, "lua_file must be specified");
+    if (logger && logger->cb) {
+      logger->cb(logger->context, __func__, 3, "lua_file must be specified");
+    }
     return NULL;
   }
 
   if (!im) {
-    if (logger) logger(__func__, 3, "inject_message callback must be "
-                       "specified");
+    if (logger && logger->cb) {
+      logger->cb(logger->context, __func__, 3, "inject_message callback must "
+                 "be specified");
+    }
     return NULL;
   }
 
   lsb_heka_sandbox *hsb = calloc(1, sizeof(lsb_heka_sandbox));
   if (!hsb) {
-    if (logger) logger(__func__, 3, "memory allocation failed");
+    if (logger && logger->cb) {
+      logger->cb(logger->context, __func__, 3, "memory allocation failed");
+    }
     return NULL;
   }
 
@@ -408,7 +415,9 @@ lsb_heka_sandbox* lsb_heka_create_input(void *parent,
   lua_pop(lua, 1); // remove the preloaded table
 
   if (lsb_init(hsb->lsb, state_file)) {
-    if (logger) logger(hsb->name, 3, lsb_get_error(hsb->lsb));
+    if (logger && logger->cb) {
+      logger->cb(logger->context, hsb->name, 3, lsb_get_error(hsb->lsb));
+    }
     lsb_destroy(hsb->lsb);
     free(hsb->hostname);
     free(hsb->name);
@@ -548,24 +557,30 @@ lsb_heka_sandbox* lsb_heka_create_analysis(void *parent,
                                            const char *lua_file,
                                            const char *state_file,
                                            const char *lsb_cfg,
-                                           lsb_logger logger,
+                                           lsb_logger *logger,
                                            lsb_heka_im_analysis im)
 {
   if (!lua_file) {
-    if (logger) logger(__func__, 3, "lua_file must be specified");
+    if (logger && logger->cb) {
+      logger->cb(logger->context, __func__, 3, "lua_file must be specified");
+    }
     return NULL;
   }
 
   if (!im) {
-    if (logger) logger(__func__, 3, "inject_message callback must be "
-                       "specified");
+    if (logger && logger->cb) {
+      logger->cb(logger->context, __func__, 3, "inject_message callback must "
+                 "be specified");
+    }
     return NULL;
   }
 
 
   lsb_heka_sandbox *hsb = calloc(1, sizeof(lsb_heka_sandbox));
   if (!hsb) {
-    if (logger) logger(__func__, 3, "memory allocation failed");
+    if (logger && logger->cb) {
+      logger->cb(logger->context, __func__, 3, "memory allocation failed");
+    }
     return NULL;
   }
 
@@ -596,7 +611,9 @@ lsb_heka_sandbox* lsb_heka_create_analysis(void *parent,
   lua_setglobal(lua, "output");
 
   if (lsb_init(hsb->lsb, state_file)) {
-    if (logger) logger(hsb->name, 3, lsb_get_error(hsb->lsb));
+    if (logger && logger->cb) {
+      logger->cb(logger->context, hsb->name, 3, lsb_get_error(hsb->lsb));
+    }
     lsb_destroy(hsb->lsb);
     free(hsb->hostname);
     free(hsb->name);
@@ -630,24 +647,30 @@ lsb_heka_sandbox* lsb_heka_create_output(void *parent,
                                          const char *lua_file,
                                          const char *state_file,
                                          const char *lsb_cfg,
-                                         lsb_logger logger,
+                                         lsb_logger *logger,
                                          lsb_heka_update_checkpoint ucp)
 {
   if (!lua_file) {
-    if (logger) logger(__func__, 3, "lua_file must be specified");
+    if (logger && logger->cb) {
+      logger->cb(logger->context, __func__, 3, "lua_file must be specified");
+    }
     return NULL;
   }
 
   if (!ucp) {
-    if (logger) logger(__func__, 3, LSB_HEKA_UPDATE_CHECKPOINT
-                       " callback must be specified");
+    if (logger && logger->cb) {
+      logger->cb(logger->context, __func__, 3, LSB_HEKA_UPDATE_CHECKPOINT
+                 " callback must be specified");
+    }
     return NULL;
   }
 
 
   lsb_heka_sandbox *hsb = calloc(1, sizeof(lsb_heka_sandbox));
   if (!hsb) {
-    if (logger) logger(__func__, 3, "memory allocation failed");
+    if (logger && logger->cb) {
+      logger->cb(logger->context, __func__, 3, "memory allocation failed");
+    }
     return NULL;
   }
 
@@ -677,6 +700,11 @@ lsb_heka_sandbox* lsb_heka_create_output(void *parent,
   lua_pushlightuserdata(lua, (void *)hsb->lsb);
   lua_pushcclosure(lua, luaopen_heka_json, 1);
   lua_rawset(lua, -3);
+// preload Heka message match builder with a pointer back to the sandbox
+  lua_pushstring(lua, mozsvc_heka_message_match_builder_table);
+  lua_pushlightuserdata(lua, (void *)hsb->lsb);
+  lua_pushcclosure(lua, luaopen_heka_message_match_builder, 1);
+  lua_rawset(lua, -3);
 #ifdef HAVE_KAFKA
 // preload the Heka Kafka producer
   lua_pushstring(lua, mozsvc_heka_kafka_producer_table);
@@ -688,7 +716,9 @@ lsb_heka_sandbox* lsb_heka_create_output(void *parent,
   lua_pop(lua, 1); // remove the preloaded table
 
   if (lsb_init(hsb->lsb, state_file)) {
-    if (logger) logger(hsb->name, 3, lsb_get_error(hsb->lsb));
+    if (logger && logger->cb) {
+      logger->cb(logger->context, hsb->name, 3, lsb_get_error(hsb->lsb));
+    }
     lsb_destroy(hsb->lsb);
     free(hsb->hostname);
     free(hsb->name);

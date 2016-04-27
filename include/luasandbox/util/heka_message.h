@@ -148,7 +148,7 @@ LSB_UTIL_EXPORT void lsb_clear_heka_message(lsb_heka_message *m);
  * @param ib Input buffer
  * @param decode True if the framed message should be protobuf decoded
  * @param discarded_bytes Used to track stream corruption
- * @param logger Logger call back (can be set to NULL to disable logging)
+ * @param logger Logger structure (can be set to NULL to disable logging)
  *
  * @return bool True on success
  */
@@ -156,7 +156,7 @@ LSB_UTIL_EXPORT bool lsb_find_heka_message(lsb_heka_message *m,
                                            lsb_input_buffer *ib,
                                            bool decode,
                                            size_t *discarded_bytes,
-                                           lsb_logger logger);
+                                           lsb_logger *logger);
 
 /**
  * Decodes an array of bytes into a Heka message. The message structure is
@@ -165,7 +165,7 @@ LSB_UTIL_EXPORT bool lsb_find_heka_message(lsb_heka_message *m,
  * @param m Heka message structure
  * @param buf Protobuf array
  * @param len Length of the protobuf array
- * @param logger Logger call back (can be set to NULL to disable logging)
+ * @param logger Logger structure (can be set to NULL to disable logging)
  *
  * @return bool True on success
  *
@@ -173,7 +173,7 @@ LSB_UTIL_EXPORT bool lsb_find_heka_message(lsb_heka_message *m,
 LSB_UTIL_EXPORT bool lsb_decode_heka_message(lsb_heka_message *m,
                                              const char *buf,
                                              size_t len,
-                                             lsb_logger logger);
+                                             lsb_logger *logger);
 
 /**
  * Reads a dynamic field from the Heka message
