@@ -8,11 +8,10 @@
 
 #include "luasandbox/util/heka_message.h"
 
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
-#include "../luasandbox_impl.h"
-#include "luasandbox_output.h"
 #include "luasandbox/util/output_buffer.h"
 #include "luasandbox/util/protobuf.h"
 

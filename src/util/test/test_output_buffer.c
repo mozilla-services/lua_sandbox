@@ -6,6 +6,7 @@
 
 /** @brief lsb_output_buffer unit tests @file */
 
+#include <limits.h>
 #include <math.h>
 #include <stdio.h>
 #include <string.h>

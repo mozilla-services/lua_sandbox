@@ -7,6 +7,7 @@
 /** @brief heka_message unit tests @file */
 
 #include <stddef.h>
+#include <stdarg.h>
 #include <string.h>
 
 #include <stdio.h>

@@ -12,6 +12,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "luasandbox.h"
 #include "luasandbox/lauxlib.h"
 #include "luasandbox/lua.h"
 #include "luasandbox/lualib.h"
