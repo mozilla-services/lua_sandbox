@@ -13,27 +13,14 @@ message_matcher = "TRUE"
 
 local write  = require "io".write
 local flush  = require "io".flush
-local floor  = require "math".floor
-local date   = require "os".date
-local byte   = require "string".byte
 local concat = require "table".concat
-
-local function get_uuid(uuid)
-    return string.format("%X%X%X%X-%X%X-%X%X-%X%X-%X%X%X%X%X", byte(uuid, 1, 16))
-end
-
-local function get_timestamp(ts)
-    local time_t = floor(ts / 1e9)
-    local ns = ts - time_t * 1e9
-    local ds = date("%Y-%m-%d %H:%M:%S", time_t)
-    return string.format("%s.%09d +0000 UTC", ds, ns)
-end
+local mi     = require "heka.msg_interpolate"
 
 function process_message()
     local raw = read_message("raw")
     local msg = decode_message(raw)
-    write(":Uuid: ", get_uuid(msg.Uuid), "\n")
-    write(":Timestamp: ", get_timestamp(msg.Timestamp), "\n")
+    write(":Uuid: ", mi.get_uuid(msg.Uuid), "\n")
+    write(":Timestamp: ", mi.get_timestamp(msg.Timestamp), "\n")
     write(":Type: ", msg.Type or "<nil>", "\n")
     write(":Logger: ", msg.Logger or "<nil>", "\n")
     write(":Severity: ", msg.Severity or 7, "\n")
