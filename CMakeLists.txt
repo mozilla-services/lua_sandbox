@@ -35,3 +35,6 @@ install(DIRECTORY "${CMAKE_SOURCE_DIR}/modules/" DESTINATION lib/${PROJECT_NAME}
 install(FILES "${CMAKE_SOURCE_DIR}/README.md" DESTINATION share/doc/${PROJECT_NAME} COMPONENT core)
 
 add_subdirectory(src)
+add_custom_target(copy_includes
+COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/include ${EP_BASE}/include)
+add_dependencies(luasandbox copy_includes)
