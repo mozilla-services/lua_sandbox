@@ -78,6 +78,22 @@ be added by infrastructure using the corresponding configuration setting.
 *Return*
 * heka_pb (string) - Heka protobuf binary string, framed as specified or an error is thrown
 
+#### create_message_matcher
+
+Returns a Heka protocol buffer message matcher; used to dynamic filter messages sent to the output plugin.
+
+*Arguments*
+* message_matcher  [message matcher](message_matcher.md)
+
+*Return*
+* message_matcher (userdata) - or an error is thrown
+  The message matcher object has one method `eval` that returns true if the current message matches, false
+  if it does not.
+
+##### Example
+
+See: [heka_tcp_matcher.lua](../../sandboxes/heka/output/heka_tcp_matcher.lua)
+
 #### update_checkpoint
 
 ##### Batch Mode

@@ -4,6 +4,8 @@
 
 set(UTIL_SRC
 heka_message.c
+heka_message_matcher.c
+heka_message_matcher_parser.c
 input_buffer.c
 output_buffer.c
 protobuf.c

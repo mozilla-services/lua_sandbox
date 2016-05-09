@@ -23,7 +23,7 @@ const char* lsb_pb_read_key(const char *p, int *tag, int *wiretype)
 
 
 lsb_err_value lsb_pb_write_key(lsb_output_buffer *ob, unsigned char tag,
-                     unsigned char wiretype)
+                               unsigned char wiretype)
 {
   lsb_err_value ret = lsb_expand_output_buffer(ob, 1);
   if (!ret) {
@@ -35,7 +35,7 @@ lsb_err_value lsb_pb_write_key(lsb_output_buffer *ob, unsigned char tag,
 
 const char* lsb_pb_read_varint(const char *p, const char *e, long long *vi)
 {
-  if (!p || !e) {
+  if (!p || !e || !vi) {
     return NULL;
   }
 

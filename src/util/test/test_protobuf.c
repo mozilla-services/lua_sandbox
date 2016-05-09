@@ -107,6 +107,10 @@ static char* test_varint()
   mu_assert(!lsb_pb_read_varint(ts, ts + sizeof(ts) - 1, &vi),
             "parsed invalid varint (too short)");
 
+  mu_assert(!lsb_pb_read_varint(NULL, ts + sizeof(ts) - 1, &vi), "null start");
+  mu_assert(!lsb_pb_read_varint(ts, NULL, &vi), "null end");
+  mu_assert(!lsb_pb_read_varint(ts, ts + sizeof(ts) - 1, NULL), "null ret");
+
   lsb_output_buffer ob;
   lsb_init_output_buffer(&ob, LSB_MAX_VARINT_BYTES);
   ob.pos = ob.maxsize;

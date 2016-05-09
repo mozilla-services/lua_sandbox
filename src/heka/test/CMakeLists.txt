@@ -12,10 +12,6 @@ add_executable(test_heka_sandbox test_sandbox.c)
 target_link_libraries(test_heka_sandbox luasandboxheka luasandbox)
 add_test(NAME test_heka_sandbox COMMAND test_heka_sandbox)
 
-add_executable(test_message_matcher test_message_matcher.c)
-target_link_libraries(test_message_matcher luasandboxheka luasandboxutil)
-add_test(NAME test_message_matcher COMMAND test_message_matcher)
-
 if(LIBRTKAFKA_LIBRARY)
 	add_executable(test_kafka test_kafka.c)
 	target_link_libraries(test_kafka luasandboxheka luasandbox)

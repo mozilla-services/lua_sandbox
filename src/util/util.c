@@ -109,6 +109,26 @@ unsigned long long lsb_get_time()
 }
 
 
+bool lsb_set_tz(const char *tz)
+{
+  if (!tz) {
+    tz = "UTC";
+  }
+#if _WIN32
+  char s[32];
+  int n = snprintf(s, sizeof(s), "TZ=%s", tz);
+  if (n < 0 || n >= sizeof(s) || _putenv(s) != 0) {
+    return false;
+  }
+#else
+  if (setenv("TZ", tz, 1) != 0) {
+    return false;
+  }
+#endif
+  return true;
+}
+
+
 #ifdef HAVE_ZLIB
 char* lsb_ungzip(const char *s, size_t s_len, size_t max_len, size_t *r_len)
 {

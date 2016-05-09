@@ -9,6 +9,7 @@
 #ifndef luasandbox_util_util_h_
 #define luasandbox_util_util_h_
 
+#include <stdbool.h>
 #include <stddef.h>
 
 #include "../error.h"
@@ -61,6 +62,15 @@ LSB_UTIL_EXPORT char* lsb_read_file(const char *fn);
  * @return unsigned long long
  */
 LSB_UTIL_EXPORT unsigned long long lsb_get_time();
+
+/**
+ * Sets the timezone environment variable for the time conversion functions
+ *
+ * @param tz Timezone string (if NULL uses UTC)
+ *
+ * @return bool True if the environment variable is successfully set
+ */
+LSB_UTIL_EXPORT bool lsb_set_tz(const char *tz);
 
 #ifdef HAVE_ZLIB
 

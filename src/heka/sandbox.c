@@ -13,12 +13,11 @@
 #include <string.h>
 
 #include "luasandbox.h"
-#include "luasandbox/heka/message_matcher.h"
+#include "luasandbox/util/heka_message_matcher.h"
 #include "luasandbox/util/protobuf.h"
 #include "luasandbox/util/running_stats.h"
 #include "luasandbox_output.h"
 #include "message_impl.h"
-#include "message_matcher_impl.h"
 #include "rapidjson_impl.h"
 #include "sandbox_impl.h"
 #include "stream_reader_impl.h"
@@ -37,12 +36,13 @@ lsb_err_id LSB_ERR_HEKA_INPUT = "invalid input";
 
 static const char *pm_func_name = "process_message";
 static const char *im_func_name = "inject_message";
+static const char *mozsvc_heka_message_matcher = "mozsvc.heka_message_matcher";
 
 static int read_message(lua_State *lua)
 {
   lsb_lua_sandbox *lsb = lua_touserdata(lua, lua_upvalueindex(1));
   if (NULL == lsb) {
-    return luaL_error(lua, "read_message() invalid lightuserdata");
+    return luaL_error(lua, "%s() invalid lightuserdata", __func__);
   }
   lsb_heka_sandbox *hsb = lsb_get_parent(lsb);
 
@@ -53,6 +53,65 @@ static int read_message(lua_State *lua)
   return heka_read_message(lua, hsb->msg);
 }
 
+
+static lsb_message_matcher* mm_check(lua_State *lua)
+{
+  lsb_message_matcher **ppmm = luaL_checkudata(lua, 1,
+                                               mozsvc_heka_message_matcher);
+  return *ppmm;
+}
+
+
+static int mm_gc(lua_State *lua)
+{
+  lsb_message_matcher *mm = mm_check(lua);
+  lsb_destroy_message_matcher(mm);
+  return 0;
+}
+
+
+static int mm_eval(lua_State *lua)
+{
+  lsb_message_matcher *mm = mm_check(lua);
+  lsb_lua_sandbox *lsb = lua_touserdata(lua, lua_upvalueindex(1));
+  if (!lsb) {
+    return luaL_error(lua, "%s() invalid lightuserdata", __func__);
+  }
+  lsb_heka_sandbox *hsb = lsb_get_parent(lsb);
+  if (!hsb->msg || !hsb->msg->raw.s) {
+    return luaL_error(lua, "no active message");
+  }
+  lua_pushboolean(lua, lsb_eval_message_matcher(mm, hsb->msg));
+  return 1;
+}
+
+
+static int mm_create(lua_State *lua)
+{
+  const char *exp = luaL_checkstring(lua, 1);
+  lsb_lua_sandbox *lsb = lua_touserdata(lua, lua_upvalueindex(1));
+  if (NULL == lsb) {
+    return luaL_error(lua, "%() invalid lightuserdata", __func__);
+  }
+
+  lsb_message_matcher **ppmm = lua_newuserdata(lua, sizeof*ppmm);
+  if (luaL_newmetatable(lua, mozsvc_heka_message_matcher) == 1) {
+    lua_pushvalue(lua, -1);
+    lua_setfield(lua, -2, "__index");
+    lua_pushcclosure(lua, mm_gc, 0);
+    lua_setfield(lua, -2, "__gc");
+    lua_pushlightuserdata(lua, lsb);
+    lua_pushcclosure(lua, mm_eval, 1);
+    lua_setfield(lua, -2, "eval");
+  }
+  lua_setmetatable(lua, -2);
+
+  *ppmm = lsb_create_message_matcher(exp);
+  if (!*ppmm) {
+    return luaL_error(lua, "invalid message matcher expression");
+  }
+  return 1;
+}
 
 static int inject_message_input(lua_State *lua)
 {
@@ -694,16 +753,12 @@ lsb_heka_sandbox* lsb_heka_create_output(void *parent,
   lsb_add_function(hsb->lsb, heka_decode_message, "decode_message");
   lsb_add_function(hsb->lsb, heka_encode_message, "encode_message");
   lsb_add_function(hsb->lsb, update_checkpoint, LSB_HEKA_UPDATE_CHECKPOINT);
+  lsb_add_function(hsb->lsb, mm_create, "create_message_matcher");
 // preload Heka JSON with a pointer back to the sandbox
   luaL_findtable(lua, LUA_REGISTRYINDEX, "_PRELOADED", 1);
   lua_pushstring(lua, mozsvc_heka_json_table);
   lua_pushlightuserdata(lua, (void *)hsb->lsb);
   lua_pushcclosure(lua, luaopen_heka_json, 1);
-  lua_rawset(lua, -3);
-// preload Heka message match builder with a pointer back to the sandbox
-  lua_pushstring(lua, mozsvc_heka_message_match_builder_table);
-  lua_pushlightuserdata(lua, (void *)hsb->lsb);
-  lua_pushcclosure(lua, luaopen_heka_message_match_builder, 1);
   lua_rawset(lua, -3);
 #ifdef HAVE_KAFKA
 // preload the Heka Kafka producer

@@ -30,7 +30,6 @@ ssl_params = {
 require "string"
 local socket = require "socket"
 require "table"
-local mmb = require "heka_message_match_builder".new()
 
 local address = read_config("address") or "127.0.0.1"
 local port = read_config("port") or 5566
@@ -93,7 +92,7 @@ function timer_event(ns, shutdown)
                     client:dohandshake()
                 end
                 local exp, err = client:receive("*l")
-                local ok, mm = pcall(mmb.create_matcher, mmb, exp)
+                local ok, mm = pcall(create_message_matcher, exp)
                 if ok then
                     num_subs = num_subs + 1
                     subscribers[num_subs] = {client, mm}

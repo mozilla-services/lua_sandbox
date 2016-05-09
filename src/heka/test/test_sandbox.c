@@ -508,8 +508,7 @@ static char* test_pm_output()
   mu_assert(2 == stats.pm_cnt, "expected %llu", stats.pm_cnt);
   mu_assert(7 == stats.pm_failures, "expected %llu", stats.pm_failures);
 
-  mu_assert_rv(-3, lsb_heka_pm_output(hsb, &m, (void *)100,
-                                      false));
+  mu_assert_rv(-3, lsb_heka_pm_output(hsb, &m, (void *)100, false));
   mu_assert(strcmp(eerr, err) == 0, "expected: %s received: %s", eerr, err);
   stats = lsb_heka_get_stats(hsb);
   mu_assert(2 == stats.pm_cnt, "expected %llu", stats.pm_cnt);

@@ -30,6 +30,10 @@ add_executable(test_heka_message test_heka_message.c)
 target_link_libraries(test_heka_message luasandboxutil)
 add_test(NAME test_heka_message COMMAND test_heka_message)
 
+add_executable(test_heka_message_matcher test_heka_message_matcher.c)
+target_link_libraries(test_heka_message_matcher luasandboxutil)
+add_test(NAME test_heka_message_matcher COMMAND test_heka_message_matcher)
+
 if(WIN32)
    set(LIBRARY_PATHS "${CMAKE_BINARY_DIR}/src/util")
    set_tests_properties(test_input_buffer PROPERTIES ENVIRONMENT PATH=${LIBRARY_PATHS})

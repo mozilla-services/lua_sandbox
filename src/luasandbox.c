@@ -390,21 +390,6 @@ static void copy_table(lua_State *sb, lua_State *cfg, lsb_logger *logger)
 }
 
 
-static bool set_tz()
-{
-#if _WIN32
-  if (_putenv("TZ=UTC") != 0) {
-    return false;
-  }
-#else
-  if (setenv("TZ", "UTC", 1) != 0) {
-    return false;
-  }
-#endif
-  return true;
-}
-
-
 static void set_random_seed()
 {
   bool seeded = false;
@@ -445,7 +430,7 @@ lsb_lua_sandbox* lsb_create(void *parent,
     return NULL;
   }
 
-  if (!set_tz()) {
+  if (!lsb_set_tz(NULL)) {
     if (logger && logger->cb) {
       logger->cb(logger->context, __func__, 3, "fail to set the TZ to UTC");
     }

@@ -63,14 +63,20 @@ All message variables must be on the left hand side of the relational comparison
 
 * Fields[_field_name_] - shorthand for Field[_field_name_][0][0]
 * Fields[_field_name_][_field_index_] - shorthand for Field[_field_name_][_field_index_][0]
-* Fields[_field_name_][_field_index_][_array_index_]
+* Fields[_field_name_][_field_index_][_array_index_] the indices are restricted to 0-255
 * If a field type is mis-match for the relational comparison, false will be returned e.g., Fields[foo] == 6 where "foo" is a string
 
 #### Quoted String
 
-* single or double quoted strings are allowed
+* Single or double quoted strings are allowed
+* The maximum string length is 255 bytes
 
 #### Lua Pattern Matching Expression
 
-* see [Lua Patterns](http://www.lua.org/manual/5.1/manual.html#5.4.1)
-* capture groups are ignored
+* Patterns are quoted string values
+* See [Lua Patterns](http://www.lua.org/manual/5.1/manual.html#5.4.1)
+* Capture groups are ignored
+
+#### Additional Restrictions
+
+* Message matchers are restricted to 128 tests

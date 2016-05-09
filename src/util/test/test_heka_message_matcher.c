@@ -12,10 +12,9 @@
 #include <string.h>
 #include <time.h>
 
-#include "luasandbox/heka/message_matcher.h"
+#include "../../test/mu_test.h"
 #include "luasandbox/util/heka_message.h"
-
-#include "test.h"
+#include "luasandbox/util/heka_message_matcher.h"
 
 // {"Logger":"GoSpec","Uuid":"xxx","Pid":32157,"Severity":6,"EnvVersion":"0.8","Fields":[{""value":["bar"],"name":"foo","value_type":0},{"value":[64],"name":"number","value_type":2},{"value":["data"],"name":"bytes","value_type":1},{"value":[999,1024],"name":"int","value_type":2},{"value":[99.9],"name":"double","value_type":3},{"value":[true],"name":"bool","value_type":4},{"value":["alternate"],"name":"foo","value_type":0},{"value":["name=test;type=web;"],"name":"Payload","value_type":0},{"representation":"date-time","value":["Mon Jan 02 15:04:05 -0700 2006"],"name":"Timestamp","value_type":0},{"value":[0],"name":"zero","value_type":2},{"value":["43"],"name":"string","value_type":0}],"Payload":"Test Payload","Timestamp":1.428773426113e+18,"Hostname":"trink-x230","Type":"TEST"}
 
@@ -31,26 +30,39 @@ static char* test_stub()
 
 static char* test_api_assertion()
 {
-  mu_assert(NULL == lsb_create_message_matcher(NULL, "TRUE"), "not null");
-  lsb_destroy_message_match_builder(NULL);
+  mu_assert(NULL == lsb_create_message_matcher(NULL), "not null");
   lsb_destroy_message_matcher(NULL);
-
-  lsb_message_match_builder *mmb = lsb_create_message_match_builder(TEST_LUA_PATH, TEST_LUA_CPATH);
-  mu_assert(mmb, "failed to create mmb");
-  mu_assert(NULL == lsb_create_message_matcher(mmb, NULL), "not null");
-  lsb_destroy_message_match_builder(mmb);
   return NULL;
 }
 
+#define T128 "Type =~ '.' && Type =~ '.' && Type =~ '.' && Type =~ '.' && Type =~ '.' && Type =~ '.' && Type =~ '.' && Type =~ '.' && Type =~ '.' && Type =~ '.' &&" \
+"Type =~ '.' && Type =~ '.' && Type =~ '.' && Type =~ '.' && Type =~ '.' && Type =~ '.' && Type =~ '.' && Type =~ '.' && Type =~ '.' && Type =~ '.' &&" \
+"Type =~ '.' && Type =~ '.' && Type =~ '.' && Type =~ '.' && Type =~ '.' && Type =~ '.' && Type =~ '.' && Type =~ '.' && Type =~ '.' && Type =~ '.' &&" \
+"Type =~ '.' && Type =~ '.' && Type =~ '.' && Type =~ '.' && Type =~ '.' && Type =~ '.' && Type =~ '.' && Type =~ '.' && Type =~ '.' && Type =~ '.' &&" \
+"Type =~ '.' && Type =~ '.' && Type =~ '.' && Type =~ '.' && Type =~ '.' && Type =~ '.' && Type =~ '.' && Type =~ '.' && Type =~ '.' && Type =~ '.' &&" \
+"Type =~ '.' && Type =~ '.' && Type =~ '.' && Type =~ '.' && Type =~ '.' && Type =~ '.' && Type =~ '.' && Type =~ '.' && Type =~ '.' && Type =~ '.' &&" \
+"Type =~ '.' && Type =~ '.' && Type =~ '.' && Type =~ '.' && Type =~ '.' && Type =~ '.' && Type =~ '.' && Type =~ '.' && Type =~ '.' && Type =~ '.' &&" \
+"Type =~ '.' && Type =~ '.' && Type =~ '.' && Type =~ '.' && Type =~ '.' && Type =~ '.' && Type =~ '.' && Type =~ '.' && Type =~ '.' && Type =~ '.' &&" \
+"Type =~ '.' && Type =~ '.' && Type =~ '.' && Type =~ '.' && Type =~ '.' && Type =~ '.' && Type =~ '.' && Type =~ '.' && Type =~ '.' && Type =~ '.' &&" \
+"Type =~ '.' && Type =~ '.' && Type =~ '.' && Type =~ '.' && Type =~ '.' && Type =~ '.' && Type =~ '.' && Type =~ '.' && Type =~ '.' && Type =~ '.' &&" \
+"Type =~ '.' && Type =~ '.' && Type =~ '.' && Type =~ '.' && Type =~ '.' && Type =~ '.' && Type =~ '.' && Type =~ '.' && Type =~ '.' && Type =~ '.' &&" \
+"Type =~ '.' && Type =~ '.' && Type =~ '.' && Type =~ '.' && Type =~ '.' && Type =~ '.' && Type =~ '.' && Type =~ '.' && Type =~ '.' && Type =~ '.' &&" \
+"Type =~ '.' && Type =~ '.' && Type =~ '.' && Type =~ '.' && Type =~ '.' && Type =~ '.' && Type =~ '.' && Type =~ '.'"
+
+#define S255 "0123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789" \
+"0123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789" \
+"0123456789012345678901234567890123456789012345678901234"
 
 static char* test_true_matcher()
 {
-  char* tests[] = {
+  char *tests[] = {
     "TRUE"
     , "Timestamp > 1.428773420000e+18"
     , "Timestamp < 1.428773426999e18"
     , "Timestamp == 1428773426113040228"
-    , "Timestamp > '2015-04-11T17:30:26Z'"
+    , "Timestamp > '2015-04-11T17:30:26Z'" // 1428773426000000000
+    , "Timestamp > '2015-04-11T17:30:26.112Z'"
+    , "Timestamp < '2015-04-11T17:30:26.114Z'"
     , "(Severity == 7 || Payload == 'Test Payload') && Type == 'TEST'"
     , "EnvVersion == \"0.8\""
     , "EnvVersion == '0.8'"
@@ -105,20 +117,20 @@ static char* test_true_matcher()
     , "Type =~ 'ST$'"
     , "Type !~ '^te'"
     , "Type !~ 'st$'"
+    , "Fields[foo][255] == NIL"
+    , "Fields[foo][0][255] == NIL"
+    , T128
     , NULL };
 
   lsb_heka_message m;
   lsb_init_heka_message(&m, 16);
   mu_assert(lsb_decode_heka_message(&m, pb, pblen - 1, NULL), "decode failed");
-  lsb_message_match_builder *mmb = lsb_create_message_match_builder(TEST_LUA_PATH, TEST_LUA_CPATH);
-  mu_assert(mmb, "failed to create mmb");
   for (int i = 0; tests[i]; ++i) {
-    lsb_message_matcher* mm = lsb_create_message_matcher(mmb, tests[i]);
+    lsb_message_matcher *mm = lsb_create_message_matcher(tests[i]);
     mu_assert(mm, "failed to create the matcher %s", tests[i]);
     mu_assert(lsb_eval_message_matcher(mm, &m), "%s", tests[i]);
     lsb_destroy_message_matcher(mm);
   }
-  lsb_destroy_message_match_builder(mmb);
   lsb_free_heka_message(&m);
   return NULL;
 }
@@ -126,7 +138,7 @@ static char* test_true_matcher()
 
 static char* test_false_matcher()
 {
-  char* tests[] = {
+  char *tests[] = {
     "FALSE"
     , "Timestamp == 1e9"
     , "Timestamp > '2015-04-11T17:30:27Z'"
@@ -166,20 +178,18 @@ static char* test_false_matcher()
     , "Type !~ '^TE'"
     , "Type !~ 'ST$'"
     , "Logger =~ '.' && Type =~ '^anything'"
+    , "Type == '" S255 "'"
     , NULL };
 
   lsb_heka_message m;
   lsb_init_heka_message(&m, 8);
   mu_assert(lsb_decode_heka_message(&m, pb, pblen - 1, NULL), "decode failed");
-  lsb_message_match_builder *mmb = lsb_create_message_match_builder(TEST_LUA_PATH, TEST_LUA_CPATH);
-  mu_assert(mmb, "failed to create mmb");
   for (int i = 0; tests[i]; ++i) {
-    lsb_message_matcher* mm = lsb_create_message_matcher(mmb, tests[i]);
+    lsb_message_matcher *mm = lsb_create_message_matcher(tests[i]);
     mu_assert(mm, "failed to create the matcher %s", tests[i]);
     mu_assert(lsb_eval_message_matcher(mm, &m) == false, "%s", tests[i]);
     lsb_destroy_message_matcher(mm);
   }
-  lsb_destroy_message_match_builder(mmb);
   lsb_free_heka_message(&m);
   return NULL;
 }
@@ -187,7 +197,7 @@ static char* test_false_matcher()
 
 static char* test_malformed_matcher()
 {
-  char* tests[] = {
+  char *tests[] = {
     ""
     , "bogus"
     , "Type = 'test'"                                               // invalid operator
@@ -211,48 +221,44 @@ static char* test_malformed_matcher()
     , "Fields[test] > NIL"                                          // existence check only works with equals and not equals
     , "TRUE FALSE"                                                  // missing operator
     , "Timestamp == '20150411T173026'"                              // non rfc3339 timestamp
+    , T128 " && Type =~ '.'"                                        // too many tests
+    , "Type == '" S255 "5'"                                         // string too long
+    , "Fields[test][256] == 1"                                      // field index out of bounds
+    , "Fields[test][0][256] == 1"                                   // array index out of bounds
     , NULL };
 
   lsb_heka_message m;
   lsb_init_heka_message(&m, 8);
   mu_assert(lsb_decode_heka_message(&m, pb, pblen - 1, NULL), "decode failed");
-  lsb_message_match_builder *mmb = lsb_create_message_match_builder(TEST_LUA_PATH, TEST_LUA_CPATH);
-  mu_assert(mmb, "failed to create mmb");
   for (int i = 0; tests[i]; ++i) {
-    lsb_message_matcher* mm = lsb_create_message_matcher(mmb, tests[i]);
+    lsb_message_matcher *mm = lsb_create_message_matcher(tests[i]);
     mu_assert(mm == NULL, "created malformed matcher");
   }
-  lsb_destroy_message_match_builder(mmb);
   lsb_free_heka_message(&m);
   return NULL;
 }
 
-
 static char* benchmark_matcher_create()
 {
   int iter = 100000;
-  const char* exp = "Type == 'TEST' && Severity == 6";
-
-  lsb_message_match_builder *mmb = lsb_create_message_match_builder(TEST_LUA_PATH, TEST_LUA_CPATH);
-  mu_assert(mmb, "failed to create mmb");
+  const char *exp = "Type == 'TEST' && Severity == 6";
 
   clock_t t = clock();
   for (int x = 0; x < iter; ++x) {
-    lsb_message_matcher* mm = lsb_create_message_matcher(mmb, exp);
+    lsb_message_matcher *mm = lsb_create_message_matcher(exp);
     mu_assert(mm, "lsb_create_message_matcher failed");
     lsb_destroy_message_matcher(mm);
   }
   t = clock() - t;
-  lsb_destroy_message_match_builder(mmb);
   printf("benchmark_matcher_create: %g\n", ((double)t) / CLOCKS_PER_SEC
-          / iter);
+         / iter);
   return NULL;
 }
 
 static char* benchmark_match()
 {
   int iter = 1000000;
-  char* tests[] = {
+  char *tests[] = {
     "Type == 'TEST' && Severity == 6"
     , "Fields[foo] == 'bar' && Severity == 6"
     , "Fields[number] == 64 && Severity == 6"
@@ -266,11 +272,9 @@ static char* benchmark_match()
   lsb_heka_message m;
   lsb_init_heka_message(&m, 8);
   mu_assert(lsb_decode_heka_message(&m, pb, pblen - 1, NULL), "decode failed");
-  lsb_message_match_builder *mmb = lsb_create_message_match_builder(TEST_LUA_PATH, TEST_LUA_CPATH);
-  mu_assert(mmb, "failed to create mmb");
 
   for (int i = 0; tests[i]; i++) {
-    lsb_message_matcher* mm = lsb_create_message_matcher(mmb, tests[i]);
+    lsb_message_matcher *mm = lsb_create_message_matcher(tests[i]);
     mu_assert(mm, "lsb_create_message_matcher failed: %s", tests[i]);
     clock_t t = clock();
     for (int x = 0; x < iter; ++x) {
@@ -280,9 +284,8 @@ static char* benchmark_match()
     t = clock() - t;
     lsb_destroy_message_matcher(mm);
     printf("matcher: '%s': %g\n", tests[i], ((double)t) / CLOCKS_PER_SEC
-            / iter);
+           / iter);
   }
-  lsb_destroy_message_match_builder(mmb);
   lsb_free_heka_message(&m);
   return NULL;
 }
@@ -304,7 +307,8 @@ static char* all_tests()
 
 int main()
 {
-  char* result = all_tests();
+  lsb_set_tz(NULL);
+  char *result = all_tests();
   if (result) {
     printf("%s\n", result);
   } else {
