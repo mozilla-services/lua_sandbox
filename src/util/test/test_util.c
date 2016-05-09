@@ -54,7 +54,7 @@ static char* test_lsb_set_tz()
   mu_assert(lsb_set_tz(NULL), "set_tz failed");
   mu_assert(lsb_set_tz("America/Los_Angeles"), "set_tz failed");
   static const char too_long[] = "01234567890123456789012345678901";
-#ifdef WIN32
+#ifdef _WIN32
   mu_assert(!lsb_set_tz(too_long), "set_tz succeeded");
 #else
   mu_assert(lsb_set_tz(too_long), "set_tz failed");

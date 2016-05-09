@@ -18,6 +18,12 @@ extern "C"
 #include "luasandbox/lua.h"
 #include "luasandbox/util/heka_message.h"
 
+#ifdef _MSC_VER
+#ifndef __func__
+#define __func__ __FUNCTION__
+#endif
+#endif
+
 extern const char *mozsvc_heka_json;
 extern const char *mozsvc_heka_json_table;
 

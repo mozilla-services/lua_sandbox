@@ -23,6 +23,12 @@
 #include "luasandbox_impl.h"
 #include "luasandbox_serialize.h"
 
+#ifdef _MSC_VER
+#ifndef __func__
+#define __func__ __FUNCTION__
+#endif
+#endif
+
 lsb_err_id LSB_ERR_INIT       = "already initialized";
 lsb_err_id LSB_ERR_LUA        = "lua error"; // use lsb_get_error for details
 lsb_err_id LSB_ERR_TERMINATED = "sandbox already terminated";

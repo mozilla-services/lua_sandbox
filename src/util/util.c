@@ -116,7 +116,7 @@ bool lsb_set_tz(const char *tz)
   }
 #if _WIN32
   char s[32];
-  int n = snprintf(s, sizeof(s), "TZ=%s", tz);
+  int n = _snprintf(s, sizeof(s), "TZ=%s", tz);
   if (n < 0 || n >= sizeof(s) || _putenv(s) != 0) {
     return false;
   }

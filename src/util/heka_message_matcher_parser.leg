@@ -20,6 +20,8 @@
 #ifndef _MSC_VER
 #pragma GCC diagnostic ignored "-Wunused-parameter"
 #pragma GCC diagnostic ignored "-Wunused-function"
+#else
+#pragma warning( disable : 4267 4244 )
 #endif
 
 typedef struct match_node_array {
