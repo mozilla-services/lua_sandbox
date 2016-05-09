@@ -83,4 +83,5 @@ install(FILES ${CMAKE_CURRENT_BINARY_DIR}/luasandboxConfig.cmake ${CMAKE_CURRENT
 add_subdirectory(src)
 add_custom_target(copy_includes
 COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/include ${EP_BASE}/include)
+add_dependencies(copy_includes ${LUA_PROJECT})
 add_dependencies(luasandboxutil copy_includes)

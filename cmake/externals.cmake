@@ -110,6 +110,21 @@ externalproject_add(
 )
 add_dependencies(lua_socket ${LUA_PROJECT})
 
+if (OPENSSL_FOUND)
+    if (APPLE)
+        set(SANDBOX_CMAKE_ARGS ${SANDBOX_CMAKE_ARGS} -DCMAKE_PROJECT_luasec_INCLUDE=${CMAKE_SOURCE_DIR}/cmake/fixup_lua_sec.cmake)
+    endif()
+    externalproject_add(
+        lua_sec
+        GIT_REPOSITORY https://github.com/LuaDist/luasec.git
+        GIT_TAG 329a8789f142bbbfef4fd7ed506285a25c3c0e0e
+        UPDATE_COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_LIST_DIR}/FindLua.cmake <SOURCE_DIR>/cmake
+        CMAKE_ARGS ${SANDBOX_CMAKE_ARGS} -DCMAKE_INSTALL_PREFIX=${EP_BASE}/io
+        INSTALL_ARGS ${INST_ARGS}
+    )
+    add_dependencies(lua_sec ${LUA_PROJECT})
+endif()
+
 # sandbox enhanced modules
 
 externalproject_add(
@@ -119,6 +134,7 @@ externalproject_add(
     CMAKE_ARGS ${SANDBOX_CMAKE_ARGS}
     INSTALL_ARGS ${INST_ARGS}
 )
+add_dependencies(lua_bloom_filter luasandbox)
 
 externalproject_add(
     lua_circular_buffer
@@ -127,6 +143,7 @@ externalproject_add(
     CMAKE_ARGS ${SANDBOX_CMAKE_ARGS}
     INSTALL_ARGS ${INST_ARGS}
 )
+add_dependencies(lua_circular_buffer luasandbox)
 
 externalproject_add(
     lua_hyperloglog
@@ -135,6 +152,7 @@ externalproject_add(
     CMAKE_ARGS ${SANDBOX_CMAKE_ARGS}
     INSTALL_ARGS ${INST_ARGS}
 )
+add_dependencies(lua_hyperloglog luasandbox)
 
 externalproject_add(
     lua_cuckoo_filter
@@ -143,6 +161,7 @@ externalproject_add(
     CMAKE_ARGS ${SANDBOX_CMAKE_ARGS}
     INSTALL_ARGS ${INST_ARGS}
 )
+add_dependencies(lua_cuckoo_filter luasandbox)
 
 externalproject_add(
     lua_sax
@@ -151,23 +170,14 @@ externalproject_add(
     CMAKE_ARGS ${SANDBOX_CMAKE_ARGS}
     INSTALL_ARGS ${INST_ARGS}
 )
+add_dependencies(lua_sax luasandbox)
 
 externalproject_add(
     rapidjson
     GIT_REPOSITORY https://github.com/miloyip/rapidjson.git
     GIT_TAG ed7efe6289cfa1fafc354aaa8a29fcd31c1607fd
+    CONFIGURE_COMMAND ${CMAKE_COMMAND} -E echo "no configure"
     BUILD_COMMAND ${CMAKE_COMMAND} -E echo "no build"
     INSTALL_COMMAND ${CMAKE_COMMAND} -E echo "no install"
 )
-include_directories("${EP_BASE}/Source/rapidjson/include")
-
-if (OPENSSL_FOUND)
-    externalproject_add(
-        lua_sec
-        GIT_REPOSITORY https://github.com/LuaDist/luasec.git
-        GIT_TAG 329a8789f142bbbfef4fd7ed506285a25c3c0e0e
-        UPDATE_COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_LIST_DIR}/FindLua.cmake <SOURCE_DIR>/cmake
-        CMAKE_ARGS ${SANDBOX_CMAKE_ARGS} -DCMAKE_INSTALL_PREFIX=${EP_BASE}/io
-        INSTALL_ARGS ${INST_ARGS}
-    )
-endif()
+include_directories(${EP_BASE}/Source/rapidjson/include)

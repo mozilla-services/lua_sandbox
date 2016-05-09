@@ -26,7 +26,7 @@ static char* test_lsb_pb_read_key()
   int tag, wt;
   const char input[] = "\x0b";
   const char *p = lsb_pb_read_key(input, &tag, &wt);
-  mu_assert(p = input + 1, "received: %p", p);
+  mu_assert(p = input + 1, "received: %p", (void *)p);
   mu_assert(tag == 1, "received: %d", tag);
   mu_assert(wt == 3, "received: %d", wt);
   p = lsb_pb_read_key(NULL, &tag, &wt);
@@ -80,7 +80,7 @@ static char* test_varint()
     size_t len = strlen(s);
     len = len ? len : 1;
     p = lsb_pb_read_varint(s, s + len, &vi);
-    mu_assert(p = s + len, "received: %p", p);
+    mu_assert(p = s + len, "received: %p", (void *)p);
     mu_assert(v == vi, "expected: %lld received: %lld", v, vi);
 
     lsb_output_buffer ob;
