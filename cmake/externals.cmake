@@ -119,6 +119,7 @@ externalproject_add(
     CMAKE_ARGS ${SANDBOX_CMAKE_ARGS}
     INSTALL_ARGS ${INST_ARGS}
 )
+add_dependencies(lua_bloom_filter luasandbox)
 
 externalproject_add(
     lua_circular_buffer
@@ -127,6 +128,7 @@ externalproject_add(
     CMAKE_ARGS ${SANDBOX_CMAKE_ARGS}
     INSTALL_ARGS ${INST_ARGS}
 )
+add_dependencies(lua_circular_buffer luasandbox)
 
 externalproject_add(
     lua_hyperloglog
@@ -135,6 +137,7 @@ externalproject_add(
     CMAKE_ARGS ${SANDBOX_CMAKE_ARGS}
     INSTALL_ARGS ${INST_ARGS}
 )
+add_dependencies(lua_hyperloglog luasandbox)
 
 externalproject_add(
     lua_cuckoo_filter
@@ -143,6 +146,7 @@ externalproject_add(
     CMAKE_ARGS ${SANDBOX_CMAKE_ARGS}
     INSTALL_ARGS ${INST_ARGS}
 )
+add_dependencies(lua_cuckoo_filter luasandbox)
 
 externalproject_add(
     lua_sax
@@ -151,3 +155,4 @@ externalproject_add(
     CMAKE_ARGS ${SANDBOX_CMAKE_ARGS}
     INSTALL_ARGS ${INST_ARGS}
 )
+add_dependencies(lua_sax luasandbox)

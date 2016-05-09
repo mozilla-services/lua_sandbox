@@ -16,10 +16,6 @@ set ( CMAKE_BUILD_WITH_INSTALL_RPATH FALSE CACHE STRING "" FORCE )
 add_library(luasandbox SHARED ${LUA_SANDBOX_SRC})
 
 add_dependencies(luasandbox ${LUA_PROJECT})
-add_dependencies(lua_bloom_filter luasandbox)
-add_dependencies(lua_circular_buffer luasandbox)
-add_dependencies(lua_hyperloglog luasandbox)
-add_dependencies(lua_cuckoo_filter luasandbox)
 
 if(MSVC)
     add_definitions(-D_CRT_SECURE_NO_WARNINGS)
