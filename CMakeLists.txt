@@ -7,7 +7,7 @@ project(luasandbox C CXX)
 set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "Generic Lua sandbox for dynamic data analysis")
 set(CPACK_PACKAGE_VERSION_MAJOR 0)
 set(CPACK_PACKAGE_VERSION_MINOR 19)
-set(CPACK_PACKAGE_VERSION_PATCH 0)
+set(CPACK_PACKAGE_VERSION_PATCH 1)
 set(CPACK_PACKAGE_CONTACT "Mike Trinkala <trink@mozilla.com>")
 
 set(CPACK_DEB_COMPONENT_INSTALL ON)
@@ -83,5 +83,4 @@ install(FILES ${CMAKE_CURRENT_BINARY_DIR}/luasandboxConfig.cmake ${CMAKE_CURRENT
 add_subdirectory(src)
 add_custom_target(copy_includes
 COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/include ${EP_BASE}/include)
-add_dependencies(copy_includes ${LUA_PROJECT})
 add_dependencies(luasandboxutil copy_includes)

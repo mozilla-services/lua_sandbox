@@ -147,6 +147,7 @@ static int output_print(lua_State *lua)
   if (!lsb) {
     return luaL_error(lua, "print() invalid lightuserdata");
   }
+  lsb->output.buf[0] = 0;
   lsb->output.pos = 0; // clear the buffer
 
   int n = lua_gettop(lua);
@@ -402,7 +403,7 @@ static void set_random_seed()
 #ifdef _WIN32
   // todo use CryptGenRandom to seed srand
 #else
-  FILE *fh = fopen("/dev/urandom", "r");
+  FILE *fh = fopen("/dev/urandom", "r" CLOSE_ON_EXEC);
   if (fh) {
     unsigned seed;
     unsigned char advance;

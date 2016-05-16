@@ -395,7 +395,7 @@ lsb_err_value preserve_global_data(lsb_lua_sandbox *lsb)
 
   lua_pushvalue(lsb->lua, LUA_GLOBALSINDEX);
 
-  FILE *fh = fopen(lsb->state_file, "wb");
+  FILE *fh = fopen(lsb->state_file, "wb" CLOSE_ON_EXEC);
   if (fh == NULL) {
     int len = snprintf(lsb->error_message, LSB_ERROR_SIZE,
                        "preserve_global_data could not open: %s",
@@ -484,7 +484,7 @@ lsb_err_value preserve_global_data(lsb_lua_sandbox *lsb)
 
 static int file_exists(const char *fn)
 {
-  FILE *fh = fopen(fn, "r");
+  FILE *fh = fopen(fn, "r" CLOSE_ON_EXEC);
   if (fh) {
     fclose(fh);
     return 1;

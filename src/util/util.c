@@ -7,6 +7,7 @@
 /** General purpose utility functions @file */
 
 #include "luasandbox/util/util.h"
+#include "../luasandbox_impl.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -52,7 +53,7 @@ char* lsb_read_file(const char *fn)
 {
   char *str = NULL;
   size_t b;
-  FILE *fh = fopen(fn, "rb");
+  FILE *fh = fopen(fn, "rb" CLOSE_ON_EXEC);
   if (!fh) return str;
 
   if (fseek(fh, 0, SEEK_END)) goto cleanup;
