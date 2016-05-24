@@ -52,10 +52,10 @@ ok, err = pcall(heka_kafka_consumer.new, "test", {"one", item = "test"}, {["grou
 assert(err == "topics must be an array of strings", err)
 
 ok, err = pcall(heka_kafka_consumer.new, "test", {"test"}, {["group.id"] = "foo", ["message.max.bytes"] = true})
-assert(err ==  'Failed to set message.max.bytes = true : Configuration property "message.max.bytes" value 0 is outside allowed range 1000..1000000000\n', err)
+assert(err:match("^Failed to set message.max.bytes = true"), err)
 
 
-local consumer = heka_kafka_consumer.new("localhost:9092", {"test"}, {["group.id"] = "integration_testing"})
+local consumer = heka_kafka_consumer.new("localhost:9092", {"test"}, {["group.id"] = "integration_testing"}, {["auto.offset.reset"] = "smallest"})
 local consumer1 = heka_kafka_consumer.new("localhost:9092", {"test:1"}, {["group.id"] = "other"})
 local pb, topic, partition, key = consumer1:receive()
 assert(not pb)

@@ -15,9 +15,9 @@
 
 char *e = NULL;
 
-void dlog(const char *component, int level, const char *fmt, ...)
+void dlog(void *context, const char *component, int level, const char *fmt, ...)
 {
-
+  (void)context;
   va_list args;
   va_start(args, fmt);
   fprintf(stderr, "%lld [%d] %s ", (long long)time(NULL), level,
@@ -26,6 +26,7 @@ void dlog(const char *component, int level, const char *fmt, ...)
   fwrite("\n", 1, 1, stderr);
   va_end(args);
 }
+static lsb_logger logger = { .context = NULL, .cb = dlog };
 
 static volatile ptrdiff_t g_sequence = 0;
 static int ucp(void *parent, void *sequence_id)
@@ -43,7 +44,7 @@ static char* test_producer()
   mu_assert(!lsb_init_heka_message(&m, 1), "failed to init message");
   mu_assert(lsb_decode_heka_message(&m, pb, sizeof pb - 1, NULL), "failed");
   lsb_heka_sandbox *hsb;
-  hsb = lsb_heka_create_output(NULL, "lua/kafka_producer.lua", NULL, NULL, dlog,
+  hsb = lsb_heka_create_output(NULL, "lua/kafka_producer.lua", NULL, NULL, &logger,
                                ucp);
   mu_assert(hsb, "lsb_heka_create_output failed");
   mu_assert(0 == lsb_heka_pm_output(hsb, &m, (void*)1, false), "err: %s",
@@ -81,7 +82,7 @@ static char* test_consumer()
 {
   lsb_heka_sandbox *hsb;
   hsb = lsb_heka_create_input(NULL, "lua/kafka_consumer.lua", NULL, NULL,
-                              dlog, iim);
+                              &logger, iim);
   mu_assert(hsb, "lsb_heka_create_input failed");
   mu_assert(0 == lsb_heka_pm_input(hsb, 0, NULL, false), "err: %s",
             lsb_heka_get_error(hsb));

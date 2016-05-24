@@ -3,6 +3,7 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 require "heka_kafka_producer"
+require "string"
 
 local ok, err
 ok, err = pcall(heka_kafka_producer.new)
@@ -15,13 +16,13 @@ ok, err = pcall(heka_kafka_producer.new, "brokerlist", true)
 assert(err == "bad argument #2 to '?' (table expected, got boolean)", err)
 
 ok, err = pcall(heka_kafka_producer.new, "local host", {["message.max.bytes"] = "foo"})
-assert(err ==  'Failed to set message.max.bytes = foo : Configuration property "message.max.bytes" value 0 is outside allowed range 1000..1000000000\n', err)
+assert(err:match("^Failed to set message.max.bytes = foo"), err)
 
 ok, err = pcall(heka_kafka_producer.new, "local host", {["message.max.bytes"] = 1})
 assert(err ==  'Failed to set message.max.bytes = 1 : Configuration property "message.max.bytes" value 1 is outside allowed range 1000..1000000000\n', err)
 
 ok, err = pcall(heka_kafka_producer.new, "local host", {["message.max.bytes"] = true})
-assert(err ==  'Failed to set message.max.bytes = true : Configuration property "message.max.bytes" value 0 is outside allowed range 1000..1000000000\n', err)
+assert(err:match("^Failed to set message.max.bytes = true"), err)
 
 ok, err = pcall(heka_kafka_producer.new, "brokerlist", {[assert] = true})
 assert(err == "invalid config key type: function", err)
