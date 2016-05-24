@@ -30,10 +30,10 @@ function process_message()
     write(":Hostname: ", msg.Hostname or "<nil>", "\n")
     write(":Fields:\n")
     for i, v in ipairs(msg.Fields or {}) do
-        write("    | name:", v.name,
-              " type:", v.value_type or 0,
-              " representation:", v.representation or "<nil>",
-              " value:")
+        write("    | name: ", v.name,
+              " type: ", v.value_type or 0,
+              " representation: ", v.representation or "<nil>",
+              " value: ")
         if v.value_type == 4 then
             for j, w in ipairs(v.value) do
                 if j ~= 1 then write(",") end
