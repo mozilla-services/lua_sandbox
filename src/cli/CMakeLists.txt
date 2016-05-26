@@ -10,4 +10,3 @@ if(LIBM_LIBRARY)
 endif()
 
 install(TARGETS lsb_heka_cat DESTINATION bin)
-install(DIRECTORY scripts/ DESTINATION bin)
