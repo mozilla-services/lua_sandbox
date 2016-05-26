@@ -9,4 +9,4 @@ if(LIBM_LIBRARY)
   target_link_libraries(lsb_heka_cat ${LIBM_LIBRARY})
 endif()
 
-install(TARGETS lsb_heka_cat DESTINATION bin)
+install(TARGETS lsb_heka_cat DESTINATION bin COMPONENT core)
