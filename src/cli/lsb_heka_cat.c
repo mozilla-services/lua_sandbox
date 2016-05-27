@@ -6,6 +6,7 @@
 
 /** @brief lua_sandbox Heka file stream cat @file */
 
+#include <ctype.h>
 #include <math.h>
 #include <stdarg.h>
 #include <stdbool.h>
@@ -129,7 +130,15 @@ static void output_text(lsb_heka_message *msg)
           p = read_string(wiretype, p, e, &cs);
           if (p) {
             for (size_t i = 0; i < cs.len; ++i) {
-              fprintf(stdout, "%02hxx", (unsigned char)cs.s[i]);
+              if (isprint(cs.s[i])) {
+                if (cs.s[i] == '\\') {
+                  fwrite("\\\\", 2, 1, stdout);
+                } else {
+                  putchar(cs.s[i]);
+                }
+              } else {
+                fprintf(stdout, "\\x%02hhx", (unsigned char)cs.s[i]);
+              }
             }
           }
         }
