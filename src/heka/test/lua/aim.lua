@@ -47,6 +47,14 @@ ok, err = pcall(inject_payload, "txt", true, "data")
 assert(not ok)
 assert("inject_payload() payload_name argument must be a string" == err, string.format("received: %s", err))
 
+ok, err = pcall(inject_payload, nil)
+assert(not ok)
+assert("inject_payload() payload_type argument must be a string" == err, string.format("received: %s", err))
+
+ok, err = pcall(inject_payload, "", nil)
+assert(not ok)
+assert("inject_payload() payload_name argument must be a string" == err, string.format("received: %s", err))
+
 ok, err = pcall(inject_message, {Fields = {foo = {value = {"s", true}}}})
 assert(not ok)
 assert("inject_message() failed: array has mixed types" == err, string.format("received: %s", err))

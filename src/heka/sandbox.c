@@ -232,13 +232,6 @@ static int inject_payload(lua_State *lua)
   }
 
   int n = lua_gettop(lua);
-  if (n > 2) {
-    lsb_output(lsb, 3, n, 1);
-    lua_pop(lua, n - 2);
-  }
-  size_t len = 0;
-  const char *output = lsb_get_output(lsb, &len);
-  if (!len) return 0;
 
   if (n > 0) {
     if (lua_type(lua, 1) != LUA_TSTRING) {
@@ -253,6 +246,14 @@ static int inject_payload(lua_State *lua)
                         __func__);
     }
   }
+
+  if (n > 2) {
+    lsb_output(lsb, 3, n, 1);
+    lua_pop(lua, n - 2);
+  }
+  size_t len = 0;
+  const char *output = lsb_get_output(lsb, &len);
+  if (!len) return 0;
 
   // build up a heka message table
   lua_createtable(lua, 0, 2); // message
