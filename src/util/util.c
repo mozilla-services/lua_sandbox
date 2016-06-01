@@ -7,7 +7,7 @@
 /** General purpose utility functions @file */
 
 #include "luasandbox/util/util.h"
-#include "../luasandbox_impl.h"
+#include "../luasandbox_defines.h"
 
 #include <stdio.h>
 #include <stdlib.h>

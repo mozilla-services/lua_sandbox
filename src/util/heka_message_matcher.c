@@ -12,10 +12,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "luasandbox.h"
-#include "luasandbox/lauxlib.h"
-#include "luasandbox/lua.h"
-#include "luasandbox/lualib.h"
 #include "luasandbox/util/heka_message.h"
 #include "luasandbox/util/heka_message_matcher.h"
 #include "luasandbox/util/string.h"

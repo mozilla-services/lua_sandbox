@@ -13,12 +13,6 @@
 #include "luasandbox/lua.h"
 #include "luasandbox/util/output_buffer.h"
 
-#ifdef _WIN32
-#define snprintf _snprintf
-#elif __linux
-#define CLOSE_ON_EXEC "e"
-#endif
-
 struct lsb_lua_sandbox {
   lua_State         *lua;
   void              *parent;

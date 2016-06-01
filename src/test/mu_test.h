@@ -11,9 +11,7 @@
 
 #include <stdio.h>
 
-#ifdef _WIN32
-#define snprintf _snprintf
-#endif
+#include "../luasandbox_defines.h"
 
 #if defined(_MSC_VER)
 #define PRIuSIZE "Iu"

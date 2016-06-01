@@ -12,6 +12,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "../luasandbox_defines.h"
 #include "luasandbox.h"
 #include "luasandbox/util/heka_message_matcher.h"
 #include "luasandbox/util/protobuf.h"
@@ -27,7 +28,6 @@
 
 #ifdef _WIN32
 #include <winsock2.h>
-#define snprintf _snprintf
 #else
 #include <unistd.h>
 #endif

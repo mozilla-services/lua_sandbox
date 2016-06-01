@@ -20,6 +20,7 @@
 #include "luasandbox/lua.h"
 #include "luasandbox/lualib.h"
 #include "luasandbox/util/output_buffer.h"
+#include "luasandbox_defines.h"
 #include "luasandbox_impl.h"
 #include "luasandbox_serialize.h"
 

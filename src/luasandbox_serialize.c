@@ -14,6 +14,7 @@
 
 #include "luasandbox/lauxlib.h"
 #include "luasandbox/lualib.h"
+#include "luasandbox_defines.h"
 #include "luasandbox_impl.h"
 
 #ifdef _MSC_VER
