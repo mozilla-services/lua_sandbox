@@ -58,7 +58,8 @@ By default only the base library is loaded additional libraries must be loaded w
   - [math](http://www.lua.org/manual/5.1/manual.html#5.6)
   - [os](http://www.lua.org/manual/5.1/manual.html#5.8)
     - The local timezone is set to UTC in all sandboxes.
-    - Disabled functions (default): getenv, execute, exit, remove, rename, setlocale, tmpname.
+    - Disabled functions for I/O sandboxes (default): exit, setlocale
+    - Disabled functions for Analysis sandbox (default): getenv, execute, exit, remove, rename, setlocale, tmpname.
   - [sax](https://github.com/trink/symtseries/blob/master/README.md) Symbolic time series data analysis based on
     [Symbolic Aggregate approXimation](http://www.cs.ucr.edu/~eamonn/SAX.pdf).
   - [string](http://www.lua.org/manual/5.1/manual.html#5.4)
