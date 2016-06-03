@@ -14,7 +14,7 @@
 #include "luasandbox/util/heka_message.h"
 #include "luasandbox/util/running_stats.h"
 
-#define LSB_ALL_VALUES "all_values"
+#define LSB_OVERRIDE_HEADERS "override_restricted_headers"
 
 struct heka_stats {
   unsigned long long im_cnt;
@@ -34,7 +34,6 @@ struct lsb_heka_sandbox {
   lsb_heka_message                  *msg;
   char                              *name;
   char                              *hostname;
-  bool                              all_values;
   union {
     lsb_heka_im_input     iim;
     lsb_heka_im_analysis  aim;
