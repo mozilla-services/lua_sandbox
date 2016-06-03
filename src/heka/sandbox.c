@@ -201,11 +201,9 @@ static int inject_message_analysis(lua_State *lua)
   }
 
   lsb_heka_sandbox *hsb = lsb_get_parent(lsb);
-  if (hsb->name) {
+  if (!hsb->override_headers) {
     lua_pushstring(lua, hsb->name);
     lua_setfield(lua, 1, LSB_LOGGER);
-  }
-  if (hsb->hostname) {
     lua_pushstring(lua, hsb->hostname);
     lua_setfield(lua, 1, LSB_HOSTNAME);
   }
@@ -379,36 +377,34 @@ static void set_restrictions(lua_State *lua, lsb_heka_sandbox *hsb)
   }
   lua_pop(lua, 1); // remove max_message_size
 
-  lua_getfield(lua, 1, LSB_OVERRIDE_HEADERS);
-  const int override_headers = lua_toboolean(lua, -1);
+  lua_getfield(lua, 1, "override_restricted_headers");
+  hsb->override_headers = lua_toboolean(lua, -1);
   lua_pop(lua, 1); // remove the override_headers boolean
 
-  if (!override_headers) {
-    lua_getfield(lua, 1, LSB_LOGGER);
-    size_t len;
-    const char *tmp = lua_tolstring(lua, -1, &len);
-    if (tmp) {
-      hsb->name = malloc(len + 1);
-      if (hsb->name) strcpy(hsb->name, tmp);
-    }
-    lua_pop(lua, 1); // remove the Logger
-
-    lua_getfield(lua, 1, LSB_HOSTNAME);
-    tmp = lua_tolstring(lua, -1, &len);
-    if (tmp) {
-      hsb->hostname = malloc(len + 1);
-      if (hsb->hostname) strcpy(hsb->hostname, tmp);
-    } else {
-      char hostname[256] = { 0 };
-      if (gethostname(hostname, sizeof hostname)) {
-        hostname[sizeof hostname - 1] = 0;
-      }
-      len = strlen(hostname);
-      hsb->hostname = malloc(len + 1);
-      if (hsb->hostname) strcpy(hsb->hostname, hostname);
-    }
-    lua_pop(lua, 1); // remove the Hostname
+  lua_getfield(lua, 1, LSB_LOGGER);
+  size_t len;
+  const char *tmp = lua_tolstring(lua, -1, &len);
+  if (tmp) {
+    hsb->name = malloc(len + 1);
+    if (hsb->name) strcpy(hsb->name, tmp);
   }
+  lua_pop(lua, 1); // remove the Logger
+
+  lua_getfield(lua, 1, LSB_HOSTNAME);
+  tmp = lua_tolstring(lua, -1, &len);
+  if (tmp) {
+    hsb->hostname = malloc(len + 1);
+    if (hsb->hostname) strcpy(hsb->hostname, tmp);
+  } else {
+    char hostname[256] = { 0 };
+    if (gethostname(hostname, sizeof hostname)) {
+      hostname[sizeof hostname - 1] = 0;
+    }
+    len = strlen(hostname);
+    hsb->hostname = malloc(len + 1);
+    if (hsb->hostname) strcpy(hsb->hostname, hostname);
+  }
+  lua_pop(lua, 1); // remove the Hostname
 
   lua_pop(lua, 1); // remove the lsb_config table
 }
