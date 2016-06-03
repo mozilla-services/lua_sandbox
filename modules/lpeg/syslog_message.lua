@@ -4,8 +4,34 @@
 
 -- Copyright 2015 Mathieu Parent <math.parent@gmail.com>
 
+--[[
+# Syslog Message Module
+
+
+## Functions
+
+### get_prog_grammar
+
+Retrieves the parser for a particular program.
+
+*Arguments*
+- prog (string) - program name e.g. "CRON", "dhclient", "dhcpd"...
+
+*Return*
+- grammar (LPEG user data object) or nil if the `programname` isn't found
+
+### get_wildcard_grammar
+
+*Arguments*
+- prog (string) - program name, currently only accepts "PAM"
+
+*Return*
+- grammar (LPEG user data object) or nil if the `programname` isn't found
+--]]
+
+
 local string = require "string"
-local ip = require "ip_address"
+local ip = require "lpeg.ip_address"
 local l = require "lpeg"
 l.locale(l)
 local tonumber = tonumber
@@ -14,7 +40,6 @@ local type = type
 local M = {}
 setfenv(1, M) -- Remove external access to contain everything in the module
 
--- Exported variables:
 local prog_grammar = {}
 local wildcard_grammar = {}
 
@@ -602,25 +627,14 @@ wildcard_grammar["PAM"] = l.Ct(
                           * l.P"unknown"
                         ))
 
+
 function get_prog_grammar(prog)
     return prog_grammar[prog]
 end
 
--- If prog is a table, return a table of wildcard grammars
--- If prog is a string, return this particular wildcard grammar
--- If prog is nil, return all wildcard grammars
+
 function get_wildcard_grammar(prog)
-    if type(prog) == "table" then
-        local ret = {}
-        for i,v in ipairs(prog) do
-            table.insert(ret, wildcard_grammar[prog])
-        end
-        return ret
-    elseif type(prog) == "string" then
-        return wildcard_grammar[prog]
-    elseif prog == nil then
-        return wildcard_grammar
-    end
+    return wildcard_grammar[prog]
 end
 
 return M

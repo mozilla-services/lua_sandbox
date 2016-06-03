@@ -4,8 +4,25 @@
 
 -- Copyright 2015 Mathieu Parent <math.parent@gmail.com>
 
+--[[
+# Postfix Module
+
+## Function
+###  function postfix_match
+
+Parses a variety of postfix log message types.
+
+*Arguments*
+- programname (string) - name of the logging program e.g., 'smtpd'
+- message (string) - message string to match
+- extract_keyvalue_data (bool) - true if key/value pairs should be split out into table entries
+
+*Return*
+- matched results (table) or nil if no match
+--]]
+
 local string = require 'string'
-local ip = require 'ip_address'
+local ip = require 'lpeg.ip_address'
 local l = require 'lpeg'
 l.locale(l)
 local ipairs = ipairs

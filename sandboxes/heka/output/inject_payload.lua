@@ -6,11 +6,14 @@ require "io"
 require "string"
 
 --[[
-Outputs inject_payload messages to the configured directory.
-Filename: output_dir/logger.payload_name.payload_type
-Contents: message.Payload
+# Message Payload Output
 
--- .cfg
+Outputs the message payload to the configured directory. The output filename is
+`output_dir`/`Logger.Fields[payload_name]`.`Fields[payload_type]`
+and the contents are the message `Payload`.
+
+## Sample Configuration
+```lua
 filename        = "inject_payload.lua"
 message_matcher = "Type == 'inject_payload'"
 ticker_interval = 0
@@ -18,7 +21,7 @@ ticker_interval = 0
 -- location where the payload is written (e.g. make them accessible from a web
 -- server for external consumption)
 output_dir      = "/var/www/hindsight/payload"
-
+```
 --]]
 
 local output_dir = read_config("output_dir") or "/tmp"

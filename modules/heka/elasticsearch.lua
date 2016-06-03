@@ -3,9 +3,9 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 --[[
-## Elasticsearch Utility Functions
+# Elasticsearch Utility Functions
 
-### Module Configuration Table (common options)
+## Module Configuration Table (common options)
 ```lua
 -- Boolean flag, if true then any time interpolation (often used to generate the
 -- ElasticSeach index) will use the timestamp from the processed message rather
@@ -26,9 +26,9 @@ id = nil -- optional, default shown
 
 ```
 
-### API
+## Functions
 
-#### bulkapi_index_json(index, type_name, id, ns)
+### bulkapi_index_json
 
 Returns a simple JSON 'index' structure satisfying the [ElasticSearch BulkAPI](http://www.elasticsearch.org/guide/en/elasticsearch/reference/current/docs-bulk.html)
 
@@ -46,7 +46,7 @@ Returns a simple JSON 'index' structure satisfying the [ElasticSearch BulkAPI](h
 * JSON - String suitable for use as ElasticSearch BulkAPI index directive.
 
 *See*
-[Field Interpolation](msg_interpolate.lua#L11)
+[Field Interpolation](msg_interpolate.html)
 --]]
 
 local cjson         = require "cjson"

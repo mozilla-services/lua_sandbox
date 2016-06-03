@@ -1,10 +1,10 @@
-## Heka Kafka Producer
+# Heka Kafka Producer
 
 Kafka Lua module for output sandboxes.
 
-### API
+## Functions
 
-#### new
+### new
 
 Creates a Heka Kafka producer.
 
@@ -28,9 +28,9 @@ local producer = heka_kafka_producer.new(brokerlist, producer_conf)
 *Return*
 * producer (userdata) - Kafka producer or an error is thrown
 
-### API Methods
+## Methods
 
-#### create_topic
+### create_topic
 
 Creates a topic to be used by a producer, no-op if the topic already exists.
 
@@ -46,7 +46,7 @@ producer:create_topic(topic) -- creates the topic if it does not exist
 * none
 
 
-#### has_topic
+### has_topic
 
 Tests if a producer is managing a topic.
 
@@ -62,7 +62,7 @@ local b = producer:has_topic(topic)
 * bool - True if the producer is managing a topic with the specificed name
 
 
-#### destroy_topic
+### destroy_topic
 
 Removes a topic from the producer.
 
@@ -78,7 +78,7 @@ producer:destroy_topic(topic)
 * none - no-op on non-existent topic
 
 
-#### send
+### send
 
 Sends a message using the specified topic.
 
@@ -101,7 +101,7 @@ local ret = producer:send(topic, -1, sequence_id, payload)
   - ESRCH (2) requested partition is unknown in the Kafka cluster
   - ENOENT (3) topic is unknown in the Kafka cluster
 
-#### poll
+### poll
 
 Polls the provided Kafka producer for events and invokes callback.  This should
 be called after every send.

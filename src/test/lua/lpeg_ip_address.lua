@@ -5,7 +5,7 @@
 
 require "lpeg"
 
-local ip = require("ip_address")
+local ip = require "lpeg.ip_address"
 
 local function ipv6()
     local tests = {"2001:0db8:85a3:0000:0000:8a2e:0370:7334",

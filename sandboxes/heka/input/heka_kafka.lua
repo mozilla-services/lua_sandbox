@@ -5,31 +5,32 @@
 require "heka_kafka_consumer"
 
 --[[
+# Heka Kafka Consumer Input
 
-*Example Configuration*
+## Sample Configuration
+```lua
+filename                = "heka_kafka.lua"
+output_limit            = 8 * 1024 * 1024
+brokerlist              = "localhost:9092" -- see https://github.com/edenhill/librdkafka/blob/master/src/rdkafka.h#L2205
 
-    filename                = "heka_kafka.lua"
-    output_limit            = 8 * 1024 * 1024
-    brokerlist              = "localhost:9092" -- see https://github.com/edenhill/librdkafka/blob/master/src/rdkafka.h#L2205
+-- in balanced consumer group mode a consumer can only subscribe on topics, not topics:partitions.
+-- The partition syntax is only used for manual assignments (without balanced consumer groups).
+topics                  = {"test"}
+ticker_interval         = 60
 
-    -- in balanced consumer group mode a consumer can only subscribe on topics, not topics:partitions.
-    -- The partition syntax is only used for manual assignments (without balanced consumer groups).
-    topics                  = {"test"}
-    ticker_interval         = 60
+-- https://github.com/edenhill/librdkafka/blob/master/CONFIGURATION.md#global-configuration-properties
+consumer_conf = {
+    ["group.id"] = "test_group", -- must always be provided (a single consumer is considered a group of one
+    -- in that case make this a unique identifier)
+    ["message.max.bytes"] = output_limit,
+}
 
-    -- https://github.com/edenhill/librdkafka/blob/master/CONFIGURATION.md#global-configuration-properties
-    consumer_conf = {
-        ["group.id"] = "test_group", -- must always be provided (a single consumer is considered a group of one
-        -- in that case make this a unique identifier)
-        ["message.max.bytes"] = output_limit,
-    }
-
-    -- https://github.com/edenhill/librdkafka/blob/master/CONFIGURATION.md#topic-configuration-properties
-    topic_conf = {
-        -- ["auto.commit.enable"] = true, -- cannot be overridden
-        -- ["offset.store.method"] = "broker, -- cannot be overridden
-    }
-
+-- https://github.com/edenhill/librdkafka/blob/master/CONFIGURATION.md#topic-configuration-properties
+topic_conf = {
+    -- ["auto.commit.enable"] = true, -- cannot be overridden
+    -- ["offset.store.method"] = "broker, -- cannot be overridden
+}
+```
 --]]
 local brokerlist    = read_config("brokerlist") or error("brokerlist must be set")
 local topics        = read_config("topics") or error("topics must be set")

@@ -1,11 +1,26 @@
-## Output Sandbox
+# Output Sandbox Interface
 
-### Required Lua Functions (called by the host)
+[Available Output Sandboxes](/lua_sandbox/sandboxes/heka/output/index.html)
 
-#### process_message
+## Recommendations
+Since he sandbox does not run in isolation there are some expectations of how
+the host infrastructure behaves.  The current recommendation are based on the
+Hindsight reference implementation.
+
+## Disabled Functionality
+- [base library](http://www.lua.org/manual/5.1/manual.html#5.1)
+    - dofile, load, loadfile, loadstring, newproxy
+- [string](http://www.lua.org/manual/5.1/manual.html#5.4)
+    - dump
+- [os](http://www.lua.org/manual/5.1/manual.html#5.8)
+    - exit, setlocale
+
+## Required Lua Functions (called by the host)
+
+### process_message
 
 Called when the host has a message available for analysis.  Usually used in
-combination with a [message matcher](message_matcher.md) expression.
+combination with a [message matcher](../util/message_matcher.html) expression.
 
 Recommenation: specify this as a `message_matcher` configuration option.
 
@@ -15,16 +30,16 @@ Recommenation: specify this as a `message_matcher` configuration option.
 *Return*
 * status_code (number) - see the [Modes of Operation](#modes-of-operation) for a detail explanation
 of the return codes
-  - fatal error (greater than zero)
-  - success (0)
-  - non fatal failure (-1)
-  - skip (-2)
-  - retry (-3)
-  - batching (-4)
-  - async output (-5)
+    * fatal error (greater than zero)
+    * success (0)
+    * non fatal failure (-1)
+    * skip (-2)
+    * retry (-3)
+    * batching (-4)
+    * async output (-5)
 * status_message (optional: string) logged when the status code is -1
 
-#### timer_event
+### timer_event
 
 Called when the host timer expires or on shutdown.
 
@@ -38,9 +53,9 @@ to keep the timestamp units consistent so it will only have a one second resolut
 *Return*
 * none
 
-### Available C Functions (called from the plugin)
+## Available C Functions (called from the plugin)
 
-#### read_config
+### read_config
 
 Provides access to the sandbox configuration variables.
 
@@ -50,21 +65,16 @@ Provides access to the sandbox configuration variables.
 *Return*
 * value (string, number, bool, table)
 
-#### read_message
+### read_message
 
-Provides access to the Heka message data. See [read_message](analysis.md#read_message) for details.
+Provides access to the Heka message data. See [read_message](analysis.html#read_message) for details.
 
-#### decode_message
+### decode_message
 
 Converts a Heka protobuf encoded message string into a Lua table.
+See [decode_message](analysis.html#decode_message) for details.
 
-*Arguments*
-* heka_pb (string) - Heka protobuf binary string
-
-*Return*
-* msg ([Heka message table (array fields)](heka_message_table.md#array-based-message-fields)) or an error is thrown
-
-#### encode_message
+### encode_message
 
 Returns a Heka protocol buffer message using the contents of the specified Lua table.
 Note: this operation uses the internal output buffer so it is goverened by the
@@ -72,31 +82,31 @@ Note: this operation uses the internal output buffer so it is goverened by the
 be added by infrastructure using the corresponding configuration setting.
 
 *Arguments*
-* msg ([Heka message table](heka_message_table.md)
+* msg ([Heka message table](message.html))
 * framed (bool default: false) A value of true includes the framing header
 
 *Return*
 * heka_pb (string) - Heka protobuf binary string, framed as specified or an error is thrown
 
-#### create_message_matcher
+### create_message_matcher
 
 Returns a Heka protocol buffer message matcher; used to dynamic filter messages sent to the output plugin.
 
 *Arguments*
-* message_matcher  [message matcher](message_matcher.md)
+* message_matcher  [message matcher](../util/message_matcher.html)
 
 *Return*
 * message_matcher (userdata) - or an error is thrown
   The message matcher object has one method `eval` that returns true if the current message matches, false
   if it does not.
 
-##### Example
+#### Example
 
-See: [heka_tcp_matcher.lua](../../sandboxes/heka/output/heka_tcp_matcher.lua)
+See: [heka_tcp_matcher.lua](https://github.com/mozilla-services/lua_sandbox/blob/master/sandboxes/heka/output/heka_tcp_matcher.lua)
 
-#### update_checkpoint
+### update_checkpoint
 
-##### Batch Mode
+#### Batch Mode
 Advances the output checkpoint when in batching mode. The standard use case is
 to call it from `timer_event` after successfully flushing a batch on
 timeout/shutdown.
@@ -104,7 +114,7 @@ timeout/shutdown.
 *Arguments*
 * none
 
-##### Asynchronous Mode
+#### Asynchronous Mode
 Advances the output checkpoint and optionally reports the number of failures that occured.
 
 *Arguments*
@@ -114,22 +124,22 @@ Advances the output checkpoint and optionally reports the number of failures tha
 *Return*
 * none (throws an error on invalid arg types)
 
-#### Modes of Operation
+### Modes of Operation
 
-##### Lock Step
+#### Lock Step
 
 * `process_message` operates on the message and returns one of the following values:
-  * success (0) - the message was successfully processed and the output checkpoint is advanced
-  * failure (-1) - the message was not successfully processed
-    * the failure count is incremented
-    * any optional error message is written to the log
-    * the message is skipped
-    * the checkpoint is advanced
-  * skip (-2) - the message was intentionally not processed and the checkpoint is advanced
-  * retry (-3) - the message was not successfully processed and the host will call `process_message`
+    * success (0) - the message was successfully processed and the output checkpoint is advanced
+    * failure (-1) - the message was not successfully processed
+        * the failure count is incremented
+        * any optional error message is written to the log
+        * the message is skipped
+        * the checkpoint is advanced
+    * skip (-2) - the message was intentionally not processed and the checkpoint is advanced
+    * retry (-3) - the message was not successfully processed and the host will call `process_message`
   again, with the same message, after a one second delay
 
-##### Example Payload Output
+#### Example Payload Output
 
 ```lua
 -- cfg
@@ -178,20 +188,20 @@ function timer_event(ns)
 end
 ```
 
-##### Batching
+#### Batching
 
 * `process_message` batches the message/transformation in memory or on disk and returns one of the following values:
-  * batching (-4) - the message was successfully added to the batch
-  * failure (-1) - the message cannot be batch
-    * the failure count is incremented
-    * any optional error message is written to the log
-    * the message is skipped
-  * skip (-2) - the message was intentionally not added to the batch
-  * retry (-3) - the message was not successfully added to the batch and the host will call `process_message`
-  again, with the same message, after a one second delay
-  * success (0) - the batch has been successfully committed and the output checkpoint is advanced to the most recent message
+    * batching (-4) - the message was successfully added to the batch
+    * failure (-1) - the message cannot be batch
+        * the failure count is incremented
+        * any optional error message is written to the log
+        * the message is skipped
+    * skip (-2) - the message was intentionally not added to the batch
+    * retry (-3) - the message was not successfully added to the batch and the host will call `process_message`
+    again, with the same message, after a one second delay
+    * success (0) - the batch has been successfully committed and the output checkpoint is advanced to the most recent message
 
-##### Example Postgres Output
+#### Example Postgres Output
 
 ```lua
 -- cfg
@@ -357,7 +367,7 @@ function timer_event(ns, shutdown)
 end
 ```
 
-##### Asynchronous
+#### Asynchronous
 
 * `async_buffer_size` **RECOMMENDED** that this configuration variable be set and consumed by the host
 * `process_message` is called with a sequence_id parameter and asynchronously sends the message/transformation
@@ -373,7 +383,7 @@ to the destination and returns one of the following values:
 * When an asynchronously sent message is acknowledged [update_checkpoint](#update_checkpoint)
 **MUST** be called to advance the checkpoint to that specific message
 
-##### Example Kafka Output
+#### Example Kafka Output
 
 ```lua
 -- cfg

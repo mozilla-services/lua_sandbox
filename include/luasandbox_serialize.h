@@ -11,6 +11,7 @@
 
 #include <stdio.h>
 
+#include "luasandbox/util/output_buffer.h"
 #include "luasandbox_output.h"
 
 #ifdef __cplusplus

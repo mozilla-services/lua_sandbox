@@ -4,7 +4,7 @@
 
 require "string"
 
-local dt = require("date_time")
+local dt = require "lpeg.date_time"
 
 local function test_valid(grammar, tests, results)
     for i,v in ipairs(tests) do

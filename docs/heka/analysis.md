@@ -1,11 +1,30 @@
-## Analysis Sandbox
+# Analysis Sandbox Interface
 
-### Required Lua Functions (called by the host)
+[Available Analysis Sandboxes](/lua_sandbox/sandboxes/heka/analysis/index.html)
 
-#### process_message
+## Recommendations
+Since he sandbox does not run in isolation there are some expectations of how
+the host infrastructure behaves.  The current recommendation are based on the
+Hindsight reference implementation.
+
+## Disabled Functionality
+- [base library](http://www.lua.org/manual/5.1/manual.html#5.1)
+    - collectgarbage, dofile, load, loadfile, loadstring, newproxy
+- [coroutine](http://www.lua.org/manual/5.1/manual.html#5.2)
+    - the entire module is inaccessible
+- [string](http://www.lua.org/manual/5.1/manual.html#5.4)
+    - dump
+- [io](http://www.lua.org/manual/5.1/manual.html#5.7)
+    - the entire module is inaccessible
+- [os](http://www.lua.org/manual/5.1/manual.html#5.8)
+    - getenv, execute, exit, remove, rename, setlocale, tmpname
+    
+## Required Lua Functions (called by the host)
+
+### process_message
 
 Called when the host has a message available for analysis.  Usually used in
-combination with a [message matcher](message_matcher.md) expression.
+combination with a [message matcher](../util/message_matcher.html) expression.
 
 Recommenation: specify this as a `message_matcher` configuration option.
 
@@ -14,11 +33,11 @@ Recommenation: specify this as a `message_matcher` configuration option.
 
 *Return*
 * status_code (number)
-  - success (less than or equal to zero)
-  - fatal error (greater than zero)
+    * success (less than or equal to zero)
+    * fatal error (greater than zero)
 * status_message (optional: string) logged when the status code is less than zero
 
-#### timer_event
+### timer_event
 
 Called when the host timer expires or on shutdown.
 
@@ -32,9 +51,9 @@ to keep the timestamp units consistent so it will only have a one second resolut
 *Return*
 * none
 
-### Available C Functions (called from the plugin)
+## Available C Functions (called from the plugin)
 
-#### read_config
+### read_config
 
 Provides access to the sandbox configuration variables.
 
@@ -44,26 +63,26 @@ Provides access to the sandbox configuration variables.
 *Return*
 * value (string, number, bool, table)
 
-#### read_message
+### read_message
 
 Provides access to the Heka message data. Note that both fieldIndex and arrayIndex are zero-based
 (i.e. the first element is 0) as opposed to Lua's standard indexing, which is one-based.
 
 *Arguments*
 * variableName (string)
-  * framed (returns the Heka message protobuf string including the framing header)
-  * raw (returns the Heka message protobuf string)
-  * size (returns the size of the raw Heka message protobuf string)
-  * Uuid
-  * Type
-  * Logger
-  * Payload
-  * EnvVersion
-  * Hostname
-  * Timestamp
-  * Severity
-  * Pid
-  * Fields[*name*]
+    * framed (returns the Heka message protobuf string including the framing header)
+    * raw (returns the Heka message protobuf string)
+    * size (returns the size of the raw Heka message protobuf string)
+    * Uuid
+    * Type
+    * Logger
+    * Payload
+    * EnvVersion
+    * Hostname
+    * Timestamp
+    * Severity
+    * Pid
+    * Fields[*name*]
 * fieldIndex (unsigned) - only used in combination with the Fields variableName
         use to retrieve a specific instance of a repeated field *name*; zero indexed
 * arrayIndex (unsigned) - only used in combination with the Fields variableName
@@ -72,17 +91,21 @@ Provides access to the Heka message data. Note that both fieldIndex and arrayInd
 *Return*
 * value (number, string, bool, nil depending on the type of variable requested)
 
-#### decode_message
+### decode_message
 
-Converts a Heka protobuf encoded message string into a Lua table.
+Converts a Heka protobuf encoded message string into a Lua table or throws an error.
 
 *Arguments*
 * heka_pb (string) - Heka protobuf binary string
 
 *Return*
-* msg ( [Heka message table (array fields)](message.md#array-based-message-fields))
+* msg ([Heka message table (array fields)](message.html#array-based-message-fields)) 
+  with the value member always being an array (even if there is only a single item).
+  This format makes working with the output more consistent. The wide variation
+  in the inject table formats is to ease the construction of the message especially
+  when using an LPeg grammar transformation.
 
-#### inject_message
+### inject_message
 
 Creates a new Heka protocol buffer message using the contents of the specified Lua table
 (overwriting whatever is in the payload buffer). `Logger` and `Hostname` are set by
@@ -90,12 +113,12 @@ the infrastructure using the corresponding configuration setting and cannot be o
 by the plugin.
 
 *Arguments*
-* msg ([Heka message table](message.md))
+* msg ([Heka message table](message.html))
 
 *Return*
 * none (throws an error if the table does not match the Heka message schema)
 
-#### add_to_payload
+### add_to_payload
 
 Appends the arguments to the payload buffer for incremental construction of the final payload output
 (`inject_payload` finalizes the buffer and sends the message to the infrastructure). This function
@@ -107,7 +130,7 @@ is a rename of the generic sandbox output function to improve the readability of
 *Return*
 * none (throws an error if arg is an unsupported type)
 
-#### inject_payload
+### inject_payload
 
 This is a wrapper function for `inject_message` that is included for backwards compatibility. The function
 creates a new Heka message using the contents of the payload buffer (pre-populated with `add_to_payload`) and combined
@@ -139,12 +162,12 @@ Fields      = {
 *Return*
 * none (throws an error if arg is an unsupported type)
 
-#### Modes of Operation
+### Modes of Operation
 
-##### Lock Step
+#### Lock Step
 * Receives one call to `process_message`, operates on the message, and returns success (0) or failure (-1)
 
-##### Example simple counter plugin
+#### Example simple counter plugin
 ```lua
 -- cfg
 message_matcher = "TRUE"

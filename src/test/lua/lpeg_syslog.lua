@@ -2,7 +2,7 @@
 -- License, v. 2.0. If a copy of the MPL was not distributed with this
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-local syslog = require("syslog")
+local syslog = require "lpeg.syslog"
 
 local function traditional_file_format()
     local grammar = syslog.build_rsyslog_grammar('%TIMESTAMP% %HOSTNAME% %syslogtag%%msg:::sp-if-no-1st-sp%%msg:::drop-last-lf%\n')

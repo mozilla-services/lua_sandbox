@@ -4,7 +4,7 @@
 
 require 'string'
 require 'table'
-local pf = require 'postfix'
+local pf = require 'lpeg.postfix'
 
 -- From https://github.com/whyscream/postfix-grok-patterns
 -- 2015-05-26 8fdd562d159845b97bf8d9c273e5357f3a143a94

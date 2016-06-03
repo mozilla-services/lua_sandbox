@@ -3,9 +3,12 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 --[[
-Simple message throughput counter/visualization
+# Throughput Analysis
 
--- .cfg
+Simple message throughput counter/visualization.
+
+## Sample Configuration
+```lua
 filename                = "throughput.lua"
 message_matcher         = "TRUE"
 ticker_interval         = 60
@@ -21,7 +24,7 @@ preservation_version    = 0
 -- preservation_version (integer) - This must be incremented if the rows or
 -- sec_per_row value is change when using preservation (the old data is cleared)
 -- preservation_version = 0
-
+```
 --]]
 _PRESERVATION_VERSION = read_config("preservation_version") or 0
 

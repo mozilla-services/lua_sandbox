@@ -614,6 +614,28 @@ static char* test_heka_json()
 }
 
 
+static char* test_heka_util()
+{
+  lsb_heka_message m;
+  mu_assert(!lsb_init_heka_message(&m, 1), "failed to init message");
+  mu_assert(lsb_decode_heka_message(&m, pb, sizeof(pb) - 1, &logger), "failed");
+
+  lsb_heka_sandbox *hsb;
+  hsb = lsb_heka_create_analysis(NULL, "lua/heka_util.lua", NULL,
+                                 "path = [[" TEST_LUA_PATH "]]\n"
+                                 "cpath = [[" TEST_LUA_CPATH "]]\n",
+                                 &logger, aim);
+  mu_assert(hsb, "lsb_heka_create_analysis failed");
+  int rv = lsb_heka_pm_analysis(hsb, &m, false);
+  mu_assert(0 == rv, "expected: %d received: %d %s", 0, rv,
+            lsb_heka_get_error(hsb));
+  e = lsb_heka_destroy_sandbox(hsb);
+  lsb_free_heka_message(&m);
+  return NULL;
+}
+
+
+
 static char* benchmark_decode_message()
 {
   int iter = 100000;
@@ -658,6 +680,7 @@ static char* all_tests()
   mu_run_test(test_decode_message);
   mu_run_test(test_read_message);
   mu_run_test(test_heka_json);
+  mu_run_test(test_heka_util);
 
   mu_run_test(benchmark_decode_message);
   return NULL;

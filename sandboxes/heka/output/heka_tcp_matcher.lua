@@ -3,10 +3,13 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 --[[
-Heka compatible TCP output with dynamic matching. Used for generating a debug
-stream of messages for as long as the connection is maintained.
+# Heka Compatible TCP Output with Dynamic Matching
 
--- .cfg
+Used for generating a debug stream of messages for as long as the connection is
+maintained.
+
+## Sample Configuration
+```lua
 filename = "heka_tcp_matcher.lua"
 instruction_limit = 0
 messsage_matcher = "TRUE"
@@ -24,7 +27,7 @@ ssl_params = {
   verify = {"peer", "fail_if_no_peer_cert"},
   options = {"all", "no_sslv3"}
 }
-
+```
 --]]
 
 require "string"

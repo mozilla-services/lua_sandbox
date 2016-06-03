@@ -1,6 +1,6 @@
-## Heka Message Table
+# Heka Message Table
 
-### Hash Based Message Fields
+## Hash Based Message Fields
 
 ```lua
 {
@@ -20,7 +20,7 @@ Fields      = {
 }
 ```
 
-### Array Based Message Fields
+## Array Based Message Fields
 ```lua
 {
 -- Message headers are the same as above

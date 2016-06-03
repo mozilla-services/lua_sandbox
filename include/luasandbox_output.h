@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-/** @brief Lua sandbox output buffer functions @file */
+/** @brief Lua sandbox output generation/retrieval functions @file */
 
 #ifndef luasandbox_output_h_
 #define luasandbox_output_h_
@@ -12,7 +12,6 @@
 #include <stdio.h>
 
 #include "luasandbox.h"
-#include "luasandbox/util/output_buffer.h"
 
 #ifdef __cplusplus
 extern "C" {

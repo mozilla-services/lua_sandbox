@@ -3,9 +3,10 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 --[[
-Heka compatible TCP output
+# Heka Compatible TCP Output
 
--- .cfg
+## Sample Configuration
+```lua
 filename        = "heka_tcp.lua"
 message_matcher = "TRUE"
 
@@ -22,7 +23,7 @@ ssl_params = {
   verify = "peer",
   options = {"all", "no_sslv3"}
 }
-
+```
 --]]
 
 local socket = require "socket"

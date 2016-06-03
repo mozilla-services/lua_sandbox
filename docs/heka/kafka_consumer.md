@@ -1,10 +1,10 @@
-## Heka Kafka Consumer
+# Heka Kafka Consumer
 
 Kafka Lua module for input sandbox plugins.
 
-### API
+## Functions
 
-#### new
+### new
 
 Creates a Heka Kafka consumer.
 
@@ -28,9 +28,9 @@ local consumer   = heka_kafka_consumer.new(brokerlist, topics, consumer_conf, to
 *Return*
 * consumer (userdata) - Kafka consumer or an error is thrown
 
-### API Methods
+## Methods
 
-#### receive
+### receive
 
 Receives a message from the specified Kafka topic(s).
 

@@ -3,11 +3,11 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 --[[
-## Simple Templating to Transform Message Fields into Strings
+# Simple Templating to Transform Message Fields into Strings
 
-### API
+## Functions
 
-#### interpolate(value, secs)
+### interpolate
 
 Interpolates values from the currently processed message into the provided
 string value. A `%{}` enclosed field name will be replaced by the field value
@@ -15,7 +15,7 @@ from the current message. All message header fields are supported ("Uuid",
 "Timestamp", "Type", "Logger", "Severity", "Payload", "EnvVersion", "Pid",
 "Hostname"). Any other values will be checked against the defined dynamic
 message fields. If no field matches, then a
-[C strftime](http://man7.org/linux/man-pages/man3/strftime.3.html) (*nix)
+[C strftime](http://man7.org/linux/man-pages/man3/strftime.3.html) (\*nix)
 or
 [C89 strftime](http://msdn.microsoft.com/en-us/library/fe06s4ak.aspx) (Windows)
 time substitution will be attempted. The time used for time substitution will be

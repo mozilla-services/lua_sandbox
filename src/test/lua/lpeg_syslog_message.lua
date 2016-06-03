@@ -2,7 +2,7 @@
 -- License, v. 2.0. If a copy of the MPL was not distributed with this
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-local syslog_message = require("syslog_message")
+local syslog_message = require "lpeg.syslog_message"
 
 local function CRON()
     local grammar = syslog_message.get_prog_grammar('CRON')
@@ -42,7 +42,7 @@ local function dhclient()
     assert(fields.dhcp_server_addr.representation == 'ipv4', fields.dhcp_server_addr)
     assert(fields.dhcp_server_port == 67, fields.dhcp_server_port)
     assert(fields.dhcp_client_interval_seconds == 18000, fields.dhcp_client_interval_seconds)
-    
+
 
     log = 'DHCPREQUEST on eth0 to 10.20.30.42 port 67'
     fields = grammar:match(log)

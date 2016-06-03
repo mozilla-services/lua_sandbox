@@ -6,11 +6,12 @@ require "io"
 require "string"
 
 --[[
-Outputs a Heka protobuf stream rolling the log file every time it reaches the
-roll_size.
+#  Heka Protobuf Stream Output (rolled by size)
 
--- .cfg
+Outputs a Heka protobuf stream rolling the log file every time it reaches the `roll_size`.
 
+## Sample Configuration
+```lua
 filename        = "heka_log_rolling.lua"
 message_matcher = "TRUE"
 ticker_interval = 0
@@ -19,7 +20,7 @@ preserve_data   = true
 --location where the payload is written
 output_dir      = "/tmp"
 roll_size       = 1024 * 1024 * 1024
-
+```
 --]]
 
 file_num = 0

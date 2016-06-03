@@ -3,15 +3,29 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 --[[
-## Elasticsearch Encoder for Heka Payload-only Messages
+# Elasticsearch Encoder for Heka Payload-only Messages
+
 The message payload must be pre-formatted JSON in an ElasticSearch compatible
 format.
 
-### Module Configuration Table
+## Module Configuration Table
 
-[Common Options](../elasticsearch.lua#8)
+[Common Options](../elasticsearch.html)
 
-### Sample Output
+## Functions
+
+### encode
+
+Creates the ElasticSearch bulk API index JSON and combines it with the
+pre-formatted JSON from the message payload (a new line is added if necessary).
+
+*Arguments*
+- none
+
+*Return*
+- JSON (string)
+
+## Sample Output
 ```json
 {"index":{"_index":"mylogger-2014.06.05","_type":"mytype-host.domain.com"}}
 {"json":"data","extracted":"from","message":"payload"}

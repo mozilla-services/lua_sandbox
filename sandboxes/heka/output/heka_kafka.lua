@@ -5,25 +5,26 @@
 require "heka_kafka_producer"
 
 --[[
+# Heka Kafka Producer Output
 
-*Example Configuration*
+## Sample Configuration
+```lua
+filename               = "heka_kafka.lua"
+message_matcher        = "TRUE"
+output_limit           = 8 * 1024 * 1024
+brokerlist              = "localhost:9092" -- see https://github.com/edenhill/librdkafka/blob/master/src/rdkafka.h#L2205
+ticker_interval        = 60
+async_buffer_size      = 20000
 
-    filename               = "heka_kafka.lua"
-    message_matcher        = "TRUE"
-    output_limit           = 8 * 1024 * 1024
-    brokerlist              = "localhost:9092" -- see https://github.com/edenhill/librdkafka/blob/master/src/rdkafka.h#L2205
-    ticker_interval        = 60
-    async_buffer_size      = 20000
-
-    topic_constant = "test"
-    producer_conf = {
-        ["queue.buffering.max.messages"] = async_buffer_size,
-        ["batch.num.messages"] = 200,
-        ["message.max.bytes"] = output_limit,
-        ["queue.buffering.max.ms"] = 10,
-        ["topic.metadata.refresh.interval.ms"] = -1,
-    }
-
+topic_constant = "test"
+producer_conf = {
+    ["queue.buffering.max.messages"] = async_buffer_size,
+    ["batch.num.messages"] = 200,
+    ["message.max.bytes"] = output_limit,
+    ["queue.buffering.max.ms"] = 10,
+    ["topic.metadata.refresh.interval.ms"] = -1,
+}
+```
 --]]
 local brokerlist = read_config("brokerlist") or error("brokerlist must be set")
 local topic_constant = read_config("topic_constant")

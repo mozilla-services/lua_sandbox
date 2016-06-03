@@ -16,6 +16,10 @@ environment including functionality like global data preservation/restoration on
 shutdown/startup, output collection in textual or binary formats and an array of
 parsers for various data types (Nginx, Apache, Syslog, MySQL and many RFC grammars)
 
+These libraries and utilities have been mostly extracted from [Hindsight](https://github.com/trink/hindsight).
+The goal was to decouple the Heka/Hindsight functionality from any particular
+infrastructure and make it embeddable into any tool or language.
+
 ### Features
 
 - small - memory requirements are as little as 8 KiB for a basic sandbox
@@ -25,7 +29,7 @@ parsers for various data types (Nginx, Apache, Syslog, MySQL and many RFC gramma
   Containment is defined in terms of restriction to the operating system,
   file system, libraries, memory use, Lua instruction use, and output size.
 
-[Full Documentation](docs/index.md)
+[Full Documentation](http://mozilla-services.github.io/lua_sandbox)
 
 ## Installation
 
@@ -36,7 +40,9 @@ parsers for various data types (Nginx, Apache, Syslog, MySQL and many RFC gramma
 
 #### Optional (used for documentation)
 * Graphviz (2.28.0) - http://graphviz.org/Download..php
-* Doxygen (1.8+)- http://www.stack.nl/~dimitri/doxygen/download.html#latestsrc
+* Doxygen (1.8.11+)- http://www.stack.nl/~dimitri/doxygen/download.html#latestsrc
+* pandoc (1.17) - http://pandoc.org/
+* lua (5.1) - https://www.lua.org/download.html
 
 ### CMake Build Instructions
 

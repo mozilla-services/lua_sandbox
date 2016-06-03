@@ -4,7 +4,7 @@
 
 require "lpeg"
 
-local cbufd = require("cbufd")
+local cbufd = require "lpeg.cbufd"
 
 function process(tc)
     if tc == 0 then

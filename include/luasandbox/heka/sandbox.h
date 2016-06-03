@@ -216,7 +216,7 @@ lsb_heka_sandbox* lsb_heka_create_output(void *parent,
                                          lsb_heka_update_checkpoint ucp);
 
 /**
- * Host access to the output sandobx process_message API
+ * Host access to the output sandbox process_message API
  *
  * @param hsb Heka output sandbox
  * @param msg Heka message to process

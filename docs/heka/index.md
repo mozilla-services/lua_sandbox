@@ -1,33 +1,21 @@
-# Heka Sandbox
+# Heka Sandbox Interface
 
 ## Overview
 
-This is the 1.0 release of the Heka sandbox API.  It is a refined implementation
-of its predecessor which was developed in [Heka](https://github.com/mozilla-services/heka).  
-The goal is to decople it from Go and make it easily embeddable in any language.
-Although this could be ported back to the Heka Go implementation a new design
-of that infrastructure has been created to replace it called 
+This document describes the pending 1.0 release of the Heka sandbox API built on
+the [Generic Sandbox Interface](../sandbox.html). The 1.0 release is a refined
+implementation of its predecessor which was developed in 
+[Heka](https://github.com/mozilla-services/heka). The goal is to decople it from
+Go and make it easily embeddable in any language. We are in the process of
+porting it back to the Heka Go implementation but a new design of that
+infrastructure has been created to replace it called 
 [Hindsight](https://github.com/trink/hindsight).
-
-## Table of Contents
-
-* [Message Matcher](message_matcher.md)
-* [Input Sandbox](input.md)
-  * [Heka Stream Reader](stream_reader.md)
-  * [Heka JSON](heka_json.md)
-  * [Heka Kafka Consumer](kafka_consumer.md)
-* [Analysis Sandbox](analysis.md)
-* [Output Sandbox](output.md)
-  * [Heka JSON](heka_json.md)
-  * [Heka Kafka Producer](kafka_producer.md)
 
 ## Sandbox API Changes from the Go Heka Sandbox
 
 There are a few intentional changes between tho original Heka sandbox and this version.
 
 ### Changes
-
-1. `read_message` now has a `framed` parameter to retrive the raw message with stream framing.
 
 #### Input Sandbox
 
@@ -41,19 +29,23 @@ There are a few intentional changes between tho original Heka sandbox and this v
 
 #### Analysis/Output Sandbox
 
+1. `read_message`
+    * returns `nil` for optional header fields if they don't exist instead of an empty string or zero
+    * added a `framed` parameter to retrive the raw message with stream framing
+    * added a `size` parameter to retrive size of the raw message without having to copy it down
 1. `timer_event` has a second parameter `shutdown` that is set to true when the sandbox is exiting.
 
 ### Additions
 
 #### Input Sandbox
 
-1. A [Heka Stream Reader](heka_stream_reader.md) Lua module was added.
-1. A [Heka JSON](heka_json.md) Lua module was added.
+1. A [Heka Stream Reader](stream_reader.html) Lua module was added.
+1. A [Heka JSON](heka_json.html) Lua module was added.
 
 #### Output Sandbox
 
-1. [update_checkpoint](output.md#update_checkpoint) was added for batch and asynchronous processing.
-1. A [Heka JSON](heka_json.md) Lua module was added.
+1. [update_checkpoint](output.html#update_checkpoint) was added for batch and asynchronous processing.
+1. A [Heka JSON](heka_json.html) Lua module was added.
 
 ### Removals
 

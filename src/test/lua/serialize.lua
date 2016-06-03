@@ -3,7 +3,7 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 require "circular_buffer"
-util = require "util"
+util = require "lsb.util"
 
 count = 0
 rate = 0.12345678

@@ -3,11 +3,12 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 --[[
-Reads a Heka protobuf stream from the stdin file handle
+# Heka Protobuf Stream Input (stdin)
 
--- .cfg
+## Sample Configuration
+```lua
 filename = "heka_stdin.lua"
-
+```
 --]]
 
 local stdin = require "io".stdin

@@ -8,6 +8,7 @@
 
 #include "message_impl.h"
 
+#include <limits.h>
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
@@ -967,7 +968,11 @@ int heka_read_message(lua_State *lua, lsb_heka_message *m)
       lua_pushnil(lua);
     }
   } else if (strcmp(field, LSB_PID) == 0) {
-    lua_pushinteger(lua, m->pid);
+    if (m->pid == INT_MIN) {
+      lua_pushnil(lua);
+    } else {
+      lua_pushinteger(lua, m->pid);
+    }
   } else if (strcmp(field, LSB_HOSTNAME) == 0) {
     if (m->hostname.s) {
       lua_pushlstring(lua, m->hostname.s, m->hostname.len);

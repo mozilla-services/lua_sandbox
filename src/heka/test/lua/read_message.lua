@@ -13,7 +13,7 @@ local tests = {
     {"EnvVersion", "env_version"},
     {"Hostname", "hostname"},
     {"Severity", 9},
-    {"Pid", 0},
+    {"Pid", nil},
     {"raw", 208},
     {"size", 208},
     {"framed", 214},

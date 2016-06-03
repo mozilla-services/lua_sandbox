@@ -314,7 +314,7 @@ static char* test_init_error()
   // disabled external modules
   ret = lsb_init(sb, NULL);
   mu_assert(ret == LSB_ERR_LUA, "lsb_init() received: %s", lsb_err_string(ret));
-  const char *expected = "lua/lpeg_date_time.lua:7: module 'date_time' not "
+  const char *expected = "lua/lpeg_date_time.lua:7: module 'lpeg.date_time' not "
       "found:";
   mu_assert(strcmp(lsb_get_error(sb), expected) == 0,
             "lsb_get_error() received: %s", lsb_get_error(sb));
@@ -836,7 +836,6 @@ static char* test_lpeg()
     , "lua/lpeg_postfix.lua"
     , "lua/lpeg_syslog.lua"
     , "lua/lpeg_syslog_message.lua"
-    , "lua/lpeg_sfl4j.lua"
     , NULL
   };
 

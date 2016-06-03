@@ -22,15 +22,15 @@ local max_file_age          = read_config("max_file_age") or 60 * 60
 local flush_on_shutdown     = read_config("flush_on_shutdown")
 
 --[[
-## Heka Protobuf Message S3 Output Partitioner
+# Heka Protobuf Stream S3 Output Partitioner
 
 Batches message data into Heka protobuf stream files based on the specified path
 dimensions and copies them to S3 when they reach the maximum size or maximum
 age.
 
-### Configuration
+## Configuration
 
-#### Dimension Specification File
+### Dimension Specification File
 This file contains a JSON specification for how the data should be partitioned
 into files and the location each file will reside at in S3. The JSON is shared
 with other tools so it is not directly included in the configuration.
@@ -40,7 +40,7 @@ TODO: This specifification should be expanded (when necessary) to include
 - field/array index support
 - patterns instead of exact matches
 
-##### Sample Specification File
+#### Sample Specification File
 ```json
   {
     "version": 1,
@@ -63,7 +63,7 @@ TODO: This specifification should be expanded (when necessary) to include
   }
 ```
 
-#### Sample Configuration
+### Sample Configuration
 
 ```lua
 filename = "heka_s3_partition.lua"

@@ -3,7 +3,7 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 require "string"
-local mysql = require("mysql")
+local mysql = require "lpeg.mysql"
 
 local slow_query_log = {
 [[

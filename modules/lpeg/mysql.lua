@@ -2,11 +2,23 @@
 -- License, v. 2.0. If a copy of the MPL was not distributed with this
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+--[[
+# MySQL Module
+
+## Variables
+### LPEG Grammars
+* `slow_query_grammar`
+* `mariadb_slow_query_grammar`
+* `percona_slow_query_grammar`
+* `short_slow_query_grammar`
+* `mariadb_short_slow_query_grammar`
+--]]
+
 -- Imports
 local l = require "lpeg"
 l.locale(l)
 local tonumber = tonumber
-local ip = require "ip_address"
+local ip = require "lpeg.ip_address"
 
 local M = {}
 setfenv(1, M) -- Remove external access to contain everything in the module

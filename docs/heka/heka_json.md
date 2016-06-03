@@ -1,4 +1,4 @@
-## Heka JSON Module
+# Heka JSON Module
 
 Allows for JSON-Schema validation and more efficient manipulation of large JSON
 structures where only a small amount of the data is consumed by the plugin.
@@ -6,13 +6,13 @@ Schema pattern matching is restricted to a subset of regex decribed in the
 Regular Expression section of the
 [RapidJSON Schema Documentation](http://rapidjson.org/md_doc_schema.html).
 
-### Availability
+## Availability
 
 Input/Output plugins only.
 
-### API
+## API Functions
 
-#### parse
+### parse
 
 Creates a Heka JSON Document from a string.
 
@@ -27,7 +27,7 @@ assert(ok, doc)
 *Return*
 * doc (userdata) - Heka JSON document or an error is thrown
 
-#### parse_schema
+### parse_schema
 
 Creates a Heka JSON Schema.
 
@@ -42,7 +42,7 @@ assert(ok, doc)
 *Return*
 * schema (userdata) - Heka JSON schema or an error is thrown
 
-#### parse_message
+### parse_message
 
 Creates a Heka JSON Document from a message variable.
 
@@ -67,9 +67,9 @@ assert(ok, doc)
 *Return*
 * doc (userdata) - Heka JSON document or an error is thrown
 
-### Heka JSON Document API Methods
+## Heka JSON Document API Methods
 
-#### validate
+### validate
 
 Checks that the JSON document conforms to the specified schema.
 
@@ -85,7 +85,7 @@ assert(ok, err)
 * ok (bool) - true if valid
 * err (string) - error message on failure
 
-#### find
+### find
 
 Searches for and returns a value in the JSON structure.
 
@@ -102,7 +102,7 @@ assert(v, "not found")
 *Return*
 * value (lightuserdata) - handle to be passed to other methods, nil if not found
 
-#### remove
+### remove
 
 Searches for and NULL's out the resulting value in the JSON structure returning the
 extracted Heka JSON document.
@@ -121,7 +121,7 @@ rv:size() -- number of elements in the extracted array
 *Return*
 * doc (userdata) - the object removed from the original JSON or nil
 
-#### value
+### value
 
 Returns the primitive value of the JSON element.
 
@@ -139,7 +139,7 @@ assert("bar" == str, tostring(str))
 *Return*
 * primitive - string, number, bool, nil or throws an error if not convertable (object, array)
 
-#### type
+### type
 
 Returns the type of the value in the JSON structure.
 
@@ -155,7 +155,7 @@ assert(t == "object", t)
 *Return*
 * type (string, nil) - "string", "number", "boolean", "object", "array" or "null"
 
-#### iter
+### iter
 
 Retrieves an interator function for an object/array.
 
@@ -173,7 +173,7 @@ end
 * iter (function, nil) - iterator function returning an index/value for arrays or a key/value for
   objects.  Throws an error on primitive types.
 
-#### size
+### size
 
 Returns the size of the value.
 ```lua
@@ -189,7 +189,7 @@ local n = doc:size(v)
 * size (number, nil) - Number of element in an array/object or the length of the string.
   Throws an error on numeric, boolean and null types.
 
-#### make_field
+### make_field
 
 Helper function to wrap the lightuserdata so it can be used in an inject_message field.
 

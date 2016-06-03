@@ -2,13 +2,34 @@
 -- License, v. 2.0. If a copy of the MPL was not distributed with this
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+--[[
+# Syslog Module
+
+## Variables
+
+* `severity` - LPEG grammar to parse a syslog severity string and return the numeric value
+
+## Functions
+
+### build_rsyslog_grammar
+
+Constructs an LPEG grammar based on the rsyslog template configuration string.
+
+*Arguments*
+- template (string) - http://rsyslog-5-8-6-doc.neocities.org/rsyslog_conf_templates.html
+
+*Return*
+- grammar (LPEG user data object) or an error is thrown
+--]]
+
+
 -- Imports
 local l = require "lpeg"
 l.locale(l)
 local math = require "math"
 local string = require "string"
-local dt = require "date_time"
-local ip = require "ip_address"
+local dt = require "lpeg.date_time"
+local ip = require "lpeg.ip_address"
 local tonumber = tonumber
 local error = error
 local type = type
@@ -60,7 +81,7 @@ local function convert_pri(pri)
 end
 local pri = digit^-3 / convert_pri
 
--- https://github.com/rsyslog/rsyslog/blob/35ef2408dfec0e8abdebd33c74578f9bb3299f20/runtime/msg.c#L298
+-- https://github.com/rsyslog/rsyslog/blob/35ef2408dfec0e8abdebd33c74578f9bb3299f20/runtime/msg.c#L309
 local syslog_severity_text = (
   (l.P"debug"   + "DEBUG")      / "7"
 + (l.P"info"    + "INFO")       / "6"
@@ -227,8 +248,6 @@ end
 --
 -- Public Interface
 --
-
--- http://rsyslog-5-8-6-doc.neocities.org/rsyslog_conf_templates.html
 function build_rsyslog_grammar(template)
     local ws = l.space / space_grammar
     local options = l.P":" * l.Cg((1 - l.P"%")^0, "options") -- todo support multiple options

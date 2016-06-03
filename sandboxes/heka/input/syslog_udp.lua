@@ -3,9 +3,10 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 --[[
-Syslog Collector
+# Syslog UDP Input
 
--- .cfg
+## Sample Configuration
+```lua
 filename            = "syslog_udp.lua"
 instruction_limit   = 0
 
@@ -18,7 +19,7 @@ instruction_limit   = 0
 -- template (string) - The 'template' configuration string from rsyslog.conf
 -- see http://rsyslog-5-8-6-doc.neocities.org/rsyslog_conf_templates.html
 -- template = "<%PRI%>%TIMESTAMP% %HOSTNAME% %syslogtag:1:32%%msg:::sp-if-no-1st-sp%%msg%" -- RSYSLOG_TraditionalForwardFormat
-
+```
 --]]
 
 local syslog = require "syslog"

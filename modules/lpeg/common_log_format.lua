@@ -2,12 +2,54 @@
 -- License, v. 2.0. If a copy of the MPL was not distributed with this
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+--[[
+# Common Log Format Module
+
+## Variables
+
+* `nginx_error_grammar` - LPEG grammar to parse an Nginx error log line
+
+## Functions
+
+### build_nginx_grammar
+
+Constructs an LPEG grammar based on the Nginx log_format configuration string.
+
+*Arguments*
+- log_format (string) - Nginx log_format configuration string
+
+*Return*
+- grammar (LPEG user data object) or an error is thrown
+
+### build_apache_grammar
+
+Constructs an LPEG grammar based on the Apache log_format configuration string.
+
+*Arguments*
+- log_format (string) - Apache log_format configuration string
+
+*Return*
+- grammar (LPEG user data object) or an error is thrown
+
+### normalize_user_agent
+
+Extracts the browser, version and os information from a user agent string.
+
+*Arguments*
+- ua (string) - user agent string
+
+*Return*
+- browser (string)
+- version (number)
+- os (string)
+--]]
+
 -- Imports
 local l = require "lpeg"
 l.locale(l)
 local string = require "string"
-local dt = require "date_time"
-local ip = require "ip_address"
+local dt = require "lpeg.date_time"
+local ip = require "lpeg.ip_address"
 local tonumber = tonumber
 local ipairs = ipairs
 local pairs = pairs

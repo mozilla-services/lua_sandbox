@@ -1,3 +1,70 @@
+-- This Source Code Form is subject to the terms of the Mozilla Public
+-- License, v. 2.0. If a copy of the MPL was not distributed with this
+-- file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+--[[
+# Date Time Module
+
+## Variables
+### LPEG Grammars
+* `date_fullyear`   - 4 digit year
+* `date_month`      - 2 digit month
+* `date_mabbr`      - month abbreviation to a numeric string
+* `date_mfull`      - month name to a numeric string
+* `date_mday`       - 2 digit month day (zero padded)
+* `date_mday_sp`    - 2 digit month day (space padded)
+* `time_hour`       - 2 digit hour
+* `time_minute`     - 2 digit minute
+* `time_second`     - 2 digit second (including leap second)
+* `time_secfrac`    - fraction seconds
+* `timezone`        - timezone abbreviations (US and UTC others create an offset of 0)
+* `timezone_offset` - numeric time zone offset
+* `clf_timestamp`   - common log format timestamp
+* `mysql_timestamp` - MySQL timestamp
+* `pgsql_timestamp` - Postgres timestamp
+* `rfc3164_timestamp`
+* `rfc3339_time_numoffset`
+* `rfc3339_time_offset`
+* `rfc3339_partial_time`
+* `rfc3339_full_date`
+* `rfc3339_full_time`
+* `rfc3339`
+
+
+## Functions
+
+### build_strftime_grammar
+
+Constructs an LPEG grammar based on the strftime format.
+
+*Arguments*
+- strftime (string) - strftime format specifier
+
+*Return*
+- grammar (LPEG user data object) or an error is thrown
+
+### time_to_ns
+
+Converts time table to a time_ns
+
+*Arguments*
+- t (table) - table returned by the various date/time grammars
+
+*Return*
+- time_ns (number) - number of nanoseconds since the Unix epoch
+
+### seconds_to_ns
+
+Converts time_t to a time_ns
+
+*Arguments*
+- time_t
+
+*Return*
+- time_ns (number) - number of nanoseconds since the Unix epoch
+
+--]]
+
 -- Imports
 local l = require "lpeg"
 l.locale(l)
@@ -6,14 +73,14 @@ local string = require "string"
 local tonumber = tonumber
 local ipairs = ipairs
 local error = error
+local type = type
 
 local M = {}
 setfenv(1, M) -- Remove external access to contain everything in the module
 
 --[[ Utility Functions --]]
--- Converts a time table into the number of nanoseconds since the UNIX epoch
 function time_to_ns(t)
-    if not t then return 0 end
+    if type(t) ~= "table" then return 0 end
     if t.time_t then return t.time_t * 1e9 end
 
     local offset = 0

@@ -3,9 +3,10 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 --[[
-Heka compatible TCP input
+# Heka Compatible TCP Input
 
--- .cfg
+## Sample Configuration
+```lua
 filename = "heka_tcp.lua"
 instruction_limit = 0
 
@@ -21,7 +22,7 @@ ssl_params = {
   verify = {"peer", "fail_if_no_peer_cert"},
   options = {"all", "no_sslv3"}
 }
-
+```
 --]]
 
 require "coroutine"

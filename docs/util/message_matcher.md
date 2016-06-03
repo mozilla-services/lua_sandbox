@@ -1,9 +1,9 @@
-### Message Matcher Syntax
+# Message Matcher Syntax
 
 The message matcher allows sandboxes to select which messages they want to consume
-(see [Heka Message Structure](message.md))
+(see [Heka Message Structure](../heka/message.html))
 
-#### Examples
+## Examples
 
 *  Type == "test" && Severity == 6
 *  (Severity == 7 || Payload == "Test Payload") && Type == "test"
@@ -13,38 +13,40 @@ The message matcher allows sandboxes to select which messages they want to consu
 *  TRUE
 *  Fields[created] =~ "^2015"
 *  Fields[widget] != NIL
+*  Timestamp >= "2016-05-24T00:00:00Z"
+*  Timestamp >= 1464048000000000000
 
-#### Relational Operators
+## Relational Operators
 
 * == equals
 * != not equals
-* > greater than
-* >= greater than equals
+* &gt; greater than
+* &gt;= greater than equals
 * < less than
 * <= less than equals
 * =~ Lua pattern match
 * !~ Lua negated pattern match
 
-#### Logical Operators
+## Logical Operators
 
 * Parentheses are used for grouping expressions
 * && and (higher precedence)
 * || or
 
-#### Boolean
+## Boolean
 
 * TRUE
 * FALSE
 
-#### Constants
+## Constants
 
 * NIL used to test the existence (!=) or non-existence (==) of a field variable
 
-#### Message Variables
+## Message Variables
 
 All message variables must be on the left hand side of the relational comparison
  
-##### String
+### String
 
 * Uuid - 16 byte raw binary type 4 UUID (useful for partitioning data)
 * Type
@@ -53,30 +55,30 @@ All message variables must be on the left hand side of the relational comparison
 * EnvVersion
 * Hostname
 
-##### Numeric
+### Numeric
 
-* Timestamp
+* Timestamp - in addition to nanoseconds since the UNIX epoch an RFC3339 string is also accepted e.g., "2016-05-24T21:51:00Z"
 * Severity
 * Pid
 
-##### Fields
+### Fields
 
 * Fields[_field_name_] - shorthand for Field[_field_name_][0][0]
 * Fields[_field_name_][_field_index_] - shorthand for Field[_field_name_][_field_index_][0]
 * Fields[_field_name_][_field_index_][_array_index_] the indices are restricted to 0-255
 * If a field type is mis-match for the relational comparison, false will be returned e.g., Fields[foo] == 6 where "foo" is a string
 
-#### Quoted String
+## Quoted String
 
 * Single or double quoted strings are allowed
 * The maximum string length is 255 bytes
 
-#### Lua Pattern Matching Expression
+## Lua Pattern Matching Expression
 
 * Patterns are quoted string values
 * See [Lua Patterns](http://www.lua.org/manual/5.1/manual.html#5.4.1)
 * Capture groups are ignored
 
-#### Additional Restrictions
+## Additional Restrictions
 
-* Message matchers are restricted to 128 tests
+* Message matchers are restricted to 128 relational comparisons

@@ -1,13 +1,23 @@
-## Input Sandbox
+# Input Sandbox Interface
 
-### Recommendations
+[Available Input Sandboxes](/lua_sandbox/sandboxes/heka/input/index.html)
+
+## Recommendations
 Since he sandbox does not run in isolation there are some expectations of how
 the host infrastructure behaves.  The current recommendation are based on the
 Hindsight reference implementation.
 
-### Required Lua Functions (called by the host)
+## Disabled Functionality
+- [base library](http://www.lua.org/manual/5.1/manual.html#5.1)
+    - dofile, load, loadfile, loadstring, newproxy
+- [string](http://www.lua.org/manual/5.1/manual.html#5.4)
+    - dump
+- [os](http://www.lua.org/manual/5.1/manual.html#5.8)
+    - exit, setlocale
 
-#### process_message
+## Required Lua Functions (called by the host)
+
+### process_message
 
 Entry point for message creation.
 
@@ -21,9 +31,9 @@ Entry point for message creation.
   - fatal error (greater than zero)
 * status_message (optional: string) logged when the status code is less than zero
 
-### Available C Functions (called from the plugin)
+## Available C Functions (called from the plugin)
 
-#### read_config
+### read_config
 
 Provides access to the sandbox configuration variables.
 
@@ -33,35 +43,30 @@ Provides access to the sandbox configuration variables.
 *Return*
 * value (string, number, bool, table)
 
-#### decode_message
+### decode_message
 
 Converts a Heka protobuf encoded message string into a Lua table.
+See [decode_message](analysis.html#decode_message) for details.
 
-*Arguments*
-* heka_pb (string) - Heka protobuf binary string
-
-*Return*
-* msg ([Heka message table (array fields)](message.md#array-based-message-fields))
-
-#### inject_message
+### inject_message
 
 Sends a Heka protocol buffer message into the host.
 
 *Arguments*
-* msg ([Heka message table](message.md), [Heka stream reader](stream_reader.md) or Heka protobuf string)
+* msg ([Heka message table](message.html), [Heka stream reader](stream_reader.html) or Heka protobuf string)
 * checkpoint (optional: number, string) - checkpoint to be returned in the `process_message` call
 
 *Return*
 * none - throws an error on invalid input
 
-### Modes of Operation
+## Modes of Operation
 
-#### Run Once
+### Run Once
 * Set the `ticker_interval` to zero and return from `process_message` when you
   are done.
 * The `instruction_limit` configuration can be set if desired.
 
-##### Example startup ping
+#### Example startup ping
 ```lua
 -- cfg
 -- send a simple 'hello' messages every time the host is started
@@ -81,14 +86,14 @@ end
 
 ```
 
-#### Polling
+### Polling
 
 * Set the `ticker_interval` greater than zero and non fatally (<=0) return from
   `process_message`, when the ticker interval expires `process_message` will be
   called again.
 * The `instruction_limit` configuration can be set if desired.
 
-##### Example startup ping
+#### Example startup ping
 ```lua
 -- cfg
 ticker_interval = 60
@@ -120,12 +125,12 @@ end
 
 ```
 
-#### Continuous
+### Continuous
 
 * Don't return from `process_message`.
 * The `instruction_limit` configuration **MUST** be set to zero.
 
-##### Example of a Heka protobuf stdin reader
+#### Example of a Heka protobuf stdin reader
 
 ```lua
 -- This Source Code Form is subject to the terms of the Mozilla Public
@@ -157,4 +162,4 @@ function process_message()
     until read == 0
     return 0
 end
-```
+``'

@@ -318,7 +318,7 @@ static void set_restrictions(lua_State *lua, lsb_heka_sandbox *hsb)
 {
   static const char *io[] = {
     NULL, "", "dofile", "load", "loadfile", "loadstring", "newproxy",
-    NULL, "os", "getenv", "exit", "setlocale",
+    NULL, "os", "exit", "setlocale",
     NULL, "string", "dump"
   };
 

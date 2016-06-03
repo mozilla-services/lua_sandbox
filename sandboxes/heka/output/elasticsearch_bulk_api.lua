@@ -3,9 +3,9 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 --[[
-## Elasticsearch Bulk API Output
+# Elasticsearch Bulk API Output
 
-### Sample Configuration
+## Sample Configuration
 ```lua
 filename        = "elasticsearch_bulk_api.lua"
 message_matcher = "Type == 'nginx'"

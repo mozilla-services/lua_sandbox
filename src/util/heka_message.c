@@ -8,6 +8,7 @@
 
 #include "luasandbox/util/heka_message.h"
 
+#include <limits.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -454,7 +455,7 @@ void lsb_clear_heka_message(lsb_heka_message *m)
   if (m->fields) memset(m->fields, 0, m->fields_size * sizeof(lsb_heka_field));
   m->timestamp = 0;
   m->severity = 7;
-  m->pid = 0;
+  m->pid = INT_MIN;
   m->fields_len = 0;
 }
 

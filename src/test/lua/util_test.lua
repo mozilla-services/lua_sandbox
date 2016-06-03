@@ -2,25 +2,8 @@
 -- License, v. 2.0. If a copy of the MPL was not distributed with this
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-local string = require("string")
-local util = require("util")
-
-local t = {toplevel=0, struct = { item0 = 0, item1 = 1, item2 = {nested = "n1"}}}
-local fa = {}
-local fb = {}
-
-local function table_to_fields()
-    util.table_to_fields(t, fa, nil)
-    assert(fa.toplevel == 0, fa.toplevel)
-    assert(fa["struct.item0"] == 0, fa["struct.item0"])
-    assert(fa["struct.item1"] == 1, fa["struct.item1"])
-    assert(fa["struct.item2.nested"] == "n1", fa["struct.item2.nested"])
-    util.table_to_fields(t, fb, nil, "_", 2)
-    assert(fb.toplevel == 0, fb.toplevel)
-    assert(fb["struct_item0"] == 0, fb["struct_item0"])
-    assert(fb["struct_item1"] == 1, fb["struct_item1"])
-    assert(fb["struct_item2"] == '{"nested":"n1"}', fb["struct_item2"])
-end
+local string = require "string"
+local util = require "lsb.util"
 
 local function alpha()
     return {"a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k",
@@ -50,8 +33,27 @@ local function behead_array()
     assert(#a == 0, string.format("#a should be 0, is %d", #a))
 end
 
+
+local function pairs_by_key()
+    local hash = { a = true , b = true, c = true }
+    local abc = {"a", "b", "c"}
+
+    local cnt = 1
+    for k, v in util.pairs_by_key(hash) do
+        assert(abc[cnt] == k)
+        cnt = cnt + 1
+    end
+
+    cnt = 3
+    for k, v in util.pairs_by_key(hash, function(a, b) return a > b end) do
+        assert(abc[cnt] == k)
+        cnt = cnt - 1
+    end
+end
+
+
 function process ()
-    table_to_fields()
     behead_array()
+    pairs_by_key()
     return 0
 end

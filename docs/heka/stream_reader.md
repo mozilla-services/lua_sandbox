@@ -1,11 +1,11 @@
-## Heka Stream Reader Module
+# Heka Stream Reader Module
 
 Enables parsing of a framed Heka protobuf stream in a Lua sandbox. See: 
-[Example of a Heka protobuf reader](input.md#example-of-a-heka-protobuf-stdin-reader)
+[Example of a Heka protobuf reader](input.html#example-of-a-heka-protobuf-stdin-reader)
 
-### API
+## Functions
 
-#### new
+### new
 
 Creates a Heka stream reader.
 
@@ -20,9 +20,9 @@ local hsr = heka_stream_reader.new("stdin")
 *Return*
 * hsr (userdata) - Heka stream reader or an error is thrown
 
-### API Methods
+## Methods
 
-#### find_message
+### find_message
 
 Locates a Heka message within the stream.
 
@@ -41,10 +41,10 @@ local found, consumed, need = hsr:find_message(buf)
 * need/read (number) - number of bytes needed to complete the message or fill the underlying buffer
   or in the case of a file object the number of bytes added to the buffer
 
-#### decode_message
+### decode_message
 
-Converts a Heka protobuf encoded message string into a stream reader representation.  Note: this operation
-clears the internal stream reader buffer.
+Converts a Heka protobuf encoded message string into a stream reader representation.
+Note: this operation clears the internal stream reader buffer.
 
 *Arguments*
 * heka_pb (string) - Heka protobuf binary string
@@ -52,7 +52,7 @@ clears the internal stream reader buffer.
 *Return*
 * none - throws an error on failure
 
-#### read_message
+### read_message
 
 Provides access to the Heka message data within the reader object. 
 
@@ -60,4 +60,4 @@ Provides access to the Heka message data within the reader object.
 local ts = hsr:read_message("Timestamp")
 
 ```
-See [read_message](analysis.md#read_message) for details.
+See [read_message](analysis.html#read_message) for details.

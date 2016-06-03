@@ -1,12 +1,12 @@
-## Heka CLI Tools
+# Command Line Interface Tools
 
-### lsb_heka_cat
+## lsb_heka_cat
 
 A command-line utility for counting, viewing, filtering, and extracting messages
 from a Heka protobuf log/stream.
 
 ```
-usage: src/cli/lsb_heka_cat [-t|-c|-h] [-m message_matcher] [-f] [-n #] <FILE>
+usage: lsb_heka_cat [-t|-c|-h] [-m message_matcher] [-f] [-n #] <FILE>
 description:
   -t output the messages in text format (default)
   -c only output the message count
@@ -19,5 +19,5 @@ notes:
   All output is written to stdout and all log/error messages are written to stderr.
 
 ```
-Set the [message matcher](message_matcher.md) documentation for more details about the message_matcher expression.
+See the [message matcher](../util/message_matcher.html) documentation for more details about the message_matcher expression.
 

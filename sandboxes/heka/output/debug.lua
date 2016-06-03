@@ -3,12 +3,15 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 --[[
-Outputs a more user friendly version (RST format) of the full Heka message to stdout.
+# RST Heka Message Output
 
--- .cfg
+Writes a user friendly version (RST format) of the full Heka message to stdout
+
+## Sample Configuration
+```lua
 filename        = "debug.lua"
 message_matcher = "TRUE"
-
+```
 --]]
 
 local write  = require "io".write
