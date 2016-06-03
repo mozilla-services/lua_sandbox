@@ -1,0 +1,321 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta name="generator" content="pandoc" />
+  <title></title>
+  <style type="text/css">code{white-space: pre;}</style>
+  <style type="text/css">
+div.sourceCode { overflow-x: auto; }
+table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
+  margin: 0; padding: 0; vertical-align: baseline; border: none; }
+table.sourceCode { width: 100%; line-height: 100%; }
+td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; color: #aaaaaa; border-right: 1px solid #aaaaaa; }
+td.sourceCode { padding-left: 5px; }
+code > span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code > span.dt { color: #902000; } /* DataType */
+code > span.dv { color: #40a070; } /* DecVal */
+code > span.bn { color: #40a070; } /* BaseN */
+code > span.fl { color: #40a070; } /* Float */
+code > span.ch { color: #4070a0; } /* Char */
+code > span.st { color: #4070a0; } /* String */
+code > span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code > span.ot { color: #007020; } /* Other */
+code > span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code > span.fu { color: #06287e; } /* Function */
+code > span.er { color: #ff0000; font-weight: bold; } /* Error */
+code > span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+code > span.cn { color: #880000; } /* Constant */
+code > span.sc { color: #4070a0; } /* SpecialChar */
+code > span.vs { color: #4070a0; } /* VerbatimString */
+code > span.ss { color: #bb6688; } /* SpecialString */
+code > span.im { } /* Import */
+code > span.va { color: #19177c; } /* Variable */
+code > span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code > span.op { color: #666666; } /* Operator */
+code > span.bu { } /* BuiltIn */
+code > span.ex { } /* Extension */
+code > span.pp { color: #bc7a00; } /* Preprocessor */
+code > span.at { color: #7d9029; } /* Attribute */
+code > span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code > span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code > span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+  </style>
+  <link rel="stylesheet" href="/lua_sandbox/docs.css" type="text/css" />
+</head>
+<body>
+<div id="title">Lua Sandbox Library (0.20.0)<hr/></div>
+<div class="menu">
+        <ul>
+            <li><a href="/lua_sandbox/index.html">Overview</a></li>
+        </ul>
+        <ul>
+            <li><a href="/lua_sandbox/sandbox.html">Generic Sandbox</a></li>
+        </ul>
+        <ul>
+            <li><a href="/lua_sandbox/heka/index.html">Heka Sandbox</a></li>
+        <ul>
+            <li><a href="/lua_sandbox/heka/analysis.html">Analysis Interface</a></li>
+            <li><a href="/lua_sandbox/heka/input.html">Input Interface</a></li>
+            <li><a href="/lua_sandbox/heka/output.html">Output Interface</a></li>
+        </ul>
+        </ul>
+        <ul>
+           <li><a href="/lua_sandbox/cli/index.html">Command Line Tools</a></li>
+        </ul>
+        <ul>
+            <li><a href="/lua_sandbox/doxygen/index.html">Source Documentation</a></li>
+        </ul>
+        <ul>
+            <li>C Modules</li>
+            <ul>
+                <li><a href="https://github.com/mozilla-services/lua_bloom_filter/blob/master/README.md">bloom_filter</a></li>
+                <li><a href="https://github.com/mozilla-services/lua_circular_buffer/blob/master/README.md">circular_buffer</a></li>
+                <li><a href="http://www.kyne.com.au/~mark/software/lua-cjson-manual.html">cjson</a></li>
+                <li><a href="https://github.com/mozilla-services/lua_cuckoo_filter/blob/master/README.md">cuckoo_filter</a></li>
+                <li><a href="https://github.com/mozilla-services/lua_hyperloglog/blob/master/README.md">hyperloglog</a></li>
+                <li><a href="http://www.inf.puc-rio.br/~roberto/lpeg/lpeg.html">lpeg</a></li>
+                <li><a href="http://www.inf.puc-rio.br/~roberto/lpeg/re.html">re</a></li>
+                <li><a href="https://github.com/trink/symtseries/blob/master/README.md">sax</a></li>
+                <li><a href="http://www.inf.puc-rio.br/~roberto/struct/">struct</a></li>
+            </ul>
+        </ul>
+        <ul>
+<li><a href="/lua_sandbox/modules/index.html">modules</a></li>
+<ul>
+<li><a href="/lua_sandbox/modules/heka/index.html">heka</a></li>
+<ul>
+<li><a href="/lua_sandbox/modules/heka/elasticsearch/index.html">elasticsearch</a></li>
+<ul>
+<li><a href="/lua_sandbox/modules/heka/elasticsearch/payload.html">payload</a></li>
+</ul>
+<li><a href="/lua_sandbox/modules/heka/elasticsearch.html">elasticsearch</a></li>
+<li><a href="/lua_sandbox/modules/heka/msg_interpolate.html">msg_interpolate</a></li>
+<li><a href="/lua_sandbox/modules/heka/util.html">util</a></li>
+</ul>
+<li><a href="/lua_sandbox/modules/lpeg/index.html">lpeg</a></li>
+<ul>
+<li><a href="/lua_sandbox/modules/lpeg/cbufd.html">cbufd</a></li>
+<li><a href="/lua_sandbox/modules/lpeg/common_log_format.html">common_log_format</a></li>
+<li><a href="/lua_sandbox/modules/lpeg/date_time.html">date_time</a></li>
+<li><a href="/lua_sandbox/modules/lpeg/ip_address.html">ip_address</a></li>
+<li><a href="/lua_sandbox/modules/lpeg/mysql.html">mysql</a></li>
+<li><a href="/lua_sandbox/modules/lpeg/postfix.html">postfix</a></li>
+<li><a href="/lua_sandbox/modules/lpeg/syslog.html">syslog</a></li>
+<li><a href="/lua_sandbox/modules/lpeg/syslog_message.html">syslog_message</a></li>
+</ul>
+<li><a href="/lua_sandbox/modules/lsb/index.html">lsb</a></li>
+<ul>
+<li><a href="/lua_sandbox/modules/lsb/util.html">util</a></li>
+</ul>
+</ul>
+</ul>
+<ul>
+<li><a href="/lua_sandbox/sandboxes/index.html">sandboxes</a></li>
+<ul>
+<li><a href="/lua_sandbox/sandboxes/heka/index.html">heka</a></li>
+<ul>
+<li><a href="/lua_sandbox/sandboxes/heka/analysis/index.html">analysis</a></li>
+<ul>
+<li><a href="/lua_sandbox/sandboxes/heka/analysis/throughput.html">throughput</a></li>
+</ul>
+<li><a href="/lua_sandbox/sandboxes/heka/input/index.html">input</a></li>
+<ul>
+<li><a href="/lua_sandbox/sandboxes/heka/input/heka_kafka.html">heka_kafka</a></li>
+<li><a href="/lua_sandbox/sandboxes/heka/input/heka_stdin.html">heka_stdin</a></li>
+<li><a href="/lua_sandbox/sandboxes/heka/input/heka_tcp.html">heka_tcp</a></li>
+<li><a href="/lua_sandbox/sandboxes/heka/input/syslog_udp.html">syslog_udp</a></li>
+</ul>
+<li><a href="/lua_sandbox/sandboxes/heka/output/index.html">output</a></li>
+<ul>
+<li><a href="/lua_sandbox/sandboxes/heka/output/debug.html">debug</a></li>
+<li><a href="/lua_sandbox/sandboxes/heka/output/elasticsearch_bulk_api.html">elasticsearch_bulk_api</a></li>
+<li><a href="/lua_sandbox/sandboxes/heka/output/heka_kafka.html">heka_kafka</a></li>
+<li><a href="/lua_sandbox/sandboxes/heka/output/heka_log_rolling.html">heka_log_rolling</a></li>
+<li><a href="/lua_sandbox/sandboxes/heka/output/heka_s3_partition.html">heka_s3_partition</a></li>
+<li><a href="/lua_sandbox/sandboxes/heka/output/heka_tcp.html">heka_tcp</a></li>
+<li><a href="/lua_sandbox/sandboxes/heka/output/heka_tcp_matcher.html">heka_tcp_matcher</a></li>
+<li><a href="/lua_sandbox/sandboxes/heka/output/inject_payload.html">inject_payload</a></li>
+</ul>
+</ul>
+</ul>
+</ul>
+    </div>
+    <div class="main-content">
+<h1 id="analysis-sandbox-interface">Analysis Sandbox Interface</h1>
+<p><a href="/lua_sandbox/sandboxes/heka/analysis/index.html">Available Analysis Sandboxes</a></p>
+<h2 id="recommendations">Recommendations</h2>
+<p>Since he sandbox does not run in isolation there are some expectations of how the host infrastructure behaves. The current recommendation are based on the Hindsight reference implementation.</p>
+<h2 id="disabled-functionality">Disabled Functionality</h2>
+<ul>
+<li><a href="http://www.lua.org/manual/5.1/manual.html#5.1">base library</a>
+<ul>
+<li>collectgarbage, dofile, load, loadfile, loadstring, newproxy</li>
+</ul></li>
+<li><a href="http://www.lua.org/manual/5.1/manual.html#5.2">coroutine</a>
+<ul>
+<li>the entire module is inaccessible</li>
+</ul></li>
+<li><a href="http://www.lua.org/manual/5.1/manual.html#5.4">string</a>
+<ul>
+<li>dump</li>
+</ul></li>
+<li><a href="http://www.lua.org/manual/5.1/manual.html#5.7">io</a>
+<ul>
+<li>the entire module is inaccessible</li>
+</ul></li>
+<li><a href="http://www.lua.org/manual/5.1/manual.html#5.8">os</a>
+<ul>
+<li>getenv, execute, exit, remove, rename, setlocale, tmpname</li>
+</ul></li>
+</ul>
+<h2 id="required-lua-functions-called-by-the-host">Required Lua Functions (called by the host)</h2>
+<h3 id="process_message">process_message</h3>
+<p>Called when the host has a message available for analysis. Usually used in combination with a <a href="../util/message_matcher.html">message matcher</a> expression.</p>
+<p>Recommenation: specify this as a <code>message_matcher</code> configuration option.</p>
+<p><em>Arguments</em></p>
+<ul>
+<li>none</li>
+</ul>
+<p><em>Return</em></p>
+<ul>
+<li>status_code (number)
+<ul>
+<li>success (less than or equal to zero)</li>
+<li>fatal error (greater than zero)</li>
+</ul></li>
+<li>status_message (optional: string) logged when the status code is less than zero</li>
+</ul>
+<h3 id="timer_event">timer_event</h3>
+<p>Called when the host timer expires or on shutdown.</p>
+<p>Recommendation: specify this as a <code>ticker_interval</code> configuration option.</p>
+<p><em>Arguments</em></p>
+<ul>
+<li>ns (number) - nanosecond timestamp of the function call (it is actually <code>time_t * 1e9</code> to keep the timestamp units consistent so it will only have a one second resolution)</li>
+<li>shutdown (bool) - true if timer_event is being called due to a shutdown</li>
+</ul>
+<p><em>Return</em></p>
+<ul>
+<li>none</li>
+</ul>
+<h2 id="available-c-functions-called-from-the-plugin">Available C Functions (called from the plugin)</h2>
+<h3 id="read_config">read_config</h3>
+<p>Provides access to the sandbox configuration variables.</p>
+<p><em>Arguments</em></p>
+<ul>
+<li>key (string) - configuration key name</li>
+</ul>
+<p><em>Return</em></p>
+<ul>
+<li>value (string, number, bool, table)</li>
+</ul>
+<h3 id="read_message">read_message</h3>
+<p>Provides access to the Heka message data. Note that both fieldIndex and arrayIndex are zero-based (i.e. the first element is 0) as opposed to Lua's standard indexing, which is one-based.</p>
+<p><em>Arguments</em></p>
+<ul>
+<li>variableName (string)
+<ul>
+<li>framed (returns the Heka message protobuf string including the framing header)</li>
+<li>raw (returns the Heka message protobuf string)</li>
+<li>size (returns the size of the raw Heka message protobuf string)</li>
+<li>Uuid</li>
+<li>Type</li>
+<li>Logger</li>
+<li>Payload</li>
+<li>EnvVersion</li>
+<li>Hostname</li>
+<li>Timestamp</li>
+<li>Severity</li>
+<li>Pid</li>
+<li>Fields[<em>name</em>]</li>
+</ul></li>
+<li>fieldIndex (unsigned) - only used in combination with the Fields variableName use to retrieve a specific instance of a repeated field <em>name</em>; zero indexed</li>
+<li>arrayIndex (unsigned) - only used in combination with the Fields variableName use to retrieve a specific element out of a field containing an array; zero indexed</li>
+</ul>
+<p><em>Return</em></p>
+<ul>
+<li>value (number, string, bool, nil depending on the type of variable requested)</li>
+</ul>
+<h3 id="decode_message">decode_message</h3>
+<p>Converts a Heka protobuf encoded message string into a Lua table or throws an error.</p>
+<p><em>Arguments</em></p>
+<ul>
+<li>heka_pb (string) - Heka protobuf binary string</li>
+</ul>
+<p><em>Return</em></p>
+<ul>
+<li>msg (<a href="message.html#array-based-message-fields">Heka message table (array fields)</a>) with the value member always being an array (even if there is only a single item). This format makes working with the output more consistent. The wide variation in the inject table formats is to ease the construction of the message especially when using an LPeg grammar transformation.</li>
+</ul>
+<h3 id="inject_message">inject_message</h3>
+<p>Creates a new Heka protocol buffer message using the contents of the specified Lua table (overwriting whatever is in the payload buffer). <code>Logger</code> and <code>Hostname</code> are set by the infrastructure using the corresponding configuration setting and cannot be overridden by the plugin.</p>
+<p><em>Arguments</em></p>
+<ul>
+<li>msg (<a href="message.html">Heka message table</a>)</li>
+</ul>
+<p><em>Return</em></p>
+<ul>
+<li>none (throws an error if the table does not match the Heka message schema)</li>
+</ul>
+<h3 id="add_to_payload">add_to_payload</h3>
+<p>Appends the arguments to the payload buffer for incremental construction of the final payload output (<code>inject_payload</code> finalizes the buffer and sends the message to the infrastructure). This function is a rename of the generic sandbox output function to improve the readability of the plugin code.</p>
+<p><em>Arguments</em></p>
+<ul>
+<li>arg (number, string, bool, nil, supported userdata)</li>
+</ul>
+<p><em>Return</em></p>
+<ul>
+<li>none (throws an error if arg is an unsupported type)</li>
+</ul>
+<h3 id="inject_payload">inject_payload</h3>
+<p>This is a wrapper function for <code>inject_message</code> that is included for backwards compatibility. The function creates a new Heka message using the contents of the payload buffer (pre-populated with <code>add_to_payload</code>) and combined with any additional payload_args passed here. The payload buffer is cleared after the injection. The <code>payload_type</code> and <code>payload_name</code> arguments are two pieces of optional metadata stored is message fields. The resulting message is structured like this:</p>
+<div class="sourceCode"><pre class="sourceCode lua"><code class="sourceCode lua">msg <span class="ot">=</span> <span class="ot">{</span>
+Timestamp   <span class="ot">=</span> <span class="ot">&lt;</span>current time<span class="ot">&gt;</span>
+Uuid        <span class="ot">=</span> <span class="st">&quot;&lt;auto generated&gt;&quot;</span>
+Hostname    <span class="ot">=</span> <span class="st">&quot;&lt;the Hostname from the config&gt;&quot;</span>
+Logger      <span class="ot">=</span> <span class="st">&quot;&lt;the Logger name from the config&gt;&quot;</span>
+Type        <span class="ot">=</span> <span class="st">&quot;inject_payload&quot;</span>
+Payload     <span class="ot">=</span> <span class="st">&quot;&lt;payload buffer contents&gt;&quot;</span>
+Fields      <span class="ot">=</span> <span class="ot">{</span>
+    payload_type <span class="ot">=</span> <span class="st">&quot;txt&quot;</span><span class="ot">,</span>
+    payload_name <span class="ot">=</span> <span class="st">&quot;&quot;</span><span class="ot">,</span>
+<span class="ot">}</span></code></pre></div>
+<p><em>Arguments</em></p>
+<ul>
+<li>payload_type (optional: string, default &quot;txt&quot;) - describes the content type of the injected payload data</li>
+<li>payload_name (optional: string, default &quot;&quot;) - names the content to aid in downstream filtering</li>
+<li>arg3 (optional) -ame type restrictions as <code>add_to_payload</code></li>
+<li>...</li>
+<li>argN</li>
+</ul>
+<p><em>Return</em></p>
+<ul>
+<li>none (throws an error if arg is an unsupported type)</li>
+</ul>
+<h3 id="modes-of-operation">Modes of Operation</h3>
+<h4 id="lock-step">Lock Step</h4>
+<ul>
+<li>Receives one call to <code>process_message</code>, operates on the message, and returns success (0) or failure (-1)</li>
+</ul>
+<h4 id="example-simple-counter-plugin">Example simple counter plugin</h4>
+<div class="sourceCode"><pre class="sourceCode lua"><code class="sourceCode lua"><span class="co">-- cfg</span>
+message_matcher <span class="ot">=</span> <span class="st">&quot;TRUE&quot;</span>
+ticker_interval <span class="ot">=</span> <span class="dv">5</span></code></pre></div>
+<div class="sourceCode"><pre class="sourceCode lua"><code class="sourceCode lua"><span class="co">-- This Source Code Form is subject to the terms of the Mozilla Public</span>
+<span class="co">-- License, v. 2.0. If a copy of the MPL was not distributed with this</span>
+<span class="co">-- file, You can obtain one at http://mozilla.org/MPL/2.0/.</span>
+
+<span class="kw">local</span> cnt <span class="ot">=</span> <span class="dv">0</span>
+
+<span class="kw">function</span> process_message<span class="ot">()</span>
+    cnt <span class="ot">=</span> cnt <span class="ot">+</span> <span class="dv">1</span>
+    <span class="kw">return</span> <span class="dv">0</span>
+<span class="kw">end</span>
+
+<span class="kw">function</span> timer_event<span class="ot">()</span>
+    inject_payload<span class="ot">(</span><span class="st">&quot;txt&quot;</span><span class="ot">,</span> <span class="st">&quot;count&quot;</span><span class="ot">,</span> cnt<span class="ot">)</span>
+<span class="kw">end</span></code></pre></div>
+</div>
+</body>
+</html>

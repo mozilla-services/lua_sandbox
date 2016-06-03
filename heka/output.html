@@ -1,0 +1,570 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta name="generator" content="pandoc" />
+  <title></title>
+  <style type="text/css">code{white-space: pre;}</style>
+  <style type="text/css">
+div.sourceCode { overflow-x: auto; }
+table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
+  margin: 0; padding: 0; vertical-align: baseline; border: none; }
+table.sourceCode { width: 100%; line-height: 100%; }
+td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; color: #aaaaaa; border-right: 1px solid #aaaaaa; }
+td.sourceCode { padding-left: 5px; }
+code > span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code > span.dt { color: #902000; } /* DataType */
+code > span.dv { color: #40a070; } /* DecVal */
+code > span.bn { color: #40a070; } /* BaseN */
+code > span.fl { color: #40a070; } /* Float */
+code > span.ch { color: #4070a0; } /* Char */
+code > span.st { color: #4070a0; } /* String */
+code > span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code > span.ot { color: #007020; } /* Other */
+code > span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code > span.fu { color: #06287e; } /* Function */
+code > span.er { color: #ff0000; font-weight: bold; } /* Error */
+code > span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+code > span.cn { color: #880000; } /* Constant */
+code > span.sc { color: #4070a0; } /* SpecialChar */
+code > span.vs { color: #4070a0; } /* VerbatimString */
+code > span.ss { color: #bb6688; } /* SpecialString */
+code > span.im { } /* Import */
+code > span.va { color: #19177c; } /* Variable */
+code > span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code > span.op { color: #666666; } /* Operator */
+code > span.bu { } /* BuiltIn */
+code > span.ex { } /* Extension */
+code > span.pp { color: #bc7a00; } /* Preprocessor */
+code > span.at { color: #7d9029; } /* Attribute */
+code > span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code > span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code > span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+  </style>
+  <link rel="stylesheet" href="/lua_sandbox/docs.css" type="text/css" />
+</head>
+<body>
+<div id="title">Lua Sandbox Library (0.20.0)<hr/></div>
+<div class="menu">
+        <ul>
+            <li><a href="/lua_sandbox/index.html">Overview</a></li>
+        </ul>
+        <ul>
+            <li><a href="/lua_sandbox/sandbox.html">Generic Sandbox</a></li>
+        </ul>
+        <ul>
+            <li><a href="/lua_sandbox/heka/index.html">Heka Sandbox</a></li>
+        <ul>
+            <li><a href="/lua_sandbox/heka/analysis.html">Analysis Interface</a></li>
+            <li><a href="/lua_sandbox/heka/input.html">Input Interface</a></li>
+            <li><a href="/lua_sandbox/heka/output.html">Output Interface</a></li>
+        </ul>
+        </ul>
+        <ul>
+           <li><a href="/lua_sandbox/cli/index.html">Command Line Tools</a></li>
+        </ul>
+        <ul>
+            <li><a href="/lua_sandbox/doxygen/index.html">Source Documentation</a></li>
+        </ul>
+        <ul>
+            <li>C Modules</li>
+            <ul>
+                <li><a href="https://github.com/mozilla-services/lua_bloom_filter/blob/master/README.md">bloom_filter</a></li>
+                <li><a href="https://github.com/mozilla-services/lua_circular_buffer/blob/master/README.md">circular_buffer</a></li>
+                <li><a href="http://www.kyne.com.au/~mark/software/lua-cjson-manual.html">cjson</a></li>
+                <li><a href="https://github.com/mozilla-services/lua_cuckoo_filter/blob/master/README.md">cuckoo_filter</a></li>
+                <li><a href="https://github.com/mozilla-services/lua_hyperloglog/blob/master/README.md">hyperloglog</a></li>
+                <li><a href="http://www.inf.puc-rio.br/~roberto/lpeg/lpeg.html">lpeg</a></li>
+                <li><a href="http://www.inf.puc-rio.br/~roberto/lpeg/re.html">re</a></li>
+                <li><a href="https://github.com/trink/symtseries/blob/master/README.md">sax</a></li>
+                <li><a href="http://www.inf.puc-rio.br/~roberto/struct/">struct</a></li>
+            </ul>
+        </ul>
+        <ul>
+<li><a href="/lua_sandbox/modules/index.html">modules</a></li>
+<ul>
+<li><a href="/lua_sandbox/modules/heka/index.html">heka</a></li>
+<ul>
+<li><a href="/lua_sandbox/modules/heka/elasticsearch/index.html">elasticsearch</a></li>
+<ul>
+<li><a href="/lua_sandbox/modules/heka/elasticsearch/payload.html">payload</a></li>
+</ul>
+<li><a href="/lua_sandbox/modules/heka/elasticsearch.html">elasticsearch</a></li>
+<li><a href="/lua_sandbox/modules/heka/msg_interpolate.html">msg_interpolate</a></li>
+<li><a href="/lua_sandbox/modules/heka/util.html">util</a></li>
+</ul>
+<li><a href="/lua_sandbox/modules/lpeg/index.html">lpeg</a></li>
+<ul>
+<li><a href="/lua_sandbox/modules/lpeg/cbufd.html">cbufd</a></li>
+<li><a href="/lua_sandbox/modules/lpeg/common_log_format.html">common_log_format</a></li>
+<li><a href="/lua_sandbox/modules/lpeg/date_time.html">date_time</a></li>
+<li><a href="/lua_sandbox/modules/lpeg/ip_address.html">ip_address</a></li>
+<li><a href="/lua_sandbox/modules/lpeg/mysql.html">mysql</a></li>
+<li><a href="/lua_sandbox/modules/lpeg/postfix.html">postfix</a></li>
+<li><a href="/lua_sandbox/modules/lpeg/syslog.html">syslog</a></li>
+<li><a href="/lua_sandbox/modules/lpeg/syslog_message.html">syslog_message</a></li>
+</ul>
+<li><a href="/lua_sandbox/modules/lsb/index.html">lsb</a></li>
+<ul>
+<li><a href="/lua_sandbox/modules/lsb/util.html">util</a></li>
+</ul>
+</ul>
+</ul>
+<ul>
+<li><a href="/lua_sandbox/sandboxes/index.html">sandboxes</a></li>
+<ul>
+<li><a href="/lua_sandbox/sandboxes/heka/index.html">heka</a></li>
+<ul>
+<li><a href="/lua_sandbox/sandboxes/heka/analysis/index.html">analysis</a></li>
+<ul>
+<li><a href="/lua_sandbox/sandboxes/heka/analysis/throughput.html">throughput</a></li>
+</ul>
+<li><a href="/lua_sandbox/sandboxes/heka/input/index.html">input</a></li>
+<ul>
+<li><a href="/lua_sandbox/sandboxes/heka/input/heka_kafka.html">heka_kafka</a></li>
+<li><a href="/lua_sandbox/sandboxes/heka/input/heka_stdin.html">heka_stdin</a></li>
+<li><a href="/lua_sandbox/sandboxes/heka/input/heka_tcp.html">heka_tcp</a></li>
+<li><a href="/lua_sandbox/sandboxes/heka/input/syslog_udp.html">syslog_udp</a></li>
+</ul>
+<li><a href="/lua_sandbox/sandboxes/heka/output/index.html">output</a></li>
+<ul>
+<li><a href="/lua_sandbox/sandboxes/heka/output/debug.html">debug</a></li>
+<li><a href="/lua_sandbox/sandboxes/heka/output/elasticsearch_bulk_api.html">elasticsearch_bulk_api</a></li>
+<li><a href="/lua_sandbox/sandboxes/heka/output/heka_kafka.html">heka_kafka</a></li>
+<li><a href="/lua_sandbox/sandboxes/heka/output/heka_log_rolling.html">heka_log_rolling</a></li>
+<li><a href="/lua_sandbox/sandboxes/heka/output/heka_s3_partition.html">heka_s3_partition</a></li>
+<li><a href="/lua_sandbox/sandboxes/heka/output/heka_tcp.html">heka_tcp</a></li>
+<li><a href="/lua_sandbox/sandboxes/heka/output/heka_tcp_matcher.html">heka_tcp_matcher</a></li>
+<li><a href="/lua_sandbox/sandboxes/heka/output/inject_payload.html">inject_payload</a></li>
+</ul>
+</ul>
+</ul>
+</ul>
+    </div>
+    <div class="main-content">
+<h1 id="output-sandbox-interface">Output Sandbox Interface</h1>
+<p><a href="/lua_sandbox/sandboxes/heka/output/index.html">Available Output Sandboxes</a></p>
+<h2 id="recommendations">Recommendations</h2>
+<p>Since he sandbox does not run in isolation there are some expectations of how the host infrastructure behaves. The current recommendation are based on the Hindsight reference implementation.</p>
+<h2 id="disabled-functionality">Disabled Functionality</h2>
+<ul>
+<li><a href="http://www.lua.org/manual/5.1/manual.html#5.1">base library</a>
+<ul>
+<li>dofile, load, loadfile, loadstring, newproxy</li>
+</ul></li>
+<li><a href="http://www.lua.org/manual/5.1/manual.html#5.4">string</a>
+<ul>
+<li>dump</li>
+</ul></li>
+<li><a href="http://www.lua.org/manual/5.1/manual.html#5.8">os</a>
+<ul>
+<li>exit, setlocale</li>
+</ul></li>
+</ul>
+<h2 id="required-lua-functions-called-by-the-host">Required Lua Functions (called by the host)</h2>
+<h3 id="process_message">process_message</h3>
+<p>Called when the host has a message available for analysis. Usually used in combination with a <a href="../util/message_matcher.html">message matcher</a> expression.</p>
+<p>Recommenation: specify this as a <code>message_matcher</code> configuration option.</p>
+<p><em>Arguments</em></p>
+<ul>
+<li>sequence_id (optional: lightuserdata) - pass in when <code>async_buffer_size</code> is configured</li>
+</ul>
+<p><em>Return</em></p>
+<ul>
+<li>status_code (number) - see the <a href="#modes-of-operation">Modes of Operation</a> for a detail explanation of the return codes
+<ul>
+<li>fatal error (greater than zero)</li>
+<li>success (0)</li>
+<li>non fatal failure (-1)</li>
+<li>skip (-2)</li>
+<li>retry (-3)</li>
+<li>batching (-4)</li>
+<li>async output (-5)</li>
+</ul></li>
+<li>status_message (optional: string) logged when the status code is -1</li>
+</ul>
+<h3 id="timer_event">timer_event</h3>
+<p>Called when the host timer expires or on shutdown.</p>
+<p>Recommendation: specify this as a <code>ticker_interval</code> configuration option.</p>
+<p><em>Arguments</em></p>
+<ul>
+<li>ns (number) - nanosecond timestamp of the function call (it is actually <code>time_t * 1e9</code> to keep the timestamp units consistent so it will only have a one second resolution)</li>
+<li>shutdown (bool) - true if timer_event is being called due to a shutdown</li>
+</ul>
+<p><em>Return</em></p>
+<ul>
+<li>none</li>
+</ul>
+<h2 id="available-c-functions-called-from-the-plugin">Available C Functions (called from the plugin)</h2>
+<h3 id="read_config">read_config</h3>
+<p>Provides access to the sandbox configuration variables.</p>
+<p><em>Arguments</em></p>
+<ul>
+<li>key (string) - configuration key name</li>
+</ul>
+<p><em>Return</em></p>
+<ul>
+<li>value (string, number, bool, table)</li>
+</ul>
+<h3 id="read_message">read_message</h3>
+<p>Provides access to the Heka message data. See <a href="analysis.html#read_message">read_message</a> for details.</p>
+<h3 id="decode_message">decode_message</h3>
+<p>Converts a Heka protobuf encoded message string into a Lua table. See <a href="analysis.html#decode_message">decode_message</a> for details.</p>
+<h3 id="encode_message">encode_message</h3>
+<p>Returns a Heka protocol buffer message using the contents of the specified Lua table. Note: this operation uses the internal output buffer so it is goverened by the <code>output_limit</code> configuration setting. If the <code>Logger</code> and <code>Hostname</code> are not set they will be added by infrastructure using the corresponding configuration setting.</p>
+<p><em>Arguments</em></p>
+<ul>
+<li>msg (<a href="message.html">Heka message table</a>)</li>
+<li>framed (bool default: false) A value of true includes the framing header</li>
+</ul>
+<p><em>Return</em></p>
+<ul>
+<li>heka_pb (string) - Heka protobuf binary string, framed as specified or an error is thrown</li>
+</ul>
+<h3 id="create_message_matcher">create_message_matcher</h3>
+<p>Returns a Heka protocol buffer message matcher; used to dynamic filter messages sent to the output plugin.</p>
+<p><em>Arguments</em></p>
+<ul>
+<li>message_matcher <a href="../util/message_matcher.html">message matcher</a></li>
+</ul>
+<p><em>Return</em></p>
+<ul>
+<li>message_matcher (userdata) - or an error is thrown The message matcher object has one method <code>eval</code> that returns true if the current message matches, false if it does not.</li>
+</ul>
+<h4 id="example">Example</h4>
+<p>See: <a href="https://github.com/mozilla-services/lua_sandbox/blob/master/sandboxes/heka/output/heka_tcp_matcher.lua">heka_tcp_matcher.lua</a></p>
+<h3 id="update_checkpoint">update_checkpoint</h3>
+<h4 id="batch-mode">Batch Mode</h4>
+<p>Advances the output checkpoint when in batching mode. The standard use case is to call it from <code>timer_event</code> after successfully flushing a batch on timeout/shutdown.</p>
+<p><em>Arguments</em></p>
+<ul>
+<li>none</li>
+</ul>
+<h4 id="asynchronous-mode">Asynchronous Mode</h4>
+<p>Advances the output checkpoint and optionally reports the number of failures that occured.</p>
+<p><em>Arguments</em></p>
+<ul>
+<li>sequence_id (lightuserdata) - sequence_id for the message that was just successfully delivered/acknowledged</li>
+<li>failures (optional: integer) - number of failures that occured in the asynchronus processing (added to the failure count)</li>
+</ul>
+<p><em>Return</em></p>
+<ul>
+<li>none (throws an error on invalid arg types)</li>
+</ul>
+<h3 id="modes-of-operation">Modes of Operation</h3>
+<h4 id="lock-step">Lock Step</h4>
+<ul>
+<li><code>process_message</code> operates on the message and returns one of the following values:
+<ul>
+<li>success (0) - the message was successfully processed and the output checkpoint is advanced</li>
+<li>failure (-1) - the message was not successfully processed
+<ul>
+<li>the failure count is incremented</li>
+<li>any optional error message is written to the log</li>
+<li>the message is skipped</li>
+<li>the checkpoint is advanced</li>
+</ul></li>
+<li>skip (-2) - the message was intentionally not processed and the checkpoint is advanced</li>
+<li>retry (-3) - the message was not successfully processed and the host will call <code>process_message</code> again, with the same message, after a one second delay</li>
+</ul></li>
+</ul>
+<h4 id="example-payload-output">Example Payload Output</h4>
+<div class="sourceCode"><pre class="sourceCode lua"><code class="sourceCode lua"><span class="co">-- cfg</span>
+message_matcher <span class="ot">=</span> <span class="st">&quot;Type == &#39;inject_payload&#39;&quot;</span>
+ticker_interval <span class="ot">=</span> <span class="dv">0</span>
+
+<span class="co">--location where the payload is written</span>
+output_dir      <span class="ot">=</span> <span class="st">&quot;/tmp&quot;</span></code></pre></div>
+<div class="sourceCode"><pre class="sourceCode lua"><code class="sourceCode lua"><span class="co">-- This Source Code Form is subject to the terms of the Mozilla Public</span>
+<span class="co">-- License, v. 2.0. If a copy of the MPL was not distributed with this</span>
+<span class="co">-- file, You can obtain one at http://mozilla.org/MPL/2.0/.</span>
+
+<span class="fu">require</span> <span class="st">&quot;io&quot;</span>
+<span class="fu">require</span> <span class="st">&quot;string&quot;</span>
+
+<span class="kw">local</span> output_dir <span class="ot">=</span> read_config<span class="ot">(</span><span class="st">&quot;output_dir&quot;</span><span class="ot">)</span> <span class="kw">or</span> <span class="st">&quot;/tmp&quot;</span>
+
+<span class="kw">function</span> process_message<span class="ot">()</span>
+    <span class="kw">local</span> pt <span class="ot">=</span> read_message<span class="ot">(</span><span class="st">&quot;Fields[payload_type]&quot;</span><span class="ot">)</span>
+    <span class="kw">if</span> <span class="fu">type</span><span class="ot">(</span>pt<span class="ot">)</span> <span class="ot">~=</span> <span class="st">&quot;string&quot;</span> <span class="kw">then</span> <span class="kw">return</span> <span class="ot">-</span><span class="dv">1</span><span class="ot">,</span> <span class="st">&quot;invalid payload_type&quot;</span> <span class="kw">end</span>
+
+    <span class="kw">local</span> pn <span class="ot">=</span> read_message<span class="ot">(</span><span class="st">&quot;Fields[payload_name]&quot;</span><span class="ot">)</span> <span class="kw">or</span> <span class="st">&quot;&quot;</span>
+    <span class="kw">if</span> <span class="fu">type</span><span class="ot">(</span>pn<span class="ot">)</span> <span class="ot">~=</span> <span class="st">&quot;string&quot;</span> <span class="kw">then</span> <span class="kw">return</span> <span class="ot">-</span><span class="dv">1</span><span class="ot">,</span> <span class="st">&quot;invalid payload_name&quot;</span> <span class="kw">end</span>
+
+    <span class="kw">local</span> logger <span class="ot">=</span> read_message<span class="ot">(</span><span class="st">&quot;Logger&quot;</span><span class="ot">)</span> <span class="kw">or</span> <span class="st">&quot;&quot;</span>
+
+    pn <span class="ot">=</span> <span class="fu">string.gsub</span><span class="ot">(</span>pn<span class="ot">,</span> <span class="st">&quot;%W&quot;</span><span class="ot">,</span> <span class="st">&quot;_&quot;</span><span class="ot">)</span>
+    pt <span class="ot">=</span> <span class="fu">string.gsub</span><span class="ot">(</span>pt<span class="ot">,</span> <span class="st">&quot;%W&quot;</span><span class="ot">,</span> <span class="st">&quot;_&quot;</span><span class="ot">)</span>
+    logger <span class="ot">=</span> <span class="fu">string.gsub</span><span class="ot">(</span>logger<span class="ot">,</span> <span class="st">&quot;%W&quot;</span><span class="ot">,</span> <span class="st">&quot;_&quot;</span><span class="ot">)</span>
+
+    <span class="kw">local</span> fn <span class="ot">=</span> <span class="fu">string.format</span><span class="ot">(</span><span class="st">&quot;%s/%s.%s.%s&quot;</span><span class="ot">,</span> output_dir<span class="ot">,</span> logger<span class="ot">,</span> pn<span class="ot">,</span> pt<span class="ot">)</span>
+    <span class="kw">local</span> fh<span class="ot">,</span> err <span class="ot">=</span> <span class="fu">io.open</span><span class="ot">(</span>fn<span class="ot">,</span> <span class="st">&quot;w&quot;</span><span class="ot">)</span>
+    <span class="kw">if</span> err <span class="kw">then</span> <span class="kw">return</span> <span class="ot">-</span><span class="dv">1</span><span class="ot">,</span> err <span class="kw">end</span>
+
+    <span class="kw">local</span> payload <span class="ot">=</span> read_message<span class="ot">(</span><span class="st">&quot;Payload&quot;</span><span class="ot">)</span> <span class="kw">or</span> <span class="st">&quot;&quot;</span>
+    fh:<span class="fu">write</span><span class="ot">(</span>payload<span class="ot">)</span>
+    fh:<span class="fu">close</span><span class="ot">()</span>
+    <span class="kw">return</span> <span class="dv">0</span>
+<span class="kw">end</span>
+
+<span class="kw">function</span> timer_event<span class="ot">(</span>ns<span class="ot">)</span>
+    <span class="co">-- no op</span>
+<span class="kw">end</span></code></pre></div>
+<h4 id="batching">Batching</h4>
+<ul>
+<li><code>process_message</code> batches the message/transformation in memory or on disk and returns one of the following values:
+<ul>
+<li>batching (-4) - the message was successfully added to the batch</li>
+<li>failure (-1) - the message cannot be batch
+<ul>
+<li>the failure count is incremented</li>
+<li>any optional error message is written to the log</li>
+<li>the message is skipped</li>
+</ul></li>
+<li>skip (-2) - the message was intentionally not added to the batch</li>
+<li>retry (-3) - the message was not successfully added to the batch and the host will call <code>process_message</code> again, with the same message, after a one second delay</li>
+<li>success (0) - the batch has been successfully committed and the output checkpoint is advanced to the most recent message</li>
+</ul></li>
+</ul>
+<h4 id="example-postgres-output">Example Postgres Output</h4>
+<div class="sourceCode"><pre class="sourceCode lua"><code class="sourceCode lua"><span class="co">-- cfg</span>
+message_matcher <span class="ot">=</span> <span class="st">&quot;Type == &#39;logfile&#39;&quot;</span>
+memory_limit <span class="ot">=</span> <span class="dv">0</span>
+ticker_interval <span class="ot">=</span> <span class="dv">60</span>
+
+buffer_max <span class="ot">=</span> <span class="dv">1000</span>
+db_config <span class="ot">=</span> <span class="ot">{</span>
+    host <span class="ot">=</span> <span class="st">&quot;example.com&quot;</span><span class="ot">,</span>
+    port <span class="ot">=</span> <span class="dv">5432</span><span class="ot">,</span>
+    name <span class="ot">=</span> <span class="st">&quot;dev&quot;</span><span class="ot">,</span>
+    user <span class="ot">=</span> <span class="st">&quot;test&quot;</span><span class="ot">,</span>
+    _password <span class="ot">=</span> <span class="st">&quot;testpw&quot;</span><span class="ot">,</span>
+<span class="ot">}</span></code></pre></div>
+<div class="sourceCode"><pre class="sourceCode lua"><code class="sourceCode lua"><span class="co">-- This Source Code Form is subject to the terms of the Mozilla Public</span>
+<span class="co">-- License, v. 2.0. If a copy of the MPL was not distributed with this</span>
+<span class="co">-- file, You can obtain one at http://mozilla.org/MPL/2.0/.</span>
+
+<span class="fu">require</span> <span class="st">&quot;os&quot;</span>
+<span class="fu">require</span> <span class="st">&quot;string&quot;</span>
+<span class="fu">require</span> <span class="st">&quot;table&quot;</span>
+
+<span class="kw">local</span> driver <span class="ot">=</span> <span class="fu">require</span> <span class="st">&quot;luasql.postgres&quot;</span>
+
+<span class="kw">local</span> ticker_interval <span class="ot">=</span> read_config<span class="ot">(</span><span class="st">&quot;ticker_interval&quot;</span><span class="ot">)</span>
+<span class="kw">local</span> db_config       <span class="ot">=</span> read_config<span class="ot">(</span><span class="st">&quot;db_config&quot;</span><span class="ot">)</span> <span class="kw">or</span> <span class="fu">error</span><span class="ot">(</span><span class="st">&quot;db_config must be set&quot;</span><span class="ot">)</span>
+<span class="kw">local</span> buffer_max      <span class="ot">=</span> read_config<span class="ot">(</span><span class="st">&quot;buffer_max&quot;</span><span class="ot">)</span> <span class="kw">or</span> <span class="dv">1000</span>
+<span class="fu">assert</span><span class="ot">(</span>buffer_max <span class="ot">&gt;</span> <span class="dv">0</span><span class="ot">,</span> <span class="st">&quot;buffer_max must be greater than zero&quot;</span><span class="ot">)</span>
+
+<span class="kw">local</span> env <span class="ot">=</span> <span class="fu">assert</span><span class="ot">(</span>driver<span class="ot">.</span>postgres<span class="ot">())</span>
+<span class="kw">local</span> con<span class="ot">,</span> err <span class="ot">=</span> env:<span class="fu">connect</span><span class="ot">(</span>db_config<span class="ot">.</span>name<span class="ot">,</span> db_config<span class="ot">.</span>user<span class="ot">,</span> db_config<span class="ot">.</span>_password<span class="ot">,</span> db_config<span class="ot">.</span>host<span class="ot">,</span> db_config<span class="ot">.</span>port<span class="ot">)</span>
+<span class="fu">assert</span><span class="ot">(</span>con<span class="ot">,</span> err<span class="ot">)</span>
+
+<span class="kw">local</span> buffer <span class="ot">=</span> <span class="ot">{}</span>
+<span class="kw">local</span> buffer_len <span class="ot">=</span> <span class="dv">0</span>
+<span class="kw">local</span> table_name <span class="ot">=</span> <span class="st">&quot;test_table&quot;</span>
+<span class="kw">local</span> MAX_LENGTH <span class="ot">=</span> <span class="dv">65535</span>
+<span class="kw">local</span> columns <span class="ot">=</span> <span class="ot">{</span>
+<span class="co">--   column name        field name                  field type      field length</span>
+    <span class="ot">{</span><span class="st">&quot;msg_Timestamp&quot;</span>    <span class="ot">,</span><span class="st">&quot;Timestamp&quot;</span>                <span class="ot">,</span><span class="st">&quot;TIMESTAMP&quot;</span>    <span class="ot">,</span><span class="kw">nil</span><span class="ot">},</span>
+    <span class="ot">{</span><span class="st">&quot;payload&quot;</span>          <span class="ot">,</span><span class="st">&quot;Payload&quot;</span>                  <span class="ot">,</span><span class="st">&quot;VARCHAR&quot;</span>      <span class="ot">,</span>MAX_LENGTH<span class="ot">},</span>
+    <span class="ot">{</span><span class="st">&quot;sourceName&quot;</span>       <span class="ot">,</span><span class="st">&quot;Fields[sourceName]&quot;</span>       <span class="ot">,</span><span class="st">&quot;VARCHAR&quot;</span>      <span class="ot">,</span><span class="dv">30</span><span class="ot">},</span>
+    <span class="ot">{</span><span class="st">&quot;sourceVersion&quot;</span>    <span class="ot">,</span><span class="st">&quot;Fields[sourceVersion]&quot;</span>    <span class="ot">,</span><span class="st">&quot;VARCHAR&quot;</span>      <span class="ot">,</span><span class="dv">12</span><span class="ot">},</span>
+    <span class="ot">{</span><span class="st">&quot;submissionDate&quot;</span>   <span class="ot">,</span><span class="st">&quot;Fields[submissionDate]&quot;</span>   <span class="ot">,</span><span class="st">&quot;DATE&quot;</span>         <span class="ot">,</span><span class="kw">nil</span><span class="ot">},</span>
+    <span class="ot">{</span><span class="st">&quot;sampleId&quot;</span>         <span class="ot">,</span><span class="st">&quot;Fields[sampleId]&quot;</span>         <span class="ot">,</span><span class="st">&quot;SMALLINT&quot;</span>     <span class="ot">,</span><span class="kw">nil</span><span class="ot">},</span>
+<span class="ot">}</span>
+
+<span class="kw">local</span> <span class="kw">function</span> make_create_table<span class="ot">()</span>
+    <span class="kw">local</span> pieces <span class="ot">=</span> <span class="ot">{</span><span class="st">&quot;CREATE TABLE IF NOT EXISTS &quot;</span><span class="ot">,</span> table_name<span class="ot">,</span> <span class="st">&quot; (&quot;</span><span class="ot">}</span>
+    <span class="kw">for</span> i<span class="ot">,</span> c <span class="kw">in</span> <span class="fu">ipairs</span><span class="ot">(</span>columns<span class="ot">)</span> <span class="kw">do</span>
+        <span class="fu">table.insert</span><span class="ot">(</span>pieces<span class="ot">,</span> c<span class="ot">[</span><span class="dv">1</span><span class="ot">])</span>
+        <span class="fu">table.insert</span><span class="ot">(</span>pieces<span class="ot">,</span> <span class="st">&quot; &quot;</span><span class="ot">)</span>
+        <span class="fu">table.insert</span><span class="ot">(</span>pieces<span class="ot">,</span> c<span class="ot">[</span><span class="dv">3</span><span class="ot">])</span>
+        <span class="kw">if</span> c<span class="ot">[</span><span class="dv">4</span><span class="ot">]</span> <span class="ot">~=</span> <span class="kw">nil</span> <span class="kw">then</span>
+            <span class="fu">table.insert</span><span class="ot">(</span>pieces<span class="ot">,</span> <span class="st">&quot;(&quot;</span><span class="ot">)</span>
+            <span class="fu">table.insert</span><span class="ot">(</span>pieces<span class="ot">,</span> c<span class="ot">[</span><span class="dv">4</span><span class="ot">])</span>
+            <span class="fu">table.insert</span><span class="ot">(</span>pieces<span class="ot">,</span> <span class="st">&quot;)&quot;</span><span class="ot">)</span>
+        <span class="kw">end</span>
+        <span class="kw">if</span> c<span class="ot">[</span><span class="dv">4</span><span class="ot">]</span> <span class="ot">==</span> MAX_LENGTH <span class="kw">then</span>
+            <span class="fu">table.insert</span><span class="ot">(</span>pieces<span class="ot">,</span> <span class="st">&quot; ENCODE LZO&quot;</span><span class="ot">)</span>
+        <span class="kw">end</span>
+        <span class="kw">if</span> i <span class="ot">&lt;</span> <span class="ot">#</span>columns <span class="kw">then</span>
+            <span class="fu">table.insert</span><span class="ot">(</span>pieces<span class="ot">,</span> <span class="st">&quot;, &quot;</span><span class="ot">)</span>
+        <span class="kw">end</span>
+    <span class="kw">end</span>
+    <span class="fu">table.insert</span><span class="ot">(</span>pieces<span class="ot">,</span> <span class="st">&quot;)&quot;</span><span class="ot">)</span>
+    <span class="kw">return</span> <span class="fu">table.concat</span><span class="ot">(</span>pieces<span class="ot">)</span>
+<span class="kw">end</span>
+<span class="fu">assert</span><span class="ot">(</span>con:<span class="fu">execute</span><span class="ot">(</span>make_create_table<span class="ot">()))</span>
+
+<span class="kw">local</span> <span class="kw">function</span> bulk_load<span class="ot">()</span>
+    <span class="kw">local</span> cnt<span class="ot">,</span> err <span class="ot">=</span> con:<span class="fu">execute</span><span class="ot">(</span><span class="fu">table.concat</span><span class="ot">(</span>buffer<span class="ot">))</span>
+    <span class="kw">if</span> <span class="kw">not</span> err <span class="kw">then</span>
+        buffer <span class="ot">=</span> <span class="ot">{}</span>
+        buffer_len <span class="ot">=</span> <span class="dv">0</span>
+    <span class="kw">else</span>
+        <span class="kw">return</span> err
+    <span class="kw">end</span>
+<span class="kw">end</span>
+
+<span class="kw">local</span> <span class="kw">function</span> esc_str<span class="ot">(</span>v<span class="ot">)</span>
+    <span class="kw">if</span> v <span class="ot">==</span> <span class="kw">nil</span> <span class="kw">then</span> <span class="kw">return</span> <span class="st">&quot;NULL&quot;</span> <span class="kw">end</span>
+
+    <span class="kw">if</span> <span class="fu">type</span><span class="ot">(</span>v<span class="ot">)</span> <span class="ot">~=</span> <span class="st">&quot;string&quot;</span> <span class="kw">then</span> v <span class="ot">=</span> <span class="fu">tostring</span><span class="ot">(</span>v<span class="ot">)</span> <span class="kw">end</span>
+    <span class="kw">if</span> <span class="fu">string.len</span><span class="ot">(</span>v<span class="ot">)</span> <span class="ot">&gt;</span> MAX_LENGTH <span class="kw">then</span>
+        v <span class="ot">=</span> <span class="st">&quot;TRUNCATED:&quot;</span> <span class="ot">..</span> <span class="fu">string.sub</span><span class="ot">(</span>v<span class="ot">,</span> <span class="dv">1</span><span class="ot">,</span> MAX_LENGTH <span class="ot">-</span> <span class="dv">10</span><span class="ot">)</span>
+    <span class="kw">end</span>
+
+    <span class="kw">local</span> escd <span class="ot">=</span> con:escape<span class="ot">(</span>v<span class="ot">)</span>
+    <span class="kw">if</span> <span class="kw">not</span> escd <span class="kw">then</span> <span class="kw">return</span> <span class="st">&quot;NULL&quot;</span> <span class="kw">end</span>
+
+    <span class="kw">return</span> <span class="fu">string.format</span><span class="ot">(</span><span class="st">&quot;&#39;%s&#39;&quot;</span><span class="ot">,</span> escd<span class="ot">)</span>
+<span class="kw">end</span>
+
+<span class="kw">local</span> <span class="kw">function</span> esc_num<span class="ot">(</span>v<span class="ot">)</span>
+    <span class="kw">if</span> v <span class="ot">==</span> <span class="kw">nil</span> <span class="kw">then</span> <span class="kw">return</span> <span class="st">&quot;NULL&quot;</span> <span class="kw">end</span>
+    <span class="kw">if</span> <span class="fu">type</span><span class="ot">(</span>v<span class="ot">)</span> <span class="ot">~=</span> <span class="st">&quot;number&quot;</span> <span class="kw">then</span> <span class="kw">return</span> esc_str<span class="ot">(</span>v<span class="ot">)</span> <span class="kw">end</span>
+    <span class="kw">return</span> <span class="fu">tostring</span><span class="ot">(</span>v<span class="ot">)</span>
+<span class="kw">end</span>
+
+<span class="kw">local</span> <span class="kw">function</span> esc_ts<span class="ot">(</span>v<span class="ot">)</span>
+    <span class="kw">if</span> v <span class="ot">==</span> <span class="kw">nil</span> <span class="kw">then</span> <span class="kw">return</span> <span class="st">&quot;NULL&quot;</span> <span class="kw">end</span>
+    <span class="kw">if</span> <span class="fu">type</span><span class="ot">(</span>v<span class="ot">)</span> <span class="ot">~=</span> <span class="st">&quot;number&quot;</span> <span class="kw">then</span> <span class="kw">return</span> esc_str<span class="ot">(</span>v<span class="ot">)</span> <span class="kw">end</span>
+    <span class="kw">local</span> seconds <span class="ot">=</span> v <span class="ot">/</span> <span class="dv">1e9</span>
+    <span class="kw">return</span> <span class="fu">table.concat</span><span class="ot">({</span><span class="st">&quot;(TIMESTAMP &#39;epoch&#39; + &quot;</span><span class="ot">,</span> seconds<span class="ot">,</span> <span class="st">&quot; * INTERVAL &#39;1 seconds&#39;)&quot;</span><span class="ot">})</span>
+<span class="kw">end</span>
+
+<span class="kw">local</span> <span class="kw">function</span> make_insert<span class="ot">(</span>sep<span class="ot">)</span>
+    <span class="kw">local</span> pieces <span class="ot">=</span> <span class="ot">{</span>sep<span class="ot">,</span> <span class="st">&quot;(&quot;</span><span class="ot">}</span>
+    <span class="kw">for</span> i<span class="ot">=</span><span class="dv">1</span><span class="ot">,#</span>columns <span class="kw">do</span>
+        <span class="kw">if</span> i <span class="ot">&gt;</span> <span class="dv">1</span> <span class="kw">then</span>
+            <span class="fu">table.insert</span><span class="ot">(</span>pieces<span class="ot">,</span> <span class="st">&quot;,&quot;</span><span class="ot">)</span>
+        <span class="kw">end</span>
+        <span class="kw">local</span> col <span class="ot">=</span> columns<span class="ot">[</span>i<span class="ot">]</span>
+        <span class="kw">if</span> col<span class="ot">[</span><span class="dv">3</span><span class="ot">]</span> <span class="ot">==</span> <span class="st">&quot;TIMESTAMP&quot;</span> <span class="kw">then</span>
+            <span class="fu">table.insert</span><span class="ot">(</span>pieces<span class="ot">,</span> esc_ts<span class="ot">(</span>read_message<span class="ot">(</span>col<span class="ot">[</span><span class="dv">2</span><span class="ot">])))</span>
+        <span class="kw">elseif</span> col<span class="ot">[</span><span class="dv">3</span><span class="ot">]</span> <span class="ot">==</span> <span class="st">&quot;SMALLINT&quot;</span> <span class="kw">then</span>
+            <span class="fu">table.insert</span><span class="ot">(</span>pieces<span class="ot">,</span> esc_num<span class="ot">(</span>read_message<span class="ot">(</span>col<span class="ot">[</span><span class="dv">2</span><span class="ot">])))</span>
+        <span class="kw">else</span>
+            <span class="fu">table.insert</span><span class="ot">(</span>pieces<span class="ot">,</span> esc_str<span class="ot">(</span>read_message<span class="ot">(</span>col<span class="ot">[</span><span class="dv">2</span><span class="ot">])))</span>
+        <span class="kw">end</span>
+    <span class="kw">end</span>
+    <span class="fu">table.insert</span><span class="ot">(</span>pieces<span class="ot">,</span> <span class="st">&quot;)&quot;</span><span class="ot">)</span>
+    <span class="kw">return</span> <span class="fu">table.concat</span><span class="ot">(</span>pieces<span class="ot">)</span>
+<span class="kw">end</span>
+
+<span class="kw">local</span> last_load <span class="ot">=</span> <span class="dv">0</span>
+<span class="kw">function</span> process_message<span class="ot">()</span>
+    <span class="kw">local</span> sep <span class="ot">=</span> <span class="st">&quot;,&quot;</span>
+    <span class="kw">if</span> buffer_len <span class="ot">==</span> <span class="dv">0</span> <span class="kw">then</span>
+        buffer_len <span class="ot">=</span> buffer_len <span class="ot">+</span> <span class="dv">1</span>
+        buffer<span class="ot">[</span>buffer_len<span class="ot">]</span> <span class="ot">=</span> <span class="fu">string.format</span><span class="ot">(</span><span class="st">&quot;INSERT INTO %s VALUES&quot;</span><span class="ot">,</span> table_name<span class="ot">)</span>
+        sep <span class="ot">=</span> <span class="st">&quot; &quot;</span>
+    <span class="kw">end</span>
+    buffer_len <span class="ot">=</span> buffer_len <span class="ot">+</span> <span class="dv">1</span>
+    buffer<span class="ot">[</span>buffer_len<span class="ot">]</span> <span class="ot">=</span> make_insert<span class="ot">(</span>sep<span class="ot">)</span>
+
+    <span class="kw">if</span> buffer_len <span class="ot">-</span> <span class="dv">1</span> <span class="ot">&gt;=</span> buffer_max <span class="kw">then</span>
+        <span class="kw">local</span> err <span class="ot">=</span> bulk_load<span class="ot">()</span>
+        <span class="kw">if</span> err <span class="kw">then</span>
+            buffer<span class="ot">[</span>buffer_len<span class="ot">]</span> <span class="ot">=</span> <span class="kw">nil</span>
+            buffer_len <span class="ot">=</span> buffer_len <span class="ot">-</span> <span class="dv">1</span>
+            <span class="kw">return</span> <span class="ot">-</span><span class="dv">3</span><span class="ot">,</span> err
+        <span class="kw">else</span>
+            last_load <span class="ot">=</span> <span class="fu">os.time</span><span class="ot">()</span>
+            <span class="kw">return</span> <span class="dv">0</span>
+        <span class="kw">end</span>
+    <span class="kw">end</span>
+    <span class="kw">return</span> <span class="ot">-</span><span class="dv">4</span>
+<span class="kw">end</span>
+
+<span class="kw">function</span> timer_event<span class="ot">(</span>ns<span class="ot">,</span> shutdown<span class="ot">)</span>
+    <span class="kw">if</span> buffer_len <span class="ot">&gt;</span> <span class="dv">1</span> <span class="kw">and</span> <span class="ot">(</span>shutdown <span class="kw">or</span> last_load <span class="ot">+</span> ticker_interval <span class="ot">&lt;=</span> ns <span class="ot">/</span> <span class="dv">1e9</span><span class="ot">)</span><span class="kw">then</span>
+        <span class="kw">local</span> err <span class="ot">=</span> bulk_load<span class="ot">()</span>
+        <span class="kw">if</span> <span class="kw">not</span> err <span class="kw">then</span>
+            update_checkpoint<span class="ot">()</span>
+        <span class="kw">end</span>
+    <span class="kw">end</span>
+<span class="kw">end</span></code></pre></div>
+<h4 id="asynchronous">Asynchronous</h4>
+<ul>
+<li><code>async_buffer_size</code> <strong>RECOMMENDED</strong> that this configuration variable be set and consumed by the host</li>
+<li><code>process_message</code> is called with a sequence_id parameter and asynchronously sends the message/transformation to the destination and returns one of the following values:</li>
+<li>asynchronous (-5) - the message was successfully queued</li>
+<li>failure (-1) - the message cannot be queue
+<ul>
+<li>the failure count is incremented</li>
+<li>any optional error message is written to the log</li>
+<li>the message is skipped</li>
+</ul></li>
+<li>skip (-2) - the message was intentionally not queued</li>
+<li>retry (-3) - the message was not successfully queued and the host will call <code>process_message</code> again, with the same message, after a one second delay</li>
+<li>When an asynchronously sent message is acknowledged <a href="#update_checkpoint">update_checkpoint</a> <strong>MUST</strong> be called to advance the checkpoint to that specific message</li>
+</ul>
+<h4 id="example-kafka-output">Example Kafka Output</h4>
+<div class="sourceCode"><pre class="sourceCode lua"><code class="sourceCode lua"><span class="co">-- cfg</span>
+message_matcher        <span class="ot">=</span> <span class="st">&quot;TRUE&quot;</span>
+output_limit           <span class="ot">=</span> <span class="dv">8</span> <span class="ot">*</span> <span class="dv">1024</span> <span class="ot">*</span> <span class="dv">1024</span>
+brokers                <span class="ot">=</span> <span class="st">&quot;localhost:9092&quot;</span>
+ticker_interval        <span class="ot">=</span> <span class="dv">60</span>
+async_buffer_size      <span class="ot">=</span> <span class="dv">20000</span>
+
+topic_constant <span class="ot">=</span> <span class="st">&quot;test&quot;</span>
+producer_conf <span class="ot">=</span> <span class="ot">{</span>
+    <span class="ot">[</span><span class="st">&quot;queue.buffering.max.messages&quot;</span><span class="ot">]</span> <span class="ot">=</span> async_buffer_size<span class="ot">,</span>
+    <span class="ot">[</span><span class="st">&quot;batch.num.messages&quot;</span><span class="ot">]</span> <span class="ot">=</span> <span class="dv">200</span><span class="ot">,</span>
+    <span class="ot">[</span><span class="st">&quot;message.max.bytes&quot;</span><span class="ot">]</span> <span class="ot">=</span> output_limit<span class="ot">,</span>
+    <span class="ot">[</span><span class="st">&quot;queue.buffering.max.ms&quot;</span><span class="ot">]</span> <span class="ot">=</span> <span class="dv">10</span><span class="ot">,</span>
+    <span class="ot">[</span><span class="st">&quot;topic.metadata.refresh.interval.ms&quot;</span><span class="ot">]</span> <span class="ot">=</span> <span class="ot">-</span><span class="dv">1</span><span class="ot">,</span>
+<span class="ot">}</span></code></pre></div>
+<div class="sourceCode"><pre class="sourceCode lua"><code class="sourceCode lua"><span class="co">-- This Source Code Form is subject to the terms of the Mozilla Public</span>
+<span class="co">-- License, v. 2.0. If a copy of the MPL was not distributed with this</span>
+<span class="co">-- file, You can obtain one at http://mozilla.org/MPL/2.0/.</span>
+
+<span class="fu">require</span> <span class="st">&quot;kafka.producer&quot;</span>
+<span class="fu">require</span> <span class="st">&quot;kafka.topic&quot;</span>
+
+<span class="kw">local</span> brokers <span class="ot">=</span> read_config<span class="ot">(</span><span class="st">&quot;brokers&quot;</span><span class="ot">)</span> <span class="kw">or</span> <span class="fu">error</span><span class="ot">(</span><span class="st">&quot;brokers must be set&quot;</span><span class="ot">)</span>
+<span class="kw">local</span> topic_constant <span class="ot">=</span> read_config<span class="ot">(</span><span class="st">&quot;topic_constant&quot;</span><span class="ot">)</span>
+<span class="kw">local</span> topic_variable <span class="ot">=</span> read_config<span class="ot">(</span><span class="st">&quot;topic_variable&quot;</span><span class="ot">)</span> <span class="kw">or</span> <span class="st">&quot;Logger&quot;</span>
+<span class="kw">local</span> producer_conf <span class="ot">=</span> read_config<span class="ot">(</span><span class="st">&quot;producer_conf&quot;</span><span class="ot">)</span>
+
+<span class="kw">local</span> producer <span class="ot">=</span> kafka<span class="ot">.</span>producer<span class="ot">.</span>new<span class="ot">(</span>brokers<span class="ot">,</span> producer_conf<span class="ot">)</span>
+<span class="kw">local</span> topics <span class="ot">=</span> <span class="ot">{}</span>
+
+<span class="kw">function</span> process_message<span class="ot">(</span>sequence_id<span class="ot">)</span>
+    <span class="kw">local</span> var <span class="ot">=</span> topic_constant
+    <span class="kw">if</span> <span class="kw">not</span> var <span class="kw">then</span>
+        var <span class="ot">=</span> read_message<span class="ot">(</span>topic_variable<span class="ot">)</span> <span class="kw">or</span> <span class="st">&quot;unknown&quot;</span>
+    <span class="kw">end</span>
+
+    <span class="kw">local</span> topic <span class="ot">=</span> topics<span class="ot">[</span>var<span class="ot">]</span>
+    <span class="kw">if</span> <span class="kw">not</span> topic <span class="kw">then</span>
+        topic <span class="ot">=</span> kafka<span class="ot">.</span>topic<span class="ot">.</span>new<span class="ot">(</span>producer<span class="ot">,</span> var<span class="ot">)</span>
+        topics<span class="ot">[</span>var<span class="ot">]</span> <span class="ot">=</span> topic
+    <span class="kw">end</span>
+
+    producer:poll<span class="ot">()</span> <span class="co">-- calls async_checkpoint_update</span>
+    <span class="kw">local</span> ret <span class="ot">=</span> topic:send<span class="ot">(</span><span class="dv">0</span><span class="ot">,</span> read_message<span class="ot">(</span><span class="st">&quot;raw&quot;</span><span class="ot">),</span> sequence_id<span class="ot">)</span>
+
+    <span class="kw">if</span> ret <span class="ot">~=</span> <span class="dv">0</span> <span class="kw">then</span>
+        <span class="kw">if</span> ret <span class="ot">==</span> <span class="dv">105</span> <span class="kw">then</span>
+            <span class="kw">return</span> <span class="ot">-</span><span class="dv">3</span> <span class="co">-- queue full retry</span>
+        <span class="kw">elseif</span> ret <span class="ot">==</span> <span class="dv">90</span> <span class="kw">then</span>
+            <span class="kw">return</span> <span class="ot">-</span><span class="dv">1</span> <span class="co">-- message too large</span>
+        <span class="kw">elseif</span> ret <span class="ot">==</span> <span class="dv">2</span> <span class="kw">then</span>
+            <span class="fu">error</span><span class="ot">(</span><span class="st">&quot;unknown topic: &quot;</span> <span class="ot">..</span> var<span class="ot">)</span>
+        <span class="kw">elseif</span> ret <span class="ot">==</span> <span class="dv">3</span> <span class="kw">then</span>
+            <span class="fu">error</span><span class="ot">(</span><span class="st">&quot;unknown partition&quot;</span><span class="ot">)</span>
+        <span class="kw">end</span>
+    <span class="kw">end</span>
+    <span class="kw">return</span> <span class="ot">-</span><span class="dv">5</span> <span class="co">-- asynchronous checkpoint management</span>
+<span class="kw">end</span>
+
+<span class="kw">function</span> timer_event<span class="ot">(</span>ns<span class="ot">)</span>
+    producer:poll<span class="ot">()</span> <span class="co">-- calls update_checkpoint</span>
+<span class="kw">end</span></code></pre></div>
+</div>
+</body>
+</html>

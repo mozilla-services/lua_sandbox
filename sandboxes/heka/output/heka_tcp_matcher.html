@@ -1,0 +1,170 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta name="generator" content="pandoc" />
+  <title></title>
+  <style type="text/css">code{white-space: pre;}</style>
+  <style type="text/css">
+div.sourceCode { overflow-x: auto; }
+table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
+  margin: 0; padding: 0; vertical-align: baseline; border: none; }
+table.sourceCode { width: 100%; line-height: 100%; }
+td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; color: #aaaaaa; border-right: 1px solid #aaaaaa; }
+td.sourceCode { padding-left: 5px; }
+code > span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code > span.dt { color: #902000; } /* DataType */
+code > span.dv { color: #40a070; } /* DecVal */
+code > span.bn { color: #40a070; } /* BaseN */
+code > span.fl { color: #40a070; } /* Float */
+code > span.ch { color: #4070a0; } /* Char */
+code > span.st { color: #4070a0; } /* String */
+code > span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code > span.ot { color: #007020; } /* Other */
+code > span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code > span.fu { color: #06287e; } /* Function */
+code > span.er { color: #ff0000; font-weight: bold; } /* Error */
+code > span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+code > span.cn { color: #880000; } /* Constant */
+code > span.sc { color: #4070a0; } /* SpecialChar */
+code > span.vs { color: #4070a0; } /* VerbatimString */
+code > span.ss { color: #bb6688; } /* SpecialString */
+code > span.im { } /* Import */
+code > span.va { color: #19177c; } /* Variable */
+code > span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code > span.op { color: #666666; } /* Operator */
+code > span.bu { } /* BuiltIn */
+code > span.ex { } /* Extension */
+code > span.pp { color: #bc7a00; } /* Preprocessor */
+code > span.at { color: #7d9029; } /* Attribute */
+code > span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code > span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code > span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+  </style>
+  <link rel="stylesheet" href="/lua_sandbox/docs.css" type="text/css" />
+</head>
+<body>
+<div id="title">Lua Sandbox Library (0.20.0)<hr/></div>
+<div class="menu">
+        <ul>
+            <li><a href="/lua_sandbox/index.html">Overview</a></li>
+        </ul>
+        <ul>
+            <li><a href="/lua_sandbox/sandbox.html">Generic Sandbox</a></li>
+        </ul>
+        <ul>
+            <li><a href="/lua_sandbox/heka/index.html">Heka Sandbox</a></li>
+        <ul>
+            <li><a href="/lua_sandbox/heka/analysis.html">Analysis Interface</a></li>
+            <li><a href="/lua_sandbox/heka/input.html">Input Interface</a></li>
+            <li><a href="/lua_sandbox/heka/output.html">Output Interface</a></li>
+        </ul>
+        </ul>
+        <ul>
+           <li><a href="/lua_sandbox/cli/index.html">Command Line Tools</a></li>
+        </ul>
+        <ul>
+            <li><a href="/lua_sandbox/doxygen/index.html">Source Documentation</a></li>
+        </ul>
+        <ul>
+            <li>C Modules</li>
+            <ul>
+                <li><a href="https://github.com/mozilla-services/lua_bloom_filter/blob/master/README.md">bloom_filter</a></li>
+                <li><a href="https://github.com/mozilla-services/lua_circular_buffer/blob/master/README.md">circular_buffer</a></li>
+                <li><a href="http://www.kyne.com.au/~mark/software/lua-cjson-manual.html">cjson</a></li>
+                <li><a href="https://github.com/mozilla-services/lua_cuckoo_filter/blob/master/README.md">cuckoo_filter</a></li>
+                <li><a href="https://github.com/mozilla-services/lua_hyperloglog/blob/master/README.md">hyperloglog</a></li>
+                <li><a href="http://www.inf.puc-rio.br/~roberto/lpeg/lpeg.html">lpeg</a></li>
+                <li><a href="http://www.inf.puc-rio.br/~roberto/lpeg/re.html">re</a></li>
+                <li><a href="https://github.com/trink/symtseries/blob/master/README.md">sax</a></li>
+                <li><a href="http://www.inf.puc-rio.br/~roberto/struct/">struct</a></li>
+            </ul>
+        </ul>
+        <ul>
+<li><a href="/lua_sandbox/modules/index.html">modules</a></li>
+<ul>
+<li><a href="/lua_sandbox/modules/heka/index.html">heka</a></li>
+<ul>
+<li><a href="/lua_sandbox/modules/heka/elasticsearch/index.html">elasticsearch</a></li>
+<ul>
+<li><a href="/lua_sandbox/modules/heka/elasticsearch/payload.html">payload</a></li>
+</ul>
+<li><a href="/lua_sandbox/modules/heka/elasticsearch.html">elasticsearch</a></li>
+<li><a href="/lua_sandbox/modules/heka/msg_interpolate.html">msg_interpolate</a></li>
+<li><a href="/lua_sandbox/modules/heka/util.html">util</a></li>
+</ul>
+<li><a href="/lua_sandbox/modules/lpeg/index.html">lpeg</a></li>
+<ul>
+<li><a href="/lua_sandbox/modules/lpeg/cbufd.html">cbufd</a></li>
+<li><a href="/lua_sandbox/modules/lpeg/common_log_format.html">common_log_format</a></li>
+<li><a href="/lua_sandbox/modules/lpeg/date_time.html">date_time</a></li>
+<li><a href="/lua_sandbox/modules/lpeg/ip_address.html">ip_address</a></li>
+<li><a href="/lua_sandbox/modules/lpeg/mysql.html">mysql</a></li>
+<li><a href="/lua_sandbox/modules/lpeg/postfix.html">postfix</a></li>
+<li><a href="/lua_sandbox/modules/lpeg/syslog.html">syslog</a></li>
+<li><a href="/lua_sandbox/modules/lpeg/syslog_message.html">syslog_message</a></li>
+</ul>
+<li><a href="/lua_sandbox/modules/lsb/index.html">lsb</a></li>
+<ul>
+<li><a href="/lua_sandbox/modules/lsb/util.html">util</a></li>
+</ul>
+</ul>
+</ul>
+<ul>
+<li><a href="/lua_sandbox/sandboxes/index.html">sandboxes</a></li>
+<ul>
+<li><a href="/lua_sandbox/sandboxes/heka/index.html">heka</a></li>
+<ul>
+<li><a href="/lua_sandbox/sandboxes/heka/analysis/index.html">analysis</a></li>
+<ul>
+<li><a href="/lua_sandbox/sandboxes/heka/analysis/throughput.html">throughput</a></li>
+</ul>
+<li><a href="/lua_sandbox/sandboxes/heka/input/index.html">input</a></li>
+<ul>
+<li><a href="/lua_sandbox/sandboxes/heka/input/heka_kafka.html">heka_kafka</a></li>
+<li><a href="/lua_sandbox/sandboxes/heka/input/heka_stdin.html">heka_stdin</a></li>
+<li><a href="/lua_sandbox/sandboxes/heka/input/heka_tcp.html">heka_tcp</a></li>
+<li><a href="/lua_sandbox/sandboxes/heka/input/syslog_udp.html">syslog_udp</a></li>
+</ul>
+<li><a href="/lua_sandbox/sandboxes/heka/output/index.html">output</a></li>
+<ul>
+<li><a href="/lua_sandbox/sandboxes/heka/output/debug.html">debug</a></li>
+<li><a href="/lua_sandbox/sandboxes/heka/output/elasticsearch_bulk_api.html">elasticsearch_bulk_api</a></li>
+<li><a href="/lua_sandbox/sandboxes/heka/output/heka_kafka.html">heka_kafka</a></li>
+<li><a href="/lua_sandbox/sandboxes/heka/output/heka_log_rolling.html">heka_log_rolling</a></li>
+<li><a href="/lua_sandbox/sandboxes/heka/output/heka_s3_partition.html">heka_s3_partition</a></li>
+<li><a href="/lua_sandbox/sandboxes/heka/output/heka_tcp.html">heka_tcp</a></li>
+<li><a href="/lua_sandbox/sandboxes/heka/output/heka_tcp_matcher.html">heka_tcp_matcher</a></li>
+<li><a href="/lua_sandbox/sandboxes/heka/output/inject_payload.html">inject_payload</a></li>
+</ul>
+</ul>
+</ul>
+</ul>
+    </div>
+    <div class="main-content">
+<h1 id="heka-compatible-tcp-output-with-dynamic-matching">Heka Compatible TCP Output with Dynamic Matching</h1>
+<p>Used for generating a debug stream of messages for as long as the connection is maintained.</p>
+<h2 id="sample-configuration">Sample Configuration</h2>
+<div class="sourceCode"><pre class="sourceCode lua"><code class="sourceCode lua">filename <span class="ot">=</span> <span class="st">&quot;heka_tcp_matcher.lua&quot;</span>
+instruction_limit <span class="ot">=</span> <span class="dv">0</span>
+messsage_matcher <span class="ot">=</span> <span class="st">&quot;TRUE&quot;</span>
+ticker_interval <span class="ot">=</span> <span class="dv">1</span>
+
+address <span class="ot">=</span> <span class="st">&quot;127.0.0.1&quot;</span>
+port    <span class="ot">=</span> <span class="dv">5566</span>
+
+ssl_params <span class="ot">=</span> <span class="ot">{</span>
+  mode <span class="ot">=</span> <span class="st">&quot;server&quot;</span><span class="ot">,</span>
+  protocol <span class="ot">=</span> <span class="st">&quot;tlsv1&quot;</span><span class="ot">,</span>
+  key <span class="ot">=</span> <span class="st">&quot;/etc/hindsight/certs/serverkey.pem&quot;</span><span class="ot">,</span>
+  certificate <span class="ot">=</span> <span class="st">&quot;/etc/hindsight/certs/server.pem&quot;</span><span class="ot">,</span>
+  cafile <span class="ot">=</span> <span class="st">&quot;/etc/hindsight/certs/CA.pem&quot;</span><span class="ot">,</span>
+  verify <span class="ot">=</span> <span class="ot">{</span><span class="st">&quot;peer&quot;</span><span class="ot">,</span> <span class="st">&quot;fail_if_no_peer_cert&quot;</span><span class="ot">},</span>
+  options <span class="ot">=</span> <span class="ot">{</span><span class="st">&quot;all&quot;</span><span class="ot">,</span> <span class="st">&quot;no_sslv3&quot;</span><span class="ot">}</span>
+<span class="ot">}</span></code></pre></div>
+<p>source code: <a href="https://github.com/mozilla-services/lua_sandbox/blob/master/sandboxes/heka/output/heka_tcp_matcher.lua">heka_tcp_matcher.lua</a></p>
+</div>
+</body>
+</html>

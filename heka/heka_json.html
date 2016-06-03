@@ -1,0 +1,303 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta name="generator" content="pandoc" />
+  <title></title>
+  <style type="text/css">code{white-space: pre;}</style>
+  <style type="text/css">
+div.sourceCode { overflow-x: auto; }
+table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
+  margin: 0; padding: 0; vertical-align: baseline; border: none; }
+table.sourceCode { width: 100%; line-height: 100%; }
+td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; color: #aaaaaa; border-right: 1px solid #aaaaaa; }
+td.sourceCode { padding-left: 5px; }
+code > span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code > span.dt { color: #902000; } /* DataType */
+code > span.dv { color: #40a070; } /* DecVal */
+code > span.bn { color: #40a070; } /* BaseN */
+code > span.fl { color: #40a070; } /* Float */
+code > span.ch { color: #4070a0; } /* Char */
+code > span.st { color: #4070a0; } /* String */
+code > span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code > span.ot { color: #007020; } /* Other */
+code > span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code > span.fu { color: #06287e; } /* Function */
+code > span.er { color: #ff0000; font-weight: bold; } /* Error */
+code > span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+code > span.cn { color: #880000; } /* Constant */
+code > span.sc { color: #4070a0; } /* SpecialChar */
+code > span.vs { color: #4070a0; } /* VerbatimString */
+code > span.ss { color: #bb6688; } /* SpecialString */
+code > span.im { } /* Import */
+code > span.va { color: #19177c; } /* Variable */
+code > span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code > span.op { color: #666666; } /* Operator */
+code > span.bu { } /* BuiltIn */
+code > span.ex { } /* Extension */
+code > span.pp { color: #bc7a00; } /* Preprocessor */
+code > span.at { color: #7d9029; } /* Attribute */
+code > span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code > span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code > span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+  </style>
+  <link rel="stylesheet" href="/lua_sandbox/docs.css" type="text/css" />
+</head>
+<body>
+<div id="title">Lua Sandbox Library (0.20.0)<hr/></div>
+<div class="menu">
+        <ul>
+            <li><a href="/lua_sandbox/index.html">Overview</a></li>
+        </ul>
+        <ul>
+            <li><a href="/lua_sandbox/sandbox.html">Generic Sandbox</a></li>
+        </ul>
+        <ul>
+            <li><a href="/lua_sandbox/heka/index.html">Heka Sandbox</a></li>
+        <ul>
+            <li><a href="/lua_sandbox/heka/analysis.html">Analysis Interface</a></li>
+            <li><a href="/lua_sandbox/heka/input.html">Input Interface</a></li>
+            <li><a href="/lua_sandbox/heka/output.html">Output Interface</a></li>
+        </ul>
+        </ul>
+        <ul>
+           <li><a href="/lua_sandbox/cli/index.html">Command Line Tools</a></li>
+        </ul>
+        <ul>
+            <li><a href="/lua_sandbox/doxygen/index.html">Source Documentation</a></li>
+        </ul>
+        <ul>
+            <li>C Modules</li>
+            <ul>
+                <li><a href="https://github.com/mozilla-services/lua_bloom_filter/blob/master/README.md">bloom_filter</a></li>
+                <li><a href="https://github.com/mozilla-services/lua_circular_buffer/blob/master/README.md">circular_buffer</a></li>
+                <li><a href="http://www.kyne.com.au/~mark/software/lua-cjson-manual.html">cjson</a></li>
+                <li><a href="https://github.com/mozilla-services/lua_cuckoo_filter/blob/master/README.md">cuckoo_filter</a></li>
+                <li><a href="https://github.com/mozilla-services/lua_hyperloglog/blob/master/README.md">hyperloglog</a></li>
+                <li><a href="http://www.inf.puc-rio.br/~roberto/lpeg/lpeg.html">lpeg</a></li>
+                <li><a href="http://www.inf.puc-rio.br/~roberto/lpeg/re.html">re</a></li>
+                <li><a href="https://github.com/trink/symtseries/blob/master/README.md">sax</a></li>
+                <li><a href="http://www.inf.puc-rio.br/~roberto/struct/">struct</a></li>
+            </ul>
+        </ul>
+        <ul>
+<li><a href="/lua_sandbox/modules/index.html">modules</a></li>
+<ul>
+<li><a href="/lua_sandbox/modules/heka/index.html">heka</a></li>
+<ul>
+<li><a href="/lua_sandbox/modules/heka/elasticsearch/index.html">elasticsearch</a></li>
+<ul>
+<li><a href="/lua_sandbox/modules/heka/elasticsearch/payload.html">payload</a></li>
+</ul>
+<li><a href="/lua_sandbox/modules/heka/elasticsearch.html">elasticsearch</a></li>
+<li><a href="/lua_sandbox/modules/heka/msg_interpolate.html">msg_interpolate</a></li>
+<li><a href="/lua_sandbox/modules/heka/util.html">util</a></li>
+</ul>
+<li><a href="/lua_sandbox/modules/lpeg/index.html">lpeg</a></li>
+<ul>
+<li><a href="/lua_sandbox/modules/lpeg/cbufd.html">cbufd</a></li>
+<li><a href="/lua_sandbox/modules/lpeg/common_log_format.html">common_log_format</a></li>
+<li><a href="/lua_sandbox/modules/lpeg/date_time.html">date_time</a></li>
+<li><a href="/lua_sandbox/modules/lpeg/ip_address.html">ip_address</a></li>
+<li><a href="/lua_sandbox/modules/lpeg/mysql.html">mysql</a></li>
+<li><a href="/lua_sandbox/modules/lpeg/postfix.html">postfix</a></li>
+<li><a href="/lua_sandbox/modules/lpeg/syslog.html">syslog</a></li>
+<li><a href="/lua_sandbox/modules/lpeg/syslog_message.html">syslog_message</a></li>
+</ul>
+<li><a href="/lua_sandbox/modules/lsb/index.html">lsb</a></li>
+<ul>
+<li><a href="/lua_sandbox/modules/lsb/util.html">util</a></li>
+</ul>
+</ul>
+</ul>
+<ul>
+<li><a href="/lua_sandbox/sandboxes/index.html">sandboxes</a></li>
+<ul>
+<li><a href="/lua_sandbox/sandboxes/heka/index.html">heka</a></li>
+<ul>
+<li><a href="/lua_sandbox/sandboxes/heka/analysis/index.html">analysis</a></li>
+<ul>
+<li><a href="/lua_sandbox/sandboxes/heka/analysis/throughput.html">throughput</a></li>
+</ul>
+<li><a href="/lua_sandbox/sandboxes/heka/input/index.html">input</a></li>
+<ul>
+<li><a href="/lua_sandbox/sandboxes/heka/input/heka_kafka.html">heka_kafka</a></li>
+<li><a href="/lua_sandbox/sandboxes/heka/input/heka_stdin.html">heka_stdin</a></li>
+<li><a href="/lua_sandbox/sandboxes/heka/input/heka_tcp.html">heka_tcp</a></li>
+<li><a href="/lua_sandbox/sandboxes/heka/input/syslog_udp.html">syslog_udp</a></li>
+</ul>
+<li><a href="/lua_sandbox/sandboxes/heka/output/index.html">output</a></li>
+<ul>
+<li><a href="/lua_sandbox/sandboxes/heka/output/debug.html">debug</a></li>
+<li><a href="/lua_sandbox/sandboxes/heka/output/elasticsearch_bulk_api.html">elasticsearch_bulk_api</a></li>
+<li><a href="/lua_sandbox/sandboxes/heka/output/heka_kafka.html">heka_kafka</a></li>
+<li><a href="/lua_sandbox/sandboxes/heka/output/heka_log_rolling.html">heka_log_rolling</a></li>
+<li><a href="/lua_sandbox/sandboxes/heka/output/heka_s3_partition.html">heka_s3_partition</a></li>
+<li><a href="/lua_sandbox/sandboxes/heka/output/heka_tcp.html">heka_tcp</a></li>
+<li><a href="/lua_sandbox/sandboxes/heka/output/heka_tcp_matcher.html">heka_tcp_matcher</a></li>
+<li><a href="/lua_sandbox/sandboxes/heka/output/inject_payload.html">inject_payload</a></li>
+</ul>
+</ul>
+</ul>
+</ul>
+    </div>
+    <div class="main-content">
+<h1 id="heka-json-module">Heka JSON Module</h1>
+<p>Allows for JSON-Schema validation and more efficient manipulation of large JSON structures where only a small amount of the data is consumed by the plugin. Schema pattern matching is restricted to a subset of regex decribed in the Regular Expression section of the <a href="http://rapidjson.org/md_doc_schema.html">RapidJSON Schema Documentation</a>.</p>
+<h2 id="availability">Availability</h2>
+<p>Input/Output plugins only.</p>
+<h2 id="api-functions">API Functions</h2>
+<h3 id="parse">parse</h3>
+<p>Creates a Heka JSON Document from a string.</p>
+<div class="sourceCode"><pre class="sourceCode lua"><code class="sourceCode lua"><span class="kw">local</span> ok<span class="ot">,</span> doc <span class="ot">=</span> <span class="fu">pcall</span><span class="ot">(</span>heka_json<span class="ot">.</span>parse<span class="ot">,</span> <span class="st">&#39;{&quot;foo&quot;:&quot;bar&quot;}&#39;</span><span class="ot">)</span>
+<span class="fu">assert</span><span class="ot">(</span>ok<span class="ot">,</span> doc<span class="ot">)</span></code></pre></div>
+<p><em>Arguments</em></p>
+<ul>
+<li>JSON (string) - JSON string to parse</li>
+</ul>
+<p><em>Return</em></p>
+<ul>
+<li>doc (userdata) - Heka JSON document or an error is thrown</li>
+</ul>
+<h3 id="parse_schema">parse_schema</h3>
+<p>Creates a Heka JSON Schema.</p>
+<div class="sourceCode"><pre class="sourceCode lua"><code class="sourceCode lua"><span class="kw">local</span> ok<span class="ot">,</span> doc <span class="ot">=</span> <span class="fu">pcall</span><span class="ot">(</span>heka_json<span class="ot">.</span>parse_schema<span class="ot">,</span> <span class="st">&#39;{&quot;type&quot;:&quot;array&quot;,&quot;minItems&quot;: 1,&quot;oneOf&quot;: [{&quot;items&quot;: {&quot;type&quot;:&quot;number&quot;}}]}&#39;</span><span class="ot">)</span>
+<span class="fu">assert</span><span class="ot">(</span>ok<span class="ot">,</span> doc<span class="ot">)</span></code></pre></div>
+<p><em>Arguments</em></p>
+<ul>
+<li>JSON (string) - JSON schema string to parse</li>
+</ul>
+<p><em>Return</em></p>
+<ul>
+<li>schema (userdata) - Heka JSON schema or an error is thrown</li>
+</ul>
+<h3 id="parse_message">parse_message</h3>
+<p>Creates a Heka JSON Document from a message variable.</p>
+<div class="sourceCode"><pre class="sourceCode lua"><code class="sourceCode lua"><span class="kw">local</span> ok<span class="ot">,</span> doc <span class="ot">=</span> <span class="fu">pcall</span><span class="ot">(</span>heka_json<span class="ot">.</span>parse_message<span class="ot">,</span> <span class="st">&quot;Fields[myjson]&quot;</span><span class="ot">)</span>
+<span class="fu">assert</span><span class="ot">(</span>ok<span class="ot">,</span> doc<span class="ot">)</span></code></pre></div>
+<p><em>Arguments</em></p>
+<ul>
+<li>heka_stream_reader (userdata) - require only for Input plugins since there is no active message available.</li>
+<li>variableName (string)</li>
+<li>Payload</li>
+<li>Fields[<em>name</em>]</li>
+<li>fieldIndex (unsigned) - optional, only used in combination with the Fields variableName use to retrieve a specific instance of a repeated field name; zero indexed</li>
+<li>arrayIndex (unsigned) - optional, only used in combination with the Fields variableName use to retrieve a specific element out of a field containing an array; zero indexed</li>
+</ul>
+<p><em>Return</em></p>
+<ul>
+<li>doc (userdata) - Heka JSON document or an error is thrown</li>
+</ul>
+<h2 id="heka-json-document-api-methods">Heka JSON Document API Methods</h2>
+<h3 id="validate">validate</h3>
+<p>Checks that the JSON document conforms to the specified schema.</p>
+<div class="sourceCode"><pre class="sourceCode lua"><code class="sourceCode lua"><span class="kw">local</span> ok<span class="ot">,</span> err <span class="ot">=</span> doc:validate<span class="ot">(</span>schema<span class="ot">)</span>
+<span class="fu">assert</span><span class="ot">(</span>ok<span class="ot">,</span> err<span class="ot">)</span></code></pre></div>
+<p><em>Arguments</em></p>
+<ul>
+<li>heka_schema (userdata) - a compiled schema to validate against</li>
+</ul>
+<p><em>Return</em></p>
+<ul>
+<li>ok (bool) - true if valid</li>
+<li>err (string) - error message on failure</li>
+</ul>
+<h3 id="find">find</h3>
+<p>Searches for and returns a value in the JSON structure.</p>
+<div class="sourceCode"><pre class="sourceCode lua"><code class="sourceCode lua"><span class="kw">local</span> v <span class="ot">=</span> doc:find<span class="ot">(</span><span class="st">&quot;obj&quot;</span><span class="ot">,</span> <span class="st">&quot;arr&quot;</span><span class="ot">,</span> <span class="dv">0</span><span class="ot">,</span> <span class="st">&quot;foo&quot;</span><span class="ot">)</span>
+<span class="fu">assert</span><span class="ot">(</span>v<span class="ot">,</span> <span class="st">&quot;not found&quot;</span><span class="ot">)</span></code></pre></div>
+<p><em>Arguments</em></p>
+<ul>
+<li>value (lightuserdata) - optional, when not specified the function is applied to document</li>
+<li>key (string, number) - object key, or array index</li>
+<li>keyN (string, number) - final object key, or array index</li>
+</ul>
+<p><em>Return</em></p>
+<ul>
+<li>value (lightuserdata) - handle to be passed to other methods, nil if not found</li>
+</ul>
+<h3 id="remove">remove</h3>
+<p>Searches for and NULL's out the resulting value in the JSON structure returning the extracted Heka JSON document.</p>
+<div class="sourceCode"><pre class="sourceCode lua"><code class="sourceCode lua"><span class="kw">local</span> rv <span class="ot">=</span> doc:<span class="fu">remove</span><span class="ot">(</span><span class="st">&quot;obj&quot;</span><span class="ot">,</span> <span class="st">&quot;arr&quot;</span><span class="ot">)</span>
+<span class="fu">assert</span><span class="ot">(</span>rv<span class="ot">,</span> <span class="st">&quot;not found&quot;</span><span class="ot">)</span>
+rv:size<span class="ot">()</span> <span class="co">-- number of elements in the extracted array</span></code></pre></div>
+<p><em>Arguments</em></p>
+<ul>
+<li>value (lightuserdata) - optional, when not specified the function is applied to document</li>
+<li>key (string, number) - object key, or array index</li>
+<li>keyN (string, number) - final object key, or array index</li>
+</ul>
+<p><em>Return</em></p>
+<ul>
+<li>doc (userdata) - the object removed from the original JSON or nil</li>
+</ul>
+<h3 id="value">value</h3>
+<p>Returns the primitive value of the JSON element.</p>
+<div class="sourceCode"><pre class="sourceCode lua"><code class="sourceCode lua"><span class="kw">local</span> v <span class="ot">=</span> doc:find<span class="ot">(</span><span class="st">&quot;obj&quot;</span><span class="ot">,</span> <span class="st">&quot;arr&quot;</span><span class="ot">,</span> <span class="dv">0</span><span class="ot">,</span> <span class="st">&quot;foo&quot;</span><span class="ot">)</span>
+<span class="kw">local</span> str <span class="ot">=</span> doc:value<span class="ot">(</span>v<span class="ot">)</span>
+<span class="fu">assert</span><span class="ot">(</span><span class="st">&quot;bar&quot;</span> <span class="ot">==</span> str<span class="ot">,</span> <span class="fu">tostring</span><span class="ot">(</span>str<span class="ot">))</span></code></pre></div>
+<p><em>Arguments</em></p>
+<ul>
+<li>value (lightuserdata, nil) - optional, when not specified the function is applied to document (accepts nil for easier nesting without having to test the inner expression) e.g., str = doc:value(doc:find(&quot;foo&quot;)) or &quot;my default&quot;</li>
+</ul>
+<p><em>Return</em></p>
+<ul>
+<li>primitive - string, number, bool, nil or throws an error if not convertable (object, array)</li>
+</ul>
+<h3 id="type">type</h3>
+<p>Returns the type of the value in the JSON structure.</p>
+<div class="sourceCode"><pre class="sourceCode lua"><code class="sourceCode lua"><span class="kw">local</span> t <span class="ot">=</span> doc:<span class="fu">type</span><span class="ot">()</span>
+<span class="fu">assert</span><span class="ot">(</span>t <span class="ot">==</span> <span class="st">&quot;object&quot;</span><span class="ot">,</span> t<span class="ot">)</span></code></pre></div>
+<p><em>Arguments</em></p>
+<ul>
+<li>value (lightuserdata, nil) - optional, when not specified the function is applied to document (accepts nil for easier nesting without having to test the inner expression)</li>
+</ul>
+<p><em>Return</em></p>
+<ul>
+<li>type (string, nil) - &quot;string&quot;, &quot;number&quot;, &quot;boolean&quot;, &quot;object&quot;, &quot;array&quot; or &quot;null&quot;</li>
+</ul>
+<h3 id="iter">iter</h3>
+<p>Retrieves an interator function for an object/array.</p>
+<div class="sourceCode"><pre class="sourceCode lua"><code class="sourceCode lua"><span class="kw">local</span> v <span class="ot">=</span> doc:find<span class="ot">(</span><span class="st">&quot;obj&quot;</span><span class="ot">,</span> <span class="st">&quot;arr&quot;</span><span class="ot">)</span>
+<span class="kw">for</span> i<span class="ot">,</span>v <span class="kw">in</span> doc:iter<span class="ot">(</span>v<span class="ot">)</span> <span class="kw">do</span>
+<span class="co">-- ...</span>
+<span class="kw">end</span></code></pre></div>
+<p><em>Arguments</em></p>
+<ul>
+<li>value (lightuserdata, nil) - optional, when not specified the function is applied to document (accepts nil for API consistency)</li>
+</ul>
+<p><em>Return</em></p>
+<ul>
+<li>iter (function, nil) - iterator function returning an index/value for arrays or a key/value for objects. Throws an error on primitive types.</li>
+</ul>
+<h3 id="size">size</h3>
+<p>Returns the size of the value.</p>
+<div class="sourceCode"><pre class="sourceCode lua"><code class="sourceCode lua"><span class="kw">local</span> v <span class="ot">=</span> doc:find<span class="ot">(</span><span class="st">&quot;obj&quot;</span><span class="ot">,</span> <span class="st">&quot;arr&quot;</span><span class="ot">)</span>
+<span class="kw">local</span> n <span class="ot">=</span> doc:size<span class="ot">(</span>v<span class="ot">)</span></code></pre></div>
+<p><em>Arguments</em></p>
+<ul>
+<li>value (lightuserdata, nil) - optional, when not specified the function is applied to document (accepts nil for easier nesting without having to test the inner expression)</li>
+</ul>
+<p><em>Return</em></p>
+<ul>
+<li>size (number, nil) - Number of element in an array/object or the length of the string. Throws an error on numeric, boolean and null types.</li>
+</ul>
+<h3 id="make_field">make_field</h3>
+<p>Helper function to wrap the lightuserdata so it can be used in an inject_message field.</p>
+<div class="sourceCode"><pre class="sourceCode lua"><code class="sourceCode lua"><span class="kw">local</span> msg <span class="ot">=</span> <span class="ot">{</span>Fields <span class="ot">=</span> <span class="ot">{}}</span>
+<span class="kw">local</span> v <span class="ot">=</span> doc:find<span class="ot">(</span><span class="st">&quot;obj&quot;</span><span class="ot">,</span> <span class="st">&quot;arr&quot;</span><span class="ot">)</span>
+msg<span class="ot">.</span>Fields<span class="ot">.</span>array <span class="ot">=</span> doc:make_field<span class="ot">(</span>v<span class="ot">)</span>  <span class="co">-- set array to the JSON string representation of &quot;arr&quot;</span>
+inject_message<span class="ot">(</span>msg<span class="ot">)</span></code></pre></div>
+<p><em>Arguments</em></p>
+<ul>
+<li>value (lightuserdata, nil) - optional, when not specified the function is applied to document (accepts nil for easier nesting without having to test the inner expression)</li>
+</ul>
+<p><em>Return</em></p>
+<ul>
+<li>field (table, nil) - i.e., <code>{value = v, userdata = doc}</code></li>
+</ul>
+</div>
+</body>
+</html>

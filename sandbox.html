@@ -1,0 +1,256 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta name="generator" content="pandoc" />
+  <title></title>
+  <style type="text/css">code{white-space: pre;}</style>
+  <style type="text/css">
+div.sourceCode { overflow-x: auto; }
+table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
+  margin: 0; padding: 0; vertical-align: baseline; border: none; }
+table.sourceCode { width: 100%; line-height: 100%; }
+td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; color: #aaaaaa; border-right: 1px solid #aaaaaa; }
+td.sourceCode { padding-left: 5px; }
+code > span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code > span.dt { color: #902000; } /* DataType */
+code > span.dv { color: #40a070; } /* DecVal */
+code > span.bn { color: #40a070; } /* BaseN */
+code > span.fl { color: #40a070; } /* Float */
+code > span.ch { color: #4070a0; } /* Char */
+code > span.st { color: #4070a0; } /* String */
+code > span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code > span.ot { color: #007020; } /* Other */
+code > span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code > span.fu { color: #06287e; } /* Function */
+code > span.er { color: #ff0000; font-weight: bold; } /* Error */
+code > span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+code > span.cn { color: #880000; } /* Constant */
+code > span.sc { color: #4070a0; } /* SpecialChar */
+code > span.vs { color: #4070a0; } /* VerbatimString */
+code > span.ss { color: #bb6688; } /* SpecialString */
+code > span.im { } /* Import */
+code > span.va { color: #19177c; } /* Variable */
+code > span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code > span.op { color: #666666; } /* Operator */
+code > span.bu { } /* BuiltIn */
+code > span.ex { } /* Extension */
+code > span.pp { color: #bc7a00; } /* Preprocessor */
+code > span.at { color: #7d9029; } /* Attribute */
+code > span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code > span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code > span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+  </style>
+  <link rel="stylesheet" href="/lua_sandbox/docs.css" type="text/css" />
+</head>
+<body>
+<div id="title">Lua Sandbox Library (0.20.0)<hr/></div>
+<div class="menu">
+        <ul>
+            <li><a href="/lua_sandbox/index.html">Overview</a></li>
+        </ul>
+        <ul>
+            <li><a href="/lua_sandbox/sandbox.html">Generic Sandbox</a></li>
+        </ul>
+        <ul>
+            <li><a href="/lua_sandbox/heka/index.html">Heka Sandbox</a></li>
+        <ul>
+            <li><a href="/lua_sandbox/heka/analysis.html">Analysis Interface</a></li>
+            <li><a href="/lua_sandbox/heka/input.html">Input Interface</a></li>
+            <li><a href="/lua_sandbox/heka/output.html">Output Interface</a></li>
+        </ul>
+        </ul>
+        <ul>
+           <li><a href="/lua_sandbox/cli/index.html">Command Line Tools</a></li>
+        </ul>
+        <ul>
+            <li><a href="/lua_sandbox/doxygen/index.html">Source Documentation</a></li>
+        </ul>
+        <ul>
+            <li>C Modules</li>
+            <ul>
+                <li><a href="https://github.com/mozilla-services/lua_bloom_filter/blob/master/README.md">bloom_filter</a></li>
+                <li><a href="https://github.com/mozilla-services/lua_circular_buffer/blob/master/README.md">circular_buffer</a></li>
+                <li><a href="http://www.kyne.com.au/~mark/software/lua-cjson-manual.html">cjson</a></li>
+                <li><a href="https://github.com/mozilla-services/lua_cuckoo_filter/blob/master/README.md">cuckoo_filter</a></li>
+                <li><a href="https://github.com/mozilla-services/lua_hyperloglog/blob/master/README.md">hyperloglog</a></li>
+                <li><a href="http://www.inf.puc-rio.br/~roberto/lpeg/lpeg.html">lpeg</a></li>
+                <li><a href="http://www.inf.puc-rio.br/~roberto/lpeg/re.html">re</a></li>
+                <li><a href="https://github.com/trink/symtseries/blob/master/README.md">sax</a></li>
+                <li><a href="http://www.inf.puc-rio.br/~roberto/struct/">struct</a></li>
+            </ul>
+        </ul>
+        <ul>
+<li><a href="/lua_sandbox/modules/index.html">modules</a></li>
+<ul>
+<li><a href="/lua_sandbox/modules/heka/index.html">heka</a></li>
+<ul>
+<li><a href="/lua_sandbox/modules/heka/elasticsearch/index.html">elasticsearch</a></li>
+<ul>
+<li><a href="/lua_sandbox/modules/heka/elasticsearch/payload.html">payload</a></li>
+</ul>
+<li><a href="/lua_sandbox/modules/heka/elasticsearch.html">elasticsearch</a></li>
+<li><a href="/lua_sandbox/modules/heka/msg_interpolate.html">msg_interpolate</a></li>
+<li><a href="/lua_sandbox/modules/heka/util.html">util</a></li>
+</ul>
+<li><a href="/lua_sandbox/modules/lpeg/index.html">lpeg</a></li>
+<ul>
+<li><a href="/lua_sandbox/modules/lpeg/cbufd.html">cbufd</a></li>
+<li><a href="/lua_sandbox/modules/lpeg/common_log_format.html">common_log_format</a></li>
+<li><a href="/lua_sandbox/modules/lpeg/date_time.html">date_time</a></li>
+<li><a href="/lua_sandbox/modules/lpeg/ip_address.html">ip_address</a></li>
+<li><a href="/lua_sandbox/modules/lpeg/mysql.html">mysql</a></li>
+<li><a href="/lua_sandbox/modules/lpeg/postfix.html">postfix</a></li>
+<li><a href="/lua_sandbox/modules/lpeg/syslog.html">syslog</a></li>
+<li><a href="/lua_sandbox/modules/lpeg/syslog_message.html">syslog_message</a></li>
+</ul>
+<li><a href="/lua_sandbox/modules/lsb/index.html">lsb</a></li>
+<ul>
+<li><a href="/lua_sandbox/modules/lsb/util.html">util</a></li>
+</ul>
+</ul>
+</ul>
+<ul>
+<li><a href="/lua_sandbox/sandboxes/index.html">sandboxes</a></li>
+<ul>
+<li><a href="/lua_sandbox/sandboxes/heka/index.html">heka</a></li>
+<ul>
+<li><a href="/lua_sandbox/sandboxes/heka/analysis/index.html">analysis</a></li>
+<ul>
+<li><a href="/lua_sandbox/sandboxes/heka/analysis/throughput.html">throughput</a></li>
+</ul>
+<li><a href="/lua_sandbox/sandboxes/heka/input/index.html">input</a></li>
+<ul>
+<li><a href="/lua_sandbox/sandboxes/heka/input/heka_kafka.html">heka_kafka</a></li>
+<li><a href="/lua_sandbox/sandboxes/heka/input/heka_stdin.html">heka_stdin</a></li>
+<li><a href="/lua_sandbox/sandboxes/heka/input/heka_tcp.html">heka_tcp</a></li>
+<li><a href="/lua_sandbox/sandboxes/heka/input/syslog_udp.html">syslog_udp</a></li>
+</ul>
+<li><a href="/lua_sandbox/sandboxes/heka/output/index.html">output</a></li>
+<ul>
+<li><a href="/lua_sandbox/sandboxes/heka/output/debug.html">debug</a></li>
+<li><a href="/lua_sandbox/sandboxes/heka/output/elasticsearch_bulk_api.html">elasticsearch_bulk_api</a></li>
+<li><a href="/lua_sandbox/sandboxes/heka/output/heka_kafka.html">heka_kafka</a></li>
+<li><a href="/lua_sandbox/sandboxes/heka/output/heka_log_rolling.html">heka_log_rolling</a></li>
+<li><a href="/lua_sandbox/sandboxes/heka/output/heka_s3_partition.html">heka_s3_partition</a></li>
+<li><a href="/lua_sandbox/sandboxes/heka/output/heka_tcp.html">heka_tcp</a></li>
+<li><a href="/lua_sandbox/sandboxes/heka/output/heka_tcp_matcher.html">heka_tcp_matcher</a></li>
+<li><a href="/lua_sandbox/sandboxes/heka/output/inject_payload.html">inject_payload</a></li>
+</ul>
+</ul>
+</ul>
+</ul>
+    </div>
+    <div class="main-content">
+<h1 id="generic-sandbox-interface">Generic Sandbox Interface</h1>
+<h2 id="configuration">Configuration</h2>
+<ul>
+<li><strong>output_limit</strong> - the largest output string an input or analysis plugin can inject into the host (bytes, default 64KiB)</li>
+<li><strong>memory_limit</strong> - the maximum amount of memory a plugin can use before being terminated (bytes, default 8MiB)</li>
+<li><strong>instruction_limit</strong> - the maximum number of Lua instructions a plugin can execute in a single API function call (count, default 1MM)</li>
+<li><strong>path</strong> - The path used by require to search for a Lua loader. See <a href="http://www.lua.org/manual/5.1/manual.html#pdf-package.loaders">package loaders</a> for the path syntax. By default no paths are set in the sandbox and everything has been moved to a sandbox configuration table.</li>
+<li><strong>cpath</strong> - The path used by require to search for a C loader (same notes as above)</li>
+<li><p><strong>disabled_modules</strong> - Hash specifying which modules should be completely inaccessible. The existence of the key in the table will disable the module.</p>
+<div class="sourceCode"><pre class="sourceCode lua"><code class="sourceCode lua">disabled_modules <span class="ot">=</span> <span class="ot">{</span>io <span class="ot">=</span> <span class="dv">1</span><span class="ot">}</span></code></pre></div></li>
+<li><p><strong>remove_entries</strong> - Hash specifying which functions within a module should be inaccessible.</p>
+<div class="sourceCode"><pre class="sourceCode lua"><code class="sourceCode lua">remove_entries <span class="ot">=</span> <span class="ot">{</span>
+os <span class="ot">=</span> <span class="ot">{</span><span class="st">&quot;getenv&quot;</span><span class="ot">,</span> <span class="st">&quot;execute&quot;</span><span class="ot">},</span>
+string <span class="ot">=</span> <span class="ot">{</span><span class="st">&quot;dump&quot;</span><span class="ot">}</span>
+<span class="ot">}</span></code></pre></div></li>
+<li><strong>log_level</strong> - Integer specifying the syslog severity level, when set to debug (7) the print function will be wired to the specified logger</li>
+<li><p><em>user defined</em> any other variable (string, bool, number, table) is passed through as-is and available via <a href="#read_config">read_config</a></p></li>
+</ul>
+<h2 id="lua-functions-exposed-to-c-by-the-core-sandbox">Lua functions exposed to C by the core sandbox</h2>
+<p>There are no functions exposed by default, see lsb_pcall_setup() and lsb_pcall_teardown() when defining an API.</p>
+<h2 id="functions-exposed-to-lua-by-the-core-sandbox">Functions exposed to Lua by the core sandbox</h2>
+<h3 id="require">require</h3>
+<p>By default only the base library is loaded additional libraries must be loaded with require().</p>
+<p><em>Arguments</em></p>
+<ul>
+<li>libraryName (string)</li>
+</ul>
+<p><em>Return</em></p>
+<ul>
+<li>a table - For non user provided libraries the table is also globally registered with the library name. User provided libraries may implement there own semantics i.e. the grammar libraries return a table but do not globally register the table name (see the individual module documentation for the correct usage).</li>
+</ul>
+<p><em>Notes</em></p>
+<p>The following modules have been modified, as described, for use in the sandbox.</p>
+<ul>
+<li><a href="http://www.lua.org/manual/5.1/manual.html#5.1">base library</a>
+<ul>
+<li>The require() function has been modified to not expose any of the package table to the sandbox.</li>
+</ul></li>
+<li><a href="http://www.kyne.com.au/~mark/software/lua-cjson-manual.html">cjson</a> JSON parser with the following modifications:
+<ul>
+<li>Loads the cjson module in a global cjson table</li>
+<li>The encode buffer is limited to the sandbox output_limit.</li>
+<li>The decode buffer will be roughly limited to one half of the sandbox memory_limit.</li>
+<li>The NULL value is not decoded to cjson.null it is simply discarded. If the original behavior is desired use cjson.decode_null(true) to enable NULL decoding.</li>
+<li>The new() function has been disabled so only a single cjson parser can be created.</li>
+<li>The encode_keep_buffer() function has been disabled (the buffer is always reused).</li>
+</ul></li>
+<li><a href="http://www.lua.org/manual/5.1/manual.html#5.8">os</a>
+<ul>
+<li>The local timezone is set to UTC in all sandboxes.</li>
+</ul></li>
+</ul>
+<h3 id="read_config">read_config</h3>
+<p>Provides access to the sandbox configuration variables.</p>
+<p><em>Arguments</em></p>
+<ul>
+<li>key (string) - configuration key name</li>
+</ul>
+<p><em>Return</em></p>
+<ul>
+<li>value (string, number, bool, table)</li>
+</ul>
+<h3 id="output">output</h3>
+<p>Receives any number of arguments and appends data to the output buffer, which cannot exceed the output_limit configuration parameter. See lsb_get_output() to connect the output to the host application.</p>
+<p><em>Arguments</em></p>
+<ul>
+<li>arg (number, string, bool, nil, userdata implementing output support) - Lua variable or literal to be appended the output buffer</li>
+</ul>
+<p><em>Return</em></p>
+<ul>
+<li>none</li>
+</ul>
+<h3 id="print">print</h3>
+<p>Receives any number of arguments and sends a debug message to the host's logger function as a tab delimited message. The function clears and then uses the output buffer so if pending output has been queued and not flushed it will be lost (the same output_limit restrictions apply). Non-printable characters are replaced with spaces to preserve the host's log integrity and any embedded NULs terminate each argument.</p>
+<p><em>Arguments</em></p>
+<ul>
+<li>arg (anything that can be converted to a string with the tostring function)</li>
+</ul>
+<p><em>Return</em></p>
+<ul>
+<li>none</li>
+</ul>
+<p><strong>Note:</strong> To extend the function set exposed to Lua see lsb_add_function()</p>
+<h2 id="how-to-interact-with-the-sandbox-creating-an-api">How to interact with the sandbox (creating an API)</h2>
+<p>The best place to start is with some examples:</p>
+<h3 id="unit-test-api">Unit Test API</h3>
+<p><a href="https://github.com/mozilla-services/lua_sandbox/blob/master/src/test/test_luasandbox.c">Unit Test Source Code</a></p>
+<h4 id="lua-functions-exposed-to-c">Lua Functions Exposed to C</h4>
+<ul>
+<li>int <strong>process</strong> (double)
+<ul>
+<li>exposes a process function that takes a test case number as its argument and returns and integer result code.</li>
+</ul></li>
+<li>void <strong>report</strong> (double)
+<ul>
+<li>exposes a report function that takes a test case number as its argument and returns nothing.</li>
+</ul></li>
+</ul>
+<h4 id="c-functions-exposed-to-lua">C Functions Exposed to Lua</h4>
+<ul>
+<li>void <strong>write_output</strong> (optionalArg1, optionalArg2, optionalArgN)
+<ul>
+<li>captures whatever is in the output buffer for use by the host application, appending any optional arguments (optional arguments have the same restriction as output).</li>
+</ul></li>
+</ul>
+<h3 id="heka-sandbox">Heka Sandbox</h3>
+<p><a href="https://github.com/mozilla-services/lua_sandbox/blob/master/include/luasandbox/heka/sandbox.h">Heka Sandbox Source Code</a></p>
+</div>
+</body>
+</html>
