@@ -3,7 +3,7 @@
 [Available Analysis Sandboxes](/lua_sandbox/sandboxes/heka/analysis/index.html)
 
 ## Recommendations
-Since he sandbox does not run in isolation there are some expectations of how
+Since the sandbox does not run in isolation there are some expectations of how
 the host infrastructure behaves.  The current recommendation are based on the
 Hindsight reference implementation.
 
@@ -110,7 +110,7 @@ Converts a Heka protobuf encoded message string into a Lua table or throws an er
 Creates a new Heka protocol buffer message using the contents of the specified Lua table
 (overwriting whatever is in the payload buffer). `Logger` and `Hostname` are set by
 the infrastructure using the corresponding configuration setting and cannot be overridden
-by the plugin.
+by the plugin unless `all_values = true` is set in the sandbox configuration.
 
 *Arguments*
 * msg ([Heka message table](message.html))
