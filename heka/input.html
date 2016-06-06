@@ -46,7 +46,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
   <link rel="stylesheet" href="/lua_sandbox/docs.css" type="text/css" />
 </head>
 <body>
-<div id="title">Lua Sandbox Library (0.20.0)<hr/></div>
+<div id="title">Lua Sandbox Library (0.20.1)<hr/></div>
 <div class="menu">
         <ul>
             <li><a href="/lua_sandbox/index.html">Overview</a></li>
@@ -147,7 +147,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <h1 id="input-sandbox-interface">Input Sandbox Interface</h1>
 <p><a href="/lua_sandbox/sandboxes/heka/input/index.html">Available Input Sandboxes</a></p>
 <h2 id="recommendations">Recommendations</h2>
-<p>Since he sandbox does not run in isolation there are some expectations of how the host infrastructure behaves. The current recommendation are based on the Hindsight reference implementation.</p>
+<p>Since the sandbox does not run in isolation there are some expectations of how the host infrastructure behaves. The current recommendation are based on the Hindsight reference implementation.</p>
 <h2 id="disabled-functionality">Disabled Functionality</h2>
 <ul>
 <li><a href="http://www.lua.org/manual/5.1/manual.html#5.1">base library</a>
@@ -256,13 +256,35 @@ Payload     <span class="ot">=</span> <span class="st">&quot;&quot;</span><span 
 <li>The <code>instruction_limit</code> configuration <strong>MUST</strong> be set to zero.</li>
 </ul>
 <h4 id="example-of-a-heka-protobuf-stdin-reader">Example of a Heka protobuf stdin reader</h4>
-<p>```lua -- This Source Code Form is subject to the terms of the Mozilla Public -- License, v. 2.0. If a copy of the MPL was not distributed with this -- file, You can obtain one at <a href="http://mozilla.org/MPL/2.0/" class="uri">http://mozilla.org/MPL/2.0/</a>.</p>
-<p>--[[ Reads a Heka protobuf stream from the stdin file handle</p>
-<p>-- .cfg instruction_limit = 0</p>
-<p>--]]</p>
-<p>local stdin = require &quot;io&quot;.stdin require &quot;heka_stream_reader&quot;</p>
-<p>local hsr = heka_stream_reader.new(read_config(&quot;Logger&quot;))</p>
-<p>function process_message() local found, consumed, read repeat repeat found, consumed, read = hsr:find_message(stdin) if found then inject_message(hsr) end until not found until read == 0 return 0 end ``'</p>
+<div class="sourceCode"><pre class="sourceCode lua"><code class="sourceCode lua"><span class="co">-- This Source Code Form is subject to the terms of the Mozilla Public</span>
+<span class="co">-- License, v. 2.0. If a copy of the MPL was not distributed with this</span>
+<span class="co">-- file, You can obtain one at http://mozilla.org/MPL/2.0/.</span>
+
+<span class="co">--[[</span>
+<span class="co">Reads a Heka protobuf stream from the stdin file handle</span>
+
+<span class="co">-- .cfg</span>
+<span class="co">instruction_limit = 0</span>
+
+<span class="co">--]]</span>
+
+<span class="kw">local</span> stdin <span class="ot">=</span> <span class="fu">require</span> <span class="st">&quot;io&quot;</span><span class="ot">.</span>stdin
+<span class="fu">require</span> <span class="st">&quot;heka_stream_reader&quot;</span>
+
+<span class="kw">local</span> hsr <span class="ot">=</span> heka_stream_reader<span class="ot">.</span>new<span class="ot">(</span>read_config<span class="ot">(</span><span class="st">&quot;Logger&quot;</span><span class="ot">))</span>
+
+<span class="kw">function</span> process_message<span class="ot">()</span>
+    <span class="kw">local</span> found<span class="ot">,</span> consumed<span class="ot">,</span> <span class="fu">read</span>
+    <span class="kw">repeat</span>
+        <span class="kw">repeat</span>
+            found<span class="ot">,</span> consumed<span class="ot">,</span> <span class="fu">read</span> <span class="ot">=</span> hsr:find_message<span class="ot">(</span>stdin<span class="ot">)</span>
+            <span class="kw">if</span> found <span class="kw">then</span>
+                inject_message<span class="ot">(</span>hsr<span class="ot">)</span>
+            <span class="kw">end</span>
+        <span class="kw">until</span> <span class="kw">not</span> found
+    <span class="kw">until</span> <span class="fu">read</span> <span class="ot">==</span> <span class="dv">0</span>
+    <span class="kw">return</span> <span class="dv">0</span>
+<span class="kw">end</span></code></pre></div>
 </div>
 </body>
 </html>
