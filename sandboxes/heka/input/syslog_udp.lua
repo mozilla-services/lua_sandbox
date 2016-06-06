@@ -22,7 +22,7 @@ instruction_limit   = 0
 ```
 --]]
 
-local syslog = require "syslog"
+local syslog = require "lpeg.syslog"
 local socket = require "socket"
 
 local address       = read_config("address") or "127.0.0.1"

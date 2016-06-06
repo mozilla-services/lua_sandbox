@@ -7,6 +7,7 @@
 /** @brief lua_sandbox Heka file stream cat @file */
 
 #include <ctype.h>
+#include <limits.h>
 #include <math.h>
 #include <stdarg.h>
 #include <stdbool.h>
@@ -95,7 +96,11 @@ static void output_text(lsb_heka_message *msg)
   fprintf(stdout, ":Severity: %d\n", msg->severity);
   output_cs(":Payload", &msg->payload, true);
   output_cs(":EnvVersion", &msg->env_version, true);
-  fprintf(stdout, ":Pid: %d\n", msg->pid);
+  if (msg->pid == INT_MIN) {
+    fprintf(stdout, ":Pid: <nil>\n");
+  } else {
+    fprintf(stdout, ":Pid: %d\n", msg->pid);
+  }
   output_cs(":Hostname", &msg->hostname, true);
   fprintf(stdout, ":Fields:\n");
   for (int i = 0; i < msg->fields_len; ++i) {

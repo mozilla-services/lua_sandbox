@@ -3,7 +3,7 @@
 [Available Analysis Sandboxes](/lua_sandbox/sandboxes/heka/analysis/index.html)
 
 ## Recommendations
-Since he sandbox does not run in isolation there are some expectations of how
+Since the sandbox does not run in isolation there are some expectations of how
 the host infrastructure behaves.  The current recommendation are based on the
 Hindsight reference implementation.
 

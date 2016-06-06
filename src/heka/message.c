@@ -24,12 +24,7 @@
 #include "luasandbox/util/output_buffer.h"
 #include "luasandbox/util/protobuf.h"
 
-/**
- * Adds missing headers specified in the configuration to the message output.
- *
- * @param lua Pointer the Lua state.
- * @param idx Lua stack index of the message table.
- */
+
 static void set_missing_headers(lua_State *lua, int idx, lsb_heka_sandbox *hsb)
 {
   lua_getfield(lua, idx, LSB_LOGGER);
