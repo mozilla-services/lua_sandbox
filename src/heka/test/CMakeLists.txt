@@ -4,7 +4,7 @@
 
 configure_file(test.h.in test.h ESCAPE_QUOTES)
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
-set(LIBRARY_PATHS "${CMAKE_BINARY_DIR}/ep_base/${LIB_DIR};${CMAKE_BINARY_DIR}/src/util;${CMAKE_BINARY_DIR}/src;${CMAKE_BINARY_DIR}/src/heka")
+set(LIBRARY_PATHS "${CMAKE_BINARY_DIR}/ep_base/lib;${CMAKE_BINARY_DIR}/src/util;${CMAKE_BINARY_DIR}/src;${CMAKE_BINARY_DIR}/src/heka")
 
 add_test(NAME test_move_heka_sandbox_tests COMMAND cmake -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR})
 

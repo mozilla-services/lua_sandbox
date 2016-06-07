@@ -29,5 +29,5 @@ if(LIBRTKAFKA_LIBRARY)
   target_link_libraries(luasandboxheka ${LIBRTKAFKA_LIBRARY})
 endif()
 
-install(TARGETS luasandboxheka DESTINATION ${LIB_DIR} COMPONENT core)
+install(TARGETS luasandboxheka DESTINATION ${CMAKE_INSTALL_LIBDIR} COMPONENT core)
 add_subdirectory(test)

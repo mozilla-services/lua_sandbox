@@ -9,4 +9,4 @@ if(LIBM_LIBRARY)
   target_link_libraries(lsb_heka_cat ${LIBM_LIBRARY})
 endif()
 
-install(TARGETS lsb_heka_cat DESTINATION bin COMPONENT core)
+install(TARGETS lsb_heka_cat DESTINATION ${CMAKE_INSTALL_BINDIR} COMPONENT core)

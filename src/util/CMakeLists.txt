@@ -27,6 +27,5 @@ if(ZLIB_FOUND)
   target_link_libraries(luasandboxutil ${ZLIB_LIBRARIES})
 endif()
 
-install(TARGETS luasandboxutil DESTINATION ${LIB_DIR} COMPONENT core)
+install(TARGETS luasandboxutil DESTINATION ${CMAKE_INSTALL_LIBDIR} COMPONENT core)
 add_subdirectory(test)
-

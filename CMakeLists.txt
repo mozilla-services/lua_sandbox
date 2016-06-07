@@ -7,19 +7,32 @@ project(luasandbox C CXX)
 set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "Generic Lua sandbox for dynamic data analysis")
 set(CPACK_PACKAGE_VERSION_MAJOR 0)
 set(CPACK_PACKAGE_VERSION_MINOR 20)
-set(CPACK_PACKAGE_VERSION_PATCH 1)
+set(CPACK_PACKAGE_VERSION_PATCH 2)
 set(CPACK_PACKAGE_CONTACT "Mike Trinkala <trink@mozilla.com>")
+
+include(GNUInstallDirs)
+if(WIN32)
+  set(INSTALL_CMAKE_DIR cmake)
+  set(CMAKE_INSTALL_LIBDIR ${CMAKE_INSTALL_BINDIR})
+else()
+  set(INSTALL_CMAKE_DIR "${CMAKE_INSTALL_LIBDIR}/${CMAKE_PROJECT_NAME}/cmake")
+endif()
 
 set(CPACK_DEB_COMPONENT_INSTALL ON)
 
 set(CPACK_RPM_PACKAGE_LICENSE "MPLv2.0")
 set(CPACK_RPM_COMPONENT_INSTALL ON)
+if("${CMAKE_SIZEOF_VOID_P}" EQUAL "8")
+  set(CPACK_RPM_PACKAGE_PROVIDES "libluasb.so.0()(64bit)")
+else()
+  set(CPACK_RPM_PACKAGE_PROVIDES "libluasb.so.0")
+endif()
 
 set(CPACK_COMPONENTS_ALL core)
 
 option(LUA_JIT "Enable LuaJIT" off)
 if(LUA_JIT)
-    add_definitions(-DLUA_JIT)
+  add_definitions(-DLUA_JIT)
 endif()
 
 find_library(LIBM_LIBRARY m)
@@ -56,24 +69,15 @@ if(HAVE_CLOCK_GETTIME)
   add_definitions(-DHAVE_CLOCK_GETTIME)
 endif()
 
-set(LIB_INSTALL_DIR lib/)
-set(INCLUDE_INSTALL_DIR include/)
-
 include_directories("${EP_BASE}/include")
-install(DIRECTORY "${CMAKE_SOURCE_DIR}/modules/" DESTINATION ${LIB_INSTALL_DIR}${PROJECT_NAME}/modules COMPONENT core)
-install(FILES "${CMAKE_SOURCE_DIR}/README.md" DESTINATION share/doc/${PROJECT_NAME} COMPONENT core)
-install(DIRECTORY "${CMAKE_SOURCE_DIR}/sandboxes/" DESTINATION share/${PROJECT_NAME}/sandboxes COMPONENT core)
-
-if(WIN32 AND NOT CYGWIN)
-  set(INSTALL_CMAKE_DIR cmake)
-else()
-  set(INSTALL_CMAKE_DIR ${LIB_INSTALL_DIR}${CMAKE_PROJECT_NAME}/cmake)
-endif()
+install(DIRECTORY "${CMAKE_SOURCE_DIR}/modules/" DESTINATION ${CMAKE_INSTALL_LIBDIR}/${PROJECT_NAME}/modules COMPONENT core)
+install(FILES "${CMAKE_SOURCE_DIR}/README.md" DESTINATION ${CMAKE_INSTALL_DOCDIR} COMPONENT core)
+install(DIRECTORY "${CMAKE_SOURCE_DIR}/sandboxes/" DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/${PROJECT_NAME}/sandboxes COMPONENT core)
 
 include(CMakePackageConfigHelpers)
 configure_package_config_file(cmake/luasandboxConfig.cmake.in ${CMAKE_CURRENT_BINARY_DIR}/luasandboxConfig.cmake
                               INSTALL_DESTINATION ${INSTALL_CMAKE_DIR}
-                              PATH_VARS INCLUDE_INSTALL_DIR LIB_INSTALL_DIR)
+                              PATH_VARS CMAKE_INSTALL_INCLUDEDIR CMAKE_INSTALL_LIBDIR)
 write_basic_package_version_file(${CMAKE_CURRENT_BINARY_DIR}/luasandboxConfigVersion.cmake
                                  VERSION ${CPACK_PACKAGE_VERSION_MAJOR}.${CPACK_PACKAGE_VERSION_MINOR}.${CPACK_PACKAGE_VERSION_PATCH}
                                  COMPATIBILITY AnyNewerVersion ) # todo change to SameMajorVersion after 1.0

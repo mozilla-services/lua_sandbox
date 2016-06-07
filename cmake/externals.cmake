@@ -6,10 +6,6 @@ include(ExternalProject)
 string(REPLACE ")$" "|INSTALL_ARGS)$" _ep_keywords_ExternalProject_Add ${_ep_keywords_ExternalProject_Add})
 
 get_filename_component(GIT_PATH ${GIT_EXECUTABLE} PATH)
-find_program(PATCH_EXECUTABLE patch HINTS "${GIT_PATH}" "${GIT_PATH}/../bin")
-if (NOT PATCH_EXECUTABLE)
-   message(FATAL_ERROR "patch not found")
-endif()
 
 set(EP_BASE "${CMAKE_BINARY_DIR}/ep_base")
 set_property(DIRECTORY PROPERTY EP_BASE ${EP_BASE})
@@ -23,43 +19,6 @@ endif()
 
 if (LUA_JIT)
     message(FATAL_ERROR, "LuaJIT support has not been added back in yet, issue #66")
-    set(LUA_PROJECT "luajit-2_0_2")
-    if(MSVC)
-        externalproject_add(
-            ${LUA_PROJECT}
-            BUILD_IN_SOURCE 1
-            URL http://luajit.org/download/LuaJIT-2.0.2.tar.gz
-            URL_MD5 112dfb82548b03377fbefbba2e0e3a5b
-            PATCH_COMMAND ${PATCH_EXECUTABLE} -p1 < ${CMAKE_CURRENT_LIST_DIR}/luajit-2_0_2.patch
-            CONFIGURE_COMMAND ""
-            BUILD_COMMAND ${CMAKE_COMMAND} -E chdir src msvcbuild.bat
-            INSTALL_COMMAND ${CMAKE_COMMAND} -E copy src/lua.dll ${EP_BASE}/lib/lua.dll
-            COMMAND ${CMAKE_COMMAND} -E copy src/lua.lib ${EP_BASE}/lib/lua.lib
-            COMMAND ${CMAKE_COMMAND} -E copy src/lauxlib.h "${LUA_INCLUDE_DIR}/lauxlib.h"
-            COMMAND ${CMAKE_COMMAND} -E copy src/luaconf.h "${LUA_INCLUDE_DIR}/luaconf.h"
-            COMMAND ${CMAKE_COMMAND} -E copy src/lua.h "${LUA_INCLUDE_DIR}/lua.h"
-            COMMAND ${CMAKE_COMMAND} -E copy src/luajit.h "${LUA_INCLUDE_DIR}/luajit.h"
-            COMMAND ${CMAKE_COMMAND} -E copy src/lualib.h "${LUA_INCLUDE_DIR}/lualib.h"
-        )
-    elseif(UNIX)
-        externalproject_add(
-            ${LUA_PROJECT}
-            BUILD_IN_SOURCE 1
-            URL http://luajit.org/download/LuaJIT-2.0.2.tar.gz
-            URL_MD5 112dfb82548b03377fbefbba2e0e3a5b
-            PATCH_COMMAND ${PATCH_EXECUTABLE} -p1 < ${CMAKE_CURRENT_LIST_DIR}/luajit-2_0_2.patch
-            CONFIGURE_COMMAND ""
-            BUILD_COMMAND make
-            INSTALL_COMMAND ${CMAKE_COMMAND} -E copy src/libluajit.a ${EP_BASE}/lib/liblua.a
-            COMMAND ${CMAKE_COMMAND} -E copy src/lauxlib.h "${LUA_INCLUDE_DIR}/lauxlib.h"
-            COMMAND ${CMAKE_COMMAND} -E copy src/luaconf.h "${LUA_INCLUDE_DIR}/luaconf.h"
-            COMMAND ${CMAKE_COMMAND} -E copy src/lua.h "${LUA_INCLUDE_DIR}/lua.h"
-            COMMAND ${CMAKE_COMMAND} -E copy src/luajit.h "${LUA_INCLUDE_DIR}/luajit.h"
-            COMMAND ${CMAKE_COMMAND} -E copy src/lualib.h "${LUA_INCLUDE_DIR}/lualib.h"
-        )
-    else()
-        message(FATAL_ERROR "Cannot use LuaJIT with ${CMAKE_GENERATOR}")
-    endif()
 else()
     set(LUA_PROJECT "lua-5_1_5")
     externalproject_add(
@@ -69,6 +28,10 @@ else()
         CMAKE_ARGS ${SANDBOX_CMAKE_ARGS}
         INSTALL_ARGS ${INST_ARGS}
     )
+    add_library(luasb SHARED IMPORTED)
+    set_target_properties(luasb PROPERTIES IMPORTED_LOCATION "${EP_BASE}/lib/${CMAKE_SHARED_LIBRARY_PREFIX}luasb${CMAKE_SHARED_LIBRARY_SUFFIX}")
+    #install(TARGETS luasb DESTINATION ${CMAKE_INSTALL_LIBDIR} COMPONENT core OPTIONAL)
+    #http://public.kitware.com/Bug/view.php?id=14311&nbn=6
 endif()
 
 externalproject_add(
