@@ -4,6 +4,7 @@ var searchData=
   ['lsb_5fadd_5foutput_5ffunction',['lsb_add_output_function',['../luasandbox__output_8h.html#a0463a4f67f53086b7a1ece7692031f78',1,'luasandbox_output.h']]],
   ['lsb_5fadd_5fserialize_5ffunction',['lsb_add_serialize_function',['../luasandbox__serialize_8h.html#a0bb439e83f3aa082f2a282c6e1f41042',1,'luasandbox_serialize.h']]],
   ['lsb_5fclear_5fheka_5fmessage',['lsb_clear_heka_message',['../heka__message_8h.html#abb0e027fc6303ee48ac7130643110b00',1,'heka_message.h']]],
+  ['lsb_5fcrc32',['lsb_crc32',['../util_8h.html#acfbc562b26b848fa0a71e0f49b77fa95',1,'util.h']]],
   ['lsb_5fcreate',['lsb_create',['../luasandbox_8h.html#a3d033bcccb62c1904a136a53c80fad44',1,'luasandbox.h']]],
   ['lsb_5fcreate_5fmessage_5fmatcher',['lsb_create_message_matcher',['../heka__message__matcher_8h.html#aa6227a7a3c39a8e2c239816a86783620',1,'heka_message_matcher.h']]],
   ['lsb_5fdecode_5fheka_5fmessage',['lsb_decode_heka_message',['../heka__message_8h.html#a0b66652063f23d19c18536434891e308',1,'heka_message.h']]],
@@ -72,6 +73,7 @@ var searchData=
   ['lsb_5fstop_5fsandbox',['lsb_stop_sandbox',['../luasandbox_8h.html#ad1ca2cc7289aed37b061088f453cefbb',1,'luasandbox.h']]],
   ['lsb_5fstring_5fmatch',['lsb_string_match',['../string__matcher_8h.html#aaedecc3c82746a229e542f4e6f7068a7',1,'string_matcher.h']]],
   ['lsb_5fterminate',['lsb_terminate',['../luasandbox_8h.html#ad246b90204713719fb73e3430843630c',1,'luasandbox.h']]],
+  ['lsb_5fungzip',['lsb_ungzip',['../util_8h.html#a4e4f03576b265ae0b78d18b8a4277d4a',1,'util.h']]],
   ['lsb_5fupdate_5frunning_5fstats',['lsb_update_running_stats',['../running__stats_8h.html#a9ba8d2374cd0f7dd0740f20f1b65994e',1,'running_stats.h']]],
   ['lsb_5fusage',['lsb_usage',['../luasandbox_8h.html#ac4532054101423ca69575ed996776107',1,'luasandbox.h']]],
   ['lsb_5fwrite_5fheka_5fuuid',['lsb_write_heka_uuid',['../heka__message_8h.html#ab530fe3dd496f1ca0a72bf21ef1b4ebb',1,'heka_message.h']]]
