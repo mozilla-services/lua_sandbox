@@ -1394,6 +1394,32 @@ static char* test_print_logger()
 }
 
 
+static char* test_builtin_modules()
+{
+  const char *tests[] = {
+    "lua/lsb_hash.lua",
+    "lua/lsb_compression.lua",
+    NULL
+  };
+
+  for (int i = 0; tests[i]; ++i) {
+    lsb_lua_sandbox *sb = lsb_create(NULL, tests[i], test_cfg, NULL);
+    mu_assert(sb, "lsb_create() received: NULL");
+
+    lsb_err_value ret = lsb_init(sb, NULL);
+    mu_assert(!ret, "lsb_init() received: %s", ret);
+
+    int result = process(sb, 0);
+    mu_assert(result == 0, "process() received: %d %s", result,
+              lsb_get_error(sb));
+
+    e = lsb_destroy(sb);
+    mu_assert(!e, "lsb_destroy() received: %s", e);
+  }
+  return NULL;
+}
+
+
 static char* benchmark_counter()
 {
   int iter = 10000000;
@@ -1693,6 +1719,7 @@ static char* all_tests()
   mu_run_test(test_print);
   mu_run_test(test_print_disabled);
   mu_run_test(test_print_logger);
+  mu_run_test(test_builtin_modules);
 
   mu_run_test(benchmark_counter);
   mu_run_test(benchmark_serialize);

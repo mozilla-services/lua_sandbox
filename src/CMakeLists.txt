@@ -4,6 +4,7 @@
 
 set(LUA_SANDBOX_SRC
 luasandbox.c
+luasandbox_modules.c
 luasandbox_output.c
 luasandbox_serialize.c
 )

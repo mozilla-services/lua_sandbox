@@ -11,6 +11,7 @@
 
 #include <stdbool.h>
 #include <stddef.h>
+#include <stdint.h>
 
 #include "../error.h"
 
@@ -72,10 +73,18 @@ LSB_UTIL_EXPORT unsigned long long lsb_get_time();
  */
 LSB_UTIL_EXPORT bool lsb_set_tz(const char *tz);
 
-#ifdef HAVE_ZLIB
+/**
+ * ZLIB CRC-32 checksum
+ *
+ * @param buf - array of bytes
+ * @param buf_len - length of the array
+ *
+ * @return LSB_UTIL_EXPORT unsigned checksum
+ */
+LSB_UTIL_EXPORT uint32_t lsb_crc32(const char* buf, size_t buf_len);
 
 /**
- * Ungzip the provided string into a new string
+ * ZLIB Inflate the provided string into a new string
  *
  * @param s String to ungzip
  * @param s_len Length of the string to ungzip
@@ -86,8 +95,6 @@ LSB_UTIL_EXPORT bool lsb_set_tz(const char *tz);
  */
 LSB_UTIL_EXPORT char* lsb_ungzip(const char *s, size_t s_len, size_t max_len,
                                   size_t *r_len);
-
-#endif
 
 #ifdef __cplusplus
 }

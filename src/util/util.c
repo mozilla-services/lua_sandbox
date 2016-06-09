@@ -131,6 +131,14 @@ bool lsb_set_tz(const char *tz)
 
 
 #ifdef HAVE_ZLIB
+uint32_t lsb_crc32(const char *buf, size_t buf_len)
+{
+  uint32_t crc = (uint32_t)crc32(0L, Z_NULL, 0);
+  crc = (uint32_t)crc32(crc, (const Bytef *)buf, buf_len);
+  return crc;
+}
+
+
 char* lsb_ungzip(const char *s, size_t s_len, size_t max_len, size_t *r_len)
 {
   if (!s || (max_len && s_len > max_len)) {

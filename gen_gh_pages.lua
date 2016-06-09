@@ -189,6 +189,11 @@ local function output_menu(before, after, paths, version)
             <li><a href="/lua_sandbox/doxygen/index.html">Source Documentation</a></li>
         </ul>
         <ul>
+            <li>Built-in Modules</li>
+            <ul>
+                <li><a href="lsb_compression.html">lsb_compression</a></li>
+                <li><a href="lsb_hash.html">lsb_hash</a></li>
+            </ul>
             <li>C Modules</li>
             <ul>
                 <li><a href="https://github.com/mozilla-services/lua_bloom_filter/blob/master/README.md">bloom_filter</a></li>

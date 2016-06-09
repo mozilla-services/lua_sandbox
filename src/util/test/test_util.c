@@ -6,6 +6,7 @@
 
 /** @brief lsb_util unit tests @file */
 
+#include <inttypes.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
@@ -63,6 +64,68 @@ static char* test_lsb_set_tz()
 }
 
 
+static char* test_lsb_crc32()
+{
+  uint32_t checksum = lsb_crc32(NULL, 0);
+  mu_assert(checksum == 0U, "received: %" PRIu32, checksum);
+
+  checksum = lsb_crc32("", 0);
+  mu_assert(checksum == 0U, "received: %" PRIu32, checksum);
+
+  checksum = lsb_crc32("foobar", 6);
+  mu_assert(checksum == 2666930069U, "received: %" PRIu32, checksum);
+  return NULL;
+}
+
+
+static char* test_lsb_ungzip()
+{
+  size_t alen = 200;
+  char gz[] = "\x1f\x8b\x08\x00\x00\x00\x00\x00\x00\x03\x4b\x4c\x1c\x1e\x00\x00\x58\xf0\x9a\x59\xc8\x00\x00\x00";
+
+  size_t len = 0;
+  char *ugz = lsb_ungzip(gz, sizeof(gz)-1, 0, &len);
+  mu_assert(ugz, "lsb_ungzip failed");
+  mu_assert(len == alen, "received: %" PRIuSIZE, len);
+  for (size_t i = 0; i < alen; ++i) {
+    mu_assert(ugz[i] == 'a', "pos: %" PRIuSIZE " char: %c", i, ugz[i]);
+  }
+  free(ugz);
+
+  ugz = lsb_ungzip(gz, sizeof(gz)-1, alen, &len);
+  mu_assert(ugz, "lsb_ungzip failed");
+  mu_assert(len == alen, "received: %" PRIuSIZE, len);
+  for (size_t i = 0; i < alen; ++i) {
+    mu_assert(ugz[i] == 'a', "pos: %" PRIuSIZE " char: %c", i, ugz[i]);
+  }
+  free(ugz);
+
+  ugz = lsb_ungzip(gz, sizeof(gz)-1, 199, &len);
+  if (ugz) {
+    free(ugz);
+    mu_assert(false, "output larger than max lsb_ungzip succeeded");
+  }
+
+  ugz = lsb_ungzip(NULL, 0, alen, &len);
+  if (ugz) {
+    free(ugz);
+    mu_assert(false, "NULL lsb_ungzip succeeded");
+  }
+
+  ugz = lsb_ungzip(gz, sizeof(gz)-1, sizeof(gz)-2, &len);
+  if (ugz) {
+    free(ugz);
+    mu_assert(false, "max smaller than input lsb_ungzip succeeded");
+  }
+
+  ugz = lsb_ungzip(gz, sizeof(gz)-1, (sizeof(gz)-1) * 2 - 1, &len);
+  if (ugz) {
+    free(ugz);
+    mu_assert(false, "max smaller than 2x input lsb_ungzip succeeded");
+  }
+  return NULL;
+}
+
 
 static char* benchmark_lsb_get_time()
 {
@@ -98,6 +161,8 @@ static char* all_tests()
   mu_run_test(test_lsb_lp2);
   mu_run_test(test_lsb_read_file);
   mu_run_test(test_lsb_set_tz);
+  mu_run_test(test_lsb_crc32);
+  mu_run_test(test_lsb_ungzip);
 
   mu_run_test(benchmark_lsb_get_time);
   return NULL;

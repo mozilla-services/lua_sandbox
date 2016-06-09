@@ -44,6 +44,8 @@ static const luaL_Reg preload_module_list[] = {
   { LUA_OSLIBNAME, luaopen_os },
   { LUA_STRLIBNAME, luaopen_string },
   { LUA_MATHLIBNAME, luaopen_math },
+  { LSB_HASH_MODULE, luaopen_lsb_hash },
+  { LSB_COMPRESSION_MODULE, luaopen_lsb_compression },
   { NULL, NULL }
 };
 
