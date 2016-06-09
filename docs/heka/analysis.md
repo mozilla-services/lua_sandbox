@@ -18,6 +18,8 @@ Hindsight reference implementation.
     - the entire module is inaccessible
 - [os](http://www.lua.org/manual/5.1/manual.html#5.8)
     - getenv, execute, exit, remove, rename, setlocale, tmpname
+- [lsb_compression](../lsb_compression.html)
+    - the entire module is inaccessible
     
 ## Required Lua Functions (called by the host)
 

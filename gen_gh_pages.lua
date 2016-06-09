@@ -191,8 +191,8 @@ local function output_menu(before, after, paths, version)
         <ul>
             <li>Built-in Modules</li>
             <ul>
-                <li><a href="lsb_compression.html">lsb_compression</a></li>
-                <li><a href="lsb_hash.html">lsb_hash</a></li>
+                <li><a href="/lua_sandbox/lsb_compression.html">lsb_compression</a></li>
+                <li><a href="/lua_sandbox/lsb_hash.html">lsb_hash</a></li>
             </ul>
             <li>C Modules</li>
             <ul>

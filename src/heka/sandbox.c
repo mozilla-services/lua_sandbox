@@ -348,6 +348,8 @@ static void set_restrictions(lua_State *lua, lsb_heka_sandbox *hsb)
     lua_setfield(lua, -2, "io");
     lua_pushboolean(lua, true);
     lua_setfield(lua, -2, "coroutine");
+    lua_pushboolean(lua, true);
+    lua_setfield(lua, -2, "lsb_compression");
     lua_setfield(lua, 1, "disable_modules");
     break;
   }
