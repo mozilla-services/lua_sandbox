@@ -1,0 +1,43 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+cmake_minimum_required(VERSION 3.0 FATAL_ERROR)
+project(luasec C)
+
+if(MSVC)
+    set(CMAKE_C_FLAGS           "/W3 /WX")
+    set(CMAKE_C_FLAGS_RELEASE   "/MD /O2 /Ob2")
+else()
+    set(CMAKE_C_FLAGS           "-std=gnu99 -Wall -pedantic -fPIC -D_POSIX_C_SOURCE=199309L")
+    set(CMAKE_C_FLAGS_RELEASE   "-O2")
+endif()
+
+include_directories(${LUA_SANDBOX_INCLUDE}/luasandbox ${OPENSSL_INCLUDE_DIR} ${CMAKE_SOURCE_DIR}/src)
+find_library(LUA_LIBRARY luasb PATHS ${EP_BASE}/lib NO_DEFAULT_PATH)
+
+set(INSTALL_PATH lib/lua)
+set(CMAKE_SHARED_LIBRARY_PREFIX "")
+
+set(LUASOCKET_SRC
+src/luasocket/buffer.c
+src/luasocket/io.c
+src/luasocket/timeout.c
+src/luasocket/usocket.c
+)
+add_library(luasocket STATIC ${LUASOCKET_SRC})
+target_compile_definitions(luasocket PRIVATE LUASOCKET_DEBUG)
+
+file(WRITE luasec.def "EXPORTS\nluaopen_ssl_core\nlua_open_ssl_x509\nluaopen_ssl_context\n")
+set(LUASEC_SRC
+src/context.c
+src/ssl.c
+src/x509.c
+luasec.def
+)
+
+add_library(ssl SHARED ${LUASEC_SRC})
+target_link_libraries(ssl luasocket ${LUA_LIBRARY} ${OPENSSL_LIBRARIES})
+install(TARGETS ssl DESTINATION ${INSTALL_PATH})
+install(FILES src/ssl.lua DESTINATION ${INSTALL_PATH})
+install(FILES src/https.lua DESTINATION ${INSTALL_PATH}/ssl)

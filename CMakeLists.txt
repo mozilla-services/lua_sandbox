@@ -7,7 +7,7 @@ project(luasandbox C CXX)
 set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "Generic Lua sandbox for dynamic data analysis")
 set(CPACK_PACKAGE_VERSION_MAJOR 0)
 set(CPACK_PACKAGE_VERSION_MINOR 21)
-set(CPACK_PACKAGE_VERSION_PATCH 1)
+set(CPACK_PACKAGE_VERSION_PATCH 2)
 set(CPACK_PACKAGE_CONTACT "Mike Trinkala <trink@mozilla.com>")
 
 include(GNUInstallDirs)
@@ -35,10 +35,11 @@ if(LUA_JIT)
   add_definitions(-DLUA_JIT)
 endif()
 
+option(LUA_SNAPPY "Include the Lua Snappy module (only used to support a deprecated Mozilla telemetry data format)" off)
+
 find_library(LIBM_LIBRARY m)
 
 find_package(ZLIB)
-
 if (ZLIB_FOUND)
   add_definitions(-DHAVE_ZLIB)
 endif()
@@ -47,12 +48,26 @@ find_library(LIBRTKAFKA_LIBRARY rdkafka)
 if (LIBRTKAFKA_LIBRARY)
   add_definitions(-DHAVE_KAFKA)
 else()
-  message(STATUS "The Kafka module will not be built")
+  message(STATUS "librdkafka was not found, dependent modules will not be built")
+endif()
+
+find_package(PostgreSQL)
+if (NOT PostgreSQL_FOUND)
+  message(STATUS "PostgreSQL was not found, dependent modules will not be built")
+endif()
+
+if (APPLE)
+  set(OPENSSL_ROOT_DIR /opt/local)
 endif()
 
 find_package(OpenSSL)
 if (NOT OPENSSL_FOUND)
-  message(STATUS "OpenSSL was not found, the LuaSec module will not be built")
+  message(STATUS "OpenSSL was not found, dependent modules will not be built")
+endif()
+
+find_library(GEOIP_LIBRARY GeoIP)
+if (NOT GEOIP_LIBRARY)
+  message(STATUS "GeoIP was not found, dependent modules will not be built")
 endif()
 
 find_package(Git REQUIRED)

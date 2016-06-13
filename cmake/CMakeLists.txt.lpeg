@@ -1,0 +1,36 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+cmake_minimum_required(VERSION 3.0 FATAL_ERROR)
+project(lpeg C)
+
+if(MSVC)
+    set(CMAKE_C_FLAGS           "/W3 /WX")
+    set(CMAKE_C_FLAGS_RELEASE   "/MD /O2 /Ob2")
+else()
+    set(CMAKE_C_FLAGS           "-std=c99 -pedantic -Werror -Wall -Wextra -fPIC")
+    set(CMAKE_C_FLAGS_RELEASE   "-O2")
+    set(CMAKE_SHARED_LIBRARY_SUFFIX ".so")
+endif()
+
+include_directories(${LUA_SANDBOX_INCLUDE}/luasandbox)
+find_library(LUA_LIBRARY luasb PATHS ${EP_BASE}/lib NO_DEFAULT_PATH)
+
+set(INSTALL_PATH lib/lua)
+set(CMAKE_SHARED_LIBRARY_PREFIX "")
+
+file(WRITE lpeg.def "EXPORTS\nluaopen_lpeg\n")
+set(LPEG_SRC
+lpcap.c
+lpcode.c
+lpprint.c
+lptree.c
+lpvm.c
+lpeg.def
+)
+
+add_library(lpeg SHARED ${LPEG_SRC})
+target_link_libraries(lpeg ${LUA_LIBRARY})
+install(TARGETS lpeg DESTINATION ${INSTALL_PATH})
+install(FILES re.lua DESTINATION ${INSTALL_PATH})

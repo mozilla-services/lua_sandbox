@@ -9,7 +9,13 @@ get_filename_component(GIT_PATH ${GIT_EXECUTABLE} PATH)
 
 set(EP_BASE "${CMAKE_BINARY_DIR}/ep_base")
 set_property(DIRECTORY PROPERTY EP_BASE ${EP_BASE})
-set(SANDBOX_CMAKE_ARGS -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE} -DCMAKE_INSTALL_PREFIX=${EP_BASE} -DEP_BASE=${EP_BASE} -DLUA_SANDBOX_INCLUDE=${CMAKE_SOURCE_DIR}/include -DUSE_RPATH=false --no-warn-unused-cli)
+set(SANDBOX_CMAKE_ARGS
+-DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
+-DCMAKE_INSTALL_PREFIX=${EP_BASE}
+-DEP_BASE=${EP_BASE}
+-DLUA_SANDBOX_INCLUDE=${CMAKE_SOURCE_DIR}/include
+-DUSE_RPATH=false
+--no-warn-unused-cli)
 set(LUA_INCLUDE_DIR "${EP_BASE}/include/${PROJECT_NAME}")
 
 set(INST_ARGS "install/strip")
@@ -36,9 +42,9 @@ endif()
 
 externalproject_add(
     lua_lpeg
-    GIT_REPOSITORY https://github.com/LuaDist/lpeg.git
-    GIT_TAG baf0dc90b9278360be719dbfb8e56d34ce3c61bd
-    UPDATE_COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_LIST_DIR}/FindLua.cmake <SOURCE_DIR>/cmake
+    URL http://www.inf.puc-rio.br/~roberto/lpeg/lpeg-1.0.0.tar.gz
+    URL_MD5 0aec64ccd13996202ad0c099e2877ece
+    UPDATE_COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_LIST_DIR}/CMakeLists.txt.lpeg <SOURCE_DIR>/CMakeLists.txt
     CMAKE_ARGS ${SANDBOX_CMAKE_ARGS}
     INSTALL_ARGS ${INST_ARGS}
 )
@@ -74,19 +80,75 @@ externalproject_add(
 add_dependencies(lua_socket ${LUA_PROJECT})
 
 if (OPENSSL_FOUND)
-    if (APPLE)
-        set(SANDBOX_CMAKE_ARGS ${SANDBOX_CMAKE_ARGS} -DCMAKE_PROJECT_luasec_INCLUDE=${CMAKE_SOURCE_DIR}/cmake/fixup_lua_sec.cmake)
-    endif()
     externalproject_add(
         lua_sec
-        GIT_REPOSITORY https://github.com/LuaDist/luasec.git
-        GIT_TAG 329a8789f142bbbfef4fd7ed506285a25c3c0e0e
-        UPDATE_COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_LIST_DIR}/FindLua.cmake <SOURCE_DIR>/cmake
-        CMAKE_ARGS ${SANDBOX_CMAKE_ARGS} -DCMAKE_INSTALL_PREFIX=${EP_BASE}/io
+        GIT_REPOSITORY https://github.com/brunoos/luasec.git
+        GIT_TAG 20443861ebc3f6498ee7d9c70fbdaa059bec15e1
+        UPDATE_COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_LIST_DIR}/CMakeLists.txt.lua_sec <SOURCE_DIR>/CMakeLists.txt
+        CMAKE_ARGS ${SANDBOX_CMAKE_ARGS}
+        -DCMAKE_INSTALL_PREFIX=${EP_BASE}/io
+        -DOPENSSL_INCLUDE_DIR=${OPENSSL_INCLUDE_DIR}
+        -DOPENSSL_LIBRARIES=${OPENSSL_LIBRARIES}
         INSTALL_ARGS ${INST_ARGS}
     )
     add_dependencies(lua_sec ${LUA_PROJECT})
+
+    externalproject_add(
+        lua_openssl
+        GIT_REPOSITORY https://github.com/zhaozg/lua-openssl.git
+        GIT_TAG 2e8930c5e13b52705ba9c390110e84b1f4748ba9
+        UPDATE_COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_LIST_DIR}/CMakeLists.txt.lua_openssl <SOURCE_DIR>/CMakeLists.txt
+        CMAKE_ARGS ${SANDBOX_CMAKE_ARGS}
+        -DCMAKE_INSTALL_PREFIX=${EP_BASE}/io
+        -DOPENSSL_INCLUDE_DIR=${OPENSSL_INCLUDE_DIR}
+        -DOPENSSL_LIBRARIES=${OPENSSL_LIBRARIES}
+        INSTALL_ARGS ${INST_ARGS}
+    )
+    add_dependencies(lua_openssl ${LUA_PROJECT})
 endif()
+
+if (PostgreSQL_FOUND)
+    externalproject_add(
+        lua_postgres
+        GIT_REPOSITORY https://github.com/LuaDist/luasql-postgresql.git
+        GIT_TAG 29a3aa1964aeac93323ec5d1446ac7d32ec700df
+        UPDATE_COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_LIST_DIR}/CMakeLists.txt.lua_postgres <SOURCE_DIR>/CMakeLists.txt
+        CMAKE_ARGS ${SANDBOX_CMAKE_ARGS}
+        -DCMAKE_INSTALL_PREFIX=${EP_BASE}/io
+        -DPostgreSQL_INCLUDE_DIRS=${PostgreSQL_INCLUDE_DIRS}
+        -DPostgreSQL_LIBRARIES=${PostgreSQL_LIBRARIES}
+        INSTALL_ARGS ${INST_ARGS}
+    )
+    add_dependencies(lua_postgres ${LUA_PROJECT})
+endif()
+
+if (GEOIP_LIBRARY)
+    externalproject_add(
+        lua_geoip
+        GIT_REPOSITORY https://github.com/agladysh/lua-geoip.git
+        GIT_TAG a07d261d8a2c7ff854fe6cd72cb8c2e16ec638ff
+        UPDATE_COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_LIST_DIR}/CMakeLists.txt.lua_geoip <SOURCE_DIR>/CMakeLists.txt
+        CMAKE_ARGS ${SANDBOX_CMAKE_ARGS}
+        -DCMAKE_INSTALL_PREFIX=${EP_BASE}/io
+        -DGEOIP_LIBRARY=${GEOIP_LIBRARY}
+        INSTALL_ARGS ${INST_ARGS}
+    )
+    add_dependencies(lua_geoip ${LUA_PROJECT})
+endif()
+
+if (LUA_SNAPPY)
+    externalproject_add(
+        lua_snappy
+        GIT_REPOSITORY https://github.com/forhappy/lua-snappy.git
+        GIT_TAG 6b4f3f6736857d5c72aa6ed0ec566af6e222278d
+        UPDATE_COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_LIST_DIR}/CMakeLists.txt.lua_snappy <SOURCE_DIR>/CMakeLists.txt
+        CMAKE_ARGS ${SANDBOX_CMAKE_ARGS}
+        -DCMAKE_INSTALL_PREFIX=${EP_BASE}/io
+        INSTALL_ARGS ${INST_ARGS}
+    )
+    add_dependencies(lua_snappy ${LUA_PROJECT})
+endif()
+
 
 # sandbox enhanced modules
 
