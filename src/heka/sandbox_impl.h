@@ -32,6 +32,7 @@ struct lsb_heka_sandbox {
   lsb_heka_message                  *msg;
   char                              *name;
   char                              *hostname;
+  bool                              override_headers;
   union {
     lsb_heka_im_input     iim;
     lsb_heka_im_analysis  aim;
