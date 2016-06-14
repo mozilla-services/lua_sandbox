@@ -76,10 +76,15 @@ See [decode_message](analysis.html#decode_message) for details.
 
 ### encode_message
 
-Returns a Heka protocol buffer message using the contents of the specified Lua table.
+Returns a Heka protocol buffer message using the contents of the specified Lua
+table. `Logger` and `Hostname` are restricted header values.  An override
+configuration option is provided `restricted_headers`; when true the headers are
+always set to the configuration values; when false (default) the headers are set
+to the values provide in the message table, if no value is provided it defaults
+to the appropriate configuration value.
+
 Note: this operation uses the internal output buffer so it is goverened by the
-`output_limit` configuration setting. If the `Logger` and `Hostname` are not set they will
-be added by infrastructure using the corresponding configuration setting.
+`output_limit` configuration setting.
 
 *Arguments*
 * msg ([Heka message table](message.html))

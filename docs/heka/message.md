@@ -5,8 +5,8 @@
 ```lua
 {
 Uuid        = "data",               -- auto generated if not a 16 byte raw binary UUID or a 36 character human readable UUID
-Logger      = "nginx",              -- ignored by analysis sandboxes (the `Logger` configuration is used instead)
-Hostname    = "example.com",        -- ignored by analysis sandboxes (the `Hostname` configuration is used instead)
+Logger      = "nginx",              -- defaults to the Logger configuration value but can be overridden with the `restricted_headers` configuration
+Hostname    = "example.com",        -- defaults to the Hostname configuration value but can be overridden with the `restricted_headers` configuration
 Timestamp   = 1e9,                  -- auto generated if not a number
 Type        = "TEST",
 Payload     = "Test Payload",

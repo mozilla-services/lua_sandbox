@@ -7,6 +7,7 @@ require "string"
 -- Table tests
 local msgs = {
     {Timestamp = 0, Uuid = "\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000"},
+    {Timestamp = 1, Uuid = "\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000", Logger = "ignore", Hostname = "spoof"},
 }
 
 local err_msgs = {

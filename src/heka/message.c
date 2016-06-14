@@ -835,9 +835,6 @@ int heka_encode_message(lua_State *lua)
     return luaL_error(lua, "encode_message() invalid upvalueindex");
   }
 
-  lsb_heka_sandbox *hsb = lsb_get_parent(lsb);
-  set_missing_headers(lua, 1, hsb);
-
   lsb->output.pos = 0;
   lsb_err_value ret = heka_encode_message_table(lsb, 1);
   if (ret) {
@@ -897,6 +894,16 @@ lsb_err_value heka_encode_message_table(lsb_lua_sandbox *lsb, int idx)
     ts = time(NULL) * 1000000000LL;
   }
   lua_pop(lsb->lua, 1); // remove timestamp
+
+  lsb_heka_sandbox *hsb = lsb_get_parent(lsb);
+  if (hsb->restricted_headers) {
+    lua_pushstring(lsb->lua, hsb->name);
+    lua_setfield(lsb->lua, idx, LSB_LOGGER);
+    lua_pushstring(lsb->lua, hsb->hostname);
+    lua_setfield(lsb->lua, idx, LSB_HOSTNAME);
+  } else {
+    set_missing_headers(lsb->lua, idx, hsb);
+  }
 
   ret = lsb_pb_write_key(ob, LSB_PB_TIMESTAMP, LSB_PB_WT_VARINT);
   if (!ret) ret = lsb_pb_write_varint(ob, ts);

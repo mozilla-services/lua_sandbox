@@ -33,12 +33,13 @@ struct lsb_heka_sandbox {
   char                              *name;
   char                              *hostname;
   union {
-    lsb_heka_im_input     iim;
-    lsb_heka_im_analysis  aim;
-    lsb_heka_update_checkpoint        ucp;
+    lsb_heka_im_input           iim;
+    lsb_heka_im_analysis        aim;
+    lsb_heka_update_checkpoint  ucp;
   } cb;
-  char                              type;
   struct heka_stats                 stats;
+  char                              type;
+  bool                              restricted_headers;
 };
 
 #endif

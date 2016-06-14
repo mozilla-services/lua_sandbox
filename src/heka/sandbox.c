@@ -200,18 +200,13 @@ static int inject_message_analysis(lua_State *lua)
     return luaL_error(lua, "%s() invalid lightuserdata", im_func_name);
   }
 
-  lsb_heka_sandbox *hsb = lsb_get_parent(lsb);
-  lua_pushstring(lua, hsb->name);
-  lua_setfield(lua, 1, LSB_LOGGER);
-  lua_pushstring(lua, hsb->hostname);
-  lua_setfield(lua, 1, LSB_HOSTNAME);
-
   if (heka_encode_message_table(lsb, 1)) {
     return luaL_error(lua, "%s() failed: %s", im_func_name, lsb_get_error(lsb));
   }
 
   size_t output_len = 0;
   const char *output = lsb_get_output(lsb, &output_len);
+  lsb_heka_sandbox *hsb = lsb_get_parent(lsb);
   if (hsb->cb.aim(hsb->parent, output, output_len) != 0) {
     return luaL_error(lua, "%s() failed: rejected by the callback",
                       im_func_name);
@@ -401,6 +396,12 @@ static void set_restrictions(lua_State *lua, lsb_heka_sandbox *hsb)
     if (hsb->hostname) strcpy(hsb->hostname, hostname);
   }
   lua_pop(lua, 1); // remove the Hostname
+
+  lua_getfield(lua, 1, "restricted_headers");
+  if (lua_type(lua, -1) == LUA_TBOOLEAN) {
+    hsb->restricted_headers = lua_toboolean(lua, -1);
+  }
+  lua_pop(lua, 1); // remove the restricted_headers boolean
 
   lua_pop(lua, 1); // remove the lsb_config table
 }
@@ -652,6 +653,7 @@ lsb_heka_sandbox* lsb_heka_create_analysis(void *parent,
   hsb->cb.aim = im;
   hsb->name = NULL;
   hsb->hostname = NULL;
+  hsb->restricted_headers = true;
 
   hsb->lsb = lsb_create(hsb, lua_file, lsb_cfg, logger);
   if (!hsb->lsb) {
@@ -666,7 +668,7 @@ lsb_heka_sandbox* lsb_heka_create_analysis(void *parent,
   lsb_add_function(hsb->lsb, read_message, "read_message");
   lsb_add_function(hsb->lsb, inject_message_analysis, "inject_message");
   lsb_add_function(hsb->lsb, inject_payload, "inject_payload");
-// rename output to add_to_payload
+  // rename output to add_to_payload
   lua_getglobal(lua, "output");
   lua_setglobal(lua, "add_to_payload");
   lua_pushnil(lua);
