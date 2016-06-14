@@ -46,7 +46,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
   <link rel="stylesheet" href="/lua_sandbox/docs.css" type="text/css" />
 </head>
 <body>
-<div id="title">Lua Sandbox Library (0.21.2)<hr/></div>
+<div id="title">Lua Sandbox Library (0.22.0)<hr/></div>
 <div class="menu">
         <ul>
             <li><a href="/lua_sandbox/index.html">Overview</a></li>
@@ -166,8 +166,8 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <h2 id="hash-based-message-fields">Hash Based Message Fields</h2>
 <div class="sourceCode"><pre class="sourceCode lua"><code class="sourceCode lua"><span class="ot">{</span>
 Uuid        <span class="ot">=</span> <span class="st">&quot;data&quot;</span><span class="ot">,</span>               <span class="co">-- auto generated if not a 16 byte raw binary UUID or a 36 character human readable UUID</span>
-Logger      <span class="ot">=</span> <span class="st">&quot;nginx&quot;</span><span class="ot">,</span>              <span class="co">-- ignored by analysis sandboxes (the `Logger` configuration is used instead)</span>
-Hostname    <span class="ot">=</span> <span class="st">&quot;example.com&quot;</span><span class="ot">,</span>        <span class="co">-- ignored by analysis sandboxes (the `Hostname` configuration is used instead)</span>
+Logger      <span class="ot">=</span> <span class="st">&quot;nginx&quot;</span><span class="ot">,</span>              <span class="co">-- defaults to the Logger configuration value but can be overridden with the `restricted_headers` configuration</span>
+Hostname    <span class="ot">=</span> <span class="st">&quot;example.com&quot;</span><span class="ot">,</span>        <span class="co">-- defaults to the Hostname configuration value but can be overridden with the `restricted_headers` configuration</span>
 Timestamp   <span class="ot">=</span> <span class="dv">1e9</span><span class="ot">,</span>                  <span class="co">-- auto generated if not a number</span>
 Type        <span class="ot">=</span> <span class="st">&quot;TEST&quot;</span><span class="ot">,</span>
 Payload     <span class="ot">=</span> <span class="st">&quot;Test Payload&quot;</span><span class="ot">,</span>

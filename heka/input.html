@@ -46,7 +46,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
   <link rel="stylesheet" href="/lua_sandbox/docs.css" type="text/css" />
 </head>
 <body>
-<div id="title">Lua Sandbox Library (0.21.2)<hr/></div>
+<div id="title">Lua Sandbox Library (0.22.0)<hr/></div>
 <div class="menu">
         <ul>
             <li><a href="/lua_sandbox/index.html">Overview</a></li>
@@ -209,7 +209,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <h3 id="decode_message">decode_message</h3>
 <p>Converts a Heka protobuf encoded message string into a Lua table. See <a href="analysis.html#decode_message">decode_message</a> for details.</p>
 <h3 id="inject_message">inject_message</h3>
-<p>Sends a Heka protocol buffer message into the host.</p>
+<p>Sends a Heka protocol buffer message into the host. For the Heka message table argument <code>Logger</code> and <code>Hostname</code> are restricted header values. An override configuration option is provided <code>restricted_headers</code>; when true the headers are always set to the configuration values; when false (default) the headers are set to the values provide in the message table, if no value is provided it defaults to the appropriate configuration value.</p>
 <p><em>Arguments</em></p>
 <ul>
 <li>msg (<a href="message.html">Heka message table</a>, <a href="stream_reader.html">Heka stream reader</a> or Heka protobuf string)</li>

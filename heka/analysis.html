@@ -46,7 +46,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
   <link rel="stylesheet" href="/lua_sandbox/docs.css" type="text/css" />
 </head>
 <body>
-<div id="title">Lua Sandbox Library (0.21.2)<hr/></div>
+<div id="title">Lua Sandbox Library (0.22.0)<hr/></div>
 <div class="menu">
         <ul>
             <li><a href="/lua_sandbox/index.html">Overview</a></li>
@@ -271,7 +271,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <li>msg (<a href="message.html#array-based-message-fields">Heka message table (array fields)</a>) with the value member always being an array (even if there is only a single item). This format makes working with the output more consistent. The wide variation in the inject table formats is to ease the construction of the message especially when using an LPeg grammar transformation.</li>
 </ul>
 <h3 id="inject_message">inject_message</h3>
-<p>Creates a new Heka protocol buffer message using the contents of the specified Lua table (overwriting whatever is in the payload buffer). <code>Logger</code> and <code>Hostname</code> are set by the infrastructure using the corresponding configuration setting and cannot be overridden by the plugin.</p>
+<p>Creates a new Heka protocol buffer message using the contents of the specified Lua table (overwriting whatever is in the payload buffer). <code>Logger</code> and <code>Hostname</code> are restricted header values. An override configuration option is provided <code>restricted_headers</code>; when true (default) the headers are always set to the configuration values; when false the headers are set to the values provide in the message table, if no value is provided it defaults to the appropriate configuration value.</p>
 <p><em>Arguments</em></p>
 <ul>
 <li>msg (<a href="message.html">Heka message table</a>)</li>
