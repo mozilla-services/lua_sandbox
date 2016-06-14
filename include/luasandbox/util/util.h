@@ -58,11 +58,20 @@ LSB_UTIL_EXPORT size_t lsb_lp2(unsigned long long x);
 LSB_UTIL_EXPORT char* lsb_read_file(const char *fn);
 
 /**
- * Retrieves the highest resolution time available converted to nanoseconds
+ * Retrieves the highest resolution timer available converted to nanoseconds
  *
  * @return unsigned long long
  */
 LSB_UTIL_EXPORT unsigned long long lsb_get_time();
+
+
+/**
+ * Retrieves the highest resolution time since Jan 1, 1970 converted to
+ * nanoseconds
+ *
+ * @return unsigned long long (time_ns)
+ */
+LSB_UTIL_EXPORT long long lsb_get_timestamp();
 
 /**
  * Sets the timezone environment variable for the time conversion functions

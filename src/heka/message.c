@@ -891,7 +891,7 @@ lsb_err_value heka_encode_message_table(lsb_lua_sandbox *lsb, int idx)
   if (lua_isnumber(lsb->lua, -1)) {
     ts = (long long)lua_tonumber(lsb->lua, -1);
   } else {
-    ts = time(NULL) * 1000000000LL;
+    ts = lsb_get_timestamp();
   }
   lua_pop(lsb->lua, 1); // remove timestamp
 

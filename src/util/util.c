@@ -26,6 +26,7 @@
 #endif
 
 #if defined(__MACH__) && defined(__APPLE__)
+#include <mach/clock.h>
 #include <mach/mach.h>
 #include <mach/mach_time.h>
 #endif
@@ -99,13 +100,46 @@ unsigned long long lsb_get_time()
     QueryPerformanceCounter((LARGE_INTEGER *)&t);
     return (t / qpf * 1000000000ULL) + ((t % qpf) * 1000000000ULL / qpf);
   } else {
-    GetSystemTimeAsFileTime((FILETIME *)&t);
+    FILETIME ft;
+    GetSystemTimeAsFileTime(&ft);
+    t = ft.dwHighDateTime;
+    t <<= 32;
+    t |= ft.dwLowDateTime;
     return t * 100ULL;
   }
 #else
   struct timeval tv;
   gettimeofday(&tv, NULL);
   return tv.tv_sec * 1000000000ULL + tv.tv_usec * 1000ULL;
+#endif
+}
+
+
+long long lsb_get_timestamp()
+{
+#ifdef HAVE_CLOCK_GETTIME
+  struct timespec ts;
+  clock_gettime(CLOCK_REALTIME, &ts);
+  return ts.tv_sec * 1000000000LL + ts.tv_nsec;
+#elif defined(__MACH__) && defined(__APPLE__)
+  clock_serv_t cclock;
+  mach_timespec_t mts;
+  host_get_clock_service(mach_host_self(), CALENDAR_CLOCK, &cclock);
+  clock_get_time(cclock, &mts);
+  mach_port_deallocate(mach_task_self(), cclock);
+  return mts.tv_sec * 1000000000LL + mts.tv_nsec;
+#elif defined(_WIN32)
+  FILETIME ft;
+  GetSystemTimeAsFileTime(&ft);
+  unsigned long long t = ft.dwHighDateTime;
+  t <<= 32;
+  t |= ft.dwLowDateTime;
+  t -= 16444736000000000ULL; // convert from Jan 1 1601 to Jan 1 1970
+  return t * 100LL;
+#else
+  struct timeval tv;
+  gettimeofday(&tv, NULL);
+  return tv.tv_sec * 1000000000LL + tv.tv_usec * 1000LL;
 #endif
 }
 

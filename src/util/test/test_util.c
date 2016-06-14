@@ -155,6 +155,22 @@ static char* benchmark_lsb_get_time()
 }
 
 
+static char* benchmark_lsb_get_timestamp()
+{
+  int iter = 1000000;
+  clock_t t = clock();
+  for (int x = 0; x < iter; ++x) {
+    lsb_get_timestamp();
+  }
+  t = clock() - t;
+  printf("benchmark_lsb_get_timestamp(%d) - clock %g seconds\n", iter,
+         (double)t / CLOCKS_PER_SEC / iter);
+  long long delta = lsb_get_timestamp() / 1000000000LL - time(NULL);
+  mu_assert(delta > 0 ? delta < 1 : delta > -1, "delta %lld", delta);
+  return NULL;
+}
+
+
 static char* all_tests()
 {
   mu_run_test(test_stub);
@@ -165,6 +181,7 @@ static char* all_tests()
   mu_run_test(test_lsb_ungzip);
 
   mu_run_test(benchmark_lsb_get_time);
+  mu_run_test(benchmark_lsb_get_timestamp);
   return NULL;
 }
 
