@@ -175,6 +175,9 @@ local function user_agent_normalization()
         ,"Opera/12.02 (Android 4.1; Linux; Opera Mobi/ADR-1111101157; U; en-US) Presto/2.9.201 Version/12.02"
         ,"Opera/9.80 (Windows NT 6.0) Presto/2.12.388 Version/12.14"
         ,"Mozilla/5.0 (Windows NT 10.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/42.0.2311.135 Safari/537.36 Edge/12.10136"
+        ,"Mozilla/5.0 (Windows NT 6.3; Trident/7.0; rv:11.0) like Gecko"
+        ,"Firefox AndroidSync 1.20.0.1.0 (Firefox)"
+        ,"Firefox-iOS-Sync/1.0 (Firefox)"
     }
     local results = {
          {"Chrome"      , 32    , "Windows 8"}
@@ -195,6 +198,9 @@ local function user_agent_normalization()
         ,{"Opera Mobi"  , 12    , "Android"}
         ,{"Opera"       , 12    , "Windows Vista"}
         ,{"Edge"        , 12    , "Windows 10"}
+        ,{"MSIE"        , 11    , "Windows 8.1"}
+        ,{"FxSync"      , 1     , "Android"}
+        ,{"FxSync"      , 1     , "iOS"}
     }
 
     for i, v in ipairs(user_agents) do

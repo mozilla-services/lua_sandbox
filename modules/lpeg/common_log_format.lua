@@ -346,7 +346,7 @@ end
 -- find the version of the product identified by the keyword
 local function ua_keyword(kw)
     return function(ua)
-        local i = ua:find(kw)
+        local i = ua:find(kw, 1, true)
         if i then
             local s = i + kw:len()
             if s then
@@ -376,15 +376,21 @@ local ua_os_matchers = {
     , {"Windows NT 5.0"          ,"Windows 2000" }
 }
 
+
+local fx_sync_android = ua_keyword("Firefox AndroidSync ")
+local fx_sync_ios = ua_keyword("Firefox-iOS-Sync/")
 local ua_browser_matchers = {
-      {"Edge"          , ua_keyword("Edge/")}
-    , {"Chrome"        , ua_keyword("Chrome/")}
-    , {"Opera Mini"    , ua_basic}
-    , {"Opera Mobi"    , ua_basic}
-    , {"Opera"         , ua_basic}
-    , {"MSIE"          , ua_keyword("MSIE ")}
-    , {"Safari"        , ua_basic}
-    , {"Firefox"       , ua_keyword("Firefox/")}
+      {"Edge"                   , ua_keyword("Edge/")}
+    , {"Chrome"                 , ua_keyword("Chrome/")}
+    , {"Opera Mini"             , ua_basic}
+    , {"Opera Mobi"             , ua_basic}
+    , {"Opera"                  , ua_basic}
+    , {"MSIE"                   , ua_keyword("MSIE ")}
+    , {"Trident/7.0"            , function() return 11, "MSIE" end}
+    , {"Safari"                 , ua_basic}
+    , {"Firefox AndroidSync"    , function(ua) return fx_sync_android(ua), "FxSync", "Android" end}
+    , {"Firefox-iOS-Sync"       , function(ua) return fx_sync_ios(ua), "FxSync", "iOS" end}
+    , {"Firefox"                , ua_keyword("Firefox/")}
 }
 
 --[[ Public Interface --]]
@@ -428,8 +434,9 @@ function normalize_user_agent(ua)
 
     for i, v in ipairs(ua_browser_matchers) do
         if ua:find(v[1], 1, true) then
-            browser = v[1]
-            version = v[2](ua)
+            version, browser, aos = v[2](ua)
+            if not browser then browser = v[1] end
+            if aos then os = aos end
             break
         end
     end
