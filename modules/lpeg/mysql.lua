@@ -23,26 +23,19 @@ local ip = require "lpeg.ip_address"
 local M = {}
 setfenv(1, M) -- Remove external access to contain everything in the module
 
-local pct_encoded   = l.P"%" * l.xdigit * l.xdigit
 local unreserved    = l.alnum + l.S"-._~"
-local sub_delims    = l.S"!$&'()*+,;="
-
 local space         = l.space^1
 local sep           = l.P"\n"
 local sql_end       = l.P";" * (l.P"\n" + -1)
 local line          = (l.P(1) - sep)^0 * sep
 local float         = l.digit^1 * "." * l.digit^1 / tonumber
 local integer       = l.P"-"^-1 * l.digit^1 / tonumber
-local host          = l.Ct(l.Cg(ip.v4, "value") * l.Cg(l.Cc"ipv4", "representation"))
-                    + l.Ct(l.Cg(ip.v6, "value") * l.Cg(l.Cc"ipv6", "representation"))
-                    + l.Ct(l.Cg((unreserved + pct_encoded + sub_delims)^1, "value") * l.Cg(l.Cc"hostname", "representation"))
 
 local time          = l.P"# Time: " * line
 
 local user_legal    = (1 - l.S"[]")
-local host_legal    = (l.alnum + l.S".-")
 local user_name     = user_legal^0 * "[" * l.Cg(user_legal^0, "Username") * "]"
-local host_name     = host_legal^0 * l.space^0 * "[" * l.Cg((l.P(1) - "]")^1, "Hostname") * "]"
+local host_name     = ip.hostname^0 * l.space^0 * "[" * l.Cg((l.P(1) - "]")^1, "Hostname") * "]"
 local user          = l.P"# User@Host: " * user_name * space * "@" * space * host_name * sep
 
 local query_time    = l.P"# Query_time: " * l.Cg(l.Ct(l.Cg(float, "value") * l.Cg(l.Cc"s", "representation")), "Query_time")

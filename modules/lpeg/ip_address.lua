@@ -9,9 +9,13 @@
 ### LPEG Grammars
 * `v4` - IPv4 address matcher
 * `v6` - IPv6 address matcher
+* `hostname` - URI reg-name
+* `host`     - v6 | v4 | hostname
+* `hostname_field` - returns the hostname as a Heka message field table `{value="127.0.0.1", representation="ipv4"}`
 --]]
 
 -- Imports
+local string = require "string"
 local l = require "lpeg"
 l.locale(l)
 
@@ -40,5 +44,16 @@ v6          =             hg * hg * hg * hg * hg * hg * ls32
 + (hg * hg^-4 + ":") *  ":"  * ls32
 + (hg * hg^-5 + ":") *  ":"  * h16
 + (hg * hg^-6 + ":") *  ":"
+
+
+local unreserved    = l.alnum + l.S"-._~"
+local pct_encoded   = l.P"%" * l.xdigit * l.xdigit
+local sub_delims    = l.S"!$&'()*+,;="
+
+hostname        = (unreserved + pct_encoded + sub_delims)^1 / string.lower
+host            = v6 + v4 + hostname
+hostname_field  = l.Ct(l.Cg(v6, "value") * l.Cg(l.Cc"ipv6", "representation"))
+                + l.Ct(l.Cg(v4, "value") * l.Cg(l.Cc"ipv4", "representation"))
+                + l.Ct(l.Cg(hostname, "value") * l.Cg(l.Cc"hostname", "representation"))
 
 return M

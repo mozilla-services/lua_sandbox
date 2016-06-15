@@ -91,10 +91,80 @@ local function ipv4_invalid()
     end
 end
 
+local function hostname()
+    local tests = {
+        "localhost",
+        "example.com",
+        "127.org",
+        "example%20",
+        "UPPERCASE.COM",
+        "aA1-._~!$&'()*+,;=.com"}
+    for i,v in ipairs(tests) do
+        if not ip.hostname:match(v) then
+            error(v)
+        end
+    end
+end
+
+local function hostname_invalid()
+    local grammar = ip.hostname * lpeg.P(-1) -- make it a full match
+    local tests = {
+        "example com",
+        "foo%AG",
+        "at@",
+        "colon:",
+        "lbracket[",
+        "rbracket]",
+        "hash#",
+        "quest?",
+        "slash/",
+        "lbrace{",
+        "rbrace}",
+        ""}
+    for i,v in ipairs(tests) do
+        if grammar:match(v) then
+            error(v)
+        end
+    end
+end
+
+local function host()
+    local tests = {
+        "localhost",
+        "127.0.0.1",
+        "::1"}
+    for i,v in ipairs(tests) do
+        if not ip.host:match(v) then
+            error(v)
+        end
+    end
+end
+
+local function host_field()
+    local tests = {
+        {"localhost", "hostname"},
+        {"127.0.0.1", "ipv4"},
+        {"::1", "ipv6"}
+    }
+    for i,v in ipairs(tests) do
+        local field = ip.hostname_field:match(v[1])
+        if field then
+            assert(field.value == tests[i][1], field.value)
+            assert(field.representation == tests[i][2], field.representation)
+        else
+            error(v)
+        end
+    end
+end
+
 function process(tc)
     ipv6()
     ipv6_invalid()
     ipv4()
     ipv4_invalid()
+    hostname()
+    hostname_invalid()
+    host()
+    host_field()
     return 0
 end
