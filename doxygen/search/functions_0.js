@@ -25,6 +25,7 @@ var searchData=
   ['lsb_5fget_5fparent',['lsb_get_parent',['../luasandbox_8h.html#a4a99254395042511ab1dfd81cbde4159',1,'luasandbox.h']]],
   ['lsb_5fget_5fstate',['lsb_get_state',['../luasandbox_8h.html#ae9417c98aa499c822d4a4834e260dcc5',1,'luasandbox.h']]],
   ['lsb_5fget_5ftime',['lsb_get_time',['../util_8h.html#aa5a90dcb39e4d35c50f65d57b0caa020',1,'util.h']]],
+  ['lsb_5fget_5ftimestamp',['lsb_get_timestamp',['../util_8h.html#ae12a2ddf7fcca16762fce07f11334d0a',1,'util.h']]],
   ['lsb_5fheka_5fcreate_5fanalysis',['lsb_heka_create_analysis',['../sandbox_8h.html#a5b75f1f0b7b135b88a241935fc996f60',1,'sandbox.h']]],
   ['lsb_5fheka_5fcreate_5finput',['lsb_heka_create_input',['../sandbox_8h.html#a716213efc97af35b926e7cdeaabf4d72',1,'sandbox.h']]],
   ['lsb_5fheka_5fcreate_5foutput',['lsb_heka_create_output',['../sandbox_8h.html#af9367fa1354ac4fd8efe5a285ea3c02c',1,'sandbox.h']]],

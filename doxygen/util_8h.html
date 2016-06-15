@@ -24,7 +24,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">luasandbox
-   &#160;<span id="projectnumber">0.22.0</span>
+   &#160;<span id="projectnumber">0.22.4</span>
    </div>
    <div id="projectbrief">Generic Lua sandbox for dynamic data analysis</div>
   </td>
@@ -118,8 +118,11 @@ Functions</h2></td></tr>
 <tr class="memdesc:a42f5036c2a360079bc5ba5c6da119bbd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Read a file into a string.  <a href="#a42f5036c2a360079bc5ba5c6da119bbd">More...</a><br /></td></tr>
 <tr class="separator:a42f5036c2a360079bc5ba5c6da119bbd"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa5a90dcb39e4d35c50f65d57b0caa020"><td class="memItemLeft" align="right" valign="top"><a class="el" href="util_8h.html#ae0f238b2a14ee752e699ed9546b8bfb2">LSB_UTIL_EXPORT</a> unsigned long long&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="util_8h.html#aa5a90dcb39e4d35c50f65d57b0caa020">lsb_get_time</a> ()</td></tr>
-<tr class="memdesc:aa5a90dcb39e4d35c50f65d57b0caa020"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retrieves the highest resolution time available converted to nanoseconds.  <a href="#aa5a90dcb39e4d35c50f65d57b0caa020">More...</a><br /></td></tr>
+<tr class="memdesc:aa5a90dcb39e4d35c50f65d57b0caa020"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retrieves the highest resolution timer available converted to nanoseconds.  <a href="#aa5a90dcb39e4d35c50f65d57b0caa020">More...</a><br /></td></tr>
 <tr class="separator:aa5a90dcb39e4d35c50f65d57b0caa020"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae12a2ddf7fcca16762fce07f11334d0a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="util_8h.html#ae0f238b2a14ee752e699ed9546b8bfb2">LSB_UTIL_EXPORT</a> long long&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="util_8h.html#ae12a2ddf7fcca16762fce07f11334d0a">lsb_get_timestamp</a> ()</td></tr>
+<tr class="memdesc:ae12a2ddf7fcca16762fce07f11334d0a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retrieves the highest resolution time since Jan 1, 1970 converted to nanoseconds.  <a href="#ae12a2ddf7fcca16762fce07f11334d0a">More...</a><br /></td></tr>
+<tr class="separator:ae12a2ddf7fcca16762fce07f11334d0a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a71f597f335f50a5312ae4b068fb250c8"><td class="memItemLeft" align="right" valign="top"><a class="el" href="util_8h.html#ae0f238b2a14ee752e699ed9546b8bfb2">LSB_UTIL_EXPORT</a> bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="util_8h.html#a71f597f335f50a5312ae4b068fb250c8">lsb_set_tz</a> (const char *tz)</td></tr>
 <tr class="memdesc:a71f597f335f50a5312ae4b068fb250c8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the timezone environment variable for the time conversion functions.  <a href="#a71f597f335f50a5312ae4b068fb250c8">More...</a><br /></td></tr>
 <tr class="separator:a71f597f335f50a5312ae4b068fb250c8"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -210,8 +213,26 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Retrieves the highest resolution time available converted to nanoseconds. </p>
+<p>Retrieves the highest resolution timer available converted to nanoseconds. </p>
 <dl class="section return"><dt>Returns</dt><dd>unsigned long long </dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="ae12a2ddf7fcca16762fce07f11334d0a"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="util_8h.html#ae0f238b2a14ee752e699ed9546b8bfb2">LSB_UTIL_EXPORT</a> long long lsb_get_timestamp </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Retrieves the highest resolution time since Jan 1, 1970 converted to nanoseconds. </p>
+<dl class="section return"><dt>Returns</dt><dd>unsigned long long (time_ns) </dd></dl>
 
 </div>
 </div>
