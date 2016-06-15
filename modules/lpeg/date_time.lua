@@ -227,6 +227,7 @@ strftime_specifiers["y"] = l.Cg((l.digit * l.digit) / function (yy) return centu
 strftime_specifiers["d"] = date_mday
 strftime_specifiers["D"] = date_month * "/" * date_mday * "/" * strftime_specifiers["y"]
 strftime_specifiers["e"] = date_mday_sp
+strftime_specifiers["f"] = l.Cg(l.digit^1 / ".%0" / tonumber, "sec_frac")
 strftime_specifiers["F"] = date_fullyear * "-" * date_month * "-" * date_mday
 strftime_specifiers["g"] = strftime_specifiers["y"]
 strftime_specifiers["G"] = date_fullyear

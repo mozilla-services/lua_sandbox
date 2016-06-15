@@ -100,7 +100,7 @@ local function strftime_all()
 end
 
 local function strftime_composite()
-    local formats = {"%c","%D %T","%D %r","%d/%b/%Y:%H:%M:%S %z"}
+    local formats = {"%c", "%D %T", "%D %r", "%d/%b/%Y:%H:%M:%S %z"}
     local inputs = {"Mon Feb 10 16:46:36 2014", "02/10/14 16:46:36", "02/10/14 04:46:36 PM", "10/Feb/2014:16:46:36 +0000"}
     if os.date("%c"):find("^%d") then -- windows %c is non-standard
         inputs[1] = inputs[2]
@@ -116,6 +116,14 @@ local function strftime_composite()
             error(string.format("time conversion failed %s", inputs[i]))
         end
     end
+end
+
+local function strftime_secfrac()
+    local g = dt.build_strftime_grammar("%d/%b/%Y:%H:%M:%S.%f")
+    local t = g:match("10/Feb/2014:16:46:36.124")
+    assert(t)
+    local ns = dt.time_to_ns(t)
+    assert(1392050796124000000 ==  ns, string.format("%d", ns))
 end
 
 local function strftime_invalid()
@@ -135,6 +143,7 @@ function process()
     strftime_all()
     strftime_composite()
     strftime_invalid()
+    strftime_secfrac()
 
     return 0
 end
