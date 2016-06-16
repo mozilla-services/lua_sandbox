@@ -38,6 +38,13 @@
                 <ul>
                     <li><a href="/lua_sandbox/lsb_compression.html">lsb_compression</a></li>
                     <li><a href="/lua_sandbox/lsb_hash.html">lsb_hash</a></li>
+                    <li>Heka</li>
+                    <ul>
+                        <li><a href="/lua_sandbox/heka/json.html">heka_json</a></li>
+                        <li><a href="/lua_sandbox/heka/kafka_consumer.html">heka_kafka_consumer</a></li>
+                        <li><a href="/lua_sandbox/heka/kafka_producer.html">heka_kafka_producer</a></li>
+                        <li><a href="/lua_sandbox/heka/stream_reader.html">heka_stream_reader</a></li>
+                    </ul>
                 </ul>
                 <li>Shared Libraries</li>
                 <ul>
@@ -133,7 +140,7 @@
 <li><code>v6</code> - IPv6 address matcher</li>
 <li><code>hostname</code> - URI reg-name</li>
 <li><code>host</code> - v6 | v4 | hostname</li>
-<li><code>hostname_field</code> - returns the hostname as a Heka message field table <code>{value=&quot;127.0.0.1&quot;, representation=&quot;ipv4&quot;}</code></li>
+<li><code>host_field</code> - returns the host as a Heka message field table <code>{value=&quot;127.0.0.1&quot;, representation=&quot;ipv4&quot;}</code></li>
 </ul>
 <p>source code: <a href="https://github.com/mozilla-services/lua_sandbox/blob/master/modules/lpeg/ip_address.lua">ip_address.lua</a></p>
 </div>
