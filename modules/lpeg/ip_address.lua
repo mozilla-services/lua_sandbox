@@ -11,7 +11,7 @@
 * `v6` - IPv6 address matcher
 * `hostname` - URI reg-name
 * `host`     - v6 | v4 | hostname
-* `hostname_field` - returns the hostname as a Heka message field table `{value="127.0.0.1", representation="ipv4"}`
+* `host_field` - returns the host as a Heka message field table `{value="127.0.0.1", representation="ipv4"}`
 --]]
 
 -- Imports
@@ -50,10 +50,10 @@ local unreserved    = l.alnum + l.S"-._~"
 local pct_encoded   = l.P"%" * l.xdigit * l.xdigit
 local sub_delims    = l.S"!$&'()*+,;="
 
-hostname        = (unreserved + pct_encoded + sub_delims)^1 / string.lower
-host            = v6 + v4 + hostname
-hostname_field  = l.Ct(l.Cg(v6, "value") * l.Cg(l.Cc"ipv6", "representation"))
-                + l.Ct(l.Cg(v4, "value") * l.Cg(l.Cc"ipv4", "representation"))
-                + l.Ct(l.Cg(hostname, "value") * l.Cg(l.Cc"hostname", "representation"))
+hostname    = (unreserved + pct_encoded + sub_delims)^1 / string.lower
+host        = v6 + v4 + hostname
+host_field  = l.Ct(l.Cg(v6, "value") * l.Cg(l.Cc"ipv6", "representation"))
+            + l.Ct(l.Cg(v4, "value") * l.Cg(l.Cc"ipv4", "representation"))
+            + l.Ct(l.Cg(hostname, "value") * l.Cg(l.Cc"hostname", "representation"))
 
 return M

@@ -147,7 +147,7 @@ local function host_field()
         {"::1", "ipv6"}
     }
     for i,v in ipairs(tests) do
-        local field = ip.hostname_field:match(v[1])
+        local field = ip.host_field:match(v[1])
         if field then
             assert(field.value == tests[i][1], field.value)
             assert(field.representation == tests[i][2], field.representation)

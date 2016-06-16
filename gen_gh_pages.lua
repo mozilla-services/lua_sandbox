@@ -195,6 +195,13 @@ local function output_menu(before, after, paths, version)
                 <ul>
                     <li><a href="/lua_sandbox/lsb_compression.html">lsb_compression</a></li>
                     <li><a href="/lua_sandbox/lsb_hash.html">lsb_hash</a></li>
+                    <li>Heka</li>
+                    <ul>
+                        <li><a href="/lua_sandbox/heka/json.html">heka_json</a></li>
+                        <li><a href="/lua_sandbox/heka/kafka_consumer.html">heka_kafka_consumer</a></li>
+                        <li><a href="/lua_sandbox/heka/kafka_producer.html">heka_kafka_producer</a></li>
+                        <li><a href="/lua_sandbox/heka/stream_reader.html">heka_stream_reader</a></li>
+                    </ul>
                 </ul>
                 <li>Shared Libraries</li>
                 <ul>
