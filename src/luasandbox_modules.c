@@ -8,8 +8,8 @@
 
 #include <stdlib.h>
 
-#include "lauxlib.h"
-#include "lua.h"
+#include "luasandbox/lauxlib.h"
+#include "luasandbox/lua.h"
 #include "luasandbox/util/util.h"
 #include "luasandbox_impl.h"
 
