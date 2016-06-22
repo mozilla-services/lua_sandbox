@@ -567,7 +567,7 @@ static char* test_encode_message()
                                &logger, ucp);
   mu_assert(hsb, "lsb_heka_create_output failed");
   lsb_heka_stats stats = lsb_heka_get_stats(hsb);
-  mu_assert(172 == stats.out_max, "received %llu", stats.out_max);
+  mu_assert(189 == stats.out_max, "received %llu", stats.out_max);
   e = lsb_heka_destroy_sandbox(hsb);
   return NULL;
 }

@@ -41,8 +41,10 @@ cycleb["a"] = cyclea
 
 data = circular_buffer.new(3,3,1)
 
-delta = circular_buffer.new(2,1,1, true)
+delta = circular_buffer.new(2,1,1)
 delta:add(0, 1, 2)
+delta:annotate(0, 1, "info", "annotation\"\t\b\r\n\240 end")
+delta:annotate(1e9, 1, "alert", "boom")
 
 dataRef = data
 
@@ -53,5 +55,3 @@ end
 
 function timer_event(ns)
 end
-
-
