@@ -40,12 +40,12 @@ There are a few intentional changes between tho original Heka sandbox and this v
 #### Input Sandbox
 
 1. A [Heka Stream Reader](stream_reader.html) Lua module was added.
-1. A [Heka JSON](heka_json.html) Lua module was added.
+1. A [Heka JSON](json.html) Lua module was added.
 
 #### Output Sandbox
 
 1. [update_checkpoint](output.html#update_checkpoint) was added for batch and asynchronous processing.
-1. A [Heka JSON](heka_json.html) Lua module was added.
+1. A [Heka JSON](json.html) Lua module was added.
 
 ### Removals
 

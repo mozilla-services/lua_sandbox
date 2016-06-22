@@ -30,7 +30,8 @@
 #endif
 
 #ifdef __cplusplus
-extern "C" {
+extern "C"
+{
 #endif
 
 LSB_UTIL_EXPORT extern lsb_err_id LSB_ERR_UTIL_NULL;
@@ -90,7 +91,7 @@ LSB_UTIL_EXPORT bool lsb_set_tz(const char *tz);
  *
  * @return LSB_UTIL_EXPORT unsigned checksum
  */
-LSB_UTIL_EXPORT uint32_t lsb_crc32(const char* buf, size_t buf_len);
+LSB_UTIL_EXPORT uint32_t lsb_crc32(const char *buf, size_t buf_len);
 
 /**
  * ZLIB Inflate the provided string into a new string
@@ -103,7 +104,7 @@ LSB_UTIL_EXPORT uint32_t lsb_crc32(const char* buf, size_t buf_len);
  * @return char* Returned string (MUST be freed by the caller), NULL on failure
  */
 LSB_UTIL_EXPORT char* lsb_ungzip(const char *s, size_t s_len, size_t max_len,
-                                  size_t *r_len);
+                                 size_t *r_len);
 
 #ifdef __cplusplus
 }
