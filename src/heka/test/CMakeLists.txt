@@ -8,15 +8,9 @@ set(LIBRARY_PATHS "${CMAKE_BINARY_DIR}/ep_base/lib;${CMAKE_BINARY_DIR}/src/util;
 
 add_test(NAME test_move_heka_sandbox_tests COMMAND cmake -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR})
 
-add_executable(test_heka_sandbox test_sandbox.c)
-target_link_libraries(test_heka_sandbox luasandboxheka luasandbox)
+add_executable(test_heka_sandbox test_heka_sandbox.c)
+target_link_libraries(test_heka_sandbox luasandboxheka)
 add_test(NAME test_heka_sandbox COMMAND test_heka_sandbox)
-
-if(LIBRTKAFKA_LIBRARY)
-	add_executable(test_kafka test_kafka.c)
-	target_link_libraries(test_kafka luasandboxheka luasandbox)
-	add_test(NAME test_kafka COMMAND test_kafka CONFIGURATIONS integration)
-endif()
 
 if(WIN32)
    STRING(REPLACE ";" "\\\\;" LIBRARY_PATHS "${LIBRARY_PATHS}")

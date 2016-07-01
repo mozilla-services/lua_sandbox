@@ -9,10 +9,10 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "../../test/mu_test.h"
 #include "luasandbox/error.h"
-#include "luasandbox/util/input_buffer.h"
+#include "luasandbox/test/mu_test.h"
 #include "luasandbox/util/heka_message.h"
+#include "luasandbox/util/input_buffer.h"
 
 static char* test_stub()
 {

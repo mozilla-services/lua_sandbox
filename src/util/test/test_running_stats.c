@@ -8,7 +8,7 @@
 
 #include <math.h>
 
-#include "../../test/mu_test.h"
+#include "luasandbox/test/mu_test.h"
 #include "luasandbox/util/running_stats.h"
 
 #ifdef _MSC_VER

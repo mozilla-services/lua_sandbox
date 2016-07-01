@@ -29,6 +29,7 @@
 
 #define LSB_SHUTTING_DOWN     "shutting down"
 #define LSB_CONFIG_TABLE      "lsb_config"
+#define LSB_THIS_PTR          "lsb_this_ptr"
 #define LSB_MEMORY_LIMIT      "memory_limit"
 #define LSB_INSTRUCTION_LIMIT "instruction_limit"
 #define LSB_OUTPUT_LIMIT      "output_limit"

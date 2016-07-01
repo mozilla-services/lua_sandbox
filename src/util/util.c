@@ -14,10 +14,6 @@
 #include <string.h>
 #include <time.h>
 
-#ifdef HAVE_ZLIB
-#include <zlib.h>
-#endif
-
 #ifdef _WIN32
 #include <windows.h>
 #include <limits.h>
@@ -162,75 +158,3 @@ bool lsb_set_tz(const char *tz)
 #endif
   return true;
 }
-
-
-#ifdef HAVE_ZLIB
-uint32_t lsb_crc32(const char *buf, size_t buf_len)
-{
-  uint32_t crc = (uint32_t)crc32(0L, Z_NULL, 0);
-  crc = (uint32_t)crc32(crc, (const Bytef *)buf, buf_len);
-  return crc;
-}
-
-
-char* lsb_ungzip(const char *s, size_t s_len, size_t max_len, size_t *r_len)
-{
-  if (!s || (max_len && s_len > max_len)) {
-    return NULL;
-  }
-  size_t buf_len = 2 * s_len;
-  if (max_len && buf_len > max_len) {
-    buf_len = max_len;
-  }
-  unsigned char *buf = malloc(buf_len);
-  if (!buf) {
-    return NULL;
-  }
-
-  z_stream strm;
-  strm.zalloc     = Z_NULL;
-  strm.zfree      = Z_NULL;
-  strm.opaque     = Z_NULL;
-  strm.avail_in   = s_len;
-  strm.next_in    = (unsigned char *)s;
-  strm.avail_out  = buf_len;
-  strm.next_out   = buf;
-
-  int ret = inflateInit2(&strm, 16 + MAX_WBITS);
-  if (ret != Z_OK) {
-    free(buf);
-    return NULL;
-  }
-
-  do {
-    if (ret == Z_BUF_ERROR) {
-      if (max_len && buf_len == max_len) {
-        ret = Z_MEM_ERROR;
-        break;
-      }
-      buf_len *= 2;
-      if (max_len && buf_len > max_len) {
-        buf_len = max_len;
-      }
-      unsigned char *tmp = realloc(buf, buf_len);
-      if (!tmp) {
-        ret = Z_MEM_ERROR;
-        break;
-      } else {
-        buf = tmp;
-        strm.avail_out = buf_len - strm.total_out;
-        strm.next_out = buf + strm.total_out;
-      }
-    }
-    ret = inflate(&strm, Z_FINISH);
-  } while (ret == Z_BUF_ERROR && strm.avail_in > 0);
-
-  inflateEnd(&strm);
-  if (ret != Z_STREAM_END) {
-    free(buf);
-    return NULL;
-  }
-  if (r_len) *r_len = strm.total_out;
-  return (char *)buf;
-}
-#endif

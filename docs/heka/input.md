@@ -64,6 +64,59 @@ to the appropriate configuration value.
 *Return*
 * none - throws an error on invalid input
 
+### create_stream_reader
+Creates a Heka stream reader to enable parsing of a framed Heka protobuf stream
+in a Lua sandbox. See: 
+[Example of a Heka protobuf reader](#example-of-a-heka-protobuf-stdin-reader)
+
+*Arguments*
+* name (string) - name of the stream reader (used in the log)
+
+*Return*
+* hsr (userdata) - Heka stream reader or an error is thrown
+
+#### Heka Stream Reader Methods
+
+##### find_message
+
+Locates a Heka message within the stream.
+
+```lua
+local found, consumed, need = hsr:find_message(buf)
+
+```
+
+*Arguments*
+* buf (string, userdata (FILE*)) - buffer containing a Heka protobuf stream data or a userdate file object
+* decode (bool default: true) - true if the framed message should be protobuf decoded
+
+*Return*
+* found (bool) - true if a message was found
+* consumed (number) - number of bytes consumed so the offset can be tracked for checkpointing purposes
+* need/read (number) - number of bytes needed to complete the message or fill the underlying buffer
+  or in the case of a file object the number of bytes added to the buffer
+
+##### decode_message
+
+Converts a Heka protobuf encoded message string into a stream reader representation.
+Note: this operation clears the internal stream reader buffer.
+
+*Arguments*
+* heka_pb (string) - Heka protobuf binary string
+
+*Return*
+* none - throws an error on failure
+
+##### read_message
+
+Provides access to the Heka message data within the reader object. 
+
+```lua
+local ts = hsr:read_message("Timestamp")
+
+```
+See [read_message](analysis.html#read_message) for details.
+
 ## Modes of Operation
 
 ### Run Once
@@ -98,7 +151,7 @@ end
   called again.
 * The `instruction_limit` configuration can be set if desired.
 
-#### Example startup ping
+#### Example heartbeat ping
 ```lua
 -- cfg
 ticker_interval = 60
@@ -150,21 +203,24 @@ instruction_limit = 0
 
 --]]
 
-local stdin = require "io".stdin
-require "heka_stream_reader"
 
-local hsr = heka_stream_reader.new(read_config("Logger"))
+local stdin = require "io".stdin
+require "string"
+
+local hsr = create_stream_reader(read_config("Logger"))
 
 function process_message()
+    local cnt = 0
     local found, consumed, read
     repeat
         repeat
             found, consumed, read = hsr:find_message(stdin)
             if found then
                 inject_message(hsr)
+                cnt = cnt + 1
             end
         until not found
     until read == 0
-    return 0
+    return 0, string.format("processed %d messages", cnt)
 end
 ```

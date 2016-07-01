@@ -471,7 +471,7 @@ void lsb_free_heka_message(lsb_heka_message *m)
 }
 
 
-bool lsb_read_heka_field(lsb_heka_message *m,
+bool lsb_read_heka_field(const lsb_heka_message *m,
                          lsb_const_string *name,
                          int fi,
                          int ai,

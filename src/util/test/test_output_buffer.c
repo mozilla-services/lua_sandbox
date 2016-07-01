@@ -11,7 +11,7 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "../../test/mu_test.h"
+#include "luasandbox/test/mu_test.h"
 #include "luasandbox/util/output_buffer.h"
 #include "luasandbox/util/heka_message.h"
 

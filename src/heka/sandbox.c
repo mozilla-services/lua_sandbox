@@ -13,18 +13,16 @@
 #include <string.h>
 
 #include "../luasandbox_defines.h"
+#include "../luasandbox_impl.h"
 #include "luasandbox.h"
+#include "luasandbox/lualib.h"
+#include "luasandbox/heka/stream_reader.h"
 #include "luasandbox/util/heka_message_matcher.h"
 #include "luasandbox/util/protobuf.h"
 #include "luasandbox/util/running_stats.h"
 #include "luasandbox_output.h"
 #include "message_impl.h"
-#include "rapidjson_impl.h"
 #include "sandbox_impl.h"
-#include "stream_reader_impl.h"
-#ifdef HAVE_KAFKA
-#include "kafka_impl.h"
-#endif
 
 #ifdef _WIN32
 #include <winsock2.h>
@@ -36,15 +34,18 @@ lsb_err_id LSB_ERR_HEKA_INPUT = "invalid input";
 
 static const char *pm_func_name = "process_message";
 static const char *im_func_name = "inject_message";
-static const char *mozsvc_heka_message_matcher = "mozsvc.heka_message_matcher";
+static const char *lsb_heka_message_matcher = "lsb.heka_message_matcher";
+
+int heka_create_stream_reader(lua_State *lua);
 
 static int read_message(lua_State *lua)
 {
-  lsb_lua_sandbox *lsb = lua_touserdata(lua, lua_upvalueindex(1));
-  if (NULL == lsb) {
-    return luaL_error(lua, "%s() invalid lightuserdata", __func__);
+  lua_getfield(lua, LUA_REGISTRYINDEX, LSB_HEKA_THIS_PTR);
+  lsb_heka_sandbox *hsb = lua_touserdata(lua, -1);
+  lua_pop(lua, 1); // remove this ptr
+  if (!hsb) {
+    return luaL_error(lua, "%s() invalid " LSB_HEKA_THIS_PTR, __func__);
   }
-  lsb_heka_sandbox *hsb = lsb_get_parent(lsb);
 
   if (!hsb->msg || !hsb->msg->raw.s) {
     lua_pushnil(lua);
@@ -57,7 +58,7 @@ static int read_message(lua_State *lua)
 static lsb_message_matcher* mm_check(lua_State *lua)
 {
   lsb_message_matcher **ppmm = luaL_checkudata(lua, 1,
-                                               mozsvc_heka_message_matcher);
+                                               lsb_heka_message_matcher);
   return *ppmm;
 }
 
@@ -73,11 +74,12 @@ static int mm_gc(lua_State *lua)
 static int mm_eval(lua_State *lua)
 {
   lsb_message_matcher *mm = mm_check(lua);
-  lsb_lua_sandbox *lsb = lua_touserdata(lua, lua_upvalueindex(1));
-  if (!lsb) {
-    return luaL_error(lua, "%s() invalid lightuserdata", __func__);
+  lua_getfield(lua, LUA_REGISTRYINDEX, LSB_HEKA_THIS_PTR);
+  lsb_heka_sandbox *hsb = lua_touserdata(lua, -1);
+  lua_pop(lua, 1); // remove this ptr
+  if (!hsb) {
+    return luaL_error(lua, "%s() invalid " LSB_HEKA_THIS_PTR, __func__);
   }
-  lsb_heka_sandbox *hsb = lsb_get_parent(lsb);
   if (!hsb->msg || !hsb->msg->raw.s) {
     return luaL_error(lua, "no active message");
   }
@@ -89,19 +91,13 @@ static int mm_eval(lua_State *lua)
 static int mm_create(lua_State *lua)
 {
   const char *exp = luaL_checkstring(lua, 1);
-  lsb_lua_sandbox *lsb = lua_touserdata(lua, lua_upvalueindex(1));
-  if (NULL == lsb) {
-    return luaL_error(lua, "%() invalid lightuserdata", __func__);
-  }
-
   lsb_message_matcher **ppmm = lua_newuserdata(lua, sizeof*ppmm);
-  if (luaL_newmetatable(lua, mozsvc_heka_message_matcher) == 1) {
+  if (luaL_newmetatable(lua, lsb_heka_message_matcher) == 1) {
     lua_pushvalue(lua, -1);
     lua_setfield(lua, -2, "__index");
-    lua_pushcclosure(lua, mm_gc, 0);
+    lua_pushcfunction(lua, mm_gc);
     lua_setfield(lua, -2, "__gc");
-    lua_pushlightuserdata(lua, lsb);
-    lua_pushcclosure(lua, mm_eval, 1);
+    lua_pushcfunction(lua, mm_eval);
     lua_setfield(lua, -2, "eval");
   }
   lua_setmetatable(lua, -2);
@@ -115,10 +111,10 @@ static int mm_create(lua_State *lua)
 
 static int inject_message_input(lua_State *lua)
 {
-  lsb_lua_sandbox *lsb = lua_touserdata(lua, lua_upvalueindex(1));
-  if (NULL == lsb) {
-    return luaL_error(lua, "%s() invalid lightuserdata", im_func_name);
-  }
+  lua_getfield(lua, LUA_REGISTRYINDEX, LSB_THIS_PTR);
+  lsb_lua_sandbox *lsb = lua_touserdata(lua, -1);
+  lua_pop(lua, 1); // remove this ptr
+  if (!lsb) return luaL_error(lua, "%s() invalid " LSB_THIS_PTR, im_func_name);
 
   const char *scp =  NULL;
   double ncp = NAN;
@@ -144,7 +140,7 @@ static int inject_message_input(lua_State *lua)
   case LUA_TUSERDATA:
     {
       heka_stream_reader *hsr = luaL_checkudata(lua, 1,
-                                                mozsvc_heka_stream_reader);
+                                                LSB_HEKA_STREAM_READER);
       if (hsr->msg.raw.s) {
         output.len = hsr->msg.raw.len;
         output.s = hsr->msg.raw.s;
@@ -195,10 +191,10 @@ static int inject_message_input(lua_State *lua)
 static int inject_message_analysis(lua_State *lua)
 {
   luaL_checktype(lua, 1, LUA_TTABLE);
-  lsb_lua_sandbox *lsb = lua_touserdata(lua, lua_upvalueindex(1));
-  if (NULL == lsb) {
-    return luaL_error(lua, "%s() invalid lightuserdata", im_func_name);
-  }
+  lua_getfield(lua, LUA_REGISTRYINDEX, LSB_THIS_PTR);
+  lsb_lua_sandbox *lsb = lua_touserdata(lua, -1);
+  lua_pop(lua, 1); // remove this ptr
+  if (!lsb) return luaL_error(lua, "%s() invalid " LSB_THIS_PTR, im_func_name);
 
   if (heka_encode_message_table(lsb, 1)) {
     return luaL_error(lua, "%s() failed: %s", im_func_name, lsb_get_error(lsb));
@@ -221,10 +217,10 @@ static int inject_payload(lua_State *lua)
 {
   static const char *default_type = "txt";
 
-  lsb_lua_sandbox *lsb = lua_touserdata(lua, lua_upvalueindex(1));
-  if (!lsb) {
-    return luaL_error(lua, "%s invalid lightuserdata", __func__);
-  }
+  lua_getfield(lua, LUA_REGISTRYINDEX, LSB_THIS_PTR);
+  lsb_lua_sandbox *lsb = lua_touserdata(lua, -1);
+  lua_pop(lua, 1); // remove this ptr
+  if (!lsb) return luaL_error(lua, "%s() invalid " LSB_THIS_PTR, __func__);
 
   int n = lua_gettop(lua);
 
@@ -278,13 +274,13 @@ static int inject_payload(lua_State *lua)
 
 static int update_checkpoint(lua_State *lua)
 {
-  static const char *func_name = LSB_HEKA_UPDATE_CHECKPOINT;
-
-  lsb_lua_sandbox *lsb = lua_touserdata(lua, lua_upvalueindex(1));
-  if (!lsb) {
-    return luaL_error(lua, "%s() invalid upvalueindex", func_name);
+  lua_getfield(lua, LUA_REGISTRYINDEX, LSB_HEKA_THIS_PTR);
+  lsb_heka_sandbox *hsb = lua_touserdata(lua, -1);
+  lua_pop(lua, 1); // remove this ptr
+  if (!hsb) {
+    return luaL_error(lua, "%s() invalid " LSB_HEKA_THIS_PTR, __func__);
   }
-  lsb_heka_sandbox *hsb = lsb_get_parent(lsb);
+
   int result = 0;
   int n = lua_gettop(lua);
   switch (n) {
@@ -300,10 +296,10 @@ static int update_checkpoint(lua_State *lua)
     result = hsb->cb.ucp(hsb->parent, NULL);
     break;
   default:
-    return luaL_error(lua, "%s() invalid number of args: %d", func_name, n);
+    return luaL_error(lua, "%s() invalid number of args: %d", __func__, n);
   }
   if (result) {
-    return luaL_error(lua, "%s() failed: rejected by the callback", func_name);
+    return luaL_error(lua, "%s() failed: rejected by the callback", __func__);
   }
   return result;
 }
@@ -328,23 +324,24 @@ static void set_restrictions(lua_State *lua, lsb_heka_sandbox *hsb)
   const char **list;
   size_t list_size;
 
+  lua_pushlightuserdata(lua, hsb);
+  lua_setfield(lua, LUA_REGISTRYINDEX, LSB_HEKA_THIS_PTR);
+
   lua_getfield(lua, LUA_REGISTRYINDEX, LSB_CONFIG_TABLE);
   switch (hsb->type) {
   case 'i':
   case 'o':
-    list_size = sizeof io / sizeof*io;
+    list_size = sizeof(io) / sizeof(*io);
     list = io;
     break;
   default:
-    list_size = sizeof analysis / sizeof*analysis;
+    list_size = sizeof(analysis) / sizeof(*analysis);
     list = analysis;
     lua_newtable(lua);
     lua_pushboolean(lua, true);
-    lua_setfield(lua, -2, "io");
+    lua_setfield(lua, -2, LUA_IOLIBNAME);
     lua_pushboolean(lua, true);
-    lua_setfield(lua, -2, "coroutine");
-    lua_pushboolean(lua, true);
-    lua_setfield(lua, -2, "lsb_compression");
+    lua_setfield(lua, -2, LUA_COLIBNAME);
     lua_setfield(lua, 1, "disable_modules");
     break;
   }
@@ -457,25 +454,7 @@ lsb_heka_sandbox* lsb_heka_create_input(void *parent,
   lsb_add_function(hsb->lsb, inject_message_input, "inject_message");
 // inject_payload is intentionally excluded from input plugins
 // you can construct whatever you need with inject_message
-
-// preload the Heka stream reader module
-  luaL_findtable(lua, LUA_REGISTRYINDEX, "_PRELOADED", 1);
-  lua_pushstring(lua, mozsvc_heka_stream_reader_table);
-  lua_pushcfunction(lua, luaopen_heka_stream_reader);
-  lua_rawset(lua, -3);
-// preload Heka JSON with a pointer back to the sandbox
-  lua_pushstring(lua, mozsvc_heka_json_table);
-  lua_pushlightuserdata(lua, (void *)hsb->lsb);
-  lua_pushcclosure(lua, luaopen_heka_json, 1);
-  lua_rawset(lua, -3);
-#ifdef HAVE_KAFKA
-// preload the Heka Kafka consumer
-  lua_pushstring(lua, mozsvc_heka_kafka_consumer_table);
-  lua_pushcfunction(lua, luaopen_heka_kafka_consumer);
-  lua_rawset(lua, -3);
-#endif
-
-  lua_pop(lua, 1); // remove the preloaded table
+  lsb_add_function(hsb->lsb, heka_create_stream_reader, "create_stream_reader");
 
   if (lsb_init(hsb->lsb, state_file)) {
     if (logger && logger->cb) {
@@ -759,21 +738,6 @@ lsb_heka_sandbox* lsb_heka_create_output(void *parent,
   lsb_add_function(hsb->lsb, heka_encode_message, "encode_message");
   lsb_add_function(hsb->lsb, update_checkpoint, LSB_HEKA_UPDATE_CHECKPOINT);
   lsb_add_function(hsb->lsb, mm_create, "create_message_matcher");
-// preload Heka JSON with a pointer back to the sandbox
-  luaL_findtable(lua, LUA_REGISTRYINDEX, "_PRELOADED", 1);
-  lua_pushstring(lua, mozsvc_heka_json_table);
-  lua_pushlightuserdata(lua, (void *)hsb->lsb);
-  lua_pushcclosure(lua, luaopen_heka_json, 1);
-  lua_rawset(lua, -3);
-#ifdef HAVE_KAFKA
-// preload the Heka Kafka producer
-  lua_pushstring(lua, mozsvc_heka_kafka_producer_table);
-  lua_pushlightuserdata(lua, (void *)hsb->lsb);
-  lua_pushcclosure(lua, luaopen_heka_kafka_producer, 1);
-  lua_rawset(lua, -3);
-#endif
-
-  lua_pop(lua, 1); // remove the preloaded table
 
   if (lsb_init(hsb->lsb, state_file)) {
     if (logger && logger->cb) {
@@ -924,4 +888,18 @@ bool lsb_heka_is_running(lsb_heka_sandbox *hsb)
   if (!hsb) return false;
   if (lsb_get_state(hsb->lsb) == LSB_RUNNING) return true;
   return false;
+}
+
+
+const lsb_heka_message* lsb_heka_get_message(lsb_heka_sandbox *hsb)
+{
+  if (!hsb) return NULL;
+  return hsb->msg;
+}
+
+
+char lsb_heka_get_type(lsb_heka_sandbox *hsb)
+{
+  if (!hsb) return '\0';
+  return hsb->type;
 }

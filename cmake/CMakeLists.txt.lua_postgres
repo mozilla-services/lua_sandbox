@@ -3,7 +3,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 cmake_minimum_required(VERSION 3.0 FATAL_ERROR)
-project(luapostgres C)
+project(postgres C)
 
 if(MSVC)
     set(CMAKE_C_FLAGS           "/W3 /WX")
@@ -14,11 +14,16 @@ else()
 	set(CMAKE_SHARED_LIBRARY_SUFFIX ".so")
 endif()
 
-include_directories(${LUA_SANDBOX_INCLUDE}/luasandbox ${PostgreSQL_INCLUDE_DIRS})
-find_library(LUA_LIBRARY luasb PATHS ${EP_BASE}/lib NO_DEFAULT_PATH)
-
-set(INSTALL_PATH lib/lua)
+include(GNUInstallDirs)
+if(WIN32)
+  set(CMAKE_INSTALL_LIBDIR ${CMAKE_INSTALL_BINDIR})
+endif()
+set(INSTALL_PATH ${CMAKE_INSTALL_LIBDIR}/luasandbox/io_modules)
 set(CMAKE_SHARED_LIBRARY_PREFIX "")
+
+find_package(PostgreSQL REQUIRED)
+
+include_directories(${LUASANDBOX_INCLUDE_DIR}/luasandbox ${PostgreSQL_INCLUDE_DIRS})
 
 file(WRITE postgres.def "EXPORTS\nluaopen_postgres")
 set(POSTGRES_SRC
@@ -28,5 +33,5 @@ postgres.def
 )
 
 add_library(postgres SHARED ${POSTGRES_SRC})
-target_link_libraries(postgres ${LUA_LIBRARY} ${PostgreSQL_LIBRARIES})
+target_link_libraries(postgres ${LUASANDBOX_LUASB_LIBRARY} ${PostgreSQL_LIBRARIES})
 install(TARGETS postgres DESTINATION ${INSTALL_PATH}/luasql)

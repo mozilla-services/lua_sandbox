@@ -7,9 +7,9 @@ _G["dataRef"]:set_header(3, "Column_3", "count", "sum")
 _G["dataRef"]:fromstring("2 2 nan nan nan nan nan nan nan nan nan")
 if _G["delta"] == nil then _G["delta"] = circular_buffer.new(2, 1, 1) end
 _G["delta"]:set_header(1, "Column_1", "count", "sum")
+_G["delta"]:fromstring("1 1 2 nan 0 2")
 _G["delta"]:annotate(1e+09, 1, "alert", "boom", true)
 _G["delta"]:annotate(0, 1, "info", "annotation\"\t\b\r\n  end", true)
-_G["delta"]:fromstring("1 1 2 nan 0 2")
 _G["data"] = _G["dataRef"]
 _G["rate"] = 0.12345678
 _G["kvp"] = {}

@@ -191,18 +191,6 @@ local function output_menu(before, after, paths, version)
         <ul>
             <li>C Modules</li>
             <ul>
-                <li>Built-in</li>
-                <ul>
-                    <li><a href="/lua_sandbox/lsb_compression.html">lsb_compression</a></li>
-                    <li><a href="/lua_sandbox/lsb_hash.html">lsb_hash</a></li>
-                    <li>Heka</li>
-                    <ul>
-                        <li><a href="/lua_sandbox/heka/json.html">heka_json</a></li>
-                        <li><a href="/lua_sandbox/heka/kafka_consumer.html">heka_kafka_consumer</a></li>
-                        <li><a href="/lua_sandbox/heka/kafka_producer.html">heka_kafka_producer</a></li>
-                        <li><a href="/lua_sandbox/heka/stream_reader.html">heka_stream_reader</a></li>
-                    </ul>
-                </ul>
                 <li>Shared Libraries</li>
                 <ul>
                     <li><a href="https://github.com/mozilla-services/lua_bloom_filter/blob/master/README.md">bloom_filter</a></li>
@@ -213,16 +201,18 @@ local function output_menu(before, after, paths, version)
                     <li><a href="http://www.inf.puc-rio.br/~roberto/lpeg/lpeg.html">lpeg</a></li>
                     <li><a href="http://www.inf.puc-rio.br/~roberto/lpeg/re.html">re</a></li>
                     <li><a href="https://github.com/trink/symtseries/blob/master/README.md">sax</a></li>
-                    <li><a href="http://www.inf.puc-rio.br/~roberto/struct/">struct</a></li>
-                <li>Conditionally Included</li>
+                <li>Optionally Built</li>
                 <ul>
                     <li><a href="https://github.com/agladysh/lua-geoip">geoip</a></li>
-                    <li><a href="https://github.com/brunoos/luasec/wiki">luasec</a></li>
+                    <li><a href="https://github.com/mozilla-services/lua_kafka/blob/master/README.md">kafka</a></li>
                     <li><a href="https://keplerproject.github.io/luasql/">luasql</a></li>
                     <ul>
                         <li><a href="https://keplerproject.github.io/luasql/manual.html#postgres_extensions">postgres</a></li>
                     </ul>
                     <li><a href="https://github.com/zhaozg/lua-openssl">openssl</a></li>
+                    <li><a href="https://github.com/mozilla-services/lua_rjson/blob/master/README.md">rjson</a></li>
+                    <li><a href="https://github.com/brunoos/luasec/wiki">ssl</a></li>
+                    <li><a href="http://www.inf.puc-rio.br/~roberto/struct/">struct</a></li>
                 </ul>
                 </ul>
             </ul>

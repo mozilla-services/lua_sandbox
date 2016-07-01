@@ -65,7 +65,6 @@ LSB_UTIL_EXPORT char* lsb_read_file(const char *fn);
  */
 LSB_UTIL_EXPORT unsigned long long lsb_get_time();
 
-
 /**
  * Retrieves the highest resolution time since Jan 1, 1970 converted to
  * nanoseconds
@@ -82,29 +81,6 @@ LSB_UTIL_EXPORT long long lsb_get_timestamp();
  * @return bool True if the environment variable is successfully set
  */
 LSB_UTIL_EXPORT bool lsb_set_tz(const char *tz);
-
-/**
- * ZLIB CRC-32 checksum
- *
- * @param buf - array of bytes
- * @param buf_len - length of the array
- *
- * @return LSB_UTIL_EXPORT unsigned checksum
- */
-LSB_UTIL_EXPORT uint32_t lsb_crc32(const char *buf, size_t buf_len);
-
-/**
- * ZLIB Inflate the provided string into a new string
- *
- * @param s String to ungzip
- * @param s_len Length of the string to ungzip
- * @param max_len Maximum length the buffer is allowed to grow to (0 for
- *                unlimited)
- * @param r_len (optional) Length of the returned string
- * @return char* Returned string (MUST be freed by the caller), NULL on failure
- */
-LSB_UTIL_EXPORT char* lsb_ungzip(const char *s, size_t s_len, size_t max_len,
-                                 size_t *r_len);
 
 #ifdef __cplusplus
 }

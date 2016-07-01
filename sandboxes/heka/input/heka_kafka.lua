@@ -2,7 +2,7 @@
 -- License, v. 2.0. If a copy of the MPL was not distributed with this
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-require "heka_kafka_consumer"
+require "kafka"
 
 --[[
 # Heka Kafka Consumer Input
@@ -37,7 +37,7 @@ local topics        = read_config("topics") or error("topics must be set")
 local consumer_conf = read_config("consumer_conf")
 local topic_conf    = read_config("topic_conf")
 
-local consumer = heka_kafka_consumer.new(brokerlist, topics, consumer_conf, topic_conf)
+local consumer = kafka.consumer(brokerlist, topics, consumer_conf, topic_conf)
 
 local err_msg = {
     Logger  = read_config("Logger"),

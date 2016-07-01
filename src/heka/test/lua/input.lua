@@ -5,6 +5,7 @@
 assert(read_config)
 assert(decode_message)
 assert(inject_message)
+assert(create_stream_reader)
 assert(not read_message)
 assert(not encode_message)
 assert(not update_checkpoint)

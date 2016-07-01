@@ -3,7 +3,7 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 require "cjson"
-require "circular_buffer"; require "bloom_filter"; require "cuckoo_filter"
+require "circular_buffer"
 require "lpeg"
 function process(tc)
     if tc == 0 then -- error internal reference

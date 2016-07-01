@@ -3,7 +3,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 cmake_minimum_required(VERSION 3.0 FATAL_ERROR)
-project(luaopenssl C)
+project(openssl C)
 
 if(MSVC)
     set(CMAKE_C_FLAGS           "/W3 /WX")
@@ -14,11 +14,20 @@ else()
 	set(CMAKE_SHARED_LIBRARY_SUFFIX ".so")
 endif()
 
-include_directories(${LUA_SANDBOX_INCLUDE}/luasandbox ${OPENSSL_INCLUDE_DIR} ${CMAKE_SOURCE_DIR}/deps)
-find_library(LUA_LIBRARY luasb PATHS ${EP_BASE}/lib NO_DEFAULT_PATH)
-
-set(INSTALL_PATH lib/lua)
+include(GNUInstallDirs)
+if(WIN32)
+  set(CMAKE_INSTALL_LIBDIR ${CMAKE_INSTALL_BINDIR})
+endif()
+set(INSTALL_PATH ${CMAKE_INSTALL_LIBDIR}/luasandbox/io_modules)
 set(CMAKE_SHARED_LIBRARY_PREFIX "")
+
+find_package(OpenSSL REQUIRED)
+
+include_directories(${LUASANDBOX_INCLUDE_DIR}/luasandbox ${OPENSSL_INCLUDE_DIR} ${CMAKE_SOURCE_DIR}/deps)
+
+if (APPLE)
+  set(OPENSSL_ROOT_DIR /opt/local)
+endif()
 
 file(WRITE luaopenssl.def "EXPORTS\nluaopen_openssl\n")
 set(LUAOPENSSL_SRC
@@ -60,5 +69,5 @@ luaopenssl.def
 )
 
 add_library(openssl SHARED ${LUAOPENSSL_SRC})
-target_link_libraries(openssl ${LUA_LIBRARY} ${OPENSSL_LIBRARIES})
+target_link_libraries(openssl ${LUASANDBOX_LUASB_LIBRARY} ${OPENSSL_LIBRARIES})
 install(TARGETS openssl DESTINATION ${INSTALL_PATH})

@@ -44,8 +44,6 @@ static const luaL_Reg preload_module_list[] = {
   { LUA_OSLIBNAME, luaopen_os },
   { LUA_STRLIBNAME, luaopen_string },
   { LUA_MATHLIBNAME, luaopen_math },
-  { LSB_HASH_MODULE, luaopen_lsb_hash },
-  { LSB_COMPRESSION_MODULE, luaopen_lsb_compression },
   { NULL, NULL }
 };
 
@@ -130,10 +128,10 @@ static void instruction_manager(lua_State *lua, lua_Debug *ar)
 
 static int output(lua_State *lua)
 {
-  lsb_lua_sandbox *lsb = lua_touserdata(lua, lua_upvalueindex(1));
-  if (!lsb) {
-    return luaL_error(lua, "output() invalid lightuserdata");
-  }
+  lua_getfield(lua, LUA_REGISTRYINDEX, LSB_THIS_PTR);
+  lsb_lua_sandbox *lsb = lua_touserdata(lua, -1);
+  lua_pop(lua, 1); // remove this ptr
+  if (!lsb) return luaL_error(lua, "%s() invalid " LSB_THIS_PTR, __func__);
 
   int n = lua_gettop(lua);
   if (n == 0) {
@@ -146,10 +144,11 @@ static int output(lua_State *lua)
 
 static int output_print(lua_State *lua)
 {
-  lsb_lua_sandbox *lsb = lua_touserdata(lua, lua_upvalueindex(1));
-  if (!lsb) {
-    return luaL_error(lua, "print() invalid lightuserdata");
-  }
+  lua_getfield(lua, LUA_REGISTRYINDEX, LSB_THIS_PTR);
+  lsb_lua_sandbox *lsb = lua_touserdata(lua, -1);
+  lua_pop(lua, 1); // remove this ptr
+  if (!lsb) return luaL_error(lua, "print() invalid " LSB_THIS_PTR);
+
   lsb->output.buf[0] = 0;
   lsb->output.pos = 0; // clear the buffer
 
@@ -493,12 +492,14 @@ lsb_lua_sandbox* lsb_create(void *parent,
   size_t ol = get_int(lsb->lua, -1, "output_limit");
   int log_level = get_int(lsb->lua, -1, "log_level");
   lua_setfield(lsb->lua, LUA_REGISTRYINDEX, LSB_CONFIG_TABLE);
-  lua_pushcclosure(lsb->lua, &read_config, 0);
+  lua_pushlightuserdata(lsb->lua, lsb);
+  lua_setfield(lsb->lua, LUA_REGISTRYINDEX, LSB_THIS_PTR);
+  lua_pushcfunction(lsb->lua, &read_config);
   lua_setglobal(lsb->lua, "read_config");
 
-  lua_pushlightuserdata(lsb->lua, (void *)lsb);
-  lua_pushcclosure(lsb->lua, &output, 1);
+  lua_pushcfunction(lsb->lua, &output);
   lua_setglobal(lsb->lua, "output");
+  preload_modules(lsb->lua);
 
   lsb->parent = parent;
   lsb->usage[LSB_UT_MEMORY][LSB_US_LIMIT] = ml;
@@ -555,7 +556,6 @@ lsb_err_value lsb_init(lsb_lua_sandbox *lsb, const char *state_file)
   lsb->usage[LSB_UT_MEMORY][LSB_US_LIMIT] = 0;
 #endif
 
-  preload_modules(lsb->lua);
   // load package module
   lua_pushcfunction(lsb->lua, luaopen_package);
   lua_pushstring(lsb->lua, LUA_LOADLIBNAME);
@@ -741,8 +741,7 @@ void lsb_add_function(lsb_lua_sandbox *lsb, lua_CFunction func,
   if (!lsb || !func || !func_name) return;
   if (!lsb->lua) return;
 
-  lua_pushlightuserdata(lsb->lua, (void *)lsb);
-  lua_pushcclosure(lsb->lua, func, 1);
+  lua_pushcfunction(lsb->lua, func);
   lua_setglobal(lsb->lua, func_name);
 }
 

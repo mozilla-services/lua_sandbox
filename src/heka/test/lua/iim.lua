@@ -4,16 +4,16 @@
 
 require "string"
 require "bloom_filter";
-require "heka_json"
+require "rjson"
 local bf = bloom_filter.new(10, 0.01)
 
 local json = [[{"foo":"bar"}]]
-local doc = heka_json.parse(json)
+local doc = rjson.parse(json)
 assert(doc)
-local doc1 = heka_json.parse(json)
-local doc2 = heka_json.parse(json)
+local doc1 = rjson.parse(json)
+local doc2 = rjson.parse(json)
 local large_json = string.format('{"foo":"%s"}', string.rep("x", 66000))
-local large_doc = heka_json.parse(large_json)
+local large_doc = rjson.parse(large_json)
 assert(large_doc)
 
 -- Table tests
@@ -49,7 +49,8 @@ local err_msgs = {
 }
 
 for i, v in ipairs(msgs) do
-    inject_message(v[1], v[2])
+    local ok, err = pcall(inject_message, v[1], v[2])
+    assert(ok, string.format("test: %d err: %s", i, tostring(err)))
 end
 
 for i, v in ipairs(err_msgs) do
@@ -60,8 +61,7 @@ end
 
 -- Stream Reader tests
 require "io"
-require "heka_stream_reader"
-local hsr = heka_stream_reader.new("test")
+local hsr = create_stream_reader("test")
 ok, err = pcall(inject_message, hsr)
 local eerr = "inject_message() attempted to inject a nil message"
 assert(eerr == err, string.format("expected: %s received: %s", eerr, err))
@@ -130,7 +130,7 @@ assert("read_message() incorrect number of arguments" == err, string.format("rec
 
 ok, err = pcall(hsr.read_message, 1, 2)
 assert(not ok)
-assert("bad argument #1 to '?' (mozsvc.heka_stream_reader expected, got number)" == err, string.format("received: %s", err))
+assert("bad argument #1 to '?' (lsb.heka_stream_reader expected, got number)" == err, string.format("received: %s", err))
 
 
 -- String tests

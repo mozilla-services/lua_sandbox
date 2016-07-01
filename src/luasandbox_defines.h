@@ -15,4 +15,10 @@
 #define CLOSE_ON_EXEC "e"
 #endif
 
+#ifdef _MSC_VER
+#ifndef __func__
+#define __func__ __FUNCTION__
+#endif
+#endif
+
 #endif

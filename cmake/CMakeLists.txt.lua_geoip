@@ -3,7 +3,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 cmake_minimum_required(VERSION 3.0 FATAL_ERROR)
-project(luageoip C)
+project(geoip C)
 
 if(MSVC)
     set(CMAKE_C_FLAGS           "/W3 /WX")
@@ -14,11 +14,16 @@ else()
 	set(CMAKE_SHARED_LIBRARY_SUFFIX ".so")
 endif()
 
-include_directories(${LUA_SANDBOX_INCLUDE}/luasandbox)
-find_library(LUA_LIBRARY luasb PATHS ${EP_BASE}/lib NO_DEFAULT_PATH)
-
-set(INSTALL_PATH lib/lua)
+include(GNUInstallDirs)
+if(WIN32)
+  set(CMAKE_INSTALL_LIBDIR ${CMAKE_INSTALL_BINDIR})
+endif()
+set(INSTALL_PATH ${CMAKE_INSTALL_LIBDIR}/luasandbox/io_modules)
 set(CMAKE_SHARED_LIBRARY_PREFIX "")
+
+find_library(GEOIP_LIBRARY GeoIP REQUIRED)
+
+include_directories(${LUASANDBOX_INCLUDE_DIR}/luasandbox)
 
 file(WRITE geoip.def "EXPORTS\nluaopen_geoip")
 set(GEOIP_SRC
@@ -42,13 +47,13 @@ country.def
 )
 
 add_library(geoip SHARED ${GEOIP_SRC})
-target_link_libraries(geoip ${LUA_LIBRARY} ${GEOIP_LIBRARY})
+target_link_libraries(geoip ${LUASANDBOX_LUASB_LIBRARY} ${GEOIP_LIBRARY})
 install(TARGETS geoip DESTINATION ${INSTALL_PATH})
 
 add_library(city SHARED ${CITY_SRC})
-target_link_libraries(city ${LUA_LIBRARY} ${GEOIP_LIBRARY})
+target_link_libraries(city ${LUASANDBOX_LUASB_LIBRARY} ${GEOIP_LIBRARY})
 install(TARGETS city DESTINATION ${INSTALL_PATH}/geoip)
 
 add_library(country SHARED ${COUNTRY_SRC})
-target_link_libraries(country ${LUA_LIBRARY} ${GEOIP_LIBRARY})
+target_link_libraries(country ${LUASANDBOX_LUASB_LIBRARY} ${GEOIP_LIBRARY})
 install(TARGETS country DESTINATION ${INSTALL_PATH}/geoip)

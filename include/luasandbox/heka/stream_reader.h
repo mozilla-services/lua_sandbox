@@ -6,20 +6,13 @@
 
 /** Hindsight Heka stream reader structures @file */
 
-#ifndef luasandbox_heka_stream_reader_impl_h_
-#define luasandbox_heka_stream_reader_impl_h_
+#ifndef luasandbox_heka_stream_reader_h_
+#define luasandbox_heka_stream_reader_h_
 
-#ifdef __cplusplus
-extern "C"
-{
-#endif
+#include "../util/heka_message.h"
+#include "../util/input_buffer.h"
 
-#include "luasandbox/lua.h"
-#include "luasandbox/util/input_buffer.h"
-#include "luasandbox/util/heka_message.h"
-
-extern const char *mozsvc_heka_stream_reader;
-extern const char *mozsvc_heka_stream_reader_table;
+#define LSB_HEKA_STREAM_READER "lsb.heka_stream_reader"
 
 typedef struct heka_stream_reader
 {
@@ -27,11 +20,5 @@ typedef struct heka_stream_reader
   lsb_heka_message msg;
   lsb_input_buffer buf;
 } heka_stream_reader;
-
-int luaopen_heka_stream_reader(lua_State *lua);
-
-#ifdef __cplusplus
-}
-#endif
 
 #endif

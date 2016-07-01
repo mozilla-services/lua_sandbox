@@ -830,10 +830,10 @@ int heka_encode_message(lua_State *lua)
     return luaL_argerror(lua, n, "incorrect number of arguments");
   }
 
-  lsb_lua_sandbox *lsb = lua_touserdata(lua, lua_upvalueindex(1));
-  if (!lsb) {
-    return luaL_error(lua, "encode_message() invalid upvalueindex");
-  }
+  lua_getfield(lua, LUA_REGISTRYINDEX, LSB_THIS_PTR);
+  lsb_lua_sandbox *lsb = lua_touserdata(lua, -1);
+  lua_pop(lua, 1); // remove this ptr
+  if (!lsb) return luaL_error(lua, "encode_message() invalid " LSB_THIS_PTR);
 
   lsb->output.pos = 0;
   lsb_err_value ret = heka_encode_message_table(lsb, 1);

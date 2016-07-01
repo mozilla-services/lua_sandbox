@@ -419,10 +419,10 @@ static char* test_pm_error()
   };
 
   struct pm_result results[] = {
-    { .ncp = 3, .scp = NULL, .rv = 1,  .err = "process_message() lua/input.lua:25: boom" },
+    { .ncp = 3, .scp = NULL, .rv = 1,  .err = "process_message() lua/input.lua:26: boom" },
     { .ncp = 4, .scp = NULL, .rv = 1,  .err = "process_message() must return a nil or string error message" },
     { .ncp = 5, .scp = NULL, .rv = 1,  .err = "process_message() must return a numeric status code" },
-    { .ncp = 6, .scp = NULL, .rv = 1,  .err = "process_message() lua/input.lua:31: aaaaaaaaaaaaaaaaaaaaaaaaa"
+    { .ncp = 6, .scp = NULL, .rv = 1,  .err = "process_message() lua/input.lua:32: aaaaaaaaaaaaaaaaaaaaaaaaa"
       "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
       "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
     }, // >max error message
@@ -604,22 +604,6 @@ static char* test_read_message()
 }
 
 
-static char* test_heka_json()
-{
-  lsb_heka_sandbox *hsb;
-  hsb = lsb_heka_create_input(NULL, "lua/heka_json.lua", NULL,
-#ifdef HAVE_ZLIB
-                              "have_zlib = true\n"
-#endif
-                              "max_message_size = 8196\n"
-                              "path = [[" TEST_LUA_PATH "]]\n"
-                              "cpath = [[" TEST_LUA_CPATH "]]\n", &logger, iim);
-  mu_assert(hsb, "lsb_heka_create_input failed");
-  e = lsb_heka_destroy_sandbox(hsb);
-  return NULL;
-}
-
-
 static char* test_heka_util()
 {
   lsb_heka_message m;
@@ -685,7 +669,6 @@ static char* all_tests()
   mu_run_test(test_encode_message);
   mu_run_test(test_decode_message);
   mu_run_test(test_read_message);
-  mu_run_test(test_heka_json);
   mu_run_test(test_heka_util);
 
   mu_run_test(benchmark_decode_message);

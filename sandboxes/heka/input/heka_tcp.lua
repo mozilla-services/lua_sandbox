@@ -27,7 +27,6 @@ ssl_params = {
 
 require "coroutine"
 local socket = require "socket"
-require "heka_stream_reader"
 require "string"
 require "table"
 
@@ -46,8 +45,7 @@ local sockets = {server}
 
 local function handle_client(client, caddr, cport)
     local found, consumed, need = false, 0, 8192 * 4
-    local hsr = heka_stream_reader.new(
-        string.format("%s:%d -> %s:%d", caddr, cport, address, port))
+    local hsr = create_stream_reader(string.format("%s:%d -> %s:%d", caddr, cport, address, port))
     client:settimeout(0)
     while client do
         local buf, err, partial = client:receive(need)

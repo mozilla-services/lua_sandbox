@@ -4,7 +4,6 @@
 
 set(LUA_SANDBOX_SRC
 luasandbox.c
-luasandbox_modules.c
 luasandbox_output.c
 luasandbox_serialize.c
 )
@@ -27,10 +26,8 @@ if(LIBM_LIBRARY)
 endif()
 
 install(TARGETS luasandbox DESTINATION ${CMAKE_INSTALL_LIBDIR} COMPONENT core)
-install(DIRECTORY "${EP_BASE}/lib/"  DESTINATION ${CMAKE_INSTALL_LIBDIR} COMPONENT core PATTERN "lua" EXCLUDE)
-install(DIRECTORY "${EP_BASE}/lib/lua/" DESTINATION ${CMAKE_INSTALL_LIBDIR}/${PROJECT_NAME}/modules COMPONENT core)
-install(DIRECTORY "${EP_BASE}/io/lib/lua/" DESTINATION ${CMAKE_INSTALL_LIBDIR}/${PROJECT_NAME}/io_modules COMPONENT core)
-install(DIRECTORY "${EP_BASE}/include/" DESTINATION ${CMAKE_INSTALL_INCLUDEDIR} COMPONENT core)
+install(DIRECTORY "${EP_BASE}/inst/${CMAKE_INSTALL_LIBDIR}/"  DESTINATION ${CMAKE_INSTALL_LIBDIR} COMPONENT core)
+install(DIRECTORY "${EP_BASE}/inst/include/" DESTINATION ${CMAKE_INSTALL_INCLUDEDIR} COMPONENT core)
 
 add_subdirectory(util)
 add_subdirectory(heka)

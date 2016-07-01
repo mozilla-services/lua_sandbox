@@ -13,9 +13,6 @@
 #include "luasandbox/lua.h"
 #include "luasandbox/util/output_buffer.h"
 
-#define LSB_HASH_MODULE "lsb_hash"
-#define LSB_COMPRESSION_MODULE "lsb_compression"
-
 struct lsb_lua_sandbox {
   lua_State         *lua;
   void              *parent;
@@ -45,23 +42,5 @@ lsb_err_value preserve_global_data(lsb_lua_sandbox *lsb);
  * @return lsb_err_value NULL on success error message on failure
  */
 lsb_err_value restore_global_data(lsb_lua_sandbox *lsb);
-
-/**
- * Built in Lua hash module
- *
- * @param lua Lua state
- *
- * @return int number of return values
- */
-int luaopen_lsb_hash(lua_State *lua);
-
-/**
- * Built in Lua compression module
- *
- * @param lua Lua state
- *
- * @return int number of return values
- */
-int luaopen_lsb_compression(lua_State *lua);
 
 #endif

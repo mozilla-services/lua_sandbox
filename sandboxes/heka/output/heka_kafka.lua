@@ -2,7 +2,7 @@
 -- License, v. 2.0. If a copy of the MPL was not distributed with this
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-require "heka_kafka_producer"
+require "kafka"
 
 --[[
 # Heka Kafka Producer Output
@@ -31,7 +31,7 @@ local topic_constant = read_config("topic_constant")
 local topic_variable = read_config("topic_variable") or "Logger"
 local producer_conf = read_config("producer_conf")
 
-local producer = heka_kafka_producer.new(brokerlist, producer_conf)
+local producer = kafka.producer(brokerlist, producer_conf)
 
 function process_message(sequence_id)
     local topic = topic_constant

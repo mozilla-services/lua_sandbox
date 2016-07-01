@@ -9,7 +9,7 @@
 #ifndef test_h_
 #define test_h_
 
-#include "${CMAKE_SOURCE_DIR}/src/test/mu_test.h"
+#include "luasandbox/test/mu_test.h"
 
 #include <errno.h>
 #include <stdio.h>
@@ -17,11 +17,12 @@
 #include <string.h>
 
 #define TEST_LUA_PATH "${CMAKE_SOURCE_DIR}/modules/?.lua"
+#define TEST_BASE_CPATH "${CMAKE_BINARY_DIR}/ep_base/inst/lib/luasandbox/"
 
 #ifdef _WIN32
-#define TEST_LUA_CPATH "${CMAKE_BINARY_DIR}/ep_base/lib/lua/?.dll"
+#define TEST_LUA_CPATH TEST_BASE_CPATH "modules/?.dll;" TEST_BASE_CPATH "io_modules/?.dll"
 #else
-#define TEST_LUA_CPATH "${CMAKE_BINARY_DIR}/ep_base/lib/lua/?.so"
+#define TEST_LUA_CPATH TEST_BASE_CPATH "modules/?.so;" TEST_BASE_CPATH "io_modules/?.so"
 #endif
 
 #endif

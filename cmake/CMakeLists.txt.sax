@@ -3,13 +3,13 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 cmake_minimum_required(VERSION 3.0 FATAL_ERROR)
-project(lpeg C)
+project(sax C)
 
 if(MSVC)
     set(CMAKE_C_FLAGS           "/W3 /WX")
     set(CMAKE_C_FLAGS_RELEASE   "/MD /O2 /Ob2")
 else()
-    set(CMAKE_C_FLAGS           "-std=c99 -pedantic -Werror -Wall -Wextra -fPIC")
+	set(CMAKE_C_FLAGS           "-std=c99 -pedantic -Werror -Wall -Wextra -fPIC")
     set(CMAKE_C_FLAGS_RELEASE   "-O2")
     set(CMAKE_SHARED_LIBRARY_SUFFIX ".so")
 endif()
@@ -22,18 +22,14 @@ set(INSTALL_PATH ${CMAKE_INSTALL_LIBDIR}/luasandbox/modules)
 set(CMAKE_SHARED_LIBRARY_PREFIX "")
 
 include_directories(${LUASANDBOX_INCLUDE_DIR}/luasandbox)
+include_directories(${CMAKE_SOURCE_DIR}/include)
 
-file(WRITE lpeg.def "EXPORTS\nluaopen_lpeg\n")
-set(LPEG_SRC
-lpcap.c
-lpcode.c
-lpprint.c
-lptree.c
-lpvm.c
-lpeg.def
-)
+find_library(LIBM_LIBRARY m)
 
-add_library(lpeg SHARED ${LPEG_SRC})
-target_link_libraries(lpeg ${LUASANDBOX_LUASB_LIBRARY})
-install(TARGETS lpeg DESTINATION ${INSTALL_PATH})
-install(FILES re.lua DESTINATION ${INSTALL_PATH})
+add_definitions(-DLUA_SANDBOX -DDIST_VERSION="0.5.0")
+add_library(sax SHARED src/symtseries.c lua/lua_sax.c lua/lua_sax.def)
+target_link_libraries(sax ${LUASANDBOX_LUASB_LIBRARY})
+if(LIBM_LIBRARY)
+  target_link_libraries(sax ${LIBM_LIBRARY})
+endif()
+install(TARGETS sax DESTINATION ${INSTALL_PATH})

@@ -12,7 +12,7 @@
 #include <string.h>
 #include <time.h>
 
-#include "../../test/mu_test.h"
+#include "luasandbox/test/mu_test.h"
 #include "luasandbox/util/heka_message.h"
 #include "luasandbox/util/heka_message_matcher.h"
 

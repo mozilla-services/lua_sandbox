@@ -12,10 +12,9 @@ filename = "heka_stdin.lua"
 --]]
 
 local stdin = require "io".stdin
-require "heka_stream_reader"
 require "string"
 
-local hsr = heka_stream_reader.new(read_config("Logger"))
+local hsr = create_stream_reader(read_config("Logger"))
 
 function process_message()
     local cnt = 0

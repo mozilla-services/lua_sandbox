@@ -186,7 +186,7 @@ LSB_UTIL_EXPORT bool lsb_decode_heka_message(lsb_heka_message *m,
  *
  * @return bool True on success
  */
-LSB_UTIL_EXPORT bool lsb_read_heka_field(lsb_heka_message *m,
+LSB_UTIL_EXPORT bool lsb_read_heka_field(const lsb_heka_message *m,
                                          lsb_const_string *name,
                                          int fi,
                                          int ai,

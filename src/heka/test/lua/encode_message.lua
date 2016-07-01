@@ -5,10 +5,10 @@
 require "string"
 require "table"
 require "circular_buffer"
-require "heka_json"
+require "rjson"
 
 local cb = circular_buffer.new(2,1,1)
-local doc = heka_json.parse([[{"foo":"bar"}]])
+local doc = rjson.parse([[{"foo":"bar"}]])
 assert(doc)
 
 local msgs = {
@@ -114,5 +114,5 @@ ok, err = pcall(encode_message, {Fields = { {noname = "foo", value = 1}} })
 assert(not ok)
 assert("encode_message() failed: field name must be a string" == err, string.format("received: %s", err))
 
-ok, err = pcall(heka_json.parse_message, "Payload")
-assert("no active message" == err, err)
+ok, err = pcall(rjson.parse_message, "Payload")
+assert("parse_message() no active message" == err, err)

@@ -31,7 +31,7 @@ encoder_cfg     = {
 --]]
 
 require "table"
-require "heka_json"
+require "rjson"
 require "string"
 local ltn12     = require "ltn12"
 local time      = require "os".time
@@ -88,7 +88,7 @@ local function send_request() -- hand coded since socket.http doesn't support ke
             local sink = ltn12.sink.table(body)
             client:receivebody(headers, sink)
             local response = table.concat(body)
-            local ok, doc = pcall(heka_json.parse, response)
+            local ok, doc = pcall(rjson.parse, response)
             if ok then
                 if doc:value(doc:find("errors")) then
                     ret = -1

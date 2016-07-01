@@ -6,7 +6,7 @@
 
 /** @brief Hindsight Heka stream reader implementation @file */
 
-#include "stream_reader_impl.h"
+#include "luasandbox/heka/stream_reader.h"
 
 #include <stdlib.h>
 #include <string.h>
@@ -15,59 +15,9 @@
 #include "message_impl.h"
 #include "luasandbox/lauxlib.h"
 
-const char *mozsvc_heka_stream_reader = "mozsvc.heka_stream_reader";
-const char *mozsvc_heka_stream_reader_table = "heka_stream_reader";
-
-static int hsr_new(lua_State *lua)
-{
-  int n = lua_gettop(lua);
-  luaL_argcheck(lua, n == 1, 0, "incorrect number of arguments");
-  size_t len;
-  const char *name = luaL_checklstring(lua, 1, &len);
-  luaL_argcheck(lua, len < 255, 1, "name is too long");
-
-  size_t nbytes = sizeof(heka_stream_reader);
-  heka_stream_reader *hsr = lua_newuserdata(lua, nbytes);
-
-  size_t mms = 0;
-  lua_getfield(lua, LUA_REGISTRYINDEX, LSB_CONFIG_TABLE);
-  if (lua_type(lua, -1) == LUA_TTABLE) {
-    lua_getfield(lua, -1, LSB_HEKA_MAX_MESSAGE_SIZE);
-    mms = (size_t)lua_tointeger(lua, -1);
-    lua_pop(lua, 1); // remove limit
-  } else {
-    free(hsr);
-    return luaL_error(lua, LSB_CONFIG_TABLE " is missing");
-  }
-  lua_pop(lua, 1); // remove config
-
-  if (lsb_init_heka_message(&hsr->msg, 8)) {
-    free(hsr);
-    return luaL_error(lua, "failed to init the message struct");
-  }
-  if (lsb_init_input_buffer(&hsr->buf, mms)) {
-    lsb_free_heka_message(&hsr->msg);
-    free(hsr);
-    return luaL_error(lua, "failed to init the input buffer");
-  }
-  hsr->name = malloc(len + 1);
-  if (!hsr->name) {
-    lsb_free_input_buffer(&hsr->buf);
-    lsb_free_heka_message(&hsr->msg);
-    free(hsr);
-    return luaL_error(lua, "memory allocation failed");
-  }
-  strcpy(hsr->name, name);
-
-  luaL_getmetatable(lua, mozsvc_heka_stream_reader);
-  lua_setmetatable(lua, -2);
-  return 1;
-}
-
-
 static heka_stream_reader* check_hsr(lua_State *lua, int args)
 {
-  heka_stream_reader *hsr = luaL_checkudata(lua, 1, mozsvc_heka_stream_reader);
+  heka_stream_reader *hsr = luaL_checkudata(lua, 1, LSB_HEKA_STREAM_READER);
   luaL_argcheck(lua, args == lua_gettop(lua), 0,
                 "incorrect number of arguments");
   return hsr;
@@ -107,7 +57,7 @@ static int hsr_find_message(lua_State *lua)
 {
   int n = lua_gettop(lua);
   luaL_argcheck(lua, n > 1 && n < 4, 0, "incorrect number of arguments");
-  heka_stream_reader *hsr = luaL_checkudata(lua, 1, mozsvc_heka_stream_reader);
+  heka_stream_reader *hsr = luaL_checkudata(lua, 1, LSB_HEKA_STREAM_READER);
   lsb_input_buffer *b = &hsr->buf;
 
   FILE *fh = NULL;
@@ -211,13 +161,6 @@ static int hsr_gc(lua_State *lua)
 }
 
 
-static const struct luaL_reg heka_stream_readerlib_f[] =
-{
-  { "new", hsr_new },
-  { NULL, NULL }
-};
-
-
 static const struct luaL_reg heka_stream_readerlib_m[] =
 {
   { "find_message", hsr_find_message },
@@ -228,12 +171,52 @@ static const struct luaL_reg heka_stream_readerlib_m[] =
 };
 
 
-int luaopen_heka_stream_reader(lua_State *lua)
+int heka_create_stream_reader(lua_State *lua)
 {
-  luaL_newmetatable(lua, mozsvc_heka_stream_reader);
-  lua_pushvalue(lua, -1);
-  lua_setfield(lua, -2, "__index");
-  luaL_register(lua, NULL, heka_stream_readerlib_m);
-  luaL_register(lua, mozsvc_heka_stream_reader_table, heka_stream_readerlib_f);
+  int n = lua_gettop(lua);
+  luaL_argcheck(lua, n == 1, 0, "incorrect number of arguments");
+  size_t len;
+  const char *name = luaL_checklstring(lua, 1, &len);
+  luaL_argcheck(lua, len < 255, 1, "name is too long");
+
+  size_t nbytes = sizeof(heka_stream_reader);
+  heka_stream_reader *hsr = lua_newuserdata(lua, nbytes);
+
+  if (luaL_newmetatable(lua, LSB_HEKA_STREAM_READER) == 1) {
+    lua_pushvalue(lua, -1);
+    lua_setfield(lua, -2, "__index");
+    luaL_register(lua, NULL, heka_stream_readerlib_m);
+  }
+  lua_setmetatable(lua, -2);
+
+  size_t mms = 0;
+  lua_getfield(lua, LUA_REGISTRYINDEX, LSB_CONFIG_TABLE);
+  if (lua_type(lua, -1) == LUA_TTABLE) {
+    lua_getfield(lua, -1, LSB_HEKA_MAX_MESSAGE_SIZE);
+    mms = (size_t)lua_tointeger(lua, -1);
+    lua_pop(lua, 1); // remove limit
+  } else {
+    free(hsr);
+    return luaL_error(lua, LSB_CONFIG_TABLE " is missing");
+  }
+  lua_pop(lua, 1); // remove config
+
+  if (lsb_init_heka_message(&hsr->msg, 8)) {
+    free(hsr);
+    return luaL_error(lua, "failed to init the message struct");
+  }
+  if (lsb_init_input_buffer(&hsr->buf, mms)) {
+    lsb_free_heka_message(&hsr->msg);
+    free(hsr);
+    return luaL_error(lua, "failed to init the input buffer");
+  }
+  hsr->name = malloc(len + 1);
+  if (!hsr->name) {
+    lsb_free_input_buffer(&hsr->buf);
+    lsb_free_heka_message(&hsr->msg);
+    free(hsr);
+    return luaL_error(lua, "memory allocation failed");
+  }
+  strcpy(hsr->name, name);
   return 1;
 }

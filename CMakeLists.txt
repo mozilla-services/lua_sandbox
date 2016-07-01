@@ -3,10 +3,10 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 cmake_minimum_required(VERSION 3.0 FATAL_ERROR)
-project(luasandbox C CXX)
+project(luasandbox C)
 set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "Generic Lua sandbox for dynamic data analysis")
 set(CPACK_PACKAGE_VERSION_MAJOR 0)
-set(CPACK_PACKAGE_VERSION_MINOR 23)
+set(CPACK_PACKAGE_VERSION_MINOR 24)
 set(CPACK_PACKAGE_VERSION_PATCH 0)
 set(CPACK_PACKAGE_CONTACT "Mike Trinkala <trink@mozilla.com>")
 
@@ -35,40 +35,7 @@ if(LUA_JIT)
   add_definitions(-DLUA_JIT)
 endif()
 
-option(LUA_SNAPPY "Include the Lua Snappy module (only used to support a deprecated Mozilla telemetry data format)" off)
-
 find_library(LIBM_LIBRARY m)
-
-find_package(ZLIB)
-if (ZLIB_FOUND)
-  add_definitions(-DHAVE_ZLIB)
-endif()
-
-find_library(LIBRTKAFKA_LIBRARY rdkafka)
-if (LIBRTKAFKA_LIBRARY)
-  add_definitions(-DHAVE_KAFKA)
-else()
-  message(STATUS "librdkafka was not found, dependent modules will not be built")
-endif()
-
-find_package(PostgreSQL)
-if (NOT PostgreSQL_FOUND)
-  message(STATUS "PostgreSQL was not found, dependent modules will not be built")
-endif()
-
-if (APPLE)
-  set(OPENSSL_ROOT_DIR /opt/local)
-endif()
-
-find_package(OpenSSL)
-if (NOT OPENSSL_FOUND)
-  message(STATUS "OpenSSL was not found, dependent modules will not be built")
-endif()
-
-find_library(GEOIP_LIBRARY GeoIP)
-if (NOT GEOIP_LIBRARY)
-  message(STATUS "GeoIP was not found, dependent modules will not be built")
-endif()
 
 find_package(Git REQUIRED)
 set(CPACK_RPM_PACKAGE_LICENSE "MPLv2.0")
@@ -84,7 +51,7 @@ if(HAVE_CLOCK_GETTIME)
   add_definitions(-DHAVE_CLOCK_GETTIME)
 endif()
 
-include_directories("${EP_BASE}/include")
+include_directories("${EP_BASE}/inst/include")
 install(DIRECTORY "${CMAKE_SOURCE_DIR}/modules/" DESTINATION ${CMAKE_INSTALL_LIBDIR}/${PROJECT_NAME}/modules COMPONENT core)
 install(FILES "${CMAKE_SOURCE_DIR}/README.md" DESTINATION ${CMAKE_INSTALL_DOCDIR} COMPONENT core)
 install(DIRECTORY "${CMAKE_SOURCE_DIR}/sandboxes/" DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/${PROJECT_NAME}/sandboxes COMPONENT core)
@@ -101,5 +68,9 @@ install(FILES ${CMAKE_CURRENT_BINARY_DIR}/luasandboxConfig.cmake ${CMAKE_CURRENT
 
 add_subdirectory(src)
 add_custom_target(copy_includes
-COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/include ${EP_BASE}/include)
-add_dependencies(luasandboxutil copy_includes)
+COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/include ${EP_BASE}/inst/include)
+add_dependencies(${LUA_PROJECT} copy_includes)
+add_dependencies(luasandboxutil ${LUA_PROJECT})
+add_dependencies(luasandbox luasandboxutil)
+add_dependencies(luasandboxtest luasandbox)
+add_dependencies(luasandboxheka luasandboxtest)

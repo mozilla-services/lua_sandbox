@@ -31,6 +31,7 @@
 
 #define LSB_HEKA_MAX_MESSAGE_SIZE "max_message_size"
 #define LSB_HEKA_UPDATE_CHECKPOINT "update_checkpoint"
+#define LSB_HEKA_THIS_PTR "lsb_heka_this_ptr"
 
 enum lsb_heka_pm_rv {
   LSB_HEKA_PM_SENT  = 0,
@@ -324,6 +325,26 @@ LSB_HEKA_EXPORT lsb_heka_stats lsb_heka_get_stats(lsb_heka_sandbox *hsb);
  * @return True if the sandbox has not been terminated
  */
 LSB_HEKA_EXPORT bool lsb_heka_is_running(lsb_heka_sandbox *hsb);
+
+/**
+ * Retrieve the currently active sandbox message.  This call returns a handle to
+ * internal data and is not thread safe.
+ * *
+ * @param hsb Heka sandbox
+ *
+ * @return const lsb_heka_message* NULL if there is no active message
+ */
+LSB_HEKA_EXPORT const lsb_heka_message*
+lsb_heka_get_message(lsb_heka_sandbox *hsb);
+
+/**
+ * Retrieve the sandbox tyye.
+ * *
+ * @param hsb Heka sandbox
+ *
+ * @return char Heka sandbox type identifer
+ */
+LSB_HEKA_EXPORT char lsb_heka_get_type(lsb_heka_sandbox *hsb);
 
 #ifdef __cplusplus
 }

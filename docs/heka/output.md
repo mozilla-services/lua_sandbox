@@ -413,47 +413,39 @@ producer_conf = {
 -- License, v. 2.0. If a copy of the MPL was not distributed with this
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-require "kafka.producer"
-require "kafka.topic"
-
-local brokers = read_config("brokers") or error("brokers must be set")
+local brokerlist = read_config("brokerlist") or error("brokerlist must be set")
 local topic_constant = read_config("topic_constant")
 local topic_variable = read_config("topic_variable") or "Logger"
 local producer_conf = read_config("producer_conf")
 
-local producer = kafka.producer.new(brokers, producer_conf)
-local topics = {}
+local producer = kafka.producer(brokerlist, producer_conf)
 
 function process_message(sequence_id)
-    local var = topic_constant
-    if not var then
-        var = read_message(topic_variable) or "unknown"
-    end
-
-    local topic = topics[var]
+    local topic = topic_constant
     if not topic then
-        topic = kafka.topic.new(producer, var)
-        topics[var] = topic
+        topic = read_message(topic_variable) or "unknown"
     end
+    producer:create_topic(topic) -- creates the topic if it does not exist
 
-    producer:poll() -- calls async_checkpoint_update
-    local ret = topic:send(0, read_message("raw"), sequence_id)
+    producer:poll()
+    local ret = producer:send(topic, -1, sequence_id) -- sends the current message
 
     if ret ~= 0 then
         if ret == 105 then
-            return -3 -- queue full retry
+            return -3, "queue full" -- retry
         elseif ret == 90 then
-            return -1 -- message too large
+            return -1, "message too large" -- fail
         elseif ret == 2 then
-            error("unknown topic: " .. var)
+            error("unknown topic: " .. topic)
         elseif ret == 3 then
             error("unknown partition")
         end
     end
+
     return -5 -- asynchronous checkpoint management
 end
 
 function timer_event(ns)
-    producer:poll() -- calls update_checkpoint
+    producer:poll()
 end
 ```

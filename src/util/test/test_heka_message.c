@@ -12,8 +12,8 @@
 
 #include <stdio.h>
 
-#include "../../test/mu_test.h"
 #include "luasandbox/error.h"
+#include "luasandbox/test/mu_test.h"
 #include "luasandbox/util/heka_message.h"
 
 #define TEST_UUID "\x0a\x10\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff"
