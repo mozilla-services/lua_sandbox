@@ -148,8 +148,8 @@ LSB_EXPORT char* lsb_destroy(lsb_lua_sandbox *lsb);
  * Retrieve the sandbox usage statistics.
  *
  * @param lsb Pointer to the sandbox.
- * @param lsb_usage_type Type of statistic to retrieve i.e. memory.
- * @param lsb_usage_stat Type of statistic to retrieve i.e. current.
+ * @param utype Type of statistic to retrieve i.e. memory.
+ * @param ustat Type of statistic to retrieve i.e. current.
  *
  * @return size_t Count or number of bytes depending on the statistic.
  */

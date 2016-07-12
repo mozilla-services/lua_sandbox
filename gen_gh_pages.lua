@@ -117,6 +117,9 @@ local function output_menu(before, after, paths, version)
         <ul>
             <li><a href="/lua_sandbox/doxygen/index.html">Source Documentation</a></li>
         </ul>
+        <ul>
+            <li><a href="/lua_sandbox_extensions/index.html">Sandbox Extensions</a></li>
+        </ul>
     </div>
     <div class="main-content">
 ]])

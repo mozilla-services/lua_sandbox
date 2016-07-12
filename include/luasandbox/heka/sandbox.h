@@ -204,7 +204,7 @@ int lsb_heka_pm_analysis(lsb_heka_sandbox *hsb,
  * @param lsb_cfg Full configuration string as a Lua table (NULL for lsb
  *                defaults)
  * @param logger Struct for error reporting/debug printing (NULL to disable)
- * @param upc checkpoint_updated callback when using batch or async output
+ * @param ucp checkpoint_updated callback when using batch or async output
  *
  * @return lsb_heka_sandbox* On success a pointer to the sandbox otherwise NULL
  */
@@ -261,7 +261,7 @@ lsb_heka_stop_sandbox(lsb_heka_sandbox *hsb);
  * @param err Reason for termination
  */
 LSB_HEKA_EXPORT void
-lsb_heka_terminate_sandbox(lsb_heka_sandbox *lsb, const char *err);
+lsb_heka_terminate_sandbox(lsb_heka_sandbox *hsb, const char *err);
 
 /**
  * Frees all memory associated with the sandbox; hsb cannont be used after this

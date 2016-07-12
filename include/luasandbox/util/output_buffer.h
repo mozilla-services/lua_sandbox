@@ -94,23 +94,23 @@ lsb_outputs(lsb_output_buffer *b, const char *str, size_t len);
  * More efficient output of a double to a string. NaN/Inf check and then calls
  * lsb_outputfd.
  *
- * @param output Pointer the output buffer.
+ * @param b Pointer the output buffer.
  * @param d Double value to convert to a string.
  *
  * @return lsb_err_value NULL on success error message on failure
  */
-LSB_UTIL_EXPORT lsb_err_value lsb_outputd(lsb_output_buffer *output, double d);
+LSB_UTIL_EXPORT lsb_err_value lsb_outputd(lsb_output_buffer *b, double d);
 
 
 /**
  * More efficient output of a double to a string; no NaN or Inf outputs.
  *
- * @param output Pointer the output buffer.
+ * @param b Pointer the output buffer.
  * @param d Double value to convert to a string.
  *
  * @return lsb_err_value NULL on success error message on failure
  */
-LSB_UTIL_EXPORT lsb_err_value lsb_outputfd(lsb_output_buffer *ob, double d);
+LSB_UTIL_EXPORT lsb_err_value lsb_outputfd(lsb_output_buffer *b, double d);
 
 #ifdef __cplusplus
 }
