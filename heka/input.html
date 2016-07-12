@@ -46,7 +46,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
   <link rel="stylesheet" href="/lua_sandbox/docs.css" type="text/css" />
 </head>
 <body>
-<div id="title">Lua Sandbox Library (0.22.4)<hr/></div>
+<div id="title">Lua Sandbox Library (1.0.0)<hr/></div>
 <div class="menu">
         <ul>
             <li><a href="/lua_sandbox/index.html">Overview</a></li>
@@ -69,108 +69,11 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
             <li><a href="/lua_sandbox/doxygen/index.html">Source Documentation</a></li>
         </ul>
         <ul>
-            <li>C Modules</li>
-            <ul>
-                <li>Built-in</li>
-                <ul>
-                    <li><a href="/lua_sandbox/lsb_compression.html">lsb_compression</a></li>
-                    <li><a href="/lua_sandbox/lsb_hash.html">lsb_hash</a></li>
-                    <li>Heka</li>
-                    <ul>
-                        <li><a href="/lua_sandbox/heka/json.html">heka_json</a></li>
-                        <li><a href="/lua_sandbox/heka/kafka_consumer.html">heka_kafka_consumer</a></li>
-                        <li><a href="/lua_sandbox/heka/kafka_producer.html">heka_kafka_producer</a></li>
-                        <li><a href="/lua_sandbox/heka/stream_reader.html">heka_stream_reader</a></li>
-                    </ul>
-                </ul>
-                <li>Shared Libraries</li>
-                <ul>
-                    <li><a href="https://github.com/mozilla-services/lua_bloom_filter/blob/master/README.md">bloom_filter</a></li>
-                    <li><a href="https://github.com/mozilla-services/lua_circular_buffer/blob/master/README.md">circular_buffer</a></li>
-                    <li><a href="http://www.kyne.com.au/~mark/software/lua-cjson-manual.html">cjson</a></li>
-                    <li><a href="https://github.com/mozilla-services/lua_cuckoo_filter/blob/master/README.md">cuckoo_filter</a></li>
-                    <li><a href="https://github.com/mozilla-services/lua_hyperloglog/blob/master/README.md">hyperloglog</a></li>
-                    <li><a href="http://www.inf.puc-rio.br/~roberto/lpeg/lpeg.html">lpeg</a></li>
-                    <li><a href="http://www.inf.puc-rio.br/~roberto/lpeg/re.html">re</a></li>
-                    <li><a href="https://github.com/trink/symtseries/blob/master/README.md">sax</a></li>
-                    <li><a href="http://www.inf.puc-rio.br/~roberto/struct/">struct</a></li>
-                <li>Conditionally Included</li>
-                <ul>
-                    <li><a href="https://github.com/agladysh/lua-geoip">geoip</a></li>
-                    <li><a href="https://github.com/brunoos/luasec/wiki">luasec</a></li>
-                    <li><a href="https://keplerproject.github.io/luasql/">luasql</a></li>
-                    <ul>
-                        <li><a href="https://keplerproject.github.io/luasql/manual.html#postgres_extensions">postgres</a></li>
-                    </ul>
-                    <li><a href="https://github.com/zhaozg/lua-openssl">openssl</a></li>
-                </ul>
-                </ul>
-            </ul>
+            <li><a href="/lua_sandbox_extensions/index.html">Sandbox Extensions</a></li>
         </ul>
-        <ul>
-<li><a href="/lua_sandbox/modules/index.html">modules</a></li>
-<ul>
-<li><a href="/lua_sandbox/modules/heka/index.html">heka</a></li>
-<ul>
-<li><a href="/lua_sandbox/modules/heka/elasticsearch/index.html">elasticsearch</a></li>
-<ul>
-<li><a href="/lua_sandbox/modules/heka/elasticsearch/payload.html">payload</a></li>
-</ul>
-<li><a href="/lua_sandbox/modules/heka/elasticsearch.html">elasticsearch</a></li>
-<li><a href="/lua_sandbox/modules/heka/msg_interpolate.html">msg_interpolate</a></li>
-<li><a href="/lua_sandbox/modules/heka/util.html">util</a></li>
-</ul>
-<li><a href="/lua_sandbox/modules/lpeg/index.html">lpeg</a></li>
-<ul>
-<li><a href="/lua_sandbox/modules/lpeg/cbufd.html">cbufd</a></li>
-<li><a href="/lua_sandbox/modules/lpeg/common_log_format.html">common_log_format</a></li>
-<li><a href="/lua_sandbox/modules/lpeg/date_time.html">date_time</a></li>
-<li><a href="/lua_sandbox/modules/lpeg/ip_address.html">ip_address</a></li>
-<li><a href="/lua_sandbox/modules/lpeg/mysql.html">mysql</a></li>
-<li><a href="/lua_sandbox/modules/lpeg/postfix.html">postfix</a></li>
-<li><a href="/lua_sandbox/modules/lpeg/syslog.html">syslog</a></li>
-<li><a href="/lua_sandbox/modules/lpeg/syslog_message.html">syslog_message</a></li>
-</ul>
-<li><a href="/lua_sandbox/modules/lsb/index.html">lsb</a></li>
-<ul>
-<li><a href="/lua_sandbox/modules/lsb/util.html">util</a></li>
-</ul>
-</ul>
-</ul>
-<ul>
-<li><a href="/lua_sandbox/sandboxes/index.html">sandboxes</a></li>
-<ul>
-<li><a href="/lua_sandbox/sandboxes/heka/index.html">heka</a></li>
-<ul>
-<li><a href="/lua_sandbox/sandboxes/heka/analysis/index.html">analysis</a></li>
-<ul>
-<li><a href="/lua_sandbox/sandboxes/heka/analysis/throughput.html">throughput</a></li>
-</ul>
-<li><a href="/lua_sandbox/sandboxes/heka/input/index.html">input</a></li>
-<ul>
-<li><a href="/lua_sandbox/sandboxes/heka/input/heka_kafka.html">heka_kafka</a></li>
-<li><a href="/lua_sandbox/sandboxes/heka/input/heka_stdin.html">heka_stdin</a></li>
-<li><a href="/lua_sandbox/sandboxes/heka/input/heka_tcp.html">heka_tcp</a></li>
-<li><a href="/lua_sandbox/sandboxes/heka/input/syslog_udp.html">syslog_udp</a></li>
-</ul>
-<li><a href="/lua_sandbox/sandboxes/heka/output/index.html">output</a></li>
-<ul>
-<li><a href="/lua_sandbox/sandboxes/heka/output/debug.html">debug</a></li>
-<li><a href="/lua_sandbox/sandboxes/heka/output/elasticsearch_bulk_api.html">elasticsearch_bulk_api</a></li>
-<li><a href="/lua_sandbox/sandboxes/heka/output/heka_kafka.html">heka_kafka</a></li>
-<li><a href="/lua_sandbox/sandboxes/heka/output/heka_log_rolling.html">heka_log_rolling</a></li>
-<li><a href="/lua_sandbox/sandboxes/heka/output/heka_s3_partition.html">heka_s3_partition</a></li>
-<li><a href="/lua_sandbox/sandboxes/heka/output/heka_tcp.html">heka_tcp</a></li>
-<li><a href="/lua_sandbox/sandboxes/heka/output/heka_tcp_matcher.html">heka_tcp_matcher</a></li>
-<li><a href="/lua_sandbox/sandboxes/heka/output/inject_payload.html">inject_payload</a></li>
-</ul>
-</ul>
-</ul>
-</ul>
     </div>
     <div class="main-content">
 <h1 id="input-sandbox-interface">Input Sandbox Interface</h1>
-<p><a href="/lua_sandbox/sandboxes/heka/input/index.html">Available Input Sandboxes</a></p>
 <h2 id="recommendations">Recommendations</h2>
 <p>Since the sandbox does not run in isolation there are some expectations of how the host infrastructure behaves. The current recommendation are based on the Hindsight reference implementation.</p>
 <h2 id="disabled-functionality">Disabled Functionality</h2>
@@ -219,13 +122,52 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <p>Sends a Heka protocol buffer message into the host. For the Heka message table argument <code>Logger</code> and <code>Hostname</code> are restricted header values. An override configuration option is provided <code>restricted_headers</code>; when true the headers are always set to the configuration values; when false (default) the headers are set to the values provide in the message table, if no value is provided it defaults to the appropriate configuration value.</p>
 <p><em>Arguments</em></p>
 <ul>
-<li>msg (<a href="message.html">Heka message table</a>, <a href="stream_reader.html">Heka stream reader</a> or Heka protobuf string)</li>
+<li>msg (<a href="message.html">Heka message table</a>, <a href="#heka-stream-reader-methods">Heka stream reader</a> or Heka protobuf string)</li>
 <li>checkpoint (optional: number, string) - checkpoint to be returned in the <code>process_message</code> call</li>
 </ul>
 <p><em>Return</em></p>
 <ul>
 <li>none - throws an error on invalid input</li>
 </ul>
+<h3 id="create_stream_reader">create_stream_reader</h3>
+<p>Creates a Heka stream reader to enable parsing of a framed Heka protobuf stream in a Lua sandbox. See: <a href="#example-of-a-heka-protobuf-stdin-reader">Example of a Heka protobuf reader</a></p>
+<p><em>Arguments</em></p>
+<ul>
+<li>name (string) - name of the stream reader (used in the log)</li>
+</ul>
+<p><em>Return</em></p>
+<ul>
+<li>hsr (userdata) - Heka stream reader or an error is thrown</li>
+</ul>
+<h4 id="heka-stream-reader-methods">Heka Stream Reader Methods</h4>
+<h5 id="find_message">find_message</h5>
+<p>Locates a Heka message within the stream.</p>
+<div class="sourceCode"><pre class="sourceCode lua"><code class="sourceCode lua"><span class="kw">local</span> found<span class="ot">,</span> consumed<span class="ot">,</span> need <span class="ot">=</span> hsr:find_message<span class="ot">(</span>buf<span class="ot">)</span></code></pre></div>
+<p><em>Arguments</em></p>
+<ul>
+<li>buf (string, userdata (FILE*)) - buffer containing a Heka protobuf stream data or a userdate file object</li>
+<li>decode (bool default: true) - true if the framed message should be protobuf decoded</li>
+</ul>
+<p><em>Return</em></p>
+<ul>
+<li>found (bool) - true if a message was found</li>
+<li>consumed (number) - number of bytes consumed so the offset can be tracked for checkpointing purposes</li>
+<li>need/read (number) - number of bytes needed to complete the message or fill the underlying buffer or in the case of a file object the number of bytes added to the buffer</li>
+</ul>
+<h5 id="decode_message-1">decode_message</h5>
+<p>Converts a Heka protobuf encoded message string into a stream reader representation. Note: this operation clears the internal stream reader buffer.</p>
+<p><em>Arguments</em></p>
+<ul>
+<li>heka_pb (string) - Heka protobuf binary string</li>
+</ul>
+<p><em>Return</em></p>
+<ul>
+<li>none - throws an error on failure</li>
+</ul>
+<h5 id="read_message">read_message</h5>
+<p>Provides access to the Heka message data within the reader object.</p>
+<div class="sourceCode"><pre class="sourceCode lua"><code class="sourceCode lua"><span class="kw">local</span> ts <span class="ot">=</span> hsr:read_message<span class="ot">(</span><span class="st">&quot;Timestamp&quot;</span><span class="ot">)</span></code></pre></div>
+<p>See <a href="analysis.html#read_message">read_message</a> for details.</p>
 <h2 id="modes-of-operation">Modes of Operation</h2>
 <h3 id="run-once">Run Once</h3>
 <ul>
@@ -250,7 +192,7 @@ ticker_interval <span class="ot">=</span> <span class="dv">0</span></code></pre>
 <li>Set the <code>ticker_interval</code> greater than zero and non fatally (&lt;=0) return from <code>process_message</code>, when the ticker interval expires <code>process_message</code> will be called again.</li>
 <li>The <code>instruction_limit</code> configuration can be set if desired.</li>
 </ul>
-<h4 id="example-startup-ping-1">Example startup ping</h4>
+<h4 id="example-heartbeat-ping">Example heartbeat ping</h4>
 <div class="sourceCode"><pre class="sourceCode lua"><code class="sourceCode lua"><span class="co">-- cfg</span>
 ticker_interval <span class="ot">=</span> <span class="dv">60</span></code></pre></div>
 <div class="sourceCode"><pre class="sourceCode lua"><code class="sourceCode lua"><span class="co">-- This Source Code Form is subject to the terms of the Mozilla Public</span>
@@ -293,22 +235,25 @@ Payload     <span class="ot">=</span> <span class="st">&quot;&quot;</span><span 
 
 <span class="co">--]]</span>
 
-<span class="kw">local</span> stdin <span class="ot">=</span> <span class="fu">require</span> <span class="st">&quot;io&quot;</span><span class="ot">.</span>stdin
-<span class="fu">require</span> <span class="st">&quot;heka_stream_reader&quot;</span>
 
-<span class="kw">local</span> hsr <span class="ot">=</span> heka_stream_reader<span class="ot">.</span>new<span class="ot">(</span>read_config<span class="ot">(</span><span class="st">&quot;Logger&quot;</span><span class="ot">))</span>
+<span class="kw">local</span> stdin <span class="ot">=</span> <span class="fu">require</span> <span class="st">&quot;io&quot;</span><span class="ot">.</span>stdin
+<span class="fu">require</span> <span class="st">&quot;string&quot;</span>
+
+<span class="kw">local</span> hsr <span class="ot">=</span> create_stream_reader<span class="ot">(</span>read_config<span class="ot">(</span><span class="st">&quot;Logger&quot;</span><span class="ot">))</span>
 
 <span class="kw">function</span> process_message<span class="ot">()</span>
+    <span class="kw">local</span> cnt <span class="ot">=</span> <span class="dv">0</span>
     <span class="kw">local</span> found<span class="ot">,</span> consumed<span class="ot">,</span> <span class="fu">read</span>
     <span class="kw">repeat</span>
         <span class="kw">repeat</span>
             found<span class="ot">,</span> consumed<span class="ot">,</span> <span class="fu">read</span> <span class="ot">=</span> hsr:find_message<span class="ot">(</span>stdin<span class="ot">)</span>
             <span class="kw">if</span> found <span class="kw">then</span>
                 inject_message<span class="ot">(</span>hsr<span class="ot">)</span>
+                cnt <span class="ot">=</span> cnt <span class="ot">+</span> <span class="dv">1</span>
             <span class="kw">end</span>
         <span class="kw">until</span> <span class="kw">not</span> found
     <span class="kw">until</span> <span class="fu">read</span> <span class="ot">==</span> <span class="dv">0</span>
-    <span class="kw">return</span> <span class="dv">0</span>
+    <span class="kw">return</span> <span class="dv">0</span><span class="ot">,</span> <span class="fu">string.format</span><span class="ot">(</span><span class="st">&quot;processed %d messages&quot;</span><span class="ot">,</span> cnt<span class="ot">)</span>
 <span class="kw">end</span></code></pre></div>
 </div>
 </body>

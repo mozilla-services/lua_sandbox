@@ -24,7 +24,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">luasandbox
-   &#160;<span id="projectnumber">0.22.4</span>
+   &#160;<span id="projectnumber">1.0.0</span>
    </div>
    <div id="projectbrief">Generic Lua sandbox for dynamic data analysis</div>
   </td>
@@ -98,13 +98,13 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="textblock"><code>#include &lt;stdio.h&gt;</code><br />
 <code>#include &quot;<a class="el" href="output__buffer_8h_source.html">luasandbox/util/output_buffer.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="luasandbox__output_8h_source.html">luasandbox_output.h</a>&quot;</code><br />
-<code>#include &quot;luasandbox/lua.h&quot;</code><br />
+<code>#include &quot;<a class="el" href="lua_8h_source.html">luasandbox/lua.h</a>&quot;</code><br />
 </div>
 <p><a href="luasandbox__serialize_8h_source.html">Go to the source code of this file.</a></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:a0bb439e83f3aa082f2a282c6e1f41042"><td class="memItemLeft" align="right" valign="top"><a class="el" href="luasandbox_8h.html#a1fe1b28ef15a5cc442f06c26c2eae3cc">LSB_EXPORT</a> void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="luasandbox__serialize_8h.html#a0bb439e83f3aa082f2a282c6e1f41042">lsb_add_serialize_function</a> (lua_State *lua, lua_CFunction fp)</td></tr>
+<tr class="memitem:a0bb439e83f3aa082f2a282c6e1f41042"><td class="memItemLeft" align="right" valign="top"><a class="el" href="luasandbox_8h.html#a1fe1b28ef15a5cc442f06c26c2eae3cc">LSB_EXPORT</a> void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="luasandbox__serialize_8h.html#a0bb439e83f3aa082f2a282c6e1f41042">lsb_add_serialize_function</a> (<a class="el" href="lua_8h.html#a28186297f2e9f2de0652504633de8fb3">lua_State</a> *lua, <a class="el" href="lua_8h.html#a878b7e392e78661a374cf1c3073029b9">lua_CFunction</a> fp)</td></tr>
 <tr class="memdesc:a0bb439e83f3aa082f2a282c6e1f41042"><td class="mdescLeft">&#160;</td><td class="mdescRight">Add a serialization function to the environment table.  <a href="#a0bb439e83f3aa082f2a282c6e1f41042">More...</a><br /></td></tr>
 <tr class="separator:a0bb439e83f3aa082f2a282c6e1f41042"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae110706a07be36c9537ba75790684dac"><td class="memItemLeft" align="right" valign="top"><a class="el" href="luasandbox_8h.html#a1fe1b28ef15a5cc442f06c26c2eae3cc">LSB_EXPORT</a> <a class="el" href="error_8h.html#aad997d70bc1cf59d6545e43984146feb">lsb_err_value</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="luasandbox__serialize_8h.html#ae110706a07be36c9537ba75790684dac">lsb_serialize_binary</a> (<a class="el" href="structlsb__output__buffer.html">lsb_output_buffer</a> *output, const void *src, size_t len)</td></tr>
@@ -126,13 +126,13 @@ Functions</h2></td></tr>
         <tr>
           <td class="memname"><a class="el" href="luasandbox_8h.html#a1fe1b28ef15a5cc442f06c26c2eae3cc">LSB_EXPORT</a> void lsb_add_serialize_function </td>
           <td>(</td>
-          <td class="paramtype">lua_State *&#160;</td>
+          <td class="paramtype"><a class="el" href="lua_8h.html#a28186297f2e9f2de0652504633de8fb3">lua_State</a> *&#160;</td>
           <td class="paramname"><em>lua</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">lua_CFunction&#160;</td>
+          <td class="paramtype"><a class="el" href="lua_8h.html#a878b7e392e78661a374cf1c3073029b9">lua_CFunction</a>&#160;</td>
           <td class="paramname"><em>fp</em>&#160;</td>
         </tr>
         <tr>

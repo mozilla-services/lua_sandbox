@@ -24,7 +24,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">luasandbox
-   &#160;<span id="projectnumber">0.22.4</span>
+   &#160;<span id="projectnumber">1.0.0</span>
    </div>
    <div id="projectbrief">Generic Lua sandbox for dynamic data analysis</div>
   </td>
@@ -100,7 +100,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <p>Generic Lua sandbox for dynamic data analysis.  
 <a href="#details">More...</a></p>
 <div class="textblock"><code>#include &quot;<a class="el" href="error_8h_source.html">luasandbox/error.h</a>&quot;</code><br />
-<code>#include &quot;luasandbox/lua.h&quot;</code><br />
+<code>#include &quot;<a class="el" href="lua_8h_source.html">luasandbox/lua.h</a>&quot;</code><br />
 </div>
 <p><a href="luasandbox_8h_source.html">Go to the source code of this file.</a></p>
 <table class="memberdecls">
@@ -114,6 +114,8 @@ Macros</h2></td></tr>
 <tr class="separator:ae22c72449928827573574083bfc928dc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:afc25cd5f045ac39bb7d771339e00c642"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="luasandbox_8h.html#afc25cd5f045ac39bb7d771339e00c642">LSB_CONFIG_TABLE</a>&#160;&#160;&#160;&quot;lsb_config&quot;</td></tr>
 <tr class="separator:afc25cd5f045ac39bb7d771339e00c642"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3aabe4e3e19ed2a3e244a59b415d037a"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="luasandbox_8h.html#a3aabe4e3e19ed2a3e244a59b415d037a">LSB_THIS_PTR</a>&#160;&#160;&#160;&quot;lsb_this_ptr&quot;</td></tr>
+<tr class="separator:a3aabe4e3e19ed2a3e244a59b415d037a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a76f0f37eafaf5d4192b827165fd10c18"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="luasandbox_8h.html#a76f0f37eafaf5d4192b827165fd10c18">LSB_MEMORY_LIMIT</a>&#160;&#160;&#160;&quot;memory_limit&quot;</td></tr>
 <tr class="separator:a76f0f37eafaf5d4192b827165fd10c18"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a28f00ccb88f58254b667c9590aef4348"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="luasandbox_8h.html#a28f00ccb88f58254b667c9590aef4348">LSB_INSTRUCTION_LIMIT</a>&#160;&#160;&#160;&quot;instruction_limit&quot;</td></tr>
@@ -178,7 +180,7 @@ Functions</h2></td></tr>
 <tr class="memitem:adb8e0a7f1ebc59d3003c4405f9d8311e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="luasandbox_8h.html#a1fe1b28ef15a5cc442f06c26c2eae3cc">LSB_EXPORT</a> void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="luasandbox_8h.html#adb8e0a7f1ebc59d3003c4405f9d8311e">lsb_set_error</a> (<a class="el" href="luasandbox_8h.html#ad2faa95e9a2ada80510c0d2942862c6e">lsb_lua_sandbox</a> *lsb, const char *err)</td></tr>
 <tr class="memdesc:adb8e0a7f1ebc59d3003c4405f9d8311e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the last error string.  <a href="#adb8e0a7f1ebc59d3003c4405f9d8311e">More...</a><br /></td></tr>
 <tr class="separator:adb8e0a7f1ebc59d3003c4405f9d8311e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa6f00183b6dd9e2c414ef443b4216e5b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="luasandbox_8h.html#a1fe1b28ef15a5cc442f06c26c2eae3cc">LSB_EXPORT</a> lua_State *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="luasandbox_8h.html#aa6f00183b6dd9e2c414ef443b4216e5b">lsb_get_lua</a> (<a class="el" href="luasandbox_8h.html#ad2faa95e9a2ada80510c0d2942862c6e">lsb_lua_sandbox</a> *lsb)</td></tr>
+<tr class="memitem:aa6f00183b6dd9e2c414ef443b4216e5b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="luasandbox_8h.html#a1fe1b28ef15a5cc442f06c26c2eae3cc">LSB_EXPORT</a> <a class="el" href="lua_8h.html#a28186297f2e9f2de0652504633de8fb3">lua_State</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="luasandbox_8h.html#aa6f00183b6dd9e2c414ef443b4216e5b">lsb_get_lua</a> (<a class="el" href="luasandbox_8h.html#ad2faa95e9a2ada80510c0d2942862c6e">lsb_lua_sandbox</a> *lsb)</td></tr>
 <tr class="memdesc:aa6f00183b6dd9e2c414ef443b4216e5b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Access the Lua pointer.  <a href="#aa6f00183b6dd9e2c414ef443b4216e5b">More...</a><br /></td></tr>
 <tr class="separator:aa6f00183b6dd9e2c414ef443b4216e5b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a10fabf01295c7d4e1a1558b3bbb1230e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="luasandbox_8h.html#a1fe1b28ef15a5cc442f06c26c2eae3cc">LSB_EXPORT</a> const char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="luasandbox_8h.html#a10fabf01295c7d4e1a1558b3bbb1230e">lsb_get_lua_file</a> (<a class="el" href="luasandbox_8h.html#ad2faa95e9a2ada80510c0d2942862c6e">lsb_lua_sandbox</a> *lsb)</td></tr>
@@ -187,7 +189,7 @@ Functions</h2></td></tr>
 <tr class="memitem:a4a99254395042511ab1dfd81cbde4159"><td class="memItemLeft" align="right" valign="top"><a class="el" href="luasandbox_8h.html#a1fe1b28ef15a5cc442f06c26c2eae3cc">LSB_EXPORT</a> void *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="luasandbox_8h.html#a4a99254395042511ab1dfd81cbde4159">lsb_get_parent</a> (<a class="el" href="luasandbox_8h.html#ad2faa95e9a2ada80510c0d2942862c6e">lsb_lua_sandbox</a> *lsb)</td></tr>
 <tr class="memdesc:a4a99254395042511ab1dfd81cbde4159"><td class="mdescLeft">&#160;</td><td class="mdescRight">Access the parent pointer stored in the sandbox.  <a href="#a4a99254395042511ab1dfd81cbde4159">More...</a><br /></td></tr>
 <tr class="separator:a4a99254395042511ab1dfd81cbde4159"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aefa569b319d920b134f8936812d71b50"><td class="memItemLeft" align="right" valign="top"><a class="el" href="luasandbox_8h.html#a1fe1b28ef15a5cc442f06c26c2eae3cc">LSB_EXPORT</a> void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="luasandbox_8h.html#aefa569b319d920b134f8936812d71b50">lsb_add_function</a> (<a class="el" href="luasandbox_8h.html#ad2faa95e9a2ada80510c0d2942862c6e">lsb_lua_sandbox</a> *lsb, lua_CFunction func, const char *func_name)</td></tr>
+<tr class="memitem:aefa569b319d920b134f8936812d71b50"><td class="memItemLeft" align="right" valign="top"><a class="el" href="luasandbox_8h.html#a1fe1b28ef15a5cc442f06c26c2eae3cc">LSB_EXPORT</a> void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="luasandbox_8h.html#aefa569b319d920b134f8936812d71b50">lsb_add_function</a> (<a class="el" href="luasandbox_8h.html#ad2faa95e9a2ada80510c0d2942862c6e">lsb_lua_sandbox</a> *lsb, <a class="el" href="lua_8h.html#a878b7e392e78661a374cf1c3073029b9">lua_CFunction</a> func, const char *func_name)</td></tr>
 <tr class="memdesc:aefa569b319d920b134f8936812d71b50"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a CFunction for use by the Sandbox.  <a href="#aefa569b319d920b134f8936812d71b50">More...</a><br /></td></tr>
 <tr class="separator:aefa569b319d920b134f8936812d71b50"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a81eb99e3e62ba7139734dee943db37fd"><td class="memItemLeft" align="right" valign="top"><a class="el" href="luasandbox_8h.html#a1fe1b28ef15a5cc442f06c26c2eae3cc">LSB_EXPORT</a> <a class="el" href="error_8h.html#aad997d70bc1cf59d6545e43984146feb">lsb_err_value</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="luasandbox_8h.html#a81eb99e3e62ba7139734dee943db37fd">lsb_pcall_setup</a> (<a class="el" href="luasandbox_8h.html#ad2faa95e9a2ada80510c0d2942862c6e">lsb_lua_sandbox</a> *lsb, const char *func_name)</td></tr>
@@ -266,7 +268,7 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="luasandbox_8h_source.html#l00033">33</a> of file <a class="el" href="luasandbox_8h_source.html">luasandbox.h</a>.</p>
+<p>Definition at line <a class="el" href="luasandbox_8h_source.html#l00034">34</a> of file <a class="el" href="luasandbox_8h_source.html">luasandbox.h</a>.</p>
 
 </div>
 </div>
@@ -280,7 +282,7 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="luasandbox_8h_source.html#l00036">36</a> of file <a class="el" href="luasandbox_8h_source.html">luasandbox.h</a>.</p>
+<p>Definition at line <a class="el" href="luasandbox_8h_source.html#l00037">37</a> of file <a class="el" href="luasandbox_8h_source.html">luasandbox.h</a>.</p>
 
 </div>
 </div>
@@ -294,7 +296,7 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="luasandbox_8h_source.html#l00035">35</a> of file <a class="el" href="luasandbox_8h_source.html">luasandbox.h</a>.</p>
+<p>Definition at line <a class="el" href="luasandbox_8h_source.html#l00036">36</a> of file <a class="el" href="luasandbox_8h_source.html">luasandbox.h</a>.</p>
 
 </div>
 </div>
@@ -308,7 +310,7 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="luasandbox_8h_source.html#l00032">32</a> of file <a class="el" href="luasandbox_8h_source.html">luasandbox.h</a>.</p>
+<p>Definition at line <a class="el" href="luasandbox_8h_source.html#l00033">33</a> of file <a class="el" href="luasandbox_8h_source.html">luasandbox.h</a>.</p>
 
 </div>
 </div>
@@ -322,7 +324,7 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="luasandbox_8h_source.html#l00037">37</a> of file <a class="el" href="luasandbox_8h_source.html">luasandbox.h</a>.</p>
+<p>Definition at line <a class="el" href="luasandbox_8h_source.html#l00038">38</a> of file <a class="el" href="luasandbox_8h_source.html">luasandbox.h</a>.</p>
 
 </div>
 </div>
@@ -336,7 +338,7 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="luasandbox_8h_source.html#l00034">34</a> of file <a class="el" href="luasandbox_8h_source.html">luasandbox.h</a>.</p>
+<p>Definition at line <a class="el" href="luasandbox_8h_source.html#l00035">35</a> of file <a class="el" href="luasandbox_8h_source.html">luasandbox.h</a>.</p>
 
 </div>
 </div>
@@ -354,6 +356,20 @@ Variables</h2></td></tr>
 
 </div>
 </div>
+<a class="anchor" id="a3aabe4e3e19ed2a3e244a59b415d037a"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define LSB_THIS_PTR&#160;&#160;&#160;&quot;lsb_this_ptr&quot;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Definition at line <a class="el" href="luasandbox_8h_source.html#l00032">32</a> of file <a class="el" href="luasandbox_8h_source.html">luasandbox.h</a>.</p>
+
+</div>
+</div>
 <h2 class="groupheader">Typedef Documentation</h2>
 <a class="anchor" id="ad2faa95e9a2ada80510c0d2942862c6e"></a>
 <div class="memitem">
@@ -365,7 +381,7 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="luasandbox_8h_source.html#l00061">61</a> of file <a class="el" href="luasandbox_8h_source.html">luasandbox.h</a>.</p>
+<p>Definition at line <a class="el" href="luasandbox_8h_source.html#l00062">62</a> of file <a class="el" href="luasandbox_8h_source.html">luasandbox.h</a>.</p>
 
 </div>
 </div>
@@ -388,7 +404,7 @@ Variables</h2></td></tr>
 </td></tr>
 </table>
 
-<p>Definition at line <a class="el" href="luasandbox_8h_source.html#l00039">39</a> of file <a class="el" href="luasandbox_8h_source.html">luasandbox.h</a>.</p>
+<p>Definition at line <a class="el" href="luasandbox_8h_source.html#l00040">40</a> of file <a class="el" href="luasandbox_8h_source.html">luasandbox.h</a>.</p>
 
 </div>
 </div>
@@ -412,7 +428,7 @@ Variables</h2></td></tr>
 </td></tr>
 </table>
 
-<p>Definition at line <a class="el" href="luasandbox_8h_source.html#l00045">45</a> of file <a class="el" href="luasandbox_8h_source.html">luasandbox.h</a>.</p>
+<p>Definition at line <a class="el" href="luasandbox_8h_source.html#l00046">46</a> of file <a class="el" href="luasandbox_8h_source.html">luasandbox.h</a>.</p>
 
 </div>
 </div>
@@ -436,7 +452,7 @@ Variables</h2></td></tr>
 </td></tr>
 </table>
 
-<p>Definition at line <a class="el" href="luasandbox_8h_source.html#l00053">53</a> of file <a class="el" href="luasandbox_8h_source.html">luasandbox.h</a>.</p>
+<p>Definition at line <a class="el" href="luasandbox_8h_source.html#l00054">54</a> of file <a class="el" href="luasandbox_8h_source.html">luasandbox.h</a>.</p>
 
 </div>
 </div>
@@ -454,7 +470,7 @@ Variables</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">lua_CFunction&#160;</td>
+          <td class="paramtype"><a class="el" href="lua_8h.html#a878b7e392e78661a374cf1c3073029b9">lua_CFunction</a>&#160;</td>
           <td class="paramname"><em>func</em>, </td>
         </tr>
         <tr>
@@ -590,7 +606,7 @@ Variables</h2></td></tr>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="luasandbox_8h.html#a1fe1b28ef15a5cc442f06c26c2eae3cc">LSB_EXPORT</a> lua_State* lsb_get_lua </td>
+          <td class="memname"><a class="el" href="luasandbox_8h.html#a1fe1b28ef15a5cc442f06c26c2eae3cc">LSB_EXPORT</a> <a class="el" href="lua_8h.html#a28186297f2e9f2de0652504633de8fb3">lua_State</a>* lsb_get_lua </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="luasandbox_8h.html#ad2faa95e9a2ada80510c0d2942862c6e">lsb_lua_sandbox</a> *&#160;</td>
           <td class="paramname"><em>lsb</em></td><td>)</td>
@@ -913,8 +929,8 @@ down" termination message is generated.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">lsb</td><td>Pointer to the sandbox. </td></tr>
-    <tr><td class="paramname">lsb_usage_type</td><td>Type of statistic to retrieve i.e. memory. </td></tr>
-    <tr><td class="paramname">lsb_usage_stat</td><td>Type of statistic to retrieve i.e. current.</td></tr>
+    <tr><td class="paramname">utype</td><td>Type of statistic to retrieve i.e. memory. </td></tr>
+    <tr><td class="paramname">ustat</td><td>Type of statistic to retrieve i.e. current.</td></tr>
   </table>
   </dd>
 </dl>

@@ -24,7 +24,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">luasandbox
-   &#160;<span id="projectnumber">0.22.4</span>
+   &#160;<span id="projectnumber">1.0.0</span>
    </div>
    <div id="projectbrief">Generic Lua sandbox for dynamic data analysis</div>
   </td>
@@ -126,12 +126,6 @@ Functions</h2></td></tr>
 <tr class="memitem:a71f597f335f50a5312ae4b068fb250c8"><td class="memItemLeft" align="right" valign="top"><a class="el" href="util_8h.html#ae0f238b2a14ee752e699ed9546b8bfb2">LSB_UTIL_EXPORT</a> bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="util_8h.html#a71f597f335f50a5312ae4b068fb250c8">lsb_set_tz</a> (const char *tz)</td></tr>
 <tr class="memdesc:a71f597f335f50a5312ae4b068fb250c8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the timezone environment variable for the time conversion functions.  <a href="#a71f597f335f50a5312ae4b068fb250c8">More...</a><br /></td></tr>
 <tr class="separator:a71f597f335f50a5312ae4b068fb250c8"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:acfbc562b26b848fa0a71e0f49b77fa95"><td class="memItemLeft" align="right" valign="top"><a class="el" href="util_8h.html#ae0f238b2a14ee752e699ed9546b8bfb2">LSB_UTIL_EXPORT</a> uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="util_8h.html#acfbc562b26b848fa0a71e0f49b77fa95">lsb_crc32</a> (const char *buf, size_t buf_len)</td></tr>
-<tr class="memdesc:acfbc562b26b848fa0a71e0f49b77fa95"><td class="mdescLeft">&#160;</td><td class="mdescRight">ZLIB CRC-32 checksum.  <a href="#acfbc562b26b848fa0a71e0f49b77fa95">More...</a><br /></td></tr>
-<tr class="separator:acfbc562b26b848fa0a71e0f49b77fa95"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4e4f03576b265ae0b78d18b8a4277d4a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="util_8h.html#ae0f238b2a14ee752e699ed9546b8bfb2">LSB_UTIL_EXPORT</a> char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="util_8h.html#a4e4f03576b265ae0b78d18b8a4277d4a">lsb_ungzip</a> (const char *s, size_t s_len, size_t max_len, size_t *r_len)</td></tr>
-<tr class="memdesc:a4e4f03576b265ae0b78d18b8a4277d4a"><td class="mdescLeft">&#160;</td><td class="mdescRight">ZLIB Inflate the provided string into a new string.  <a href="#a4e4f03576b265ae0b78d18b8a4277d4a">More...</a><br /></td></tr>
-<tr class="separator:a4e4f03576b265ae0b78d18b8a4277d4a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="var-members"></a>
 Variables</h2></td></tr>
@@ -164,42 +158,6 @@ Variables</h2></td></tr>
 </div>
 </div>
 <h2 class="groupheader">Function Documentation</h2>
-<a class="anchor" id="acfbc562b26b848fa0a71e0f49b77fa95"></a>
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="util_8h.html#ae0f238b2a14ee752e699ed9546b8bfb2">LSB_UTIL_EXPORT</a> uint32_t lsb_crc32 </td>
-          <td>(</td>
-          <td class="paramtype">const char *&#160;</td>
-          <td class="paramname"><em>buf</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">size_t&#160;</td>
-          <td class="paramname"><em>buf_len</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>ZLIB CRC-32 checksum. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">buf</td><td>- array of bytes </td></tr>
-    <tr><td class="paramname">buf_len</td><td>- length of the array</td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section return"><dt>Returns</dt><dd>LSB_UTIL_EXPORT unsigned checksum </dd></dl>
-
-</div>
-</div>
 <a class="anchor" id="aa5a90dcb39e4d35c50f65d57b0caa020"></a>
 <div class="memitem">
 <div class="memproto">
@@ -309,56 +267,6 @@ Variables</h2></td></tr>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>bool True if the environment variable is successfully set </dd></dl>
-
-</div>
-</div>
-<a class="anchor" id="a4e4f03576b265ae0b78d18b8a4277d4a"></a>
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="util_8h.html#ae0f238b2a14ee752e699ed9546b8bfb2">LSB_UTIL_EXPORT</a> char* lsb_ungzip </td>
-          <td>(</td>
-          <td class="paramtype">const char *&#160;</td>
-          <td class="paramname"><em>s</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">size_t&#160;</td>
-          <td class="paramname"><em>s_len</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">size_t&#160;</td>
-          <td class="paramname"><em>max_len</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">size_t *&#160;</td>
-          <td class="paramname"><em>r_len</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>ZLIB Inflate the provided string into a new string. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">s</td><td>String to ungzip </td></tr>
-    <tr><td class="paramname">s_len</td><td>Length of the string to ungzip </td></tr>
-    <tr><td class="paramname">max_len</td><td>Maximum length the buffer is allowed to grow to (0 for unlimited) </td></tr>
-    <tr><td class="paramname">r_len</td><td>(optional) Length of the returned string </td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section return"><dt>Returns</dt><dd>char* Returned string (MUST be freed by the caller), NULL on failure </dd></dl>
 
 </div>
 </div>

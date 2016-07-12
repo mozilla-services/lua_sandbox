@@ -1,6 +1,5 @@
 var searchData=
 [
-  ['sandbox_2eh',['sandbox.h',['../sandbox_8h.html',1,'']]],
-  ['string_2eh',['string.h',['../string_8h.html',1,'']]],
-  ['string_5fmatcher_2eh',['string_matcher.h',['../string__matcher_8h.html',1,'']]]
+  ['readme_2emd',['README.md',['../README_8md.html',1,'']]],
+  ['running_5fstats_2eh',['running_stats.h',['../running__stats_8h.html',1,'']]]
 ];
