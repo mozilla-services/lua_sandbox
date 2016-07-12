@@ -49,14 +49,6 @@ By default only the base library is loaded additional libraries must be loaded w
 The following modules have been modified, as described, for use in the sandbox.
   - [base library](http://www.lua.org/manual/5.1/manual.html#5.1)
     - The require() function has been modified to not expose any of the package table to the sandbox.
-  - [cjson](http://www.kyne.com.au/~mark/software/lua-cjson-manual.html) JSON parser with the following modifications:
-    - Loads the cjson module in a global cjson table
-    - The encode buffer is limited to the sandbox output_limit.
-    - The decode buffer will be roughly limited to one half of the sandbox memory_limit.
-    - The NULL value is not decoded to cjson.null it is simply discarded.
-      If the original behavior is desired use cjson.decode_null(true) to enable NULL decoding.
-    - The new() function has been disabled so only a single cjson parser can be created.
-    - The encode_keep_buffer() function has been disabled (the buffer is always reused).
   - [os](http://www.lua.org/manual/5.1/manual.html#5.8)
     - The local timezone is set to UTC in all sandboxes.
 
@@ -104,7 +96,7 @@ The best place to start is with some examples:
 
 ### Unit Test API
 
-[Unit Test Source Code](https://github.com/mozilla-services/lua_sandbox/blob/master/src/test/test_luasandbox.c)
+[Unit Test API](/lua_sandbox/doxygen/test_2sandbox_8h.html)
 
 #### Lua Functions Exposed to C
 
@@ -119,7 +111,7 @@ The best place to start is with some examples:
     - captures whatever is in the output buffer for use by the host application, appending any optional arguments
     (optional arguments have the same restriction as output).
 
-### Heka Sandbox
+### Heka Sandbox API
 
-[Heka Sandbox Source Code](https://github.com/mozilla-services/lua_sandbox/blob/master/include/luasandbox/heka/sandbox.h)
+[Heka Sandbox API](/lua_sandbox/doxygen/heka_2sandbox_8h.html)
 

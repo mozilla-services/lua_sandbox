@@ -15,14 +15,12 @@
 #include "../error.h"
 
 #ifdef _WIN32
-#define LSB_TEST_MODULE_PATH "path = '.\\\\?.lua';cpath = '.\\\\?.dll'\n"
 #ifdef luasandboxtest_EXPORTS
 #define LSB_TEST_EXPORT __declspec(dllexport)
 #else
 #define LSB_TEST_EXPORT __declspec(dllimport)
 #endif
 #else
-#define LSB_TEST_MODULE_PATH "path = './?.lua';cpath = './?.so'\n"
 #if __GNUC__ >= 4
 #define LSB_TEST_EXPORT __attribute__ ((visibility ("default")))
 #else
@@ -36,12 +34,53 @@ extern "C"
 #endif
 #include "../lua.h"
 
+/**
+ * Global variable to store the test output
+ *
+ */
 LSB_TEST_EXPORT extern const char *lsb_test_output;
+
+/**
+ * Global variable storing the length of the current test output string
+ *
+ */
 LSB_TEST_EXPORT extern size_t lsb_test_output_len;
+
+/**
+ * Generaly purpose stderr logger
+ *
+ */
 LSB_TEST_EXPORT extern lsb_logger lsb_test_logger;
 
-LSB_TEST_EXPORT int lsb_test_process(lsb_lua_sandbox *lsb, double ts);
+/**
+ * Function to emulate processing data
+ *
+ * @param lsb Pointer to a lua sandbox
+ * @param tc Test case number to control how the sandbox state is updated
+ *
+ * @return LSB_TEST_EXPORT int Status value returned from the sandbox
+ */
+LSB_TEST_EXPORT int lsb_test_process(lsb_lua_sandbox *lsb, double tc);
+
+/**
+ * Function to emulate outputting summary data
+ *
+ * @param lsb Pointer to a lua sandbox
+ * @param tc Test case number to control what data is returned and how the state
+ *           is updated
+ *
+ * @return LSB_TEST_EXPORT int 0 on success, 1 on failure
+ */
 LSB_TEST_EXPORT int lsb_test_report(lsb_lua_sandbox *lsb, double tc);
+
+/**
+ * Callback for collecting output, places a pointer to the results in the global
+ * lsb_test_output variable )not thread safe)
+ *
+ * @param lua Lua state
+ *
+ * @return LSB_TEST_EXPORT int 0 or lua_error
+ */
 LSB_TEST_EXPORT int lsb_test_write_output(lua_State *lua);
 
 #ifdef __cplusplus

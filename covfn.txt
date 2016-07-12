@@ -1,200 +1,158 @@
-Function                                                                                            Source                    Line  FnCov           C/D Coverage
---------------------------------------------------------------------------------------------------  ------------------------------  -----  ---------------------
-add_table_ref(table_ref_array*,const void*,size_t)                                                  ...uasandbox_serialize.c   170  1 / 1       1 /     4 =  25%
-consumer_receive(lua_State*)                                                                        ../src/heka/kafka.c        671  1 / 1       5 /    16 =  31%
-restore_global_data(lsb_lua_sandbox*)                                                               ...uasandbox_serialize.c   495  1 / 1       7 /    18 =  38%
-lsb_create(void*,const char*,const char*,lsb_logger)                                                ../src/luasandbox.c        378  1 / 1      11 /    26 =  42%
-serialize_data(lsb_lua_sandbox*,int,lsb_output_buffer*)                                             ...uasandbox_serialize.c   229  1 / 1       8 /    18 =  44%
-hsr_new(lua_State*)                                                                                 .../heka/stream_reader.c    21  1 / 1       4 /     8 =  50%
-lsb_create_message_match_builder(const char*,const char*)                                           ...eka/message_matcher.c   443  1 / 1       3 /     6 =  50%
-msg_delivered(rd_kafka_t*,void*,size_t,int,void*,void*)                                             ../src/heka/kafka.c         56  1 / 1       1 /     2 =  50%
-producer_destroy_topic(lua_State*)                                                                  ../src/heka/kafka.c        370  1 / 1       1 /     2 =  50%
-luaopen_heka_json(lua_State*)                                                                       ...rc/heka/rapidjson.cpp   685  1 / 1       1 /     2 =  50%
-instruction_manager(lua_State*,lua_Debug*)                                                          ../src/luasandbox.c        114  1 / 1       1 /     2 =  50%
-read_config(lua_State*)                                                                             ../src/luasandbox.c        138  1 / 1       1 /     2 =  50%
-set_tz()                                                                                            ../src/luasandbox.c        335  1 / 1       1 /     2 =  50%
-heka_encode_message_table(lsb_lua_sandbox*,int)                                                     ../src/heka/message.c      881  1 / 1      14 /    24 =  58%
-set_random_seed()                                                                                   ../src/luasandbox.c        350  1 / 1       7 /    12 =  58%
-lsb_read_file(const char*)                                                                          ../src/util/util.c          51  1 / 1       6 /    10 =  60%
-lsb_heka_create_analysis(void*,const char*,const...r*,const char*,lsb_logger,lsb_heka_im_analysis)  ../src/heka/sandbox.c      547  1 / 1      11 /    18 =  61%
-lsb_heka_create_output(void*,const char*,const c...st char*,lsb_logger,lsb_heka_update_checkpoint)  ../src/heka/sandbox.c      630  1 / 1      11 /    18 =  61%
-hj_parse(lua_State*)                                                                                ...rc/heka/rapidjson.cpp   134  1 / 1       5 /     8 =  62%
-hj_remove(lua_State*)                                                                               ...rc/heka/rapidjson.cpp   616  1 / 1       5 /     8 =  62%
-min_expand(MatchState*,const char*,const char*,const char*)                                         ...util/string_matcher.c   171  1 / 1       5 /     8 =  62%
-preserve_global_data(lsb_lua_sandbox*)                                                              ...uasandbox_serialize.c   366  1 / 1      27 /    42 =  64%
-lsb_heka_create_input(void*,const char*,const char*,const char*,lsb_logger,lsb_heka_im_input)       ../src/heka/sandbox.c      346  1 / 1      12 /    18 =  66%
-producer_poll(lua_State*)                                                                           ../src/heka/kafka.c        389  1 / 1       4 /     6 =  66%
-lsb_init_heka_message(lsb_heka_message*,int)                                                        ...c/util/heka_message.c   417  1 / 1       4 /     6 =  66%
-process_fields(lua_State*,const char*,const char*)                                                  ../src/heka/message.c       93  1 / 1      55 /    82 =  67%
-encode_field_array(lsb_lua_sandbox*,lsb_output_buffer*,int,const char*,int)                         ../src/heka/message.c      330  1 / 1      19 /    28 =  67%
-lsb_ungzip(const char*,size_t,size_t,size_t*)                                                       ../src/util/util.c         113  1 / 1      30 /    44 =  68%
-load_topic_conf(lua_State*,rd_kafka_topic_conf_t*,int)                                              ../src/heka/kafka.c        154  1 / 1      15 /    22 =  68%
-lsb_heka_pm_input(lsb_heka_sandbox*,double,const char*,_Bool)                                       ../src/heka/sandbox.c      513  1 / 1      11 /    16 =  68%
-read_string(lua_State*,int,const char*,const char*)                                                 ../src/heka/message.c       52  1 / 1       7 /    10 =  70%
-check_int(lua_State*,int,const char*,int)                                                           ../src/luasandbox.c        191  1 / 1       5 /     7 =  71%
-hj_parse_message(lua_State*)                                                                        ...rc/heka/rapidjson.cpp   483  1 / 1      26 /    36 =  72%
-producer_create_topic(lua_State*)                                                                   ../src/heka/kafka.c        303  1 / 1       8 /    11 =  72%
-hj_iter(lua_State*)                                                                                 ...rc/heka/rapidjson.cpp   413  1 / 1       8 /    11 =  72%
-encode_fields(lsb_lua_sandbox*,lsb_output_buffer*,char,const char*,int)                             ../src/heka/message.c      618  1 / 1      27 /    36 =  75%
-serialize_kvp(lsb_lua_sandbox*,serialization_data*,size_t)                                          ...uasandbox_serialize.c   286  1 / 1      18 /    24 =  75%
-decode_header(char*,size_t,size_t)                                                                  ...c/util/heka_message.c    19  1 / 1      12 /    16 =  75%
-read_message(lua_State*)                                                                            ../src/heka/sandbox.c       40  1 / 1       6 /     8 =  75%
-hsr_decode_message(lua_State*)                                                                      .../heka/stream_reader.c    77  1 / 1       6 /     8 =  75%
-process_varint(lua_State*,const char*,int,int,const char*,const char*)                              ../src/heka/message.c       72  1 / 1       3 /     4 =  75%
-encode_int(lsb_lua_sandbox*,lsb_output_buffer*,char,const char*,int)                                ../src/heka/message.c      287  1 / 1       3 /     4 =  75%
-load_op_node(lua_State*,match_node*)                                                                ...eka/message_matcher.c   321  1 / 1       3 /     4 =  75%
-lsb_destroy_message_match_builder(lsb_message_match_builder*)                                       ...eka/message_matcher.c   480  1 / 1       3 /     4 =  75%
-output(lua_State*)                                                                                  ../src/luasandbox.c        122  1 / 1       3 /     4 =  75%
-lsb_stop_sandbox(lsb_lua_sandbox*)                                                                  ../src/luasandbox.c        560  1 / 1       3 /     4 =  75%
-lsb_get_output(lsb_lua_sandbox*,size_t*)                                                            ...c/luasandbox_output.c   110  1 / 1       3 /     4 =  75%
-lsb_clear_heka_message(lsb_heka_message*)                                                           ...c/util/heka_message.c   431  1 / 1       3 /     4 =  75%
-lsb_outputc(lsb_output_buffer*,char)                                                                .../util/output_buffer.c    78  1 / 1       3 /     4 =  75%
-lsb_outputs(lsb_output_buffer*,const char*,size_t)                                                  .../util/output_buffer.c   146  1 / 1       3 /     4 =  75%
-consumer_new(lua_State*)                                                                            ../src/heka/kafka.c        591  1 / 1      16 /    21 =  76%
-encode_field_value(lsb_lua_sandbox*,lsb_output_buffer*,int,const char*,int)                         ../src/heka/message.c      403  1 / 1      84 /   110 =  76%
-process_message(lsb_heka_sandbox*,lsb_heka_message*,lua_State*,int,_Bool)                           ../src/heka/sandbox.c      428  1 / 1      30 /    39 =  76%
-lsb_outputfd(lsb_output_buffer*,double)                                                             .../util/output_buffer.c   177  1 / 1      31 /    40 =  77%
-lsb_init(lsb_lua_sandbox*,const char*)                                                              ../src/luasandbox.c        460  1 / 1      28 /    36 =  77%
-lsb_pcall_setup(lsb_lua_sandbox*,const char*)                                                       ../src/luasandbox.c        675  1 / 1      14 /    18 =  77%
-producer_new(lua_State*)                                                                            ../src/heka/kafka.c        238  1 / 1       7 /     9 =  77%
-output_heka_json(lua_State*)                                                                        ...rc/heka/rapidjson.cpp   593  1 / 1      11 /    14 =  78%
-producer_send(lua_State*)                                                                           ../src/heka/kafka.c        410  1 / 1       8 /    10 =  80%
-read_string(int,const char*,const char*,lsb_const_string*)                                          ...c/util/heka_message.c    39  1 / 1       8 /    10 =  80%
-read_string_value(const char*,const char*,int,lsb_read_value*)                                      ...c/util/heka_message.c    57  1 / 1       8 /    10 =  80%
-read_integer_value(const char*,const char*,int,lsb_read_value*)                                     ...c/util/heka_message.c    78  1 / 1       8 /    10 =  80%
-check_string(lua_State*,int,const char*,const char*)                                                ../src/luasandbox.c        169  1 / 1       4 /     5 =  80%
-matchbalance(MatchState*,const char*,const char*)                                                   ...util/string_matcher.c   137  1 / 1      13 /    16 =  81%
-set_restrictions(lua_State*,lsb_heka_sandbox*)                                                      ../src/heka/sandbox.c      256  1 / 1      22 /    27 =  81%
-load_conf(lua_State*,rd_kafka_conf_t*,int)                                                          ../src/heka/kafka.c         72  1 / 1      18 /    22 =  81%
-lsb_serialize_binary(lsb_output_buffer*,const void*,size_t)                                         ...uasandbox_serialize.c   547  1 / 1       9 /    11 =  81%
-lsb_outputf(lsb_output_buffer*,const char*,...)                                                     .../util/output_buffer.c    92  1 / 1      23 /    28 =  82%
-lsb_create_message_matcher(const lsb_message_match_builder*,const char*)                            ...eka/message_matcher.c   493  1 / 1      24 /    29 =  82%
-heka_decode_message(lua_State*)                                                                     ../src/heka/message.c      693  1 / 1      54 /    65 =  83%
-heka_read_message(lua_State*,lsb_heka_message*)                                                     ../src/heka/message.c      922  1 / 1      45 /    54 =  83%
-hsr_find_message(lua_State*)                                                                        .../heka/stream_reader.c   106  1 / 1      25 /    30 =  83%
-lsb_heka_pm_analysis(lsb_heka_sandbox*,lsb_heka_message*,_Bool)                                     ../src/heka/sandbox.c      611  1 / 1      10 /    12 =  83%
-ignore_value_type(lsb_lua_sandbox*,serialization_data*,int,lua_CFunction*)                          ...uasandbox_serialize.c   114  1 / 1      10 /    12 =  83%
-producer_gc(lua_State*)                                                                             ../src/heka/kafka.c        455  1 / 1       5 /     6 =  83%
-hj_parse_schema(lua_State*)                                                                         ...rc/heka/rapidjson.cpp   108  1 / 1       5 /     6 =  83%
-inject_message_analysis(lua_State*)                                                                 ../src/heka/sandbox.c      135  1 / 1       5 /     6 =  83%
-lsb_destroy(lsb_lua_sandbox*)                                                                       ../src/luasandbox.c        573  1 / 1       5 /     6 =  83%
-lsb_pb_output_varint(char*,unsigned long long)                                                      ../src/util/protobuf.c      56  1 / 1       5 /     6 =  83%
-lsb_output(lsb_lua_sandbox*,int,int,int)                                                            ...c/luasandbox_output.c    42  1 / 1      27 /    32 =  84%
-heka_encode_message(lua_State*)                                                                     ../src/heka/message.c      820  1 / 1      11 /    13 =  84%
-match_class(int,int)                                                                                ...util/string_matcher.c    68  1 / 1      11 /    13 =  84%
-match(MatchState*,const char*,const char*)                                                          ...util/string_matcher.c   183  1 / 1      39 /    46 =  84%
-lsb_pb_read_varint(const char*,const char*,long long*)                                              ../src/util/protobuf.c      36  1 / 1      17 /    20 =  85%
-inject_message_input(lua_State*)                                                                    ../src/heka/sandbox.c       56  1 / 1      18 /    21 =  85%
-lsb_heka_pm_output(lsb_heka_sandbox*,lsb_heka_message*,void*,_Bool)                                 ../src/heka/sandbox.c      733  1 / 1      12 /    14 =  85%
-lsb_expand_input_buffer(lsb_input_buffer*,size_t)                                                   ...c/util/input_buffer.c    49  1 / 1      12 /    14 =  85%
-numeric_test(match_node*,double)                                                                    ...eka/message_matcher.c   213  1 / 1       6 /     7 =  85%
-add_consumer_topics(lua_State*,heka_kafka_consumer*,int)                                            ../src/heka/kafka.c        528  1 / 1      19 /    22 =  86%
-load_sandbox_config(const char*,lsb_logger)                                                         ../src/luasandbox.c        222  1 / 1      19 /    22 =  86%
-matchbracketclass(int,const char*,const char*)                                                      ...util/string_matcher.c    99  1 / 1      19 /    22 =  86%
-eval_tree(match_node*,lsb_heka_message*)                                                            ...eka/message_matcher.c   297  1 / 1      14 /    16 =  87%
-lsb_heka_timer_event(lsb_heka_sandbox*,time_t,_Bool)                                                ../src/heka/sandbox.c      759  1 / 1      14 /    16 =  87%
-update_checkpoint(lua_State*)                                                                       ../src/heka/sandbox.c      223  1 / 1       7 /     8 =  87%
-lsb_init_input_buffer(lsb_input_buffer*,size_t)                                                     ...c/util/input_buffer.c    20  1 / 1       7 /     8 =  87%
-lsb_outputd(lsb_output_buffer*,double)                                                              .../util/output_buffer.c   160  1 / 1       7 /     8 =  87%
-process_fields(lsb_heka_field*,const char*,const char*)                                             ...c/util/heka_message.c   121  1 / 1      50 /    57 =  87%
-copy_table(lua_State*,lua_State*,lsb_logger)                                                        ../src/luasandbox.c        262  1 / 1      22 /    25 =  88%
-hj_value(lua_State*)                                                                                ...rc/heka/rapidjson.cpp   380  1 / 1       8 /     9 =  88%
-load_expression_node(lua_State*,match_node*)                                                        ...eka/message_matcher.c   335  1 / 1      42 /    47 =  89%
-lsb_decode_heka_message(lsb_heka_message*,const char*,size_t,lsb_logger)                            ...c/util/heka_message.c   201  1 / 1      51 /    57 =  89%
-inject_payload(lua_State*)                                                                          ../src/heka/sandbox.c      165  1 / 1      18 /    20 =  90%
-check_value(lua_State*)                                                                             ...rc/heka/rapidjson.cpp    55  1 / 1       9 /    10 =  90%
-hj_type(lua_State*)                                                                                 ...rc/heka/rapidjson.cpp   246  1 / 1       9 /    10 =  90%
-hj_size(lua_State*)                                                                                 ...rc/heka/rapidjson.cpp   279  1 / 1       9 /    10 =  90%
-lsb_add_function(lsb_lua_sandbox*,lua_CFunction,const char*)                                        ../src/luasandbox.c        663  1 / 1       9 /    10 =  90%
-lsb_init_output_buffer(lsb_output_buffer*,size_t)                                                   .../util/output_buffer.c    27  1 / 1       9 /    10 =  90%
-eval_node(match_node*,lsb_heka_message*)                                                            ...eka/message_matcher.c   235  1 / 1      31 /    34 =  91%
-set_missing_headers(lua_State*,int,lsb_heka_sandbox*)                                               ../src/heka/message.c       32  1 / 1      11 /    12 =  91%
-memory_manager(void*,void*,size_t,size_t)                                                           ../src/luasandbox.c         77  1 / 1      11 /    12 =  91%
-lsb_read_heka_field(lsb_heka_message*,lsb_const_string*,int,int,lsb_read_value*)                    ...c/util/heka_message.c   462  1 / 1      24 /    26 =  92%
-lsb_find_heka_message(lsb_heka_message*,lsb_input_buffer*,_Bool,size_t*,lsb_logger)                 ...c/util/heka_message.c   319  1 / 1      30 /    32 =  93%
-classend(const char*)                                                                               ...util/string_matcher.c    43  1 / 1      16 /    17 =  94%
-lsb_expand_output_buffer(lsb_output_buffer*,size_t)                                                 .../util/output_buffer.c    52  1 / 1      17 /    18 =  94%
-string_test(match_node*,lsb_const_string*)                                                          ...eka/message_matcher.c   167  1 / 1      18 /    19 =  94%
-check_producer(lua_State*,int)                                                                      ../src/heka/kafka.c         47  1 / 1       0 /     0       
-get_topic(lua_State*,heka_kafka_producer*,const char*)                                              ../src/heka/kafka.c        288  1 / 1       2 /     2 = 100%
-producer_has_topic(lua_State*)                                                                      ../src/heka/kafka.c        355  1 / 1       2 /     2 = 100%
-luaopen_heka_kafka_producer(lua_State*)                                                             ../src/heka/kafka.c        500  1 / 1       0 /     0       
-check_consumer(lua_State*,int)                                                                      ../src/heka/kafka.c        519  1 / 1       0 /     0       
-consumer_gc(lua_State*)                                                                             ../src/heka/kafka.c        720  1 / 1       6 /     6 = 100%
-luaopen_heka_kafka_consumer(lua_State*)                                                             ../src/heka/kafka.c        745  1 / 1       0 /     0       
-encode_string(lsb_lua_sandbox*,lsb_output_buffer*,char,const char*,int)                             ../src/heka/message.c      258  1 / 1       2 /     2 = 100%
-encode_field_object(lsb_lua_sandbox*,lsb_output_buffer*)                                            ../src/heka/message.c      381  1 / 1       4 /     4 = 100%
-lsb_destroy_message_matcher(lsb_message_matcher*)                                                   ...eka/message_matcher.c   559  1 / 1       6 /     6 = 100%
-lsb_eval_message_matcher(lsb_message_matcher*,lsb_heka_message*)                                    ...eka/message_matcher.c   578  1 / 1       0 /     0       
-schema_gc(lua_State*)                                                                               ...rc/heka/rapidjson.cpp    78  1 / 1       0 /     0       
-iter_gc(lua_State*)                                                                                 ...rc/heka/rapidjson.cpp    87  1 / 1       0 /     0       
-hj_gc(lua_State*)                                                                                   ...rc/heka/rapidjson.cpp    96  1 / 1       0 /     0       
-hj_validate(lua_State*)                                                                             ...rc/heka/rapidjson.cpp   161  1 / 1       4 /     4 = 100%
-hj_find(lua_State*)                                                                                 ...rc/heka/rapidjson.cpp   190  1 / 1      19 /    19 = 100%
-hj_make_field(lua_State*)                                                                           ...rc/heka/rapidjson.cpp   309  1 / 1       2 /     2 = 100%
-hj_object_iter(lua_State*)                                                                          ...rc/heka/rapidjson.cpp   326  1 / 1       4 /     4 = 100%
-hj_array_iter(lua_State*)                                                                           ...rc/heka/rapidjson.cpp   352  1 / 1       4 /     4 = 100%
-read_message(lua_State*,int,lsb_heka_message*)                                                      ...rc/heka/rapidjson.cpp   457  1 / 1      14 /    14 = 100%
-OutputBufferWrapper::OutputBufferWrapper(lsb_output_buffer*)                                        ...rc/heka/rapidjson.cpp   566  1 / 1       0 /     0       
-OutputBufferWrapper::Put(Ch)                                                                        ...rc/heka/rapidjson.cpp   578  1 / 1       2 /     2 = 100%
-OutputBufferWrapper::Flush()                                                                        ...rc/heka/rapidjson.cpp   583  1 / 1       0 /     0       
-OutputBufferWrapper::GetError()                                                                     ...rc/heka/rapidjson.cpp   584  1 / 1       0 /     0       
-lsb_heka_stop_sandbox(lsb_heka_sandbox*)                                                            ../src/heka/sandbox.c      709  1 / 1       0 /     0       
-lsb_heka_terminate_sandbox(lsb_heka_sandbox*,const char*)                                           ../src/heka/sandbox.c      715  1 / 1       0 /     0       
-lsb_heka_destroy_sandbox(lsb_heka_sandbox*)                                                         ../src/heka/sandbox.c      721  1 / 1       2 /     2 = 100%
-lsb_heka_get_error(lsb_heka_sandbox*)                                                               ../src/heka/sandbox.c      800  1 / 1       2 /     2 = 100%
-lsb_heka_get_lua_file(lsb_heka_sandbox*)                                                            ../src/heka/sandbox.c      806  1 / 1       2 /     2 = 100%
-lsb_heka_get_stats(lsb_heka_sandbox*)                                                               ../src/heka/sandbox.c      812  1 / 1       2 /     2 = 100%
-lsb_heka_is_running(lsb_heka_sandbox*)                                                              ../src/heka/sandbox.c      833  1 / 1       4 /     4 = 100%
-check_hsr(lua_State*,int)                                                                           .../heka/stream_reader.c    68  1 / 1       0 /     0       
-hsr_read_message(lua_State*)                                                                        .../heka/stream_reader.c   192  1 / 1       6 /     6 = 100%
-hsr_gc(lua_State*)                                                                                  .../heka/stream_reader.c   204  1 / 1       0 /     0       
-luaopen_heka_stream_reader(lua_State*)                                                              .../heka/stream_reader.c   231  1 / 1       0 /     0       
-libsize(const luaL_Reg*)                                                                            ../src/luasandbox.c         43  1 / 1       2 /     2 = 100%
-preload_modules(lua_State*)                                                                         ../src/luasandbox.c         50  1 / 1       2 /     2 = 100%
-instruction_usage(lsb_lua_sandbox*)                                                                 ../src/luasandbox.c        108  1 / 1       0 /     0       
-unprotected_panic(lua_State*)                                                                       ../src/luasandbox.c        152  1 / 1       0 /     0       
-get_usage_config(lua_State*,int,const char*)                                                        ../src/luasandbox.c        160  1 / 1       0 /     0       
-stop_hook(lua_State*,lua_Debug*)                                                                    ../src/luasandbox.c        552  1 / 1       0 /     0       
-lsb_usage(lsb_lua_sandbox*,lsb_usage_type,lsb_usage_stat)                                           ../src/luasandbox.c        596  1 / 1      10 /    10 = 100%
-lsb_get_error(lsb_lua_sandbox*)                                                                     ../src/luasandbox.c        620  1 / 1       2 /     2 = 100%
-lsb_set_error(lsb_lua_sandbox*,const char*)                                                         ../src/luasandbox.c        626  1 / 1       4 /     4 = 100%
-lsb_get_lua(lsb_lua_sandbox*)                                                                       ../src/luasandbox.c        639  1 / 1       2 /     2 = 100%
-lsb_get_lua_file(lsb_lua_sandbox*)                                                                  ../src/luasandbox.c        645  1 / 1       2 /     2 = 100%
-lsb_get_parent(lsb_lua_sandbox*)                                                                    ../src/luasandbox.c        651  1 / 1       2 /     2 = 100%
-lsb_get_state(lsb_lua_sandbox*)                                                                     ../src/luasandbox.c        657  1 / 1       2 /     2 = 100%
-lsb_pcall_teardown(lsb_lua_sandbox*)                                                                ../src/luasandbox.c        699  1 / 1       4 /     4 = 100%
-lsb_terminate(lsb_lua_sandbox*,const char*)                                                         ../src/luasandbox.c        713  1 / 1       6 /     6 = 100%
-lsb_add_output_function(lua_State*,lua_CFunction)                                                   ...c/luasandbox_output.c    22  1 / 1       0 /     0       
-lsb_get_output_function(lua_State*,int)                                                             ...c/luasandbox_output.c    30  1 / 1       0 /     0       
-get_serialize_function(lua_State*,int)                                                              ...uasandbox_serialize.c    92  1 / 1       0 /     0       
-find_table_ref(table_ref_array*,const void*)                                                        ...uasandbox_serialize.c   149  1 / 1       4 /     4 = 100%
-get_preservation_version(lua_State*)                                                                ...uasandbox_serialize.c   195  1 / 1       4 /     4 = 100%
-serialize_table(lsb_lua_sandbox*,serialization_data*,size_t)                                        ...uasandbox_serialize.c   214  1 / 1       6 /     6 = 100%
-file_exists(const char*)                                                                            ...uasandbox_serialize.c   484  1 / 1       2 /     2 = 100%
-lsb_add_serialize_function(lua_State*,lua_CFunction)                                                ...uasandbox_serialize.c   539  1 / 1       0 /     0       
-lsb_serialize_double(lsb_output_buffer*,double)                                                     ...uasandbox_serialize.c   574  1 / 1       6 /     6 = 100%
-read_double_value(const char*,const char*,int,lsb_read_value*)                                      ...c/util/heka_message.c    97  1 / 1       2 /     2 = 100%
-process_varint(int,const char*,const char*,long long*)                                              ...c/util/heka_message.c   110  1 / 1       4 /     4 = 100%
-lsb_free_heka_message(lsb_heka_message*)                                                            ...c/util/heka_message.c   451  1 / 1       2 /     2 = 100%
-lsb_write_heka_uuid(lsb_output_buffer*,const char*,size_t)                                          ...c/util/heka_message.c   507  1 / 1      22 /    22 = 100%
-lsb_free_input_buffer(lsb_input_buffer*)                                                            ...c/util/input_buffer.c    36  1 / 1       2 /     2 = 100%
-lsb_free_output_buffer(lsb_output_buffer*)                                                          .../util/output_buffer.c    42  1 / 1       2 /     2 = 100%
-lsb_pb_read_key(const char*,int*,int*)                                                              ../src/util/protobuf.c      15  1 / 1       8 /     8 = 100%
-lsb_pb_write_key(lsb_output_buffer*,unsigned char,unsigned char)                                    ../src/util/protobuf.c      25  1 / 1       2 /     2 = 100%
-lsb_pb_write_varint(lsb_output_buffer*,unsigned long long)                                          ../src/util/protobuf.c      75  1 / 1       2 /     2 = 100%
-lsb_pb_write_bool(lsb_output_buffer*,int)                                                           ../src/util/protobuf.c      85  1 / 1       4 /     4 = 100%
-lsb_pb_write_double(lsb_output_buffer*,double)                                                      ../src/util/protobuf.c      99  1 / 1       2 /     2 = 100%
-lsb_pb_write_string(lsb_output_buffer*,char,const char*,size_t)                                     ../src/util/protobuf.c     114  1 / 1       6 /     6 = 100%
-lsb_pb_update_field_length(lsb_output_buffer*,size_t)                                               ../src/util/protobuf.c     127  1 / 1       8 /     8 = 100%
-lsb_init_running_stats(lsb_running_stats*)                                                          .../util/running_stats.c    13  1 / 1       0 /     0       
-lsb_update_running_stats(lsb_running_stats*,double)                                                 .../util/running_stats.c    21  1 / 1       4 /     4 = 100%
-lsb_sd_running_stats(lsb_running_stats*)                                                            .../util/running_stats.c    37  1 / 1       2 /     2 = 100%
-lsb_init_const_string(lsb_const_string*)                                                            ../src/util/string.c        11  1 / 1       0 /     0       
-singlematch(int,const char*,const char*)                                                            ...util/string_matcher.c   119  1 / 1       4 /     4 = 100%
-max_expand(MatchState*,const char*,const char*,const char*)                                         ...util/string_matcher.c   156  1 / 1      10 /    10 = 100%
-lsb_string_match(const char*,size_t,const char*)                                                    ...util/string_matcher.c   261  1 / 1      10 /    10 = 100%
-lsb_lp2(unsigned long long)                                                                         ../src/util/util.c          37  1 / 1       2 /     2 = 100%
-lsb_get_time()                                                                                      ../src/util/util.c          77  1 / 1       0 /     0       
---------------------------------------------------------------------------------------------------  ------------------------------  -----  ---------------------
-Total                                                                                                                                100%    1874 /  2337 =  80%
+Function                                                                                          Source                      Line  FnCov           C/D Coverage
+------------------------------------------------------------------------------------------------  --------------------------------  -----  ---------------------
+add_table_ref(table_ref_array*,const void*,size_t)                                                .../luasandbox_serialize.c   171  1 / 1       1 /     4 =  25%
+lsb_create(void*,const char*,const char*,lsb_logger*)                                             ../src/luasandbox.c          428  1 / 1      16 /    42 =  38%
+restore_global_data(lsb_lua_sandbox*)                                                             .../luasandbox_serialize.c   488  1 / 1       7 /    18 =  38%
+lsb_heka_create_input(void*,const char*,const char*,const char*,lsb_logger*,lsb_heka_im_input)    ../src/heka/sandbox.c        407  1 / 1      14 /    34 =  41%
+lsb_heka_create_analysis(void*,const char*,cons...,const char*,lsb_logger*,lsb_heka_im_analysis)  ../src/heka/sandbox.c        598  1 / 1      14 /    34 =  41%
+lsb_heka_create_output(void*,const char*,const ... char*,lsb_logger*,lsb_heka_update_checkpoint)  ../src/heka/sandbox.c        689  1 / 1      14 /    34 =  41%
+serialize_data(lsb_lua_sandbox*,int,lsb_output_buffer*)                                           .../luasandbox_serialize.c   230  1 / 1       9 /    20 =  45%
+heka_create_stream_reader(lua_State*)                                                             ...rc/heka/stream_reader.c   174  1 / 1       5 /    10 =  50%
+lsb_get_output(lsb_lua_sandbox*,size_t*)                                                          ../src/luasandbox_output.c   110  1 / 1       2 /     4 =  50%
+instruction_manager(lua_State*,lua_Debug*)                                                        ../src/luasandbox.c          119  1 / 1       1 /     2 =  50%
+read_config(lua_State*)                                                                           ../src/luasandbox.c          201  1 / 1       1 /     2 =  50%
+set_random_seed()                                                                                 ../src/luasandbox.c          400  1 / 1       7 /    12 =  58%
+lsb_read_file(const char*)                                                                        ../src/util/util.c            49  1 / 1       6 /    10 =  60%
+heka_encode_message_table(lsb_lua_sandbox*,int)                                                   ../src/heka/message.c        874  1 / 1      16 /    26 =  61%
+min_expand(MatchState*,const char*,const char*,const char*)                                       ...c/util/string_matcher.c   171  1 / 1       5 /     8 =  62%
+encode_field_value(lsb_lua_sandbox*,lsb_output_buffer*,int,const char*,int)                       ../src/heka/message.c        399  1 / 1      70 /   110 =  63%
+preserve_global_data(lsb_lua_sandbox*)                                                            .../luasandbox_serialize.c   368  1 / 1      27 /    42 =  64%
+lsb_init_heka_message(lsb_heka_message*,int)                                                      ../src/util/heka_message.c   429  1 / 1       4 /     6 =  66%
+process_fields(lua_State*,const char*,const char*)                                                ../src/heka/message.c         89  1 / 1      55 /    82 =  67%
+encode_field_array(lsb_lua_sandbox*,lsb_output_buffer*,int,const char*,int)                       ../src/heka/message.c        326  1 / 1      19 /    28 =  67%
+lsb_heka_pm_input(lsb_heka_sandbox*,double,const char*,_Bool)                                     ../src/heka/sandbox.c        564  1 / 1      11 /    16 =  68%
+set_restrictions(lua_State*,lsb_heka_sandbox*)                                                    ../src/heka/sandbox.c        308  1 / 1      20 /    29 =  68%
+read_string(lua_State*,int,const char*,const char*)                                               ../src/heka/message.c         48  1 / 1       7 /    10 =  70%
+lsb_init(lsb_lua_sandbox*,const char*)                                                            ../src/luasandbox.c          528  1 / 1      27 /    38 =  71%
+check_int(lua_State*,int,const char*,int)                                                         ../src/luasandbox.c          254  1 / 1       5 /     7 =  71%
+lsb_outputfd(lsb_output_buffer*,double)                                                           ...rc/util/output_buffer.c   177  1 / 1      29 /    40 =  72%
+encode_fields(lsb_lua_sandbox*,lsb_output_buffer*,char,const char*,int)                           ../src/heka/message.c        614  1 / 1      27 /    36 =  75%
+serialize_kvp(lsb_lua_sandbox*,serialization_data*,size_t)                                        .../luasandbox_serialize.c   288  1 / 1      18 /    24 =  75%
+decode_header(char*,size_t,size_t)                                                                ../src/util/heka_message.c    25  1 / 1      12 /    16 =  75%
+read_message(lua_State*)                                                                          ../src/heka/sandbox.c         41  1 / 1       6 /     8 =  75%
+mm_eval(lua_State*)                                                                               ../src/heka/sandbox.c         74  1 / 1       6 /     8 =  75%
+hsr_decode_message(lua_State*)                                                                    ...rc/heka/stream_reader.c    27  1 / 1       6 /     8 =  75%
+process_varint(lua_State*,const char*,int,int,const char*,const char*)                            ../src/heka/message.c         68  1 / 1       3 /     4 =  75%
+encode_int(lsb_lua_sandbox*,lsb_output_buffer*,char,const char*,int)                              ../src/heka/message.c        283  1 / 1       3 /     4 =  75%
+output(lua_State*)                                                                                ../src/luasandbox.c          127  1 / 1       3 /     4 =  75%
+lsb_stop_sandbox(lsb_lua_sandbox*)                                                                ../src/luasandbox.c          621  1 / 1       3 /     4 =  75%
+lsb_clear_heka_message(lsb_heka_message*)                                                         ../src/util/heka_message.c   443  1 / 1       3 /     4 =  75%
+lsb_outputc(lsb_output_buffer*,char)                                                              ...rc/util/output_buffer.c    78  1 / 1       3 /     4 =  75%
+lsb_outputs(lsb_output_buffer*,const char*,size_t)                                                ...rc/util/output_buffer.c   146  1 / 1       3 /     4 =  75%
+lsb_set_tz(const char*)                                                                           ../src/util/util.c           143  1 / 1       3 /     4 =  75%
+lsb_decode_heka_message(lsb_heka_message*,const char*,size_t,lsb_logger*)                         ../src/util/heka_message.c   207  1 / 1      59 /    77 =  76%
+process_message(lsb_heka_sandbox*,lsb_heka_message*,lua_State*,int,_Bool)                         ../src/heka/sandbox.c        478  1 / 1      33 /    43 =  76%
+lsb_pcall_setup(lsb_lua_sandbox*,const char*)                                                     ../src/luasandbox.c          721  1 / 1      14 /    18 =  77%
+read_string(int,const char*,const char*,lsb_const_string*)                                        ../src/util/heka_message.c    45  1 / 1       8 /    10 =  80%
+read_string_value(const char*,const char*,int,lsb_read_value*)                                    ../src/util/heka_message.c    63  1 / 1       8 /    10 =  80%
+read_integer_value(const char*,const char*,int,lsb_read_value*)                                   ../src/util/heka_message.c    84  1 / 1       8 /    10 =  80%
+check_string(lua_State*,int,const char*,const char*)                                              ../src/luasandbox.c          232  1 / 1       4 /     5 =  80%
+matchbalance(MatchState*,const char*,const char*)                                                 ...c/util/string_matcher.c   137  1 / 1      13 /    16 =  81%
+lsb_outputf(lsb_output_buffer*,const char*,...)                                                   ...rc/util/output_buffer.c    92  1 / 1      23 /    28 =  82%
+heka_read_message(lua_State*,lsb_heka_message*)                                                   ../src/heka/message.c        925  1 / 1      48 /    58 =  82%
+heka_decode_message(lua_State*)                                                                   ../src/heka/message.c        689  1 / 1      54 /    65 =  83%
+hsr_find_message(lua_State*)                                                                      ...rc/heka/stream_reader.c    56  1 / 1      25 /    30 =  83%
+lsb_heka_timer_event(lsb_heka_sandbox*,time_t,_Bool)                                              ../src/heka/sandbox.c        811  1 / 1      15 /    18 =  83%
+set_missing_headers(lua_State*,int,lsb_heka_sandbox*)                                             ../src/heka/message.c         28  1 / 1      10 /    12 =  83%
+lsb_heka_pm_analysis(lsb_heka_sandbox*,lsb_heka_message*,_Bool)                                   ../src/heka/sandbox.c        670  1 / 1      10 /    12 =  83%
+ignore_value_type(lsb_lua_sandbox*,serialization_data*,int,lua_CFunction*)                        .../luasandbox_serialize.c   115  1 / 1      10 /    12 =  83%
+inject_message_analysis(lua_State*)                                                               ../src/heka/sandbox.c        191  1 / 1       5 /     6 =  83%
+lsb_destroy(lsb_lua_sandbox*)                                                                     ../src/luasandbox.c          634  1 / 1       5 /     6 =  83%
+lsb_pb_output_varint(char*,unsigned long long)                                                    ../src/util/protobuf.c        56  1 / 1       5 /     6 =  83%
+lsb_output(lsb_lua_sandbox*,int,int,int)                                                          ../src/luasandbox_output.c    42  1 / 1      27 /    32 =  84%
+heka_encode_message(lua_State*)                                                                   ../src/heka/message.c        816  1 / 1      11 /    13 =  84%
+match_class(int,int)                                                                              ...c/util/string_matcher.c    68  1 / 1      11 /    13 =  84%
+match(MatchState*,const char*,const char*)                                                        ...c/util/string_matcher.c   183  1 / 1      39 /    46 =  84%
+inject_message_input(lua_State*)                                                                  ../src/heka/sandbox.c        112  1 / 1      18 /    21 =  85%
+lsb_heka_pm_output(lsb_heka_sandbox*,lsb_heka_message*,void*,_Bool)                               ../src/heka/sandbox.c        785  1 / 1      12 /    14 =  85%
+lsb_expand_input_buffer(lsb_input_buffer*,size_t)                                                 ../src/util/input_buffer.c    49  1 / 1      12 /    14 =  85%
+numeric_test(match_node*,double)                                                                  .../heka_message_matcher.c    67  1 / 1       6 /     7 =  85%
+lsb_find_heka_message(lsb_heka_message*,lsb_input_buffer*,_Bool,size_t*,lsb_logger*)              ../src/util/heka_message.c   331  1 / 1      31 /    36 =  86%
+output_print(lua_State*)                                                                          ../src/luasandbox.c          143  1 / 1      19 /    22 =  86%
+load_sandbox_config(const char*,lsb_logger*)                                                      ../src/luasandbox.c          285  1 / 1      19 /    22 =  86%
+matchbracketclass(int,const char*,const char*)                                                    ...c/util/string_matcher.c    99  1 / 1      19 /    22 =  86%
+update_checkpoint(lua_State*)                                                                     ../src/heka/sandbox.c        275  1 / 1       7 /     8 =  87%
+lsb_init_input_buffer(lsb_input_buffer*,size_t)                                                   ../src/util/input_buffer.c    20  1 / 1       7 /     8 =  87%
+lsb_outputd(lsb_output_buffer*,double)                                                            ...rc/util/output_buffer.c   160  1 / 1       7 /     8 =  87%
+process_fields(lsb_heka_field*,const char*,const char*)                                           ../src/util/heka_message.c   127  1 / 1      50 /    57 =  87%
+copy_table(lua_State*,lua_State*,lsb_logger*)                                                     ../src/luasandbox.c          327  1 / 1      22 /    25 =  88%
+lsb_expand_output_buffer(lsb_output_buffer*,size_t)                                               ...rc/util/output_buffer.c    52  1 / 1      16 /    18 =  88%
+inject_payload(lua_State*)                                                                        ../src/heka/sandbox.c        216  1 / 1      18 /    20 =  90%
+lsb_add_function(lsb_lua_sandbox*,lua_CFunction,const char*)                                      ../src/luasandbox.c          710  1 / 1       9 /    10 =  90%
+lsb_init_output_buffer(lsb_output_buffer*,size_t)                                                 ...rc/util/output_buffer.c    27  1 / 1       9 /    10 =  90%
+eval_node(match_node*,lsb_heka_message*)                                                          .../heka_message_matcher.c    89  1 / 1      31 /    34 =  91%
+eval_tree(match_node*,match_node*,lsb_heka_message*)                                              .../heka_message_matcher.c   151  1 / 1      22 /    24 =  91%
+memory_manager(void*,void*,size_t,size_t)                                                         ../src/luasandbox.c           83  1 / 1      11 /    12 =  91%
+lsb_read_heka_field(const lsb_heka_message*,lsb_const_string*,int,int,lsb_read_value*)            ../src/util/heka_message.c   474  1 / 1      24 /    26 =  92%
+classend(const char*)                                                                             ...c/util/string_matcher.c    43  1 / 1      16 /    17 =  94%
+string_test(match_node*,lsb_const_string*)                                                        .../heka_message_matcher.c    21  1 / 1      18 /    19 =  94%
+encode_string(lsb_lua_sandbox*,lsb_output_buffer*,char,const char*,int)                           ../src/heka/message.c        254  1 / 1       2 /     2 = 100%
+encode_field_object(lsb_lua_sandbox*,lsb_output_buffer*)                                          ../src/heka/message.c        377  1 / 1       4 /     4 = 100%
+mm_check(lua_State*)                                                                              ../src/heka/sandbox.c         58  1 / 1       0 /     0       
+mm_gc(lua_State*)                                                                                 ../src/heka/sandbox.c         66  1 / 1       0 /     0       
+mm_create(lua_State*)                                                                             ../src/heka/sandbox.c         91  1 / 1       4 /     4 = 100%
+lsb_heka_stop_sandbox(lsb_heka_sandbox*)                                                          ../src/heka/sandbox.c        761  1 / 1       0 /     0       
+lsb_heka_terminate_sandbox(lsb_heka_sandbox*,const char*)                                         ../src/heka/sandbox.c        767  1 / 1       0 /     0       
+lsb_heka_destroy_sandbox(lsb_heka_sandbox*)                                                       ../src/heka/sandbox.c        773  1 / 1       2 /     2 = 100%
+lsb_heka_get_error(lsb_heka_sandbox*)                                                             ../src/heka/sandbox.c        853  1 / 1       2 /     2 = 100%
+lsb_heka_get_lua_file(lsb_heka_sandbox*)                                                          ../src/heka/sandbox.c        859  1 / 1       2 /     2 = 100%
+lsb_heka_get_stats(lsb_heka_sandbox*)                                                             ../src/heka/sandbox.c        865  1 / 1       2 /     2 = 100%
+lsb_heka_is_running(lsb_heka_sandbox*)                                                            ../src/heka/sandbox.c        886  1 / 1       4 /     4 = 100%
+lsb_heka_get_message(lsb_heka_sandbox*)                                                           ../src/heka/sandbox.c        894  1 / 1       2 /     2 = 100%
+lsb_heka_get_type(lsb_heka_sandbox*)                                                              ../src/heka/sandbox.c        901  1 / 1       2 /     2 = 100%
+check_hsr(lua_State*,int)                                                                         ...rc/heka/stream_reader.c    18  1 / 1       0 /     0       
+hsr_read_message(lua_State*)                                                                      ...rc/heka/stream_reader.c   142  1 / 1       6 /     6 = 100%
+hsr_gc(lua_State*)                                                                                ...rc/heka/stream_reader.c   154  1 / 1       0 /     0       
+libsize(const luaL_Reg*)                                                                          ../src/luasandbox.c           50  1 / 1       2 /     2 = 100%
+preload_modules(lua_State*)                                                                       ../src/luasandbox.c           57  1 / 1       2 /     2 = 100%
+instruction_usage(lsb_lua_sandbox*)                                                               ../src/luasandbox.c          113  1 / 1       0 /     0       
+unprotected_panic(lua_State*)                                                                     ../src/luasandbox.c          215  1 / 1       0 /     0       
+get_int(lua_State*,int,const char*)                                                               ../src/luasandbox.c          223  1 / 1       0 /     0       
+stop_hook(lua_State*,lua_Debug*)                                                                  ../src/luasandbox.c          613  1 / 1       0 /     0       
+lsb_usage(lsb_lua_sandbox*,lsb_usage_type,lsb_usage_stat)                                         ../src/luasandbox.c          657  1 / 1      10 /    10 = 100%
+lsb_get_error(lsb_lua_sandbox*)                                                                   ../src/luasandbox.c          667  1 / 1       2 /     2 = 100%
+lsb_set_error(lsb_lua_sandbox*,const char*)                                                       ../src/luasandbox.c          673  1 / 1       4 /     4 = 100%
+lsb_get_lua(lsb_lua_sandbox*)                                                                     ../src/luasandbox.c          686  1 / 1       2 /     2 = 100%
+lsb_get_lua_file(lsb_lua_sandbox*)                                                                ../src/luasandbox.c          692  1 / 1       2 /     2 = 100%
+lsb_get_parent(lsb_lua_sandbox*)                                                                  ../src/luasandbox.c          698  1 / 1       2 /     2 = 100%
+lsb_get_state(lsb_lua_sandbox*)                                                                   ../src/luasandbox.c          704  1 / 1       2 /     2 = 100%
+lsb_pcall_teardown(lsb_lua_sandbox*)                                                              ../src/luasandbox.c          745  1 / 1       4 /     4 = 100%
+lsb_terminate(lsb_lua_sandbox*,const char*)                                                       ../src/luasandbox.c          759  1 / 1       6 /     6 = 100%
+lsb_add_output_function(lua_State*,lua_CFunction)                                                 ../src/luasandbox_output.c    22  1 / 1       0 /     0       
+lsb_get_output_function(lua_State*,int)                                                           ../src/luasandbox_output.c    30  1 / 1       0 /     0       
+get_serialize_function(lua_State*,int)                                                            .../luasandbox_serialize.c    93  1 / 1       0 /     0       
+find_table_ref(table_ref_array*,const void*)                                                      .../luasandbox_serialize.c   150  1 / 1       4 /     4 = 100%
+get_preservation_version(lua_State*)                                                              .../luasandbox_serialize.c   196  1 / 1       4 /     4 = 100%
+serialize_table(lsb_lua_sandbox*,serialization_data*,size_t)                                      .../luasandbox_serialize.c   215  1 / 1       6 /     6 = 100%
+file_exists(const char*)                                                                          .../luasandbox_serialize.c   477  1 / 1       2 /     2 = 100%
+lsb_add_serialize_function(lua_State*,lua_CFunction)                                              .../luasandbox_serialize.c   523  1 / 1       0 /     0       
+lsb_serialize_binary(lsb_output_buffer*,const void*,size_t)                                       .../luasandbox_serialize.c   531  1 / 1      11 /    11 = 100%
+lsb_serialize_double(lsb_output_buffer*,double)                                                   .../luasandbox_serialize.c   558  1 / 1       6 /     6 = 100%
+read_double_value(const char*,const char*,int,lsb_read_value*)                                    ../src/util/heka_message.c   103  1 / 1       2 /     2 = 100%
+process_varint(int,const char*,const char*,long long*)                                            ../src/util/heka_message.c   116  1 / 1       4 /     4 = 100%
+lsb_free_heka_message(lsb_heka_message*)                                                          ../src/util/heka_message.c   463  1 / 1       2 /     2 = 100%
+lsb_write_heka_uuid(lsb_output_buffer*,const char*,size_t)                                        ../src/util/heka_message.c   519  1 / 1      22 /    22 = 100%
+lsb_destroy_message_matcher(lsb_message_matcher*)                                                 .../heka_message_matcher.c   175  1 / 1       6 /     6 = 100%
+lsb_eval_message_matcher(lsb_message_matcher*,lsb_heka_message*)                                  .../heka_message_matcher.c   195  1 / 1       0 /     0       
+lsb_free_input_buffer(lsb_input_buffer*)                                                          ../src/util/input_buffer.c    36  1 / 1       2 /     2 = 100%
+lsb_free_output_buffer(lsb_output_buffer*)                                                        ...rc/util/output_buffer.c    42  1 / 1       2 /     2 = 100%
+lsb_pb_read_key(const char*,int*,int*)                                                            ../src/util/protobuf.c        15  1 / 1       8 /     8 = 100%
+lsb_pb_write_key(lsb_output_buffer*,unsigned char,unsigned char)                                  ../src/util/protobuf.c        25  1 / 1       2 /     2 = 100%
+lsb_pb_read_varint(const char*,const char*,long long*)                                            ../src/util/protobuf.c        36  1 / 1      22 /    22 = 100%
+lsb_pb_write_varint(lsb_output_buffer*,unsigned long long)                                        ../src/util/protobuf.c        75  1 / 1       2 /     2 = 100%
+lsb_pb_write_bool(lsb_output_buffer*,int)                                                         ../src/util/protobuf.c        85  1 / 1       4 /     4 = 100%
+lsb_pb_write_double(lsb_output_buffer*,double)                                                    ../src/util/protobuf.c        99  1 / 1       2 /     2 = 100%
+lsb_pb_write_string(lsb_output_buffer*,char,const char*,size_t)                                   ../src/util/protobuf.c       114  1 / 1       6 /     6 = 100%
+lsb_pb_update_field_length(lsb_output_buffer*,size_t)                                             ../src/util/protobuf.c       127  1 / 1       8 /     8 = 100%
+lsb_init_running_stats(lsb_running_stats*)                                                        ...rc/util/running_stats.c    13  1 / 1       0 /     0       
+lsb_update_running_stats(lsb_running_stats*,double)                                               ...rc/util/running_stats.c    21  1 / 1       4 /     4 = 100%
+lsb_sd_running_stats(lsb_running_stats*)                                                          ...rc/util/running_stats.c    37  1 / 1       2 /     2 = 100%
+lsb_init_const_string(lsb_const_string*)                                                          ../src/util/string.c          11  1 / 1       0 /     0       
+singlematch(int,const char*,const char*)                                                          ...c/util/string_matcher.c   119  1 / 1       4 /     4 = 100%
+max_expand(MatchState*,const char*,const char*,const char*)                                       ...c/util/string_matcher.c   156  1 / 1      10 /    10 = 100%
+lsb_string_match(const char*,size_t,const char*)                                                  ...c/util/string_matcher.c   261  1 / 1      10 /    10 = 100%
+lsb_lp2(unsigned long long)                                                                       ../src/util/util.c            35  1 / 1       2 /     2 = 100%
+lsb_get_time()                                                                                    ../src/util/util.c            75  1 / 1       0 /     0       
+lsb_get_timestamp()                                                                               ../src/util/util.c           114  1 / 1       0 /     0       
+------------------------------------------------------------------------------------------------  --------------------------------  -----  ---------------------
+Total                                                                                                                                100%    1568 /  2029 =  77%

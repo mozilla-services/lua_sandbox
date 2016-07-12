@@ -20,5 +20,5 @@ if(LIBM_LIBRARY)
   target_link_libraries(luasandboxheka ${LIBM_LIBRARY})
 endif()
 
-install(TARGETS luasandboxheka DESTINATION ${CMAKE_INSTALL_LIBDIR} COMPONENT core)
+install(TARGETS luasandboxheka DESTINATION ${CMAKE_INSTALL_LIBDIR})
 add_subdirectory(test)

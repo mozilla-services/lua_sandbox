@@ -52,7 +52,7 @@ int lsb_test_write_output(lua_State *lua)
 }
 
 
-int lsb_test_process(lsb_lua_sandbox *lsb, double ts)
+int lsb_test_process(lsb_lua_sandbox *lsb, double tc)
 {
   static const char *func_name = "process";
   lua_State *lua = lsb_get_lua(lsb);
@@ -60,7 +60,7 @@ int lsb_test_process(lsb_lua_sandbox *lsb, double ts)
 
   if (lsb_pcall_setup(lsb, func_name)) return 1;
 
-  lua_pushnumber(lua, ts);
+  lua_pushnumber(lua, tc);
   if (lua_pcall(lua, 1, 2, 0) != 0) {
     char err[LSB_ERROR_SIZE];
     const char *em = lua_tostring(lua, -1);

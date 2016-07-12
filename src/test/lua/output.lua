@@ -2,7 +2,14 @@
 -- License, v. 2.0. If a copy of the MPL was not distributed with this
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+
 function process(tc)
-    write_output(1.2, " string ", nil, " ", true, " ", false)
+    if tc == 0 then -- lua types
+        write_output(1.2, " string ", nil, " ", true, " ", false)
+    elseif tc == 1 then -- user data
+        require "ud"
+        local udv = ud.new("foo")
+        write_output(udv)
+    end
     return 0
 end

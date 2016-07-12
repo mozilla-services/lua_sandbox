@@ -23,5 +23,5 @@ if(LIBM_LIBRARY)
   target_link_libraries(luasandboxutil ${LIBM_LIBRARY})
 endif()
 
-install(TARGETS luasandboxutil DESTINATION ${CMAKE_INSTALL_LIBDIR} COMPONENT core)
+install(TARGETS luasandboxutil DESTINATION ${CMAKE_INSTALL_LIBDIR})
 add_subdirectory(test)

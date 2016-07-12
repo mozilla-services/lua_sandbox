@@ -5,77 +5,6 @@
 require "os"
 require "io"
 require "string"
-require "table"
-
-local function get_path(s)
-    return s:match("(.+)/[^/]-$")
-end
-
-
-local function get_filename(s)
-    return s:match("/([^/]-)$")
-end
-
-
-local function strip_ext(s)
-    return s:sub(1, #s - 4)
-end
-
-
-local function sort_entries(t)
-  local a = {}
-  for n in pairs(t) do table.insert(a, n) end
-  table.sort(a)
-  local i = 0      -- iterator variable
-  local iter = function ()   -- iterator function
-    i = i + 1
-    if a[i] == nil then
-        return nil
-    else
-        return a[i], t[a[i]]
-    end
-  end
-  return iter
-end
-
-
-local function create_index(path, dir)
-    local fh = assert(io.open("gh-pages/" .. path .. "/index.md", "w"))
-    fh:write(string.format("# %s\n", path))
-
-    for k,v in sort_entries(dir.entries) do
-        if k:match(".lua$") then
-            fh:write(string.format("* [%s](%s.html) - %s\n", k, strip_ext(k), v.title))
-        else
-            fh:write(string.format("* [%s](%s/index.html)\n", k, k))
-        end
-    end
-
-    fh:close()
-end
-
-
-local function output_tree(fh, list, key, dir)
-    list[#list + 1] = key
-    local path = table.concat(list, "/")
-    create_index(path, dir)
-    if #list == 1 then fh:write("<ul>\n") end
-    fh:write(string.format('<li><a href="/lua_sandbox/%s/index.html">%s</a></li>\n', path, key))
-
-    fh:write("<ul>\n")
-    for k, v in sort_entries(dir.entries) do
-        if k:match(".lua$") then
-            fh:write(string.format('<li><a href="/lua_sandbox/%s.html">%s</a></li>\n', strip_ext(v.line), strip_ext(k)))
-        else
-            output_tree(fh, list, k, v)
-        end
-    end
-    fh:write("</ul>\n")
-
-    if #list == 1 then fh:write("</ul>\n") end
-    table.remove(list)
-end
-
 
 local function output_css()
     local fh = assert(io.open("gh-pages/docs.css", "w"))
@@ -188,41 +117,6 @@ local function output_menu(before, after, paths, version)
         <ul>
             <li><a href="/lua_sandbox/doxygen/index.html">Source Documentation</a></li>
         </ul>
-        <ul>
-            <li>C Modules</li>
-            <ul>
-                <li>Shared Libraries</li>
-                <ul>
-                    <li><a href="https://github.com/mozilla-services/lua_bloom_filter/blob/master/README.md">bloom_filter</a></li>
-                    <li><a href="https://github.com/mozilla-services/lua_circular_buffer/blob/master/README.md">circular_buffer</a></li>
-                    <li><a href="http://www.kyne.com.au/~mark/software/lua-cjson-manual.html">cjson</a></li>
-                    <li><a href="https://github.com/mozilla-services/lua_cuckoo_filter/blob/master/README.md">cuckoo_filter</a></li>
-                    <li><a href="https://github.com/mozilla-services/lua_hyperloglog/blob/master/README.md">hyperloglog</a></li>
-                    <li><a href="http://www.inf.puc-rio.br/~roberto/lpeg/lpeg.html">lpeg</a></li>
-                    <li><a href="http://www.inf.puc-rio.br/~roberto/lpeg/re.html">re</a></li>
-                    <li><a href="https://github.com/trink/symtseries/blob/master/README.md">sax</a></li>
-                <li>Optionally Built</li>
-                <ul>
-                    <li><a href="https://github.com/agladysh/lua-geoip">geoip</a></li>
-                    <li><a href="https://github.com/mozilla-services/lua_kafka/blob/master/README.md">kafka</a></li>
-                    <li><a href="https://keplerproject.github.io/luasql/">luasql</a></li>
-                    <ul>
-                        <li><a href="https://keplerproject.github.io/luasql/manual.html#postgres_extensions">postgres</a></li>
-                    </ul>
-                    <li><a href="https://github.com/zhaozg/lua-openssl">openssl</a></li>
-                    <li><a href="https://github.com/mozilla-services/lua_rjson/blob/master/README.md">rjson</a></li>
-                    <li><a href="https://github.com/brunoos/luasec/wiki">ssl</a></li>
-                    <li><a href="http://www.inf.puc-rio.br/~roberto/struct/">struct</a></li>
-                </ul>
-                </ul>
-            </ul>
-        </ul>
-        ]])
-
-    output_tree(fh, {}, "modules", paths.entries.modules)
-    output_tree(fh, {}, "sandboxes", paths.entries.sandboxes)
-
-    fh:write([[
     </div>
     <div class="main-content">
 ]])
@@ -230,51 +124,6 @@ local function output_menu(before, after, paths, version)
 
     fh = assert(io.open(after, "w"))
     fh:write("</div>\n")
-    fh:close()
-end
-
-
-local function handle_path(paths, in_path, out_path)
-    local list = {}
-    local d = paths
-    for dir in string.gmatch(out_path, "[^/]+") do
-        list[#list + 1] = dir
-        if dir ~= "gh-pages" then
-            local full_path = table.concat(list, "/")
-            local cd = d.entries[dir]
-            if not cd then
-                os.execute(string.format("mkdir -p %s", full_path))
-                local nd = {path = in_path, entries = {}}
-                d.entries[dir] = nd
-                d = nd
-            else
-                d = cd
-            end
-        end
-    end
-    return d
-end
-
-
-local function extract_lua_docs(paths)
-    local fh = assert(io.popen("find sandboxes modules -name \\*.lua"))
-    for line in fh:lines() do
-        local sfh = assert(io.open(line))
-        local lua = sfh:read("*a")
-        sfh:close()
-
-        local doc = lua:match("%-%-%[%[%s*(.-)%-%-%]%]")
-        local title = lua:match("#%s(.-)\n")
-        if not title then error("doc error, no title: " .. line) end
-
-        local outfn = string.gsub("gh-pages/" .. line, "lua$", "md")
-        local p = handle_path(paths, get_path(line), get_path(outfn))
-        local ofh = assert(io.open(outfn, "w"))
-        p.entries[get_filename(line)] = {line = line, title = title}
-        ofh:write(doc)
-        ofh:write(string.format("\n\nsource code: [%s](https://github.com/mozilla-services/lua_sandbox/blob/master/%s)\n", get_filename(line), line))
-        ofh:close()
-    end
     fh:close()
 end
 
@@ -305,7 +154,6 @@ local function main()
     if rv ~= 0 then error"rsync" end
     output_css()
     local paths = {entries = {}}
-    extract_lua_docs(paths)
     md_to_html(paths, args[1])
 end
 

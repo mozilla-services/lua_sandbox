@@ -68,7 +68,6 @@ static void preload_modules(lua_State *lua)
 }
 
 
-#ifndef LUA_JIT
 /**
 * Implementation of the memory allocator for the Lua state.
 *
@@ -109,7 +108,6 @@ static void* memory_manager(void *ud, void *ptr, size_t osize, size_t nsize)
   }
   return nptr;
 }
-#endif
 
 
 static size_t instruction_usage(lsb_lua_sandbox *lsb)
@@ -456,11 +454,7 @@ lsb_lua_sandbox* lsb_create(void *parent,
     return NULL;
   }
 
-#ifdef LUA_JIT
-  lsb->lua = luaL_newstate();
-#else
   lsb->lua = lua_newstate(memory_manager, lsb);
-#endif
   if (logger) {
     lsb->logger = *logger;
   }
@@ -551,10 +545,8 @@ lsb_err_value lsb_init(lsb_lua_sandbox *lsb, const char *state_file)
     strcpy(lsb->state_file, state_file);
   }
 
-#ifndef LUA_JIT
   size_t mem_limit = lsb->usage[LSB_UT_MEMORY][LSB_US_LIMIT];
   lsb->usage[LSB_UT_MEMORY][LSB_US_LIMIT] = 0;
-#endif
 
   // load package module
   lua_pushcfunction(lsb->lua, luaopen_package);
@@ -588,13 +580,7 @@ lsb_err_value lsb_init(lsb_lua_sandbox *lsb, const char *state_file)
   } else {
     lua_sethook(lsb->lua, NULL, 0, 0);
   }
-#ifdef LUA_JIT
-  // todo limit
-  lua_gc(lsb->lua, LUA_GCSETMEMLIMIT,
-         (int)lsb->usage[LSB_UT_MEMORY][LSB_US_LIMIT]);
-#else
   lsb->usage[LSB_UT_MEMORY][LSB_US_LIMIT] = mem_limit;
-#endif
   lua_CFunction pf = lua_atpanic(lsb->lua, unprotected_panic);
   int jump = setjmp(g_jbuf);
   if (jump || luaL_dofile(lsb->lua, lsb->lua_file) != 0) {
@@ -674,20 +660,6 @@ size_t lsb_usage(lsb_lua_sandbox *lsb, lsb_usage_type utype,
   if (!lsb || !lsb->lua || utype >= LSB_UT_MAX || ustat >= LSB_US_MAX) {
     return 0;
   }
-#ifdef LUA_JIT
-  if (lsb->lua && utype == LSB_UT_MEMORY) {
-    switch (ustat) {
-    case LSB_US_CURRENT:
-      return lua_gc(lsb->lua, LUA_GCCOUNT, 0) * 1024
-             + lua_gc(lsb->lua, LUA_GCCOUNTB, 0);
-    case LSB_US_MAXIMUM:
-      return lua_gc(lsb->lua, LUA_GCMAXCOUNT, 0) * 1024
-             + lua_gc(lsb->lua, LUA_GCMAXCOUNTB, 0);
-    default:
-      break;
-    }
-  }
-#endif
   return lsb->usage[utype][ustat];
 }
 

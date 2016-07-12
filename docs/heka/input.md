@@ -1,7 +1,5 @@
 # Input Sandbox Interface
 
-[Available Input Sandboxes](/lua_sandbox/sandboxes/heka/input/index.html)
-
 ## Recommendations
 Since the sandbox does not run in isolation there are some expectations of how
 the host infrastructure behaves.  The current recommendation are based on the
@@ -58,7 +56,7 @@ to the values provide in the message table, if no value is provided it defaults
 to the appropriate configuration value.
 
 *Arguments*
-* msg ([Heka message table](message.html), [Heka stream reader](stream_reader.html) or Heka protobuf string)
+* msg ([Heka message table](message.html), [Heka stream reader](#heka-stream-reader-methods) or Heka protobuf string)
 * checkpoint (optional: number, string) - checkpoint to be returned in the `process_message` call
 
 *Return*

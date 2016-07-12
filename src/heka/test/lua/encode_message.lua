@@ -4,12 +4,6 @@
 
 require "string"
 require "table"
-require "circular_buffer"
-require "rjson"
-
-local cb = circular_buffer.new(2,1,1)
-local doc = rjson.parse([[{"foo":"bar"}]])
-assert(doc)
 
 local msgs = {
     {
@@ -72,13 +66,6 @@ local msgs = {
         msg = {Timestamp = 0, Uuid = string.rep("\0", 16), Fields = {key = {value = {1,2,3}, value_type = 2, representation = "widget"}}}, -- int
         rv = "\10\16\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\16\0\34\2\115\108\74\2\115\104\82\20\10\3\107\101\121\16\2\26\6\119\105\100\103\101\116\50\3\1\2\3",
     },
-    {
-        msg = {Timestamp = 0, Uuid = string.rep("\0", 16), Fields = {key = cb}}, -- userdata
-        rv = '\10\16\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\16\0\34\2\115\108\74\2\115\104\82\158\1\10\3\107\101\121\16\1\42\148\1\123\34\116\105\109\101\34\58\48\44\34\114\111\119\115\34\58\50\44\34\99\111\108\117\109\110\115\34\58\49\44\34\115\101\99\111\110\100\115\95\112\101\114\95\114\111\119\34\58\49\44\34\99\111\108\117\109\110\95\105\110\102\111\34\58\91\123\34\110\97\109\101\34\58\34\67\111\108\117\109\110\95\49\34\44\34\117\110\105\116\34\58\34\99\111\117\110\116\34\44\34\97\103\103\114\101\103\97\116\105\111\110\34\58\34\115\117\109\34\125\93\44\34\97\110\110\111\116\97\116\105\111\110\115\34\58\91\93\125\10\110\97\110\10\110\97\110\10'
-    },
-    { msg = {Timestamp = 0, Uuid = string.rep("\0", 16), Fields = {json = doc:make_field()}},
-      rv = "\10\16\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\16\0\34\2\115\108\74\2\115\104\82\23\10\4\106\115\111\110\16\1\42\13\123\34\102\111\111\34\58\34\98\97\114\34\125"
-    },
 }
 
 for i, v in ipairs(msgs) do
@@ -113,6 +100,3 @@ assert("encode_message() failed: array has mixed types" == err, string.format("r
 ok, err = pcall(encode_message, {Fields = { {noname = "foo", value = 1}} })
 assert(not ok)
 assert("encode_message() failed: field name must be a string" == err, string.format("received: %s", err))
-
-ok, err = pcall(rjson.parse_message, "Payload")
-assert("parse_message() no active message" == err, err)

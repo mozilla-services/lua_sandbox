@@ -2,32 +2,67 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+if(MSVC)
+	add_definitions(
+	-DLUA_WIN 
+	-DLUA_BUILD_AS_DLL
+	-D_CRT_SECURE_NO_WARNINGS
+	)
+else()
+	add_definitions(
+	-DLUA_USE_POSIX 
+	-DLUA_USE_DLOPEN 
+	-DLUA_USE_STRTODHEX
+	-DLUA_USE_LONGLONG 
+	-DLUA_USE_GMTIME_R
+	)
+endif()
+
+set(LUA_SRC
+lua/lapi.c
+lua/lauxlib.c
+lua/lbaselib.c
+lua/lcode.c
+lua/ldblib.c
+lua/ldebug.c
+lua/ldo.c
+lua/ldump.c
+lua/lfunc.c 
+lua/lgc.c
+lua/linit.c
+lua/liolib.c
+lua/llex.c
+lua/lmathlib.c
+lua/lmem.c
+lua/loadlib.c 
+lua/lobject.c
+lua/lopcodes.c
+lua/loslib.c
+lua/lparser.c
+lua/lstate.c
+lua/lstring.c
+lua/lstrlib.c
+lua/ltable.c
+lua/ltablib.c
+lua/ltm.c
+lua/lundump.c
+lua/lvm.c
+lua/lzio.c
+)
+
 set(LUA_SANDBOX_SRC
 luasandbox.c
 luasandbox_output.c
 luasandbox_serialize.c
 )
 
-set ( CMAKE_SKIP_BUILD_RPATH FALSE CACHE STRING "" FORCE )
-set ( CMAKE_BUILD_WITH_INSTALL_RPATH FALSE CACHE STRING "" FORCE )
-
-if(MSVC)
-    add_definitions(-D_CRT_SECURE_NO_WARNINGS)
-    install(DIRECTORY "${EP_BASE}/lib/"  DESTINATION ${CMAKE_INSTALL_LIBDIR} COMPONENT core PATTERN "*.dll")
-endif()
-
-add_library(luasandbox SHARED ${LUA_SANDBOX_SRC})
-add_dependencies(luasandbox ${LUA_PROJECT})
-
-set_target_properties(luasandbox PROPERTIES VERSION ${CPACK_PACKAGE_VERSION_MAJOR}.${CPACK_PACKAGE_VERSION_MINOR}.${CPACK_PACKAGE_VERSION_PATCH} SOVERSION 0)
-target_link_libraries(luasandbox luasandboxutil luasb ${CMAKE_DL_LIBS})
+add_library(luasandbox SHARED ${LUA_SANDBOX_SRC} ${LUA_SRC})
+set_target_properties(luasandbox PROPERTIES VERSION ${PROJECT_VERSION} SOVERSION 0)
+target_link_libraries(luasandbox luasandboxutil ${CMAKE_DL_LIBS})
 if(LIBM_LIBRARY)
   target_link_libraries(luasandbox ${LIBM_LIBRARY})
 endif()
-
-install(TARGETS luasandbox DESTINATION ${CMAKE_INSTALL_LIBDIR} COMPONENT core)
-install(DIRECTORY "${EP_BASE}/inst/${CMAKE_INSTALL_LIBDIR}/"  DESTINATION ${CMAKE_INSTALL_LIBDIR} COMPONENT core)
-install(DIRECTORY "${EP_BASE}/inst/include/" DESTINATION ${CMAKE_INSTALL_INCLUDEDIR} COMPONENT core)
+install(TARGETS luasandbox DESTINATION ${CMAKE_INSTALL_LIBDIR})
 
 add_subdirectory(util)
 add_subdirectory(heka)

@@ -412,12 +412,8 @@ lsb_err_value preserve_global_data(lsb_lua_sandbox *lsb)
   data.fh = fh;
 
 // Clear the sandbox limits during preservation.
-#ifdef LUA_JIT
-  lua_gc(lsb->lua, LUA_GCSETMEMLIMIT, 0);
-#else
 //  size_t limit = lsb->usage[LSB_UT_MEMORY][LSB_US_LIMIT];
   lsb->usage[LSB_UT_MEMORY][LSB_US_LIMIT] = 0;
-#endif
 //  size_t cur_output_size = lsb->output.size;
 //  size_t max_output_size = lsb->output.maxsize;
   lsb->output.maxsize = 0;
@@ -460,15 +456,10 @@ lsb_err_value preserve_global_data(lsb_lua_sandbox *lsb)
 // destroyed if the user was collecting output between calls.
 /*
 // Restore the sandbox limits after preservation
-#ifdef LUA_JIT
-  lua_gc(lsb->lua, LUA_GCSETMEMLIMIT,
-         lsb->usage[LSB_UT_MEMORY][LSB_US_LIMIT]);
-#else
   lua_gc(lsb->lua, LUA_GCCOLLECT, 0);
   lsb->usage[LSB_UT_MEMORY][LSB_US_LIMIT] = limit;
   lsb->usage[LSB_UT_MEMORY][LSB_US_MAXIMUM] =
     lsb->usage[LSB_UT_MEMORY][LSB_US_CURRENT];
-#endif
   lsb->output.maxsize = max_output_size;
   lsb_clear_output_buffer(lsb->output);
   if (lsb->output.size > cur_output_size) {
@@ -504,12 +495,8 @@ lsb_err_value restore_global_data(lsb_lua_sandbox *lsb)
   }
 
   // Clear the sandbox limits during restoration.
-#ifdef LUA_JIT
-  lua_gc(lsb->lua, LUA_GCSETMEMLIMIT, 0);
-#else
   size_t limit = lsb->usage[LSB_UT_MEMORY][LSB_US_LIMIT];
   lsb->usage[LSB_UT_MEMORY][LSB_US_LIMIT] = 0;
-#endif
   lua_sethook(lsb->lua, NULL, 0, 0);
 
   int err = luaL_dofile(lsb->lua, lsb->state_file);
@@ -525,15 +512,10 @@ lsb_err_value restore_global_data(lsb_lua_sandbox *lsb)
       return LSB_ERR_LUA;
     }
   }
-#ifdef LUA_JIT
-  lua_gc(lsb->lua, LUA_GCSETMEMLIMIT,
-         lsb->usage[LSB_UT_MEMORY][LSB_US_LIMIT]); // reinstate limit
-#else
   lua_gc(lsb->lua, LUA_GCCOLLECT, 0);
   lsb->usage[LSB_UT_MEMORY][LSB_US_LIMIT] = limit;
   lsb->usage[LSB_UT_MEMORY][LSB_US_MAXIMUM] =
       lsb->usage[LSB_UT_MEMORY][LSB_US_CURRENT];
-#endif
   return NULL;
 }
 

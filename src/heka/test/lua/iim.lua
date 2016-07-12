@@ -3,18 +3,7 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 require "string"
-require "bloom_filter";
-require "rjson"
-local bf = bloom_filter.new(10, 0.01)
-
-local json = [[{"foo":"bar"}]]
-local doc = rjson.parse(json)
-assert(doc)
-local doc1 = rjson.parse(json)
-local doc2 = rjson.parse(json)
-local large_json = string.format('{"foo":"%s"}', string.rep("x", 66000))
-local large_doc = rjson.parse(large_json)
-assert(large_doc)
+require "io"
 
 -- Table tests
 local msgs = {
@@ -22,9 +11,6 @@ local msgs = {
     {{Timestamp = 1, Uuid = "00000000-0000-0000-0000-000000000000"}, nil},
     {{Timestamp = 2, Uuid = "00000000-0000-0000-0000-000000000000", Logger = "logger", Hostname = "hostname", Type = "type", Payload = "payload", EnvVersion = "envversion", Pid = 99, Severity = 5}, 99},
     {{Timestamp = 3, Uuid = "00000000-0000-0000-0000-000000000000", Fields = {number=1,numbers={value={1,2,3}, representation="count"},string="string",strings={"s1","s2","s3"}, bool=true, bools={true,false,false}}}, "foo.log:123"},
-    {{Timestamp = 4, Uuid = "00000000-0000-0000-0000-000000000000", Fields = {json = doc:make_field()}}, nil}, -- use the lightuserdata
-    {{Timestamp = 4, Uuid = "00000000-0000-0000-0000-000000000000", Fields = {json = doc}}, nil}, -- use the full userdata
-    {{Timestamp = 4, Uuid = "00000000-0000-0000-0000-000000000000", Fields = {json = doc2:remove()}}, nil}, -- use the removed item
 }
 
 local err_msgs = {
@@ -42,10 +28,7 @@ local err_msgs = {
     {msg = {Timestamp = 1e9, Fields = {counts={value=true, value_type=1}}}, err = "inject_message() failed: invalid boolean value_type: 1"},
     {msg = {Timestamp = 1e9, Fields = {counts={value=true, value_type=2}}}, err = "inject_message() failed: invalid boolean value_type: 2"},
     {msg = {Timestamp = 1e9, Fields = {counts={value=true, value_type=2}}}, err = "inject_message() failed: invalid boolean value_type: 2"},
-    {msg = {Timestamp = 1e9, Fields = {bf = {value=bf, representation="bf"}}}, err = "inject_message() failed: userdata object does not implement lsb_output"},
-    {msg = {Timestamp = 1e9, Fields = {json = {value = doc:find()}}}, err = "inject_message() failed: a lightuserdata output must also specify a userdata value"},
-    {msg = {Timestamp = 1e9, Fields = {json = {value = doc1:find(), userdata = doc}}}, err = "inject_message() failed: userdata output callback failed: 1"},
-    {msg = {Timestamp = 1e9, Fields = {json = large_doc:make_field()}}, err = "inject_message() failed: userdata output callback failed: 1"},
+    {msg = {Timestamp = 1e9, Fields = {bf = {value=io.stdin, representation="bf"}}}, err = "inject_message() failed: userdata object does not implement lsb_output"},
 }
 
 for i, v in ipairs(msgs) do

@@ -1,7 +1,5 @@
 # Analysis Sandbox Interface
 
-[Available Analysis Sandboxes](/lua_sandbox/sandboxes/heka/analysis/index.html)
-
 ## Recommendations
 Since the sandbox does not run in isolation there are some expectations of how
 the host infrastructure behaves.  The current recommendation are based on the

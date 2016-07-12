@@ -1,5 +1,4 @@
-Lua Sandbox Library
--------------------
+# Lua Sandbox Library
 
 ## Overview
 

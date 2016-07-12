@@ -1,7 +1,5 @@
 # Output Sandbox Interface
 
-[Available Output Sandboxes](/lua_sandbox/sandboxes/heka/output/index.html)
-
 ## Recommendations
 Since the sandbox does not run in isolation there are some expectations of how
 the host infrastructure behaves.  The current recommendation are based on the
@@ -107,7 +105,7 @@ Returns a Heka protocol buffer message matcher; used to dynamic filter messages 
 
 #### Example
 
-See: [heka_tcp_matcher.lua](https://github.com/mozilla-services/lua_sandbox/blob/master/sandboxes/heka/output/heka_tcp_matcher.lua)
+See: [heka_tcp_matcher.lua](https://github.com/mozilla-services/lua_sandbox_extensions/socket/sandboxes/heka/output/heka_tcp_matcher.html)
 
 ### update_checkpoint
 

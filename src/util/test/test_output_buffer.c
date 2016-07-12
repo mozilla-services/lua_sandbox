@@ -26,6 +26,7 @@ static char* test_stub()
   return NULL;
 }
 
+
 static char* test_init_small_buf()
 {
   size_t size = 512;
