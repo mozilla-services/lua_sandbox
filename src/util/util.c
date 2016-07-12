@@ -130,7 +130,7 @@ long long lsb_get_timestamp()
   unsigned long long t = ft.dwHighDateTime;
   t <<= 32;
   t |= ft.dwLowDateTime;
-  t -= 16444736000000000ULL; // convert from Jan 1 1601 to Jan 1 1970
+  t -= 116444736000000000ULL; // convert from Jan 1 1601 to Jan 1 1970
   return t * 100LL;
 #else
   struct timeval tv;

@@ -11,7 +11,9 @@
 
 #ifdef _WIN32
 #define snprintf _snprintf
-#elif __linux
+#endif
+
+#if __linux
 #define CLOSE_ON_EXEC "e"
 #else
 #define CLOSE_ON_EXEC ""

@@ -114,7 +114,9 @@ static int inject_message_input(lua_State *lua)
   lua_getfield(lua, LUA_REGISTRYINDEX, LSB_THIS_PTR);
   lsb_lua_sandbox *lsb = lua_touserdata(lua, -1);
   lua_pop(lua, 1); // remove this ptr
-  if (!lsb) return luaL_error(lua, "%s() invalid " LSB_THIS_PTR, im_func_name);
+  if (!lsb) {
+    return luaL_error(lua, "%s() invalid " LSB_THIS_PTR, im_func_name);
+  }
 
   const char *scp =  NULL;
   double ncp = NAN;

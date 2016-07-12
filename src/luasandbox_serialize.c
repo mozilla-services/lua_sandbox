@@ -6,6 +6,7 @@
 
 /** @brief Sandbox serialization implementation @file */
 
+#define LUA_LIB
 #include "luasandbox_serialize.h"
 
 #include <math.h>

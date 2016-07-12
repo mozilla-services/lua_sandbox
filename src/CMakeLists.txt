@@ -4,7 +4,6 @@
 
 if(MSVC)
 	add_definitions(
-	-DLUA_WIN 
 	-DLUA_BUILD_AS_DLL
 	-D_CRT_SECURE_NO_WARNINGS
 	)

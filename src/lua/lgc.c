@@ -285,7 +285,7 @@ static l_mem propagatemark (global_State *g) {
       if (traversetable(g, h))  /* table is weak? */
         black2gray(o);  /* keep it gray */
       return sizeof(Table) + sizeof(TValue) * h->sizearray +
-                             sizeof(Node) * sizenode(h);
+                             sizeof(Node) * (size_t)sizenode(h);
     }
     case LUA_TFUNCTION: {
       Closure *cl = gco2cl(o);

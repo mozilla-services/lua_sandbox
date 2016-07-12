@@ -16,6 +16,7 @@
 #include "luasandbox/lauxlib.h"
 #include "luasandbox/lua.h"
 #include "luasandbox_output.h"
+#include "../luasandbox_defines.h"
 
 const char *lsb_test_output = NULL;
 size_t lsb_test_output_len = 0;

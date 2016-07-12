@@ -6,6 +6,7 @@
 
 /** @brief Lua sandbox output buffer implementation @file */
 
+#define LUA_LIB
 #include "luasandbox_output.h"
 
 #include <stdarg.h>

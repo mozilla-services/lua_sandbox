@@ -6,6 +6,7 @@
 
 /** @brief Lua sandboxed implementation @file */
 
+#define LUA_LIB
 #include "luasandbox.h"
 
 #include <ctype.h>

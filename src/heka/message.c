@@ -23,6 +23,7 @@
 #include "luasandbox/util/heka_message.h"
 #include "luasandbox/util/output_buffer.h"
 #include "luasandbox/util/protobuf.h"
+#include "../luasandbox_defines.h"
 
 
 static void set_missing_headers(lua_State *lua, int idx, lsb_heka_sandbox *hsb)
