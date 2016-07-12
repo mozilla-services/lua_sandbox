@@ -13,6 +13,8 @@
 #define snprintf _snprintf
 #elif __linux
 #define CLOSE_ON_EXEC "e"
+#else
+#define CLOSE_ON_EXEC ""
 #endif
 
 #ifdef _MSC_VER
