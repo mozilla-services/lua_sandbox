@@ -45,6 +45,7 @@ endif()
 set(CPACK_PACKAGE_VENDOR        "Mozilla Services")
 set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_SOURCE_DIR}/LICENSE.txt")
 set(CPACK_STRIP_FILES TRUE)
+set(CPACK_DEBIAN_PACKAGE_SHLIBDEPS ON)
 
 include(CPack)
 include(CTest)
