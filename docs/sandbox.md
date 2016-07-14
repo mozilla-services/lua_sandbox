@@ -49,6 +49,10 @@ By default only the base library is loaded additional libraries must be loaded w
 The following modules have been modified, as described, for use in the sandbox.
   - [base library](http://www.lua.org/manual/5.1/manual.html#5.1)
     - The require() function has been modified to not expose any of the package table to the sandbox.
+  - [math](http://www.lua.org/manual/5.1/manual.html#5.6)
+    - Added Functions
+        - erf(x) - Returns the error function value for x.
+        - erfc(x)- Returns the complementary error function value for x.
   - [os](http://www.lua.org/manual/5.1/manual.html#5.8)
     - The local timezone is set to UTC in all sandboxes.
 

@@ -212,6 +212,18 @@ static int math_randomseed (lua_State *L) {
 }
 
 
+static int math_erf (lua_State *L) {
+  lua_pushnumber(L, erf(luaL_checknumber(L, 1)));
+  return 1;
+}
+
+
+static int math_erfc (lua_State *L) {
+  lua_pushnumber(L, erfc(luaL_checknumber(L, 1)));
+  return 1;
+}
+
+
 static const luaL_Reg mathlib[] = {
   {"abs",   math_abs},
   {"acos",  math_acos},
@@ -222,6 +234,8 @@ static const luaL_Reg mathlib[] = {
   {"cosh",   math_cosh},
   {"cos",   math_cos},
   {"deg",   math_deg},
+  {"erf",   math_erf},
+  {"erfc",   math_erfc},
   {"exp",   math_exp},
   {"floor", math_floor},
   {"fmod",   math_fmod},
