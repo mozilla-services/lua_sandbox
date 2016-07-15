@@ -3,7 +3,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 cmake_minimum_required(VERSION 3.0 FATAL_ERROR)
-project(luasandbox VERSION 1.0.1 LANGUAGES C)
+project(luasandbox VERSION 1.0.2 LANGUAGES C)
 
 set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "Generic Lua sandbox for dynamic data analysis")
 set(CPACK_PACKAGE_VERSION_MAJOR ${PROJECT_VERSION_MAJOR})
@@ -17,7 +17,7 @@ if(WIN32)
   set(INSTALL_CMAKE_DIR cmake)
   set(CMAKE_INSTALL_LIBDIR ${CMAKE_INSTALL_BINDIR})
 else()
-  set(INSTALL_CMAKE_DIR "${CMAKE_INSTALL_LIBDIR}/${PROJECT_NAME}/cmake")
+  set(INSTALL_CMAKE_DIR "${CMAKE_INSTALL_DATAROOTDIR}/cmake/${PROJECT_NAME}")
 endif()
 
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
