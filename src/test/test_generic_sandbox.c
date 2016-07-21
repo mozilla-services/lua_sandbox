@@ -170,6 +170,8 @@ static char* test_api_assertion()
   lsb_add_function(NULL, NULL, NULL);
   lsb_pcall_teardown(NULL);
   lsb_terminate(NULL, NULL);
+  lsb_terminate(sb, NULL);
+  lsb_add_function(sb, lsb_test_write_output, "write_output");
 
   e = lsb_destroy(sb);
   mu_assert(!e, "lsb_destroy() received: %s", e);
@@ -317,8 +319,10 @@ static char* test_usage_error()
 
   mu_assert(sb, "lsb_create() received: NULL");
   lsb_terminate(sb, "forced termination");
+  lsb_state s = lsb_get_state(sb);
+  mu_assert(s == LSB_TERMINATED, "lsb_get_state() received: %d", s);
   u = lsb_usage(sb, LSB_UT_MEMORY, LSB_US_CURRENT);
-  mu_assert(u == 0, "Terminated memory usage received: %" PRIuSIZE, u);
+  mu_assert(u > 0, "Terminated memory usage received: 0");
 
   e = lsb_destroy(sb);
   mu_assert(!e, "lsb_destroy() received: %s", e);

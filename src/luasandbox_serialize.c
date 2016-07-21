@@ -369,7 +369,7 @@ serialize_kvp(lsb_lua_sandbox *lsb, serialization_data *data, size_t parent)
 lsb_err_value preserve_global_data(lsb_lua_sandbox *lsb)
 {
 
-  if (!lsb->lua || !lsb->state_file) {
+  if (!lsb->lua || !lsb->state_file || lsb->state == LSB_TERMINATED) {
     return NULL;
   }
   lua_sethook(lsb->lua, NULL, 0, 0);

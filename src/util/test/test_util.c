@@ -103,7 +103,7 @@ static char* benchmark_lsb_get_timestamp()
   printf("benchmark_lsb_get_timestamp(%d) - clock %g seconds\n", iter,
          (double)t / CLOCKS_PER_SEC / iter);
   long long delta = lsb_get_timestamp() / 1000000000LL - time(NULL);
-  mu_assert(delta > 0 ? delta < 1 : delta > -1, "delta %lld", delta);
+  mu_assert(delta > 0 ? delta <= 1 : delta >= -1, "delta %lld", delta);
   return NULL;
 }
 

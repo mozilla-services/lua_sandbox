@@ -646,7 +646,12 @@ char* lsb_destroy(lsb_lua_sandbox *lsb)
       strcpy(err, lsb->error_message);
     }
   }
-  lsb_terminate(lsb, NULL);
+
+  if (lsb->lua) {
+    lua_close(lsb->lua);
+    lsb->lua = NULL;
+  }
+
   lsb_free_output_buffer(&lsb->output);
   free(lsb->state_file);
   free(lsb->lua_file);
@@ -658,7 +663,7 @@ char* lsb_destroy(lsb_lua_sandbox *lsb)
 size_t lsb_usage(lsb_lua_sandbox *lsb, lsb_usage_type utype,
                  lsb_usage_stat ustat)
 {
-  if (!lsb || !lsb->lua || utype >= LSB_UT_MAX || ustat >= LSB_US_MAX) {
+  if (!lsb || utype >= LSB_UT_MAX || ustat >= LSB_US_MAX) {
     return 0;
   }
   return lsb->usage[utype][ustat];
@@ -712,7 +717,7 @@ void lsb_add_function(lsb_lua_sandbox *lsb, lua_CFunction func,
                       const char *func_name)
 {
   if (!lsb || !func || !func_name) return;
-  if (!lsb->lua) return;
+  if (lsb->state == LSB_TERMINATED) return;
 
   lua_pushcfunction(lsb->lua, func);
   lua_setglobal(lsb->lua, func_name);
@@ -722,7 +727,7 @@ void lsb_add_function(lsb_lua_sandbox *lsb, lua_CFunction func,
 lsb_err_value lsb_pcall_setup(lsb_lua_sandbox *lsb, const char *func_name)
 {
   if (!lsb || !func_name) return LSB_ERR_UTIL_NULL;
-  if (!lsb->lua) return LSB_ERR_TERMINATED;
+  if (lsb->state == LSB_TERMINATED) return LSB_ERR_TERMINATED;
 
   if (lsb->usage[LSB_UT_INSTRUCTION][LSB_US_LIMIT] != 0) {
     lua_sethook(lsb->lua, instruction_manager, LUA_MASKCOUNT,
@@ -765,11 +770,5 @@ void lsb_terminate(lsb_lua_sandbox *lsb, const char *err)
     strncpy(lsb->error_message, err, LSB_ERROR_SIZE);
     lsb->error_message[LSB_ERROR_SIZE - 1] = 0;
   }
-
-  if (lsb->lua) {
-    lua_close(lsb->lua);
-    lsb->lua = NULL;
-  }
-  lsb->usage[LSB_UT_MEMORY][LSB_US_CURRENT] = 0;
   lsb->state = LSB_TERMINATED;
 }
