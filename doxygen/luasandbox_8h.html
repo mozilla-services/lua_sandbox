@@ -24,7 +24,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">luasandbox
-   &#160;<span id="projectnumber">1.0.2</span>
+   &#160;<span id="projectnumber">1.0.3</span>
    </div>
    <div id="projectbrief">Generic Lua sandbox for dynamic data analysis</div>
   </td>
@@ -199,7 +199,7 @@ Functions</h2></td></tr>
 <tr class="memdesc:a2d3283afd4a2a164408a426ec54d25b7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Helper function to update the statistics after the call.  <a href="#a2d3283afd4a2a164408a426ec54d25b7">More...</a><br /></td></tr>
 <tr class="separator:a2d3283afd4a2a164408a426ec54d25b7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad246b90204713719fb73e3430843630c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="luasandbox_8h.html#a1fe1b28ef15a5cc442f06c26c2eae3cc">LSB_EXPORT</a> void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="luasandbox_8h.html#ad246b90204713719fb73e3430843630c">lsb_terminate</a> (<a class="el" href="luasandbox_8h.html#ad2faa95e9a2ada80510c0d2942862c6e">lsb_lua_sandbox</a> *lsb, const char *err)</td></tr>
-<tr class="memdesc:ad246b90204713719fb73e3430843630c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Shutdown the sandbox due to a fatal error.  <a href="#ad246b90204713719fb73e3430843630c">More...</a><br /></td></tr>
+<tr class="memdesc:ad246b90204713719fb73e3430843630c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Change the sandbox state to LSB_TERMINATED due to a fatal error.  <a href="#ad246b90204713719fb73e3430843630c">More...</a><br /></td></tr>
 <tr class="separator:ad246b90204713719fb73e3430843630c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="var-members"></a>
@@ -884,7 +884,7 @@ down" termination message is generated.</p>
       </table>
 </div><div class="memdoc">
 
-<p>Shutdown the sandbox due to a fatal error. </p>
+<p>Change the sandbox state to LSB_TERMINATED due to a fatal error. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">lsb</td><td>Pointer to the sandbox. </td></tr>
