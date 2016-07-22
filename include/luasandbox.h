@@ -242,7 +242,7 @@ lsb_pcall_setup(lsb_lua_sandbox *lsb, const char *func_name);
 LSB_EXPORT void lsb_pcall_teardown(lsb_lua_sandbox *lsb);
 
 /**
- * Shutdown the sandbox due to a fatal error.
+ * Change the sandbox state to LSB_TERMINATED due to a fatal error.
  *
  * @param lsb Pointer to the sandbox.
  * @param err Reason for termination
