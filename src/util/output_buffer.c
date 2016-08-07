@@ -151,8 +151,9 @@ lsb_err_value lsb_outputs(lsb_output_buffer *b, const char *str, size_t len)
   lsb_err_value ret = lsb_expand_output_buffer(b, len + 1);
   if (ret) return ret;
 
-  memcpy(b->buf + b->pos, str, len + 1);
+  memcpy(b->buf + b->pos, str, len);
   b->pos += len;
+  b->buf[b->pos] = 0;
   return ret;
 }
 
