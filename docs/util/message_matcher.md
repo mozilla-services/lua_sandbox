@@ -82,3 +82,4 @@ All message variables must be on the left hand side of the relational comparison
 ## Additional Restrictions
 
 * Message matchers are restricted to 128 relational comparisons
+* A NUL character '\0' is not allowed in a matcher string

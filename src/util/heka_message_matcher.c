@@ -49,7 +49,7 @@ static bool string_test(match_node *mn, lsb_const_string *val)
     {
       int cmp = strncmp(val->s, mn->value.s, val->len);
       if (cmp == 0) {
-        return val->len == mn->value_len;
+        return val->len >= mn->value_len;
       }
       return cmp > 0;
     }
