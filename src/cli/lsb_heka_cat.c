@@ -245,7 +245,18 @@ static int find_header(const char *cur, int clen, const char *prev, int num)
       }
 
       char flag;
-      int hend = i + 2 + hlen;
+      int hend = i + 2;
+      if (hend < clen) {
+        flag = cur[hend];
+      } else {
+        flag = prev[hend - clen];
+      }
+
+      if (flag != 0x08) {
+        continue;
+      }
+
+      hend += hlen;
       if (hend < clen) {
         flag = cur[hend];
       } else {
@@ -290,7 +301,7 @@ static void move_to_offset(FILE *fh, int num)
 
     int loc = find_header(cur, consume, prev, num);
     if (loc >= 0) {
-      if (fseek(fh, -(consume - loc) , SEEK_CUR)) {
+      if (fseek(fh, -(consume - loc), SEEK_CUR)) {
         log_cb(NULL, NULL, 0, "fseek failed (find position)");
       }
       return;
@@ -376,7 +387,10 @@ int main(int argc, char **argv)
     return EXIT_FAILURE;
   }
 
-  lsb_message_matcher *mm = lsb_create_message_matcher(matcher);
+  char ms[strlen(matcher) + 1];
+  size_t len = sizeof(ms);
+  lsb_message_matcher *mm = lsb_create_message_matcher(
+      lsb_lua_string_unescape(ms, matcher, &len));
   if (!mm) {
     log_cb(NULL, NULL, 0, "invalid message matcher: %s", matcher);
     return EXIT_FAILURE;

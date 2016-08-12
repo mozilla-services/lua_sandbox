@@ -19,16 +19,35 @@ typedef struct lsb_const_string
 
 
 #ifdef __cplusplus
-extern "C" {
+extern "C"
+{
 #endif
 
 /**
- * Initializes the struct to zero
+ * Initializes the struct to zero.
  *
  * @param s Pointer to the struct
  *
  */
 LSB_UTIL_EXPORT void lsb_init_const_string(lsb_const_string *s);
+
+
+/**
+ * Lua string unescape. The returned string is always NUL terminated, but can
+ * contain other NULs in its body.
+ *
+ * @param d Pointer to the destination array where the content is to be
+ *          unescaped.
+ * @param s C string to be unescaped
+ * @param dlen The length of the destination array (must be 1 byte larger than
+ *            the source string (for inclusion of the NUL terminator).  After
+ *            successful conversion the final length of the escaped string is
+ *            written back to this value as it may not equal strlen(d).
+ *
+ * @return char* A pointer to d or NULL on error.
+ */
+LSB_UTIL_EXPORT
+char* lsb_lua_string_unescape(char *d, const char *s, size_t *dlen);
 
 #ifdef __cplusplus
 }
