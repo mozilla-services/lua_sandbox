@@ -13,14 +13,9 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "../luasandbox_defines.h"
 #include "luasandbox/util/output_buffer.h"
 #include "luasandbox/util/protobuf.h"
-
-#ifdef _MSC_VER
-#ifndef __func__
-#define __func__ __FUNCTION__
-#endif
-#endif
 
 static size_t decode_header(char *buf, size_t len, size_t max_message_size)
 {

@@ -38,6 +38,10 @@ static lsb_logger logger = { .context = NULL, .cb = dlog };
 static int iim(void *parent, const char *pb, size_t pb_len, double cp_numeric,
                const char *cp_string)
 {
+  if (!pb) {
+    return 0;
+  }
+
   static int cnt = 0;
   struct im_result {
     const char  *pb;
@@ -328,7 +332,7 @@ static char* test_timer_event()
             lsb_heka_get_error(hsb));
   mu_assert(1 == lsb_heka_timer_event(hsb, 2, false), "err: %s",
             lsb_heka_get_error(hsb));
-  mu_assert(false == lsb_heka_is_running(hsb), "running");
+  mu_assert(false == lsb_heka_is_running(hsb), "not running");
 
   stats = lsb_heka_get_stats(hsb);
   mu_assert(0 == stats.im_cnt, "received %llu", stats.im_cnt);
@@ -349,6 +353,32 @@ static char* test_timer_event()
   mu_assert(strcmp("timer_event() function was not found", err) == 0,
             "received: %s", err);
   e = lsb_heka_destroy_sandbox(hsb);
+  return NULL;
+}
+
+
+static char* test_clean_stop_input()
+{
+  static const char *state_file = "stop.data";
+  remove(state_file);
+  lsb_heka_sandbox *hsb;
+  hsb = lsb_heka_create_input(NULL, "lua/input.lua", state_file, NULL, &logger, iim);
+  mu_assert(hsb, "lsb_heka_create_input failed");
+
+  mu_assert(true == lsb_heka_is_running(hsb), "running");
+  int rv = lsb_heka_pm_input(hsb, 8, NULL, true);
+  const char *err = lsb_heka_get_error(hsb);
+  mu_assert(rv == 0, "error: %s expected: %d received: %d", err, 0, rv);
+  mu_assert(true == lsb_heka_is_running(hsb), "running");
+
+  lsb_heka_stop_sandbox_clean(hsb);
+  rv = lsb_heka_pm_input(hsb, 9, NULL, true);
+  err = lsb_heka_get_error(hsb);
+  mu_assert(rv == 0, "error: %s expected: %d received: %d", err, 0, rv);
+  mu_assert(false == lsb_heka_is_running(hsb), "not running");
+
+  e = lsb_heka_destroy_sandbox(hsb);
+  mu_assert(!e, "received %s", e);
   return NULL;
 }
 
@@ -416,10 +446,10 @@ static char* test_pm_error()
   };
 
   struct pm_result results[] = {
-    { .ncp = 3, .scp = NULL, .rv = 1,  .err = "process_message() lua/input.lua:26: boom" },
+    { .ncp = 3, .scp = NULL, .rv = 1,  .err = "process_message() lua/input.lua:27: boom" },
     { .ncp = 4, .scp = NULL, .rv = 1,  .err = "process_message() must return a nil or string error message" },
     { .ncp = 5, .scp = NULL, .rv = 1,  .err = "process_message() must return a numeric status code" },
-    { .ncp = 6, .scp = NULL, .rv = 1,  .err = "process_message() lua/input.lua:32: aaaaaaaaaaaaaaaaaaaaaaaaa"
+    { .ncp = 6, .scp = NULL, .rv = 1,  .err = "process_message() lua/input.lua:33: aaaaaaaaaaaaaaaaaaaaaaaaa"
       "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
       "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
     }, // >max error message
@@ -657,6 +687,7 @@ static char* all_tests()
   mu_run_test(test_create_analysis_sandbox);
   mu_run_test(test_create_output_sandbox);
   mu_run_test(test_timer_event);
+  mu_run_test(test_clean_stop_input);
   mu_run_test(test_stop_input);
   mu_run_test(test_pm_input);
   mu_run_test(test_pm_error);

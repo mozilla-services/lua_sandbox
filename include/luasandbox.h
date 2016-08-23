@@ -40,7 +40,8 @@
 typedef enum {
   LSB_UNKNOWN     = 0,
   LSB_RUNNING     = 1,
-  LSB_TERMINATED  = 2
+  LSB_TERMINATED  = 2,
+  LSB_STOP        = 3
 } lsb_state;
 
 typedef enum {
@@ -124,8 +125,19 @@ LSB_EXPORT lsb_err_value
 lsb_init(lsb_lua_sandbox *lsb, const char *state_file);
 
 /**
+ * Changes the sandbox state to LSB_STOP to allow for a clean exit. This call is
+ * not thread safe.
+ *
+ * @param lsb sandbox to clean stop
+ *
+ * @return
+ *
+ */
+LSB_EXPORT void lsb_stop_sandbox_clean(lsb_lua_sandbox *lsb);
+
+/**
  * Aborts the running sandbox from a different thread of execution. A "shutting
- * down" termination message is generated.
+ * down" Lua error message is generated.
  *
  * @param lsb sandbox to abort
  *

@@ -15,7 +15,7 @@ environment including functionality like global data preservation/restoration on
 shutdown/startup, output collection in textual or binary formats and an array of
 parsers for various data types (Nginx, Apache, Syslog, MySQL and many RFC grammars)
 
-These libraries and utilities have been mostly extracted from [Hindsight](https://github.com/trink/hindsight).
+These libraries and utilities have been mostly extracted from [Hindsight](https://github.com/mozilla-services/hindsight).
 The goal was to decouple the Heka/Hindsight functionality from any particular
 infrastructure and make it embeddable into any tool or language.
 

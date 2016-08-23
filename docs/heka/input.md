@@ -41,6 +41,18 @@ Provides access to the sandbox configuration variables.
 *Return*
 * value (string, number, bool, table)
 
+### is_running
+
+Provides a synchronization point for collecting statistics and communicating
+shutdown status.
+
+*Arguments*
+* none
+
+*Return*
+* running (boolean) - true if a sandbox state is LSB_RUNNING, false if not or
+  throws an error if the request to the host fails.
+
 ### decode_message
 
 Converts a Heka protobuf encoded message string into a Lua table.
