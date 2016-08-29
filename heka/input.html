@@ -46,7 +46,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
   <link rel="stylesheet" href="/lua_sandbox/docs.css" type="text/css" />
 </head>
 <body>
-<div id="title">Lua Sandbox Library (1.0.4)<hr/></div>
+<div id="title">Lua Sandbox Library (1.1.0)<hr/></div>
 <div class="menu">
         <ul>
             <li><a href="/lua_sandbox/index.html">Overview</a></li>
@@ -115,6 +115,16 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <p><em>Return</em></p>
 <ul>
 <li>value (string, number, bool, table)</li>
+</ul>
+<h3 id="is_running">is_running</h3>
+<p>Provides a synchronization point for collecting statistics and communicating shutdown status.</p>
+<p><em>Arguments</em></p>
+<ul>
+<li>none</li>
+</ul>
+<p><em>Return</em></p>
+<ul>
+<li>running (boolean) - true if a sandbox state is LSB_RUNNING, false if not or throws an error if the request to the host fails.</li>
 </ul>
 <h3 id="decode_message">decode_message</h3>
 <p>Converts a Heka protobuf encoded message string into a Lua table. See <a href="analysis.html#decode_message">decode_message</a> for details.</p>

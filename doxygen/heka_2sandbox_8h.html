@@ -24,7 +24,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">luasandbox
-   &#160;<span id="projectnumber">1.0.4</span>
+   &#160;<span id="projectnumber">1.1.0</span>
    </div>
    <div id="projectbrief">Generic Lua sandbox for dynamic data analysis</div>
   </td>
@@ -106,6 +106,22 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <code>#include &quot;<a class="el" href="heka__message_8h_source.html">../util/heka_message.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="lauxlib_8h_source.html">../lauxlib.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="lua_8h_source.html">../lua.h</a>&quot;</code><br />
+</div><div class="textblock"><div class="dynheader">
+Include dependency graph for sandbox.h:</div>
+<div class="dyncontent">
+<div class="center"><img src="heka_2sandbox_8h__incl.png" border="0" usemap="#include_2luasandbox_2heka_2sandbox_8h" alt=""/></div>
+<map name="include_2luasandbox_2heka_2sandbox_8h" id="include_2luasandbox_2heka_2sandbox_8h">
+<area shape="rect" id="node4" href="error_8h.html" title="Error handling and logging. " alt="" coords="34,319,104,345"/>
+<area shape="rect" id="node5" href="heka__message_8h.html" title="Heka message representation. " alt="" coords="269,95,424,121"/>
+<area shape="rect" id="node12" href="lauxlib_8h.html" title="../lauxlib.h" alt="" coords="620,95,702,121"/>
+<area shape="rect" id="node14" href="lua_8h.html" title="lua.h" alt="" coords="766,169,817,196"/>
+<area shape="rect" id="node7" href="input__buffer_8h.html" title="Data stream input buffer. " alt="" coords="454,169,556,196"/>
+<area shape="rect" id="node8" href="util_8h.html" title="Shared types and structures. " alt="" coords="321,244,372,271"/>
+<area shape="rect" id="node10" href="output__buffer_8h.html" title="Data stream output buffer. " alt="" coords="180,169,289,196"/>
+<area shape="rect" id="node11" href="string_8h.html" title="Heka message string. " alt="" coords="314,169,379,196"/>
+<area shape="rect" id="node16" href="luaconf_8h.html" title="luaconf.h" alt="" coords="825,244,900,271"/>
+</map>
+</div>
 </div>
 <p><a href="heka_2sandbox_8h_source.html">Go to the source code of this file.</a></p>
 <table class="memberdecls">
@@ -175,6 +191,9 @@ Functions</h2></td></tr>
 <tr class="memitem:a18bcbd51c72982cfc210395572f308f6"><td class="memItemLeft" align="right" valign="top"><a class="el" href="heka_2sandbox_8h.html#acd7bfad98c412254d12cfcafc4be7b4c">LSB_HEKA_EXPORT</a> int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="heka_2sandbox_8h.html#a18bcbd51c72982cfc210395572f308f6">lsb_heka_pm_output</a> (<a class="el" href="heka_2sandbox_8h.html#a44d198540fb5dd8f538e9a2134e49cbc">lsb_heka_sandbox</a> *hsb, <a class="el" href="structlsb__heka__message.html">lsb_heka_message</a> *msg, void *sequence_id, bool profile)</td></tr>
 <tr class="memdesc:a18bcbd51c72982cfc210395572f308f6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Host access to the output sandbox process_message API.  <a href="#a18bcbd51c72982cfc210395572f308f6">More...</a><br /></td></tr>
 <tr class="separator:a18bcbd51c72982cfc210395572f308f6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7add05473542c5c639cf2ed25284fd1d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="heka_2sandbox_8h.html#acd7bfad98c412254d12cfcafc4be7b4c">LSB_HEKA_EXPORT</a> void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="heka_2sandbox_8h.html#a7add05473542c5c639cf2ed25284fd1d">lsb_heka_stop_sandbox_clean</a> (<a class="el" href="heka_2sandbox_8h.html#a44d198540fb5dd8f538e9a2134e49cbc">lsb_heka_sandbox</a> *hsb)</td></tr>
+<tr class="memdesc:a7add05473542c5c639cf2ed25284fd1d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Requests a long running input sandbox to stop.  <a href="#a7add05473542c5c639cf2ed25284fd1d">More...</a><br /></td></tr>
+<tr class="separator:a7add05473542c5c639cf2ed25284fd1d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4c02df01bec3baf40ad6aee5ecbdb3d7"><td class="memItemLeft" align="right" valign="top"><a class="el" href="heka_2sandbox_8h.html#acd7bfad98c412254d12cfcafc4be7b4c">LSB_HEKA_EXPORT</a> void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="heka_2sandbox_8h.html#a4c02df01bec3baf40ad6aee5ecbdb3d7">lsb_heka_stop_sandbox</a> (<a class="el" href="heka_2sandbox_8h.html#a44d198540fb5dd8f538e9a2134e49cbc">lsb_heka_sandbox</a> *hsb)</td></tr>
 <tr class="memdesc:a4c02df01bec3baf40ad6aee5ecbdb3d7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Aborts the running sandbox from a different thread of execution.  <a href="#a4c02df01bec3baf40ad6aee5ecbdb3d7">More...</a><br /></td></tr>
 <tr class="separator:a4c02df01bec3baf40ad6aee5ecbdb3d7"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -203,7 +222,7 @@ Functions</h2></td></tr>
 <tr class="memdesc:ae603a42c56a144354ff3ad756cb9c4e9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retrieve the currently active sandbox message.  <a href="#ae603a42c56a144354ff3ad756cb9c4e9">More...</a><br /></td></tr>
 <tr class="separator:ae603a42c56a144354ff3ad756cb9c4e9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abc83070502a5ce87219a407609455aa4"><td class="memItemLeft" align="right" valign="top"><a class="el" href="heka_2sandbox_8h.html#acd7bfad98c412254d12cfcafc4be7b4c">LSB_HEKA_EXPORT</a> char&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="heka_2sandbox_8h.html#abc83070502a5ce87219a407609455aa4">lsb_heka_get_type</a> (<a class="el" href="heka_2sandbox_8h.html#a44d198540fb5dd8f538e9a2134e49cbc">lsb_heka_sandbox</a> *hsb)</td></tr>
-<tr class="memdesc:abc83070502a5ce87219a407609455aa4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retrieve the sandbox tyye.  <a href="#abc83070502a5ce87219a407609455aa4">More...</a><br /></td></tr>
+<tr class="memdesc:abc83070502a5ce87219a407609455aa4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retrieve the sandbox type.  <a href="#abc83070502a5ce87219a407609455aa4">More...</a><br /></td></tr>
 <tr class="separator:abc83070502a5ce87219a407609455aa4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="var-members"></a>
@@ -294,7 +313,7 @@ Variables</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>0 on success </dd></dl>
 
-<p>Definition at line <a class="el" href="heka_2sandbox_8h_source.html#l00101">101</a> of file <a class="el" href="heka_2sandbox_8h_source.html">sandbox.h</a>.</p>
+<p>Definition at line <a class="el" href="heka_2sandbox_8h_source.html#l00104">104</a> of file <a class="el" href="heka_2sandbox_8h_source.html">sandbox.h</a>.</p>
 
 </div>
 </div>
@@ -309,7 +328,7 @@ Variables</h2></td></tr>
 </div><div class="memdoc">
 
 <p>inject_message callback function provided by the host. </p>
-<p>Only one (or neither) of the checkpoint values will be set in a call. Numeric checkpoints can have a measurable performance benefit but are not always applicable so both option are provided to support various types of input plugins.</p>
+<p>Only one (or neither) of the checkpoint values will be set in a call. Numeric checkpoints can have a measurable performance benefit but are not always applicable so both options are provided to support various types of input plugins. This function can be called with a NULL pb pointer by the 'is_running' API; it should be treated as a no-op and used as a synchronization point to collect statistics and communicate shutdown status.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">parent</td><td>Opaque pointer the host object owning this sandbox </td></tr>
@@ -322,7 +341,7 @@ Variables</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>0 on success </dd></dl>
 
-<p>Definition at line <a class="el" href="heka_2sandbox_8h_source.html#l00086">86</a> of file <a class="el" href="heka_2sandbox_8h_source.html">sandbox.h</a>.</p>
+<p>Definition at line <a class="el" href="heka_2sandbox_8h_source.html#l00089">89</a> of file <a class="el" href="heka_2sandbox_8h_source.html">sandbox.h</a>.</p>
 
 </div>
 </div>
@@ -372,7 +391,7 @@ Variables</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>0 on success </dd></dl>
 
-<p>Definition at line <a class="el" href="heka_2sandbox_8h_source.html#l00114">114</a> of file <a class="el" href="heka_2sandbox_8h_source.html">sandbox.h</a>.</p>
+<p>Definition at line <a class="el" href="heka_2sandbox_8h_source.html#l00117">117</a> of file <a class="el" href="heka_2sandbox_8h_source.html">sandbox.h</a>.</p>
 
 </div>
 </div>
@@ -741,7 +760,7 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Retrieve the sandbox tyye. </p>
+<p>Retrieve the sandbox type. </p>
 <ul>
 <li><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
@@ -943,7 +962,33 @@ Variables</h2></td></tr>
 down" termination message is generated. Used to abort long runnning sandboxes such as an input sandbox.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">hsb</td><td>Heka sandbox to abort</td></tr>
+    <tr><td class="paramname">hsb</td><td>Heka sandbox to forcibly stop</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd></dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="a7add05473542c5c639cf2ed25284fd1d"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="heka_2sandbox_8h.html#acd7bfad98c412254d12cfcafc4be7b4c">LSB_HEKA_EXPORT</a> void lsb_heka_stop_sandbox_clean </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="heka_2sandbox_8h.html#a44d198540fb5dd8f538e9a2134e49cbc">lsb_heka_sandbox</a> *&#160;</td>
+          <td class="paramname"><em>hsb</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Requests a long running input sandbox to stop. </p>
+<p>This call is not thread safe.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">hsb</td><td>Heka sandbox to cleanly stop</td></tr>
   </table>
   </dd>
 </dl>

@@ -9,7 +9,7 @@
   <link rel="stylesheet" href="/lua_sandbox/docs.css" type="text/css" />
 </head>
 <body>
-<div id="title">Lua Sandbox Library (1.0.4)<hr/></div>
+<div id="title">Lua Sandbox Library (1.1.0)<hr/></div>
 <div class="menu">
         <ul>
             <li><a href="/lua_sandbox/index.html">Overview</a></li>
@@ -38,7 +38,7 @@
     <div class="main-content">
 <h1 id="heka-sandbox-interface">Heka Sandbox Interface</h1>
 <h2 id="overview">Overview</h2>
-<p>This document describes the pending 1.0 release of the Heka sandbox API built on the <a href="../sandbox.html">Generic Sandbox Interface</a>. The 1.0 release is a refined implementation of its predecessor which was developed in <a href="https://github.com/mozilla-services/heka">Heka</a>. The goal is to decople it from Go and make it easily embeddable in any language. We are in the process of porting it back to the Heka Go implementation but a new design of that infrastructure has been created to replace it called <a href="https://github.com/trink/hindsight">Hindsight</a>.</p>
+<p>This document describes the 1.0 release of the Heka sandbox API built on the <a href="../sandbox.html">Generic Sandbox Interface</a>. The 1.0 release is a refined implementation of its predecessor which was developed in <a href="https://github.com/mozilla-services/heka">Heka</a>. The goal is to decople it from Go and make it easily embeddable in any language. The Go version of Heka has been deprecated and replaced by <a href="https://github.com/mozilla-services/hindsight">Hindsight</a>.</p>
 <h2 id="sandbox-api-changes-from-the-go-heka-sandbox">Sandbox API Changes from the Go Heka Sandbox</h2>
 <p>There are a few intentional changes between tho original Heka sandbox and this version.</p>
 <h3 id="changes">Changes</h3>
@@ -64,7 +64,8 @@
 <h3 id="additions">Additions</h3>
 <h4 id="input-sandbox-1">Input Sandbox</h4>
 <ol>
-<li>A <a href="input.html#create_stream_reader">create_stream_reader</a> function was added.</li>
+<li><a href="input.html#create_stream_reader">create_stream_reader</a> function was added.</li>
+<li><a href="input.html#is_running">is_running</a> function was added.</li>
 </ol>
 <h4 id="output-sandbox-1">Output Sandbox</h4>
 <ol>

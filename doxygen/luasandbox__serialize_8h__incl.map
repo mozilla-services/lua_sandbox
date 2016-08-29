@@ -1,0 +1,9 @@
+<map id="include/luasandbox_serialize.h" name="include/luasandbox_serialize.h">
+<area shape="rect" id="node3" href="$output__buffer_8h.html" title="Data stream output buffer. " alt="" coords="24,95,173,136"/>
+<area shape="rect" id="node9" href="$luasandbox__output_8h.html" title="Lua sandbox output generation/retrieval functions. " alt="" coords="249,102,391,129"/>
+<area shape="rect" id="node11" href="$lua_8h.html" title="luasandbox/lua.h" alt="" coords="341,259,461,285"/>
+<area shape="rect" id="node5" href="$util_8h.html" title="Shared types and structures. " alt="" coords="105,184,156,211"/>
+<area shape="rect" id="node8" href="$error_8h.html" title="Error handling and logging. " alt="" coords="246,259,317,285"/>
+<area shape="rect" id="node10" href="$luasandbox_8h.html" title="Generic Lua sandbox for dynamic data analysis. " alt="" coords="265,184,364,211"/>
+<area shape="rect" id="node13" href="$luaconf_8h.html" title="luaconf.h" alt="" coords="413,333,488,360"/>
+</map>

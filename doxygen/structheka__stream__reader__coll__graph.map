@@ -1,0 +1,6 @@
+<map id="heka_stream_reader" name="heka_stream_reader">
+<area shape="rect" id="node2" href="$structlsb__input__buffer.html" title="lsb_input_buffer" alt="" coords="5,289,120,316"/>
+<area shape="rect" id="node3" href="$structlsb__heka__message.html" title="lsb_heka_message" alt="" coords="145,289,279,316"/>
+<area shape="rect" id="node4" href="$structlsb__heka__field.html" title="lsb_heka_field" alt="" coords="259,162,365,189"/>
+<area shape="rect" id="node5" href="$structlsb__const__string.html" title="lsb_const_string" alt="" coords="153,5,271,32"/>
+</map>

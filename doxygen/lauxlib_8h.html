@@ -24,7 +24,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">luasandbox
-   &#160;<span id="projectnumber">1.0.4</span>
+   &#160;<span id="projectnumber">1.1.0</span>
    </div>
    <div id="projectbrief">Generic Lua sandbox for dynamic data analysis</div>
   </td>
@@ -98,6 +98,23 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="textblock"><code>#include &lt;stddef.h&gt;</code><br />
 <code>#include &lt;stdio.h&gt;</code><br />
 <code>#include &quot;<a class="el" href="lua_8h_source.html">lua.h</a>&quot;</code><br />
+</div><div class="textblock"><div class="dynheader">
+Include dependency graph for lauxlib.h:</div>
+<div class="dyncontent">
+<div class="center"><img src="lauxlib_8h__incl.png" border="0" usemap="#include_2luasandbox_2lauxlib_8h" alt=""/></div>
+<map name="include_2luasandbox_2lauxlib_8h" id="include_2luasandbox_2lauxlib_8h">
+<area shape="rect" id="node4" href="lua_8h.html" title="lua.h" alt="" coords="127,95,177,121"/>
+<area shape="rect" id="node6" href="luaconf_8h.html" title="luaconf.h" alt="" coords="197,169,272,196"/>
+</map>
+</div>
+</div><div class="textblock"><div class="dynheader">
+This graph shows which files directly or indirectly include this file:</div>
+<div class="dyncontent">
+<div class="center"><img src="lauxlib_8h__dep__incl.png" border="0" usemap="#include_2luasandbox_2lauxlib_8hdep" alt=""/></div>
+<map name="include_2luasandbox_2lauxlib_8hdep" id="include_2luasandbox_2lauxlib_8hdep">
+<area shape="rect" id="node2" href="heka_2sandbox_8h.html" title="Heka sandbox implementation. " alt="" coords="5,95,139,136"/>
+</map>
+</div>
 </div>
 <p><a href="lauxlib_8h_source.html">Go to the source code of this file.</a></p>
 <table class="memberdecls">
@@ -110,10 +127,10 @@ Classes</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="define-members"></a>
 Macros</h2></td></tr>
-<tr class="memitem:ade1479c9b9818c04a0f01203f0f38889"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="lauxlib_8h.html#ade1479c9b9818c04a0f01203f0f38889">luaL_getn</a>(L,  i)                &#160;&#160;&#160;((int)<a class="el" href="lua_8h.html#a07bd1384def434a4a3efdcd48b771ca9">lua_objlen</a>(L, i))</td></tr>
-<tr class="separator:ade1479c9b9818c04a0f01203f0f38889"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac1fdfc7b0e3330b5af268c8c73b857a6"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="lauxlib_8h.html#ac1fdfc7b0e3330b5af268c8c73b857a6">luaL_setn</a>(L,  i,  j)            &#160;&#160;&#160;((void)0)  /* no op! */</td></tr>
-<tr class="separator:ac1fdfc7b0e3330b5af268c8c73b857a6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0ef5c05520dabbaa65ecbade53e719fa"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="lauxlib_8h.html#a0ef5c05520dabbaa65ecbade53e719fa">luaL_getn</a>(L,  i)&#160;&#160;&#160;((int)<a class="el" href="lua_8h.html#a07bd1384def434a4a3efdcd48b771ca9">lua_objlen</a>(L, i))</td></tr>
+<tr class="separator:a0ef5c05520dabbaa65ecbade53e719fa"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6528439647f8e5928dd9151be7c89302"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="lauxlib_8h.html#a6528439647f8e5928dd9151be7c89302">luaL_setn</a>(L,  i,  j)&#160;&#160;&#160;((void)0)  /* no op! */</td></tr>
+<tr class="separator:a6528439647f8e5928dd9151be7c89302"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aba5d150de784924e9111ccf650bea087"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="lauxlib_8h.html#aba5d150de784924e9111ccf650bea087">luaI_openlib</a>&#160;&#160;&#160;luaL_openlib</td></tr>
 <tr class="separator:aba5d150de784924e9111ccf650bea087"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab8d4418d33cd59728435db95ac2caf5a"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="lauxlib_8h.html#ab8d4418d33cd59728435db95ac2caf5a">LUA_ERRFILE</a>&#160;&#160;&#160;(<a class="el" href="lua_8h.html#a295ea44b6036e266b06e5de0f8ff24e0">LUA_ERRERR</a>+1)</td></tr>
@@ -154,10 +171,10 @@ Macros</h2></td></tr>
 <tr class="separator:a004a6b76c047f3b94890a08dbdcbbee7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad33a233129d81d873e9b5a65fc7d0c3a"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="lauxlib_8h.html#ad33a233129d81d873e9b5a65fc7d0c3a">lua_ref</a>(L,  lock)</td></tr>
 <tr class="separator:ad33a233129d81d873e9b5a65fc7d0c3a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a493a44539313877639ad8f408c55c742"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="lauxlib_8h.html#a493a44539313877639ad8f408c55c742">lua_unref</a>(L,  ref)            &#160;&#160;&#160;<a class="el" href="lauxlib_8h.html#a6200030ecae784852045161274501e0e">luaL_unref</a>(L, <a class="el" href="lua_8h.html#a3524c2bbc8fcf847dc083246b62945dd">LUA_REGISTRYINDEX</a>, (ref))</td></tr>
-<tr class="separator:a493a44539313877639ad8f408c55c742"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6f6594c3f147660360f64d709b2cc5c9"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="lauxlib_8h.html#a6f6594c3f147660360f64d709b2cc5c9">lua_getref</a>(L,  ref)          &#160;&#160;&#160;<a class="el" href="lua_8h.html#a83de0bf688c2a389db2e444aa34e752a">lua_rawgeti</a>(L, <a class="el" href="lua_8h.html#a3524c2bbc8fcf847dc083246b62945dd">LUA_REGISTRYINDEX</a>, (ref))</td></tr>
-<tr class="separator:a6f6594c3f147660360f64d709b2cc5c9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac9b78e96e9af92b1f43fa2fa016b263c"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="lauxlib_8h.html#ac9b78e96e9af92b1f43fa2fa016b263c">lua_unref</a>(L,  ref)&#160;&#160;&#160;<a class="el" href="lauxlib_8h.html#a6200030ecae784852045161274501e0e">luaL_unref</a>(L, <a class="el" href="lua_8h.html#a3524c2bbc8fcf847dc083246b62945dd">LUA_REGISTRYINDEX</a>, (ref))</td></tr>
+<tr class="separator:ac9b78e96e9af92b1f43fa2fa016b263c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7bce9002427e63aa572e53f77432a7ee"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="lauxlib_8h.html#a7bce9002427e63aa572e53f77432a7ee">lua_getref</a>(L,  ref)&#160;&#160;&#160;<a class="el" href="lua_8h.html#a83de0bf688c2a389db2e444aa34e752a">lua_rawgeti</a>(L, <a class="el" href="lua_8h.html#a3524c2bbc8fcf847dc083246b62945dd">LUA_REGISTRYINDEX</a>, (ref))</td></tr>
+<tr class="separator:a7bce9002427e63aa572e53f77432a7ee"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2015fce24247ce967682fd7458684af2"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="lauxlib_8h.html#a2015fce24247ce967682fd7458684af2">luaL_reg</a>&#160;&#160;&#160;<a class="el" href="structluaL__Reg.html">luaL_Reg</a></td></tr>
 <tr class="separator:a2015fce24247ce967682fd7458684af2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
@@ -254,7 +271,7 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="a6f6594c3f147660360f64d709b2cc5c9"></a>
+<a class="anchor" id="a7bce9002427e63aa572e53f77432a7ee"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -342,7 +359,7 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="a493a44539313877639ad8f408c55c742"></a>
+<a class="anchor" id="ac9b78e96e9af92b1f43fa2fa016b263c"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -650,7 +667,7 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="ade1479c9b9818c04a0f01203f0f38889"></a>
+<a class="anchor" id="a0ef5c05520dabbaa65ecbade53e719fa"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -862,7 +879,7 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="ac1fdfc7b0e3330b5af268c8c73b857a6"></a>
+<a class="anchor" id="a6528439647f8e5928dd9151be7c89302"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">

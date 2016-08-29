@@ -24,7 +24,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">luasandbox
-   &#160;<span id="projectnumber">1.0.4</span>
+   &#160;<span id="projectnumber">1.1.0</span>
    </div>
    <div id="projectbrief">Generic Lua sandbox for dynamic data analysis</div>
   </td>
@@ -94,6 +94,28 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="contents">
 <div class="textblock"><code>#include &lt;limits.h&gt;</code><br />
 <code>#include &lt;stddef.h&gt;</code><br />
+</div><div class="textblock"><div class="dynheader">
+Include dependency graph for luaconf.h:</div>
+<div class="dyncontent">
+<div class="center"><img src="luaconf_8h__incl.png" border="0" usemap="#include_2luasandbox_2luaconf_8h" alt=""/></div>
+<map name="include_2luasandbox_2luaconf_8h" id="include_2luasandbox_2luaconf_8h">
+</map>
+</div>
+</div><div class="textblock"><div class="dynheader">
+This graph shows which files directly or indirectly include this file:</div>
+<div class="dyncontent">
+<div class="center"><img src="luaconf_8h__dep__incl.png" border="0" usemap="#include_2luasandbox_2luaconf_8hdep" alt=""/></div>
+<map name="include_2luasandbox_2luaconf_8hdep" id="include_2luasandbox_2luaconf_8hdep">
+<area shape="rect" id="node2" href="lua_8h.html" title="include/luasandbox\l/lua.h" alt="" coords="317,95,451,136"/>
+<area shape="rect" id="node3" href="lauxlib_8h.html" title="include/luasandbox\l/lauxlib.h" alt="" coords="5,184,139,225"/>
+<area shape="rect" id="node4" href="heka_2sandbox_8h.html" title="Heka sandbox implementation. " alt="" coords="57,273,191,315"/>
+<area shape="rect" id="node5" href="lualib_8h.html" title="include/luasandbox\l/lualib.h" alt="" coords="213,184,347,225"/>
+<area shape="rect" id="node6" href="luasandbox_8h.html" title="Generic Lua sandbox for dynamic data analysis. " alt="" coords="421,191,565,218"/>
+<area shape="rect" id="node7" href="test_2sandbox_8h.html" title="Test interface for the generic lua sandbox. " alt="" coords="321,273,455,315"/>
+<area shape="rect" id="node8" href="luasandbox__output_8h.html" title="Lua sandbox output generation/retrieval functions. " alt="" coords="483,273,616,315"/>
+<area shape="rect" id="node9" href="luasandbox__serialize_8h.html" title="Lua sandbox serialization. " alt="" coords="535,363,668,404"/>
+</map>
+</div>
 </div>
 <p><a href="luaconf_8h_source.html">Go to the source code of this file.</a></p>
 <table class="memberdecls">
@@ -213,18 +235,18 @@ Macros</h2></td></tr>
 <tr class="separator:a7cecfa7bbfb47e8a8598a9bfbfbcab54"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a565caa86b583f7872e480a5bfa643a72"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="luaconf_8h.html#a565caa86b583f7872e480a5bfa643a72">lua_popen</a>(L,  c,  m)</td></tr>
 <tr class="separator:a565caa86b583f7872e480a5bfa643a72"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae6bae0a8241e6ae85fad7775a643e453"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="luaconf_8h.html#ae6bae0a8241e6ae85fad7775a643e453">lua_pclose</a>(L,  file)    &#160;&#160;&#160;((void)((void)L, file), 0)</td></tr>
-<tr class="separator:ae6bae0a8241e6ae85fad7775a643e453"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0a836babab5fc75b99bb7316a48a949c"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="luaconf_8h.html#a0a836babab5fc75b99bb7316a48a949c">lua_pclose</a>(L,  file)&#160;&#160;&#160;((void)((void)L, file), 0)</td></tr>
+<tr class="separator:a0a836babab5fc75b99bb7316a48a949c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:afe9505df46f0ce00c3d5cefac2109c4e"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="luaconf_8h.html#afe9505df46f0ce00c3d5cefac2109c4e">LUAI_EXTRASPACE</a>&#160;&#160;&#160;0</td></tr>
 <tr class="separator:afe9505df46f0ce00c3d5cefac2109c4e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2816c4fd1009d3f275eca3a4439bbc78"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="luaconf_8h.html#a2816c4fd1009d3f275eca3a4439bbc78">luai_userstateopen</a>(L)  &#160;&#160;&#160;((void)L)</td></tr>
-<tr class="separator:a2816c4fd1009d3f275eca3a4439bbc78"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa5946850b71501b834895619fb792a24"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="luaconf_8h.html#aa5946850b71501b834895619fb792a24">luai_userstateclose</a>(L)    &#160;&#160;&#160;((void)L)</td></tr>
-<tr class="separator:aa5946850b71501b834895619fb792a24"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a05bbfa34e58a82e39cc19701e5359881"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="luaconf_8h.html#a05bbfa34e58a82e39cc19701e5359881">luai_userstateopen</a>(L)&#160;&#160;&#160;((void)L)</td></tr>
+<tr class="separator:a05bbfa34e58a82e39cc19701e5359881"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae269d75893fce50868b37c32214648e5"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="luaconf_8h.html#ae269d75893fce50868b37c32214648e5">luai_userstateclose</a>(L)&#160;&#160;&#160;((void)L)</td></tr>
+<tr class="separator:ae269d75893fce50868b37c32214648e5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a533eae4cf709fa76f3974823354e4067"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="luaconf_8h.html#a533eae4cf709fa76f3974823354e4067">luai_userstatethread</a>(L,  L1)&#160;&#160;&#160;((void)L)</td></tr>
 <tr class="separator:a533eae4cf709fa76f3974823354e4067"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8b3c19afebad3713fcc95019c7a85a8f"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="luaconf_8h.html#a8b3c19afebad3713fcc95019c7a85a8f">luai_userstatefree</a>(L)  &#160;&#160;&#160;((void)L)</td></tr>
-<tr class="separator:a8b3c19afebad3713fcc95019c7a85a8f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad905d3a1a7e2edb1af6fafc4dd06479f"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="luaconf_8h.html#ad905d3a1a7e2edb1af6fafc4dd06479f">luai_userstatefree</a>(L)&#160;&#160;&#160;((void)L)</td></tr>
+<tr class="separator:ad905d3a1a7e2edb1af6fafc4dd06479f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af110e056a602175437e5cda45dd7db5e"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="luaconf_8h.html#af110e056a602175437e5cda45dd7db5e">luai_userstateresume</a>(L,  n)&#160;&#160;&#160;((void)L)</td></tr>
 <tr class="separator:af110e056a602175437e5cda45dd7db5e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ade427932b2d70d9f0b04c4d6a2af177a"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="luaconf_8h.html#ade427932b2d70d9f0b04c4d6a2af177a">luai_userstateyield</a>(L,  n)&#160;&#160;&#160;((void)L)</td></tr>
@@ -664,7 +686,7 @@ Macros</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<b>Value:</b><div class="fragment"><div class="line"><span class="stringliteral">&quot;./?.lua;&quot;</span>  <a class="code" href="luaconf_8h.html#a3c00e6041f7f276f3c8e8125c7d28cb3">LUA_LDIR</a><span class="stringliteral">&quot;?.lua;&quot;</span>  <a class="code" href="luaconf_8h.html#a3c00e6041f7f276f3c8e8125c7d28cb3">LUA_LDIR</a><span class="stringliteral">&quot;?/init.lua;&quot;</span> \</div><div class="line">                LUA_CDIR<span class="stringliteral">&quot;?.lua;&quot;</span>  <a class="code" href="luaconf_8h.html#a6cb5bc40fe287c1223c0b461372ac080">LUA_CDIR</a><span class="stringliteral">&quot;?/init.lua&quot;</span></div><div class="ttc" id="luaconf_8h_html_a3c00e6041f7f276f3c8e8125c7d28cb3"><div class="ttname"><a href="luaconf_8h.html#a3c00e6041f7f276f3c8e8125c7d28cb3">LUA_LDIR</a></div><div class="ttdeci">#define LUA_LDIR</div><div class="ttdef"><b>Definition:</b> <a href="luaconf_8h_source.html#l00098">luaconf.h:98</a></div></div>
+<b>Value:</b><div class="fragment"><div class="line"><span class="stringliteral">&quot;./?.lua;&quot;</span>  <a class="code" href="luaconf_8h.html#a3c00e6041f7f276f3c8e8125c7d28cb3">LUA_LDIR</a><span class="stringliteral">&quot;?.lua;&quot;</span>  <a class="code" href="luaconf_8h.html#a3c00e6041f7f276f3c8e8125c7d28cb3">LUA_LDIR</a><span class="stringliteral">&quot;?/init.lua;&quot;</span> <a class="code" href="luaconf_8h.html#a6cb5bc40fe287c1223c0b461372ac080">\</a></div><div class="line"><a class="code" href="luaconf_8h.html#a6cb5bc40fe287c1223c0b461372ac080">                LUA_CDIR</a><span class="stringliteral">&quot;?.lua;&quot;</span>  <a class="code" href="luaconf_8h.html#a6cb5bc40fe287c1223c0b461372ac080">LUA_CDIR</a><span class="stringliteral">&quot;?/init.lua&quot;</span></div><div class="ttc" id="luaconf_8h_html_a3c00e6041f7f276f3c8e8125c7d28cb3"><div class="ttname"><a href="luaconf_8h.html#a3c00e6041f7f276f3c8e8125c7d28cb3">LUA_LDIR</a></div><div class="ttdeci">#define LUA_LDIR</div><div class="ttdef"><b>Definition:</b> <a href="luaconf_8h_source.html#l00098">luaconf.h:98</a></div></div>
 <div class="ttc" id="luaconf_8h_html_a6cb5bc40fe287c1223c0b461372ac080"><div class="ttname"><a href="luaconf_8h.html#a6cb5bc40fe287c1223c0b461372ac080">LUA_CDIR</a></div><div class="ttdeci">#define LUA_CDIR</div><div class="ttdef"><b>Definition:</b> <a href="luaconf_8h_source.html#l00099">luaconf.h:99</a></div></div>
 </div><!-- fragment -->
 <p>Definition at line <a class="el" href="luaconf_8h_source.html#l00100">100</a> of file <a class="el" href="luaconf_8h_source.html">luaconf.h</a>.</p>
@@ -699,7 +721,7 @@ Macros</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="ae6bae0a8241e6ae85fad7775a643e453"></a>
+<a class="anchor" id="a0a836babab5fc75b99bb7316a48a949c"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -1207,7 +1229,7 @@ Macros</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="aa5946850b71501b834895619fb792a24"></a>
+<a class="anchor" id="ae269d75893fce50868b37c32214648e5"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -1225,7 +1247,7 @@ Macros</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="a8b3c19afebad3713fcc95019c7a85a8f"></a>
+<a class="anchor" id="ad905d3a1a7e2edb1af6fafc4dd06479f"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -1243,7 +1265,7 @@ Macros</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="a2816c4fd1009d3f275eca3a4439bbc78"></a>
+<a class="anchor" id="a05bbfa34e58a82e39cc19701e5359881"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">

@@ -1,0 +1,6 @@
+<map id="include/luasandbox/util/input_buffer.h" name="include/luasandbox/util/input_buffer.h">
+<area shape="rect" id="node2" href="$heka__message_8h.html" title="Heka message representation. " alt="" coords="212,95,359,136"/>
+<area shape="rect" id="node4" href="$stream__reader_8h.html" title="Hindsight Heka stream reader structures. " alt="" coords="387,184,539,225"/>
+<area shape="rect" id="node3" href="$heka_2sandbox_8h.html" title="Heka sandbox implementation. " alt="" coords="5,184,139,225"/>
+<area shape="rect" id="node5" href="$heka__message__matcher_8h.html" title="Hindsight/Heka message matcher. " alt="" coords="163,184,363,225"/>
+</map>

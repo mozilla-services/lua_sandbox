@@ -1,0 +1,11 @@
+<map id="include/luasandbox/heka/sandbox.h" name="include/luasandbox/heka/sandbox.h">
+<area shape="rect" id="node4" href="$error_8h.html" title="Error handling and logging. " alt="" coords="34,319,104,345"/>
+<area shape="rect" id="node5" href="$heka__message_8h.html" title="Heka message representation. " alt="" coords="269,95,424,121"/>
+<area shape="rect" id="node12" href="$lauxlib_8h.html" title="../lauxlib.h" alt="" coords="620,95,702,121"/>
+<area shape="rect" id="node14" href="$lua_8h.html" title="lua.h" alt="" coords="766,169,817,196"/>
+<area shape="rect" id="node7" href="$input__buffer_8h.html" title="Data stream input buffer. " alt="" coords="454,169,556,196"/>
+<area shape="rect" id="node8" href="$util_8h.html" title="Shared types and structures. " alt="" coords="321,244,372,271"/>
+<area shape="rect" id="node10" href="$output__buffer_8h.html" title="Data stream output buffer. " alt="" coords="180,169,289,196"/>
+<area shape="rect" id="node11" href="$string_8h.html" title="Heka message string. " alt="" coords="314,169,379,196"/>
+<area shape="rect" id="node16" href="$luaconf_8h.html" title="luaconf.h" alt="" coords="825,244,900,271"/>
+</map>

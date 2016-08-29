@@ -24,7 +24,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">luasandbox
-   &#160;<span id="projectnumber">1.0.4</span>
+   &#160;<span id="projectnumber">1.1.0</span>
    </div>
    <div id="projectbrief">Generic Lua sandbox for dynamic data analysis</div>
   </td>
@@ -101,6 +101,26 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <a href="#details">More...</a></p>
 <div class="textblock"><code>#include &quot;<a class="el" href="error_8h_source.html">luasandbox/error.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="lua_8h_source.html">luasandbox/lua.h</a>&quot;</code><br />
+</div><div class="textblock"><div class="dynheader">
+Include dependency graph for luasandbox.h:</div>
+<div class="dyncontent">
+<div class="center"><img src="luasandbox_8h__incl.png" border="0" usemap="#include_2luasandbox_8h" alt=""/></div>
+<map name="include_2luasandbox_8h" id="include_2luasandbox_8h">
+<area shape="rect" id="node2" href="error_8h.html" title="Error handling and logging. " alt="" coords="5,80,135,107"/>
+<area shape="rect" id="node3" href="lua_8h.html" title="luasandbox/lua.h" alt="" coords="159,80,279,107"/>
+<area shape="rect" id="node6" href="luaconf_8h.html" title="luaconf.h" alt="" coords="257,155,331,181"/>
+</map>
+</div>
+</div><div class="textblock"><div class="dynheader">
+This graph shows which files directly or indirectly include this file:</div>
+<div class="dyncontent">
+<div class="center"><img src="luasandbox_8h__dep__incl.png" border="0" usemap="#include_2luasandbox_8hdep" alt=""/></div>
+<map name="include_2luasandbox_8hdep" id="include_2luasandbox_8hdep">
+<area shape="rect" id="node2" href="test_2sandbox_8h.html" title="Test interface for the generic lua sandbox. " alt="" coords="5,80,139,121"/>
+<area shape="rect" id="node3" href="luasandbox__output_8h.html" title="Lua sandbox output generation/retrieval functions. " alt="" coords="163,80,296,121"/>
+<area shape="rect" id="node4" href="luasandbox__serialize_8h.html" title="Lua sandbox serialization. " alt="" coords="163,169,296,211"/>
+</map>
+</div>
 </div>
 <p><a href="luasandbox_8h_source.html">Go to the source code of this file.</a></p>
 <table class="memberdecls">
@@ -138,7 +158,8 @@ Typedefs</h2></td></tr>
 Enumerations</h2></td></tr>
 <tr class="memitem:a6c44052ea49bca2e9b3aabebff9e3424"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="luasandbox_8h.html#a6c44052ea49bca2e9b3aabebff9e3424">lsb_state</a> { <a class="el" href="luasandbox_8h.html#a6c44052ea49bca2e9b3aabebff9e3424a8bed0bf36a464f59ed9fbd70c3cffdb8">LSB_UNKNOWN</a> = 0, 
 <a class="el" href="luasandbox_8h.html#a6c44052ea49bca2e9b3aabebff9e3424a9f756a4a2e7f5e35a7a306bc0afe9d3d">LSB_RUNNING</a> = 1, 
-<a class="el" href="luasandbox_8h.html#a6c44052ea49bca2e9b3aabebff9e3424a9b7f7abf9ba91037857f302b98e05345">LSB_TERMINATED</a> = 2
+<a class="el" href="luasandbox_8h.html#a6c44052ea49bca2e9b3aabebff9e3424a9b7f7abf9ba91037857f302b98e05345">LSB_TERMINATED</a> = 2, 
+<a class="el" href="luasandbox_8h.html#a6c44052ea49bca2e9b3aabebff9e3424ae76a409981c08c8cfadb86d860f73c06">LSB_STOP</a> = 3
  }</td></tr>
 <tr class="separator:a6c44052ea49bca2e9b3aabebff9e3424"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a38352e5b9ee876a368779683069ae01c"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="luasandbox_8h.html#a38352e5b9ee876a368779683069ae01c">lsb_usage_stat</a> { <a class="el" href="luasandbox_8h.html#a38352e5b9ee876a368779683069ae01ca132dc6e15f8644a4d7ebe7f30be71039">LSB_US_LIMIT</a> = 0, 
@@ -162,6 +183,9 @@ Functions</h2></td></tr>
 <tr class="memitem:a716eb31795c0bf03c45dde73abddcf14"><td class="memItemLeft" align="right" valign="top"><a class="el" href="luasandbox_8h.html#a1fe1b28ef15a5cc442f06c26c2eae3cc">LSB_EXPORT</a> <a class="el" href="error_8h.html#aad997d70bc1cf59d6545e43984146feb">lsb_err_value</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="luasandbox_8h.html#a716eb31795c0bf03c45dde73abddcf14">lsb_init</a> (<a class="el" href="luasandbox_8h.html#ad2faa95e9a2ada80510c0d2942862c6e">lsb_lua_sandbox</a> *lsb, const char *state_file)</td></tr>
 <tr class="memdesc:a716eb31795c0bf03c45dde73abddcf14"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initializes the Lua sandbox and loads/runs the Lua script that was specified in lua_create_sandbox.  <a href="#a716eb31795c0bf03c45dde73abddcf14">More...</a><br /></td></tr>
 <tr class="separator:a716eb31795c0bf03c45dde73abddcf14"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a16b0d85cd792527295579f114e5f59f9"><td class="memItemLeft" align="right" valign="top"><a class="el" href="luasandbox_8h.html#a1fe1b28ef15a5cc442f06c26c2eae3cc">LSB_EXPORT</a> void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="luasandbox_8h.html#a16b0d85cd792527295579f114e5f59f9">lsb_stop_sandbox_clean</a> (<a class="el" href="luasandbox_8h.html#ad2faa95e9a2ada80510c0d2942862c6e">lsb_lua_sandbox</a> *lsb)</td></tr>
+<tr class="memdesc:a16b0d85cd792527295579f114e5f59f9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Changes the sandbox state to LSB_STOP to allow for a clean exit.  <a href="#a16b0d85cd792527295579f114e5f59f9">More...</a><br /></td></tr>
+<tr class="separator:a16b0d85cd792527295579f114e5f59f9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad1ca2cc7289aed37b061088f453cefbb"><td class="memItemLeft" align="right" valign="top"><a class="el" href="luasandbox_8h.html#a1fe1b28ef15a5cc442f06c26c2eae3cc">LSB_EXPORT</a> void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="luasandbox_8h.html#ad1ca2cc7289aed37b061088f453cefbb">lsb_stop_sandbox</a> (<a class="el" href="luasandbox_8h.html#ad2faa95e9a2ada80510c0d2942862c6e">lsb_lua_sandbox</a> *lsb)</td></tr>
 <tr class="memdesc:ad1ca2cc7289aed37b061088f453cefbb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Aborts the running sandbox from a different thread of execution.  <a href="#ad1ca2cc7289aed37b061088f453cefbb">More...</a><br /></td></tr>
 <tr class="separator:ad1ca2cc7289aed37b061088f453cefbb"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -381,7 +405,7 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="luasandbox_8h_source.html#l00062">62</a> of file <a class="el" href="luasandbox_8h_source.html">luasandbox.h</a>.</p>
+<p>Definition at line <a class="el" href="luasandbox_8h_source.html#l00063">63</a> of file <a class="el" href="luasandbox_8h_source.html">luasandbox.h</a>.</p>
 
 </div>
 </div>
@@ -401,6 +425,8 @@ Variables</h2></td></tr>
 <tr><td class="fieldname"><a class="anchor" id="a6c44052ea49bca2e9b3aabebff9e3424a9f756a4a2e7f5e35a7a306bc0afe9d3d"></a>LSB_RUNNING&#160;</td><td class="fielddoc">
 </td></tr>
 <tr><td class="fieldname"><a class="anchor" id="a6c44052ea49bca2e9b3aabebff9e3424a9b7f7abf9ba91037857f302b98e05345"></a>LSB_TERMINATED&#160;</td><td class="fielddoc">
+</td></tr>
+<tr><td class="fieldname"><a class="anchor" id="a6c44052ea49bca2e9b3aabebff9e3424ae76a409981c08c8cfadb86d860f73c06"></a>LSB_STOP&#160;</td><td class="fielddoc">
 </td></tr>
 </table>
 
@@ -428,7 +454,7 @@ Variables</h2></td></tr>
 </td></tr>
 </table>
 
-<p>Definition at line <a class="el" href="luasandbox_8h_source.html#l00046">46</a> of file <a class="el" href="luasandbox_8h_source.html">luasandbox.h</a>.</p>
+<p>Definition at line <a class="el" href="luasandbox_8h_source.html#l00047">47</a> of file <a class="el" href="luasandbox_8h_source.html">luasandbox.h</a>.</p>
 
 </div>
 </div>
@@ -452,7 +478,7 @@ Variables</h2></td></tr>
 </td></tr>
 </table>
 
-<p>Definition at line <a class="el" href="luasandbox_8h_source.html#l00054">54</a> of file <a class="el" href="luasandbox_8h_source.html">luasandbox.h</a>.</p>
+<p>Definition at line <a class="el" href="luasandbox_8h_source.html#l00055">55</a> of file <a class="el" href="luasandbox_8h_source.html">luasandbox.h</a>.</p>
 
 </div>
 </div>
@@ -849,10 +875,36 @@ Variables</h2></td></tr>
 
 <p>Aborts the running sandbox from a different thread of execution. </p>
 <p>A "shutting
-down" termination message is generated.</p>
+down" Lua error message is generated.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">lsb</td><td>sandbox to abort</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd></dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="a16b0d85cd792527295579f114e5f59f9"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="luasandbox_8h.html#a1fe1b28ef15a5cc442f06c26c2eae3cc">LSB_EXPORT</a> void lsb_stop_sandbox_clean </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="luasandbox_8h.html#ad2faa95e9a2ada80510c0d2942862c6e">lsb_lua_sandbox</a> *&#160;</td>
+          <td class="paramname"><em>lsb</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Changes the sandbox state to LSB_STOP to allow for a clean exit. </p>
+<p>This call is not thread safe.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">lsb</td><td>sandbox to clean stop</td></tr>
   </table>
   </dd>
 </dl>

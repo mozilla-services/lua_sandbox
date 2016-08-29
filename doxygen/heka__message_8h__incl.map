@@ -1,0 +1,7 @@
+<map id="include/luasandbox/util/heka_message.h" name="include/luasandbox/util/heka_message.h">
+<area shape="rect" id="node4" href="$input__buffer_8h.html" title="Data stream input buffer. " alt="" coords="212,95,314,121"/>
+<area shape="rect" id="node5" href="$util_8h.html" title="Shared types and structures. " alt="" coords="211,169,262,196"/>
+<area shape="rect" id="node8" href="$output__buffer_8h.html" title="Data stream output buffer. " alt="" coords="28,95,138,121"/>
+<area shape="rect" id="node9" href="$string_8h.html" title="Heka message string. " alt="" coords="338,95,404,121"/>
+<area shape="rect" id="node7" href="$error_8h.html" title="Error handling and logging. " alt="" coords="145,244,216,271"/>
+</map>

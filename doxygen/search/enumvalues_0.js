@@ -40,6 +40,7 @@ var searchData=
   ['lsb_5fread_5fnumeric',['LSB_READ_NUMERIC',['../heka__message_8h.html#a4625ec77bbe3cfc4414653164d63611fa5e0ce0e2ab062b320d858affba82ee38',1,'heka_message.h']]],
   ['lsb_5fread_5fstring',['LSB_READ_STRING',['../heka__message_8h.html#a4625ec77bbe3cfc4414653164d63611faffee4d0d01114a477fcb2d156805f739',1,'heka_message.h']]],
   ['lsb_5frunning',['LSB_RUNNING',['../luasandbox_8h.html#a6c44052ea49bca2e9b3aabebff9e3424a9f756a4a2e7f5e35a7a306bc0afe9d3d',1,'luasandbox.h']]],
+  ['lsb_5fstop',['LSB_STOP',['../luasandbox_8h.html#a6c44052ea49bca2e9b3aabebff9e3424ae76a409981c08c8cfadb86d860f73c06',1,'luasandbox.h']]],
   ['lsb_5fterminated',['LSB_TERMINATED',['../luasandbox_8h.html#a6c44052ea49bca2e9b3aabebff9e3424a9b7f7abf9ba91037857f302b98e05345',1,'luasandbox.h']]],
   ['lsb_5funknown',['LSB_UNKNOWN',['../luasandbox_8h.html#a6c44052ea49bca2e9b3aabebff9e3424a8bed0bf36a464f59ed9fbd70c3cffdb8',1,'luasandbox.h']]],
   ['lsb_5fus_5fcurrent',['LSB_US_CURRENT',['../luasandbox_8h.html#a38352e5b9ee876a368779683069ae01caa234981bee176d2d251e705d25e41edc',1,'luasandbox.h']]],
