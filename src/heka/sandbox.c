@@ -38,6 +38,25 @@ static const char *lsb_heka_message_matcher = "lsb.heka_message_matcher";
 
 int heka_create_stream_reader(lua_State *lua);
 
+
+static int is_running(lua_State *lua)
+{
+  lua_getfield(lua, LUA_REGISTRYINDEX, LSB_HEKA_THIS_PTR);
+  lsb_heka_sandbox *hsb = lua_touserdata(lua, -1);
+  lua_pop(lua, 1); // remove this ptr
+  if (!hsb) {
+    return luaL_error(lua, "%s() invalid " LSB_HEKA_THIS_PTR, __func__);
+  }
+  // call inject_message with a NULL message/checkpoint (special case
+  // synchronization point)
+  if (hsb->cb.iim(hsb->parent, NULL, 0, NAN, NULL) != 0) {
+    return luaL_error(lua, "%s() failed: rejected by the callback", __func__);
+  }
+  lua_pushboolean(lua, lsb_heka_is_running(hsb));
+  return 1;
+}
+
+
 static int read_message(lua_State *lua)
 {
   lua_getfield(lua, LUA_REGISTRYINDEX, LSB_HEKA_THIS_PTR);
@@ -108,6 +127,7 @@ static int mm_create(lua_State *lua)
   }
   return 1;
 }
+
 
 static int inject_message_input(lua_State *lua)
 {
@@ -457,6 +477,7 @@ lsb_heka_sandbox* lsb_heka_create_input(void *parent,
 // inject_payload is intentionally excluded from input plugins
 // you can construct whatever you need with inject_message
   lsb_add_function(hsb->lsb, heka_create_stream_reader, "create_stream_reader");
+  lsb_add_function(hsb->lsb, is_running, "is_running");
 
   if (lsb_init(hsb->lsb, state_file)) {
     if (logger && logger->cb) {
@@ -760,10 +781,17 @@ lsb_heka_sandbox* lsb_heka_create_output(void *parent,
 }
 
 
+void lsb_heka_stop_sandbox_clean(lsb_heka_sandbox *hsb)
+{
+  lsb_stop_sandbox_clean(hsb->lsb);
+}
+
+
 void lsb_heka_stop_sandbox(lsb_heka_sandbox *hsb)
 {
   lsb_stop_sandbox(hsb->lsb);
 }
+
 
 
 void lsb_heka_terminate_sandbox(lsb_heka_sandbox *hsb, const char *err)

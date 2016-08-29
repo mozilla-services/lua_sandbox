@@ -25,12 +25,6 @@
 #include "luasandbox_impl.h"
 #include "luasandbox_serialize.h"
 
-#ifdef _MSC_VER
-#ifndef __func__
-#define __func__ __FUNCTION__
-#endif
-#endif
-
 lsb_err_id LSB_ERR_INIT       = "already initialized";
 lsb_err_id LSB_ERR_LUA        = "lua error"; // use lsb_get_error for details
 lsb_err_id LSB_ERR_TERMINATED = "sandbox already terminated";
@@ -616,6 +610,15 @@ static void stop_hook(lua_State *lua, lua_Debug *ar)
   (void)ar;  /* unused arg. */
   lua_sethook(lua, NULL, 0, 0);
   luaL_error(lua, LSB_SHUTTING_DOWN);
+}
+
+
+void lsb_stop_sandbox_clean(lsb_lua_sandbox *lsb)
+{
+  if (!lsb) {
+    return;
+  }
+  lsb->state = LSB_STOP;
 }
 
 

@@ -6,6 +6,7 @@ assert(read_config)
 assert(decode_message)
 assert(inject_message)
 assert(create_stream_reader)
+assert(is_running)
 assert(not read_message)
 assert(not encode_message)
 assert(not update_checkpoint)
@@ -34,6 +35,10 @@ function process_message(cp)
         return 0, "string"
     elseif cp == 7 then
         error(nil)
+    elseif cp == 8 then
+        assert(is_running(), "running")
+    elseif cp == 9 then
+        assert(not is_running(), "not running")
     end
     return 0, "no cp"
 end

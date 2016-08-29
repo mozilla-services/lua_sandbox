@@ -72,8 +72,11 @@ LSB_HEKA_EXPORT extern lsb_err_id LSB_ERR_HEKA_INPUT;
 /**
  * inject_message callback function provided by the host. Only one (or neither)
  * of the checkpoint values will be set in a call.  Numeric checkpoints can have
- * a measurable performance benefit but are not always applicable so both option
- * are provided to support various types of input plugins.
+ * a measurable performance benefit but are not always applicable so both
+ * options are provided to support various types of input plugins. This function
+ * can be called with a NULL pb pointer by the 'is_running' API; it should be
+ * treated as a no-op and used as a synchronization point to collect statistics
+ * and communicate shutdown status.
  *
  * @param parent Opaque pointer the host object owning this sandbox
  * @param pb Pointer to a Heka protobuf encoded message being injected.
@@ -240,13 +243,23 @@ int lsb_heka_pm_output(lsb_heka_sandbox *hsb,
                        lsb_heka_message *msg,
                        void *sequence_id,
                        bool profile);
+/**
+ * Requests a long running input sandbox to stop. This call is not thread safe.
+ *
+ * @param hsb Heka sandbox to cleanly stop
+ *
+ * @return
+ *
+ */
+LSB_HEKA_EXPORT void
+lsb_heka_stop_sandbox_clean(lsb_heka_sandbox *hsb);
 
 /**
  * Aborts the running sandbox from a different thread of execution. A "shutting
  * down" termination message is generated. Used to abort long runnning sandboxes
  * such as an input sandbox.
  *
- * @param hsb Heka sandbox to abort
+ * @param hsb Heka sandbox to forcibly stop
  *
  * @return
  *
@@ -338,7 +351,7 @@ LSB_HEKA_EXPORT const lsb_heka_message*
 lsb_heka_get_message(lsb_heka_sandbox *hsb);
 
 /**
- * Retrieve the sandbox tyye.
+ * Retrieve the sandbox type.
  * *
  * @param hsb Heka sandbox
  *

@@ -2,14 +2,12 @@
 
 ## Overview
 
-This document describes the pending 1.0 release of the Heka sandbox API built on
-the [Generic Sandbox Interface](../sandbox.html). The 1.0 release is a refined
+This document describes the 1.0 release of the Heka sandbox API built on the
+[Generic Sandbox Interface](../sandbox.html). The 1.0 release is a refined
 implementation of its predecessor which was developed in 
 [Heka](https://github.com/mozilla-services/heka). The goal is to decople it from
-Go and make it easily embeddable in any language. We are in the process of
-porting it back to the Heka Go implementation but a new design of that
-infrastructure has been created to replace it called 
-[Hindsight](https://github.com/trink/hindsight).
+Go and make it easily embeddable in any language. The Go version of Heka has
+been deprecated and replaced by [Hindsight](https://github.com/mozilla-services/hindsight).
 
 ## Sandbox API Changes from the Go Heka Sandbox
 
@@ -39,7 +37,8 @@ There are a few intentional changes between tho original Heka sandbox and this v
 
 #### Input Sandbox
 
-1. A [create_stream_reader](input.html#create_stream_reader) function was added.
+1. [create_stream_reader](input.html#create_stream_reader) function was added.
+1. [is_running](input.html#is_running) function was added.
 
 #### Output Sandbox
 
