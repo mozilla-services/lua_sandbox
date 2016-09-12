@@ -59,3 +59,4 @@ infrastructure and make it embeddable into any tool or language.
     nmake
 
     ctest
+    cpack -G TGZ # (DEB|RPM|ZIP)
