@@ -849,14 +849,12 @@ int heka_encode_message(lua_State *lua)
   lsb->usage[LSB_UT_OUTPUT][LSB_US_CURRENT] = len;
 
   if (framed) {
-    char header[14] = "\x1e\x00\x08"; // up to 10 varint bytes and a \x1f
-    int hlen = lsb_pb_output_varint(header + 3, len) + 1;
-    lsb->usage[LSB_UT_OUTPUT][LSB_US_CURRENT] = len + hlen + LSB_HDR_FRAME_SIZE;
-    header[1] = (char)hlen;
-    header[hlen + 2] = '\x1f';
+    char header[LSB_MIN_HDR_SIZE];
+    size_t hlen = lsb_write_heka_header(header, len);
+    lsb->usage[LSB_UT_OUTPUT][LSB_US_CURRENT] = len + hlen;
     luaL_Buffer b;
     luaL_buffinit(lua, &b);
-    luaL_addlstring(&b, header, hlen + LSB_HDR_FRAME_SIZE);
+    luaL_addlstring(&b, header, hlen);
     luaL_addlstring(&b, output, len);
     luaL_pushresult(&b);
   } else {
@@ -986,13 +984,11 @@ int heka_read_message(lua_State *lua, lsb_heka_message *m)
     lua_pushlstring(lua, m->raw.s, m->raw.len);
   } else if (strcmp(field, "framed") == 0) {
     {
-      char header[14] = "\x1e\x00\x08"; // up to 10 varint bytes and a \x1f
-      int hlen = lsb_pb_output_varint(header + 3, m->raw.len) + 1;
-      header[1] = (char)hlen;
-      header[hlen + 2] = '\x1f';
+      char header[LSB_MIN_HDR_SIZE];
+      size_t hlen = lsb_write_heka_header(header, m->raw.len);
       luaL_Buffer b;
       luaL_buffinit(lua, &b);
-      luaL_addlstring(&b, header, hlen + 3);
+      luaL_addlstring(&b, header, hlen);
       luaL_addlstring(&b, m->raw.s, m->raw.len);
       luaL_pushresult(&b);
     }

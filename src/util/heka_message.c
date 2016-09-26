@@ -564,3 +564,14 @@ lsb_write_heka_uuid(lsb_output_buffer *ob, const char *uuid, size_t len)
   }
   return NULL;
 }
+
+
+size_t lsb_write_heka_header(char *buf, size_t len)
+{
+  int hlen = lsb_pb_output_varint(buf + 3, len) + 1;
+  buf[hlen + 2] = '\x1f';
+  buf[0] = '\x1e';
+  buf[1] = (char)hlen;
+  buf[2] = '\x08';
+  return LSB_HDR_FRAME_SIZE + hlen;
+}
