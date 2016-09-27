@@ -121,6 +121,7 @@ static void output_text(lsb_heka_message *msg)
           p = read_string(wiretype, p, e, &cs);
           if (p) {
             fprintf(stdout, "%.*s", (int)cs.len, cs.s);
+            if (p < e) fprintf(stdout, "|");
           }
         }
       }
@@ -145,6 +146,7 @@ static void output_text(lsb_heka_message *msg)
                 fprintf(stdout, "\\x%02hhx", (unsigned char)cs.s[i]);
               }
             }
+            if (p < e) fprintf(stdout, "|");
           }
         }
       }
@@ -156,6 +158,7 @@ static void output_text(lsb_heka_message *msg)
           p = lsb_pb_read_varint(p, e, &ll);
           if (p) {
             fprintf(stdout, "%lld", ll);
+            if (p < e) fprintf(stdout, "|");
           }
         }
       }
@@ -165,9 +168,7 @@ static void output_text(lsb_heka_message *msg)
         double d;
         for (int i = 0; p <= (e - sizeof(double)); p += sizeof(double), ++i) {
           memcpy(&d, p, sizeof(double));
-          if (i > 0) {
-            fprintf(stdout, ",");
-          }
+          if (i > 0) fprintf(stdout, "|");
           fprintf(stdout, "%.17g", d);
         }
       }
@@ -179,6 +180,7 @@ static void output_text(lsb_heka_message *msg)
           p = lsb_pb_read_varint(p, e, &ll);
           if (p) {
             fprintf(stdout, "%s", ll == 0 ? "false" : "true");
+            if (p < e) fprintf(stdout, "|");
           }
         }
       }
