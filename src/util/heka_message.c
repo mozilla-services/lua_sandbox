@@ -17,7 +17,10 @@
 #include "luasandbox/util/output_buffer.h"
 #include "luasandbox/util/protobuf.h"
 
-static size_t decode_header(char *buf, size_t len, size_t max_message_size)
+static size_t decode_header(char *buf,
+                            size_t len,
+                            size_t max_message_size,
+                            lsb_logger *logger)
 {
   if (*buf != 0x08) {
     return 0;
@@ -29,6 +32,12 @@ static size_t decode_header(char *buf, size_t len, size_t max_message_size)
     if (lsb_pb_read_varint(p + 1, buf + len, &vi)) {
       if (vi > 0 && vi <= (long long)max_message_size) {
         return (size_t)vi;
+      } else {
+        if (logger && logger->cb) {
+          logger->cb(logger->context, __func__, 4,
+                     "maximum (%lld) messages size exceeded: %lld",
+                     (long long)max_message_size, vi);
+        }
       }
     }
   }
@@ -277,7 +286,8 @@ bool lsb_decode_heka_message(lsb_heka_message *m,
                                       m->fields_size * sizeof(lsb_heka_field));
         if (!tmp) {
           if (logger && logger->cb) {
-            logger->cb(logger->context, __func__, 0, "fields reallocation failed");
+            logger->cb(logger->context, __func__, 0,
+                       "fields reallocation failed");
           }
           return false;
         }
@@ -370,7 +380,7 @@ bool lsb_find_heka_message(lsb_heka_message *m,
 
     if (!ib->msglen) {
       ib->msglen = decode_header(&ib->buf[ib->scanpos + 2], hlen,
-                                 ib->maxsize - LSB_MAX_HDR_SIZE);
+                                 ib->maxsize - LSB_MAX_HDR_SIZE, logger);
     }
 
     if (ib->msglen) {
