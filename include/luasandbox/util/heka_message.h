@@ -33,6 +33,9 @@
 #define LSB_PID           "Pid"
 #define LSB_HOSTNAME      "Hostname"
 #define LSB_FIELDS        "Fields"
+#define LSB_RAW           "raw"
+#define LSB_FRAMED        "framed"
+#define LSB_SIZE          "size"
 
 typedef enum {
   LSB_PB_UUID         = 1,

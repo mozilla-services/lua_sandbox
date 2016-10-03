@@ -690,13 +690,30 @@ encode_fields(lsb_lua_sandbox *lsb, lsb_output_buffer *ob, char tag,
 int heka_decode_message(lua_State *lua)
 {
   int n = lua_gettop(lua);
-  if (n != 1 || lua_type(lua, 1) != LUA_TSTRING) {
-    return luaL_argerror(lua, 0, "must have one string argument");
-  }
+  luaL_argcheck(lua, n == 1, n, "incorrect number of arguments");
 
   size_t len;
-  const char *pbstr = lua_tolstring(lua, 1, &len);
-  if (len < 20) {
+  const char *pbstr;
+  int t = lua_type(lua, 1);
+  if (t == LUA_TSTRING) {
+    pbstr = lua_tolstring(lua, 1, &len);
+  } else if (t == LUA_TUSERDATA) {
+    lua_CFunction fp = lsb_get_zero_copy_function(lua, 1);
+    if (!fp) {
+      return luaL_argerror(lua, 1, "no zero copy support");
+    }
+    int results = fp(lua);
+    if (results != 2 || lua_type(lua, 2) != LUA_TLIGHTUSERDATA) {
+      return luaL_error(lua, "invalid zero copy return");
+    }
+    pbstr = lua_touserdata(lua, 2);
+    len = (size_t)lua_tointeger(lua, 3);
+    lua_pop(lua, results);
+  } else {
+    return luaL_typerror(lua, 1, "string or userdata");
+  }
+
+  if (!pbstr || len < 20) {
     return luaL_error(lua, "invalid message, too short");
   }
 
@@ -925,14 +942,19 @@ int heka_read_message(lua_State *lua, lsb_heka_message *m)
 {
   int n = lua_gettop(lua);
   if (n < 1 || n > 3) {
-    return luaL_error(lua, "read_message() incorrect number of arguments");
+    return luaL_error(lua, "%s() incorrect number of arguments", __func__);
   }
   size_t field_len;
   const char *field = luaL_checklstring(lua, 1, &field_len);
-  int fi = (int)luaL_optinteger(lua, 2, 0);
+  int fi = luaL_optint(lua, 2, 0);
   luaL_argcheck(lua, fi >= 0, 2, "field index must be >= 0");
-  int ai = (int)luaL_optinteger(lua, 3, 0);
+  int ai = luaL_optint(lua, 3, 0);
   luaL_argcheck(lua, ai >= 0, 3, "array index must be >= 0");
+
+  if (!m || !m->raw.s) {
+    lua_pushnil(lua);
+    return 1;
+  }
 
   if (strcmp(field, LSB_UUID) == 0) {
     if (m->uuid.s) {
@@ -1016,7 +1038,8 @@ int heka_read_message(lua_State *lua, lsb_heka_message *m)
         break;
       }
     } else {
-      lua_pushnil(lua);
+      luaL_error(lua, "%s() field: '%s' not supported/recognized", __func__,
+                 field);
     }
   }
   return 1;

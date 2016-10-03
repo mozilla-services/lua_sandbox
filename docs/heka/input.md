@@ -119,7 +119,8 @@ Note: this operation clears the internal stream reader buffer.
 
 ##### read_message
 
-Provides access to the Heka message data within the reader object. 
+Provides access to the Heka message data within the reader object. The zeroCopy
+flag is not accepted here.
 
 ```lua
 local ts = hsr:read_message("Timestamp")

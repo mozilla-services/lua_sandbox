@@ -19,6 +19,7 @@
 #include "luasandbox_serialize.h"
 
 static const char *output_function = "lsb_output";
+static const char *zero_copy_function = "lsb_zero_copy";
 
 void lsb_add_output_function(lua_State *lua, lua_CFunction fp)
 {
@@ -33,6 +34,26 @@ lua_CFunction lsb_get_output_function(lua_State *lua, int index)
   lua_CFunction fp = NULL;
   lua_getfenv(lua, index);
   lua_pushstring(lua, output_function);
+  lua_rawget(lua, -2);
+  fp = lua_tocfunction(lua, -1);
+  lua_pop(lua, 2); // environment and field
+  return fp;
+}
+
+
+void lsb_add_zero_copy_function(lua_State *lua, lua_CFunction fp)
+{
+  lua_pushstring(lua, zero_copy_function);
+  lua_pushcfunction(lua, fp);
+  lua_rawset(lua, -3);
+}
+
+
+lua_CFunction lsb_get_zero_copy_function(lua_State *lua, int index)
+{
+  lua_CFunction fp = NULL;
+  lua_getfenv(lua, index);
+  lua_pushstring(lua, zero_copy_function);
   lua_rawget(lua, -2);
   fp = lua_tocfunction(lua, -1);
   lua_pop(lua, 2); // environment and field

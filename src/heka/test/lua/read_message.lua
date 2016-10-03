@@ -19,21 +19,30 @@ local tests = {
     {"framed", 214},
     {"Fields[string]", "string"},
     {"Fields[notfound]", nil},
-    {"Fields[string", nil},
-    {"morethan8", nil},
-    {"lt8", nil},
 }
 
 local fields = {
-    {"number"   , 0 , 0 , 1},
-    {"numbers"  , 0 , 2 , 3},
-    {"bool"     , 0 , 0 , true},
-    {"bools"    , 0 , 1 , false},
-    {"strings"  , 0 , 0 , "s1"},
-    {"strings"  , 0 , 2 , "s3"},
-    {"strings"  , 10, 0 , nil},
-    {"strings"  , 0 , 10, nil},
-    {"notfound" , 0 , 0 , nil},
+    {{"Fields[number]"   , 0 , 0 }, 1},
+    {{"Fields[number]"   , 0 , 0, false }, 1},
+    {{"Fields[numbers]"  , 0 , 2 }, 3},
+    {{"Fields[bool]"     , 0 , 0 }, true},
+    {{"Fields[bools]"    , 0 , 1 }, false},
+    {{"Fields[strings]"  , 0 , 0 }, "s1"},
+    {{"Fields[strings]"  , 0 , 2 }, "s3"},
+    {{"Fields[strings]"  , 10, 0 }, nil},
+    {{"Fields[strings]"  , 0 , 10}, nil},
+    {{"Fields[notfound]" , 0 , 0 }, nil},
+}
+
+local errors = {
+    {"Fields[string"},
+    {"morethan8"},
+    {"lt8"},
+    {"Fields[string]", -1, 0},
+    {"Fields[string]", 0, -1},
+    {"Fields[string]", "a", 0},
+    {"Fields[string]", 0, "a"},
+    {"Fields[string]", 0, 0, "str"},
 }
 
 
@@ -50,8 +59,14 @@ function process_message()
     end
 
     for i, v in ipairs(fields) do
-        local r = read_message(string.format("Fields[%s]", v[1]), v[2], v[3])
-        assert(v[4] == r, string.format("test: %d expected: %s received: %s", i, tostring(v[4]), tostring(r)))
+        local r = read_message(unpack(v[1]))
+        assert(v[2] == r, string.format("test: %d expected: %s received: %s", i, tostring(v[2]), tostring(r)))
     end
+
+    for i, v in ipairs(errors) do
+        local ok, r = pcall(read_message, unpack(v))
+        assert(not ok, string.format("test: %d should have errored", i))
+    end
+
     return 0
 end

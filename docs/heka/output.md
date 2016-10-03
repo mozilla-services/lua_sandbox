@@ -23,11 +23,12 @@ combination with a [message matcher](../util/message_matcher.html) expression.
 Recommenation: specify this as a `message_matcher` configuration option.
 
 *Arguments*
-* sequence_id (optional: lightuserdata) - pass in when `async_buffer_size` is configured
+* sequence_id (optional: lightuserdata) - pass in when `async_buffer_size` is
+  configured
 
 *Return*
-* status_code (number) - see the [Modes of Operation](#modes-of-operation) for a detail explanation
-of the return codes
+* status_code (number) - see the [Modes of Operation](#modes-of-operation) for
+  a detail explanation of the return codes
     * fatal error (greater than zero)
     * success (0)
     * non fatal failure (-1)
@@ -44,8 +45,9 @@ Called when the host timer expires or on shutdown.
 Recommendation: specify this as a `ticker_interval` configuration option.
 
 *Arguments*
-* ns (number) - nanosecond timestamp of the function call (it is actually `time_t * 1e9`
-to keep the timestamp units consistent so it will only have a one second resolution)
+* ns (number) - nanosecond timestamp of the function call (it is actually
+  `time_t * 1e9` to keep the timestamp units consistent so it will only have a
+  one second resolution)
 * shutdown (bool) - true if timer_event is being called due to a shutdown
 
 *Return*
@@ -65,7 +67,8 @@ Provides access to the sandbox configuration variables.
 
 ### read_message
 
-Provides access to the Heka message data. See [read_message](analysis.html#read_message) for details.
+Provides access to the Heka message data.
+See [read_message](analysis.html#read_message) for details.
 
 ### decode_message
 
@@ -89,19 +92,21 @@ Note: this operation uses the internal output buffer so it is goverened by the
 * framed (bool default: false) A value of true includes the framing header
 
 *Return*
-* heka_pb (string) - Heka protobuf binary string, framed as specified or an error is thrown
+* heka_pb (string) - Heka protobuf binary string, framed as specified or an
+  error is thrown
 
 ### create_message_matcher
 
-Returns a Heka protocol buffer message matcher; used to dynamic filter messages sent to the output plugin.
+Returns a Heka protocol buffer message matcher; used to dynamic filter messages
+sent to the output plugin.
 
 *Arguments*
 * message_matcher  [message matcher](../util/message_matcher.html)
 
 *Return*
 * message_matcher (userdata) - or an error is thrown
-  The message matcher object has one method `eval` that returns true if the current message matches, false
-  if it does not.
+  The message matcher object has one method `eval` that returns true if the
+  current message matches, false if it does not.
 
 #### Example
 
@@ -118,11 +123,14 @@ timeout/shutdown.
 * none
 
 #### Asynchronous Mode
-Advances the output checkpoint and optionally reports the number of failures that occured.
+Advances the output checkpoint and optionally reports the number of failures
+that occured.
 
 *Arguments*
-* sequence_id (lightuserdata) - sequence_id for the message that was just successfully delivered/acknowledged
-* failures (optional: integer) - number of failures that occured in the asynchronus processing (added to the failure count)
+* sequence_id (lightuserdata) - sequence_id for the message that was just
+  successfully delivered/acknowledged
+* failures (optional: integer) - number of failures that occured in the
+  asynchronus processing (added to the failure count)
 
 *Return*
 * none (throws an error on invalid arg types)
@@ -131,16 +139,20 @@ Advances the output checkpoint and optionally reports the number of failures tha
 
 #### Lock Step
 
-* `process_message` operates on the message and returns one of the following values:
-    * success (0) - the message was successfully processed and the output checkpoint is advanced
+* `process_message` operates on the message and returns one of the following
+  values:
+    * success (0) - the message was successfully processed and the output
+      checkpoint is advanced
     * failure (-1) - the message was not successfully processed
         * the failure count is incremented
         * any optional error message is written to the log
         * the message is skipped
         * the checkpoint is advanced
-    * skip (-2) - the message was intentionally not processed and the checkpoint is advanced
-    * retry (-3) - the message was not successfully processed and the host will call `process_message`
-  again, with the same message, after a one second delay
+    * skip (-2) - the message was intentionally not processed and the checkpoint
+      is advanced
+    * retry (-3) - the message was not successfully processed and the host will
+      call `process_message` again, with the same message, after a one second
+      delay
 
 #### Example Payload Output
 
@@ -193,16 +205,19 @@ end
 
 #### Batching
 
-* `process_message` batches the message/transformation in memory or on disk and returns one of the following values:
+* `process_message` batches the message/transformation in memory or on disk and
+  returns one of the following values:
     * batching (-4) - the message was successfully added to the batch
     * failure (-1) - the message cannot be batch
         * the failure count is incremented
         * any optional error message is written to the log
         * the message is skipped
     * skip (-2) - the message was intentionally not added to the batch
-    * retry (-3) - the message was not successfully added to the batch and the host will call `process_message`
-    again, with the same message, after a one second delay
-    * success (0) - the batch has been successfully committed and the output checkpoint is advanced to the most recent message
+    * retry (-3) - the message was not successfully added to the batch and the
+      host will call `process_message` again, with the same message, after a one
+      second delay
+    * success (0) - the batch has been successfully committed and the output
+      checkpoint is advanced to the most recent message
 
 #### Example Postgres Output
 
@@ -387,63 +402,5 @@ to the destination and returns one of the following values:
 **MUST** be called to advance the checkpoint to that specific message
 
 #### Example Kafka Output
+[kafka.lua](https://github.com/mozilla-services/lua_sandbox_extensions/blob/master/kafka/sandboxes/heka/output/kafka.lua)
 
-```lua
--- cfg
-message_matcher        = "TRUE"
-output_limit           = 8 * 1024 * 1024
-brokers                = "localhost:9092"
-ticker_interval        = 60
-async_buffer_size      = 20000
-
-topic_constant = "test"
-producer_conf = {
-    ["queue.buffering.max.messages"] = async_buffer_size,
-    ["batch.num.messages"] = 200,
-    ["message.max.bytes"] = output_limit,
-    ["queue.buffering.max.ms"] = 10,
-    ["topic.metadata.refresh.interval.ms"] = -1,
-}
-```
-
-```lua
--- This Source Code Form is subject to the terms of the Mozilla Public
--- License, v. 2.0. If a copy of the MPL was not distributed with this
--- file, You can obtain one at http://mozilla.org/MPL/2.0/.
-
-local brokerlist = read_config("brokerlist") or error("brokerlist must be set")
-local topic_constant = read_config("topic_constant")
-local topic_variable = read_config("topic_variable") or "Logger"
-local producer_conf = read_config("producer_conf")
-
-local producer = kafka.producer(brokerlist, producer_conf)
-
-function process_message(sequence_id)
-    local topic = topic_constant
-    if not topic then
-        topic = read_message(topic_variable) or "unknown"
-    end
-    producer:create_topic(topic) -- creates the topic if it does not exist
-
-    producer:poll()
-    local ret = producer:send(topic, -1, sequence_id) -- sends the current message
-
-    if ret ~= 0 then
-        if ret == 105 then
-            return -3, "queue full" -- retry
-        elseif ret == 90 then
-            return -1, "message too large" -- fail
-        elseif ret == 2 then
-            error("unknown topic: " .. topic)
-        elseif ret == 3 then
-            error("unknown partition")
-        end
-    end
-
-    return -5 -- asynchronous checkpoint management
-end
-
-function timer_event(ns)
-    producer:poll()
-end
-```

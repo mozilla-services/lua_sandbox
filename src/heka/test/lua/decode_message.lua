@@ -208,3 +208,11 @@ local test = "\010\016\233\213\137\149\106\254\064\066\175\098\058\163\017\067\2
 ok, msg = pcall(decode_message, test)
 assert(not ok)
 assert(msg == "error in tag: 3 wiretype: 2 offset: 24", msg)
+
+
+function process_message()
+    msg = decode_message(read_message("raw", nil, nil, true))
+    assert(msg.Timestamp == 1e9)
+    assert(#msg.Fields == 6)
+    return 0
+end
