@@ -161,6 +161,7 @@ static char* test_api_assertion()
   mu_assert(lsb_get_lua(NULL) == NULL, "not null");
   mu_assert(lsb_get_lua_file(NULL) == NULL, "not null");
   mu_assert(lsb_get_parent(NULL) == NULL, "not null");
+  mu_assert(lsb_get_logger(NULL) == NULL, "not null");
   mu_assert(lsb_get_state(NULL) == LSB_UNKNOWN, "not unknown");
   lsb_add_function(NULL, lsb_test_write_output, "foo");
   lsb_add_function(sb, NULL, "foo");
@@ -694,6 +695,8 @@ static char* test_print()
   };
   lsb_lua_sandbox *sb = lsb_create(NULL, "lua/print.lua", "log_level = 7;", &printer);
   mu_assert(sb, "lsb_create() received: NULL");
+  mu_assert(lsb_get_logger(sb) != NULL, "no logger");
+  mu_assert(lsb_get_logger(sb)->cb == printer.cb, "incorrect logger callback");
 
   lsb_err_value ret = lsb_init(sb, NULL);
   mu_assert(!ret, "lsb_init() received: %s", ret);
