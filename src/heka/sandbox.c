@@ -8,6 +8,7 @@
 
 #include "luasandbox/heka/sandbox.h"
 
+#include <errno.h>
 #include <math.h>
 #include <stdlib.h>
 #include <string.h>
@@ -37,6 +38,7 @@ static const char *im_func_name = "inject_message";
 static const char *lsb_heka_message_matcher = "lsb.heka_message_matcher";
 
 int heka_create_stream_reader(lua_State *lua);
+int heka_create_read_message_zc(lua_State *lua);
 
 
 static int is_running(lua_State *lua)
@@ -65,10 +67,12 @@ static int read_message(lua_State *lua)
   if (!hsb) {
     return luaL_error(lua, "%s() invalid " LSB_HEKA_THIS_PTR, __func__);
   }
-
-  if (!hsb->msg || !hsb->msg->raw.s) {
-    lua_pushnil(lua);
-    return 1;
+  if (lua_gettop(lua) == 4) {
+    luaL_checktype(lua, 4, LUA_TBOOLEAN);
+    if (lua_toboolean(lua, 4)) {
+      return heka_create_read_message_zc(lua);
+    }
+    lua_pop(lua, 1); // remove the zc flag
   }
   return heka_read_message(lua, hsb->msg);
 }
@@ -709,6 +713,131 @@ int lsb_heka_pm_analysis(lsb_heka_sandbox *hsb,
 }
 
 
+// IO write zero copy replacement
+static int pushresult(lua_State *lua, int i, const char *filename)
+{
+  int en = errno;  /* calls to Lua API may change this value */
+  if (i) {
+    lua_pushboolean(lua, 1);
+    return 1;
+  } else {
+    lua_pushnil(lua);
+    if (filename) lua_pushfstring(lua, "%s: %s", filename, strerror(en));
+    else lua_pushfstring(lua, "%s", strerror(en));
+    lua_pushinteger(lua, en);
+    return 3;
+  }
+}
+
+
+static int zc_write(lua_State *lua, FILE *f, int arg)
+{
+  int n =  lua_gettop(lua);
+  int nargs = n - 1;
+  int status = 1;
+  for (; nargs--; arg++) {
+    switch (lua_type(lua, arg)) {
+    case LUA_TNUMBER:
+      /* optimization: could be done exactly as for strings */
+      status = status &&
+          fprintf(f, LUA_NUMBER_FMT, lua_tonumber(lua, arg)) > 0;
+      break;
+    case LUA_TSTRING:
+      {
+        size_t l;
+        const char *s = luaL_checklstring(lua, arg, &l);
+        status = status && (fwrite(s, sizeof(char), l, f) == l);
+      }
+      break;
+    case LUA_TUSERDATA:
+      {
+        lua_CFunction fp = lsb_get_zero_copy_function(lua, arg);
+        if (!fp) {
+          return luaL_argerror(lua, arg, "no zero copy support");
+        }
+        lua_pushvalue(lua, arg);
+        int results = fp(lua);
+        int start = n + 2;
+        int end = start + results;
+        size_t len;
+        const char *s;
+        for (int i = start; i < end; ++i) {
+          switch (lua_type(lua, i)) {
+          case LUA_TSTRING:
+            s = lua_tolstring(lua, i, &len);
+            if (s && len > 0) {
+              status = status && (fwrite(s, sizeof(char), len, f) == len);
+            }
+            break;
+          case LUA_TLIGHTUSERDATA:
+            s = lua_touserdata(lua, i++);
+            len = (size_t)lua_tointeger(lua, i);
+            if (s && len > 0) {
+              status = status && (fwrite(s, sizeof(char), len, f) == len);
+            }
+            break;
+          default:
+            return luaL_error(lua, "invalid zero copy return");
+          }
+        }
+        lua_pop(lua, results + 1); // remove the returns values and
+                                   // the copy of the userdata
+      }
+      break;
+    default:
+      return luaL_typerror(lua, arg, "number, string or userdata");
+    }
+  }
+  return pushresult(lua, status, NULL);
+}
+
+static FILE* getiofile(lua_State *lua, int findex)
+{
+  static const char *const fnames[] = { "input", "output" };
+  FILE *f;
+  lua_rawgeti(lua, LUA_ENVIRONINDEX, findex);
+  f = *(FILE **)lua_touserdata(lua, -1);
+  if (f == NULL) luaL_error(lua, "standard %s file is closed",
+                            fnames[findex - 1]);
+  return f;
+}
+
+
+static int zc_io_write(lua_State *lua)
+{
+  return zc_write(lua, getiofile(lua, 2), 1);
+}
+
+
+static FILE* tofile(lua_State *lua)
+{
+  FILE **f = (FILE **)luaL_checkudata(lua, 1, LUA_FILEHANDLE);
+  if (*f == NULL) luaL_error(lua, "attempt to use a closed file");
+  return *f;
+}
+
+
+static int zc_f_write(lua_State *lua)
+{
+  return zc_write(lua, tofile(lua), 2);
+}
+
+
+static int zc_luaopen_io(lua_State *lua)
+{
+  luaopen_io(lua);
+  lua_pushcclosure(lua, zc_io_write, 0);
+  lua_setfield(lua, -2, "write");
+
+  luaL_getmetatable(lua, LUA_FILEHANDLE);
+  lua_pushcclosure(lua, zc_f_write, 0);
+  lua_setfield(lua, -2, "write");
+  lua_pop(lua, 1); // remove the metatable
+  return 1;
+}
+// End IO write zero copy replacement
+
+
 lsb_heka_sandbox* lsb_heka_create_output(void *parent,
                                          const char *lua_file,
                                          const char *state_file,
@@ -761,6 +890,14 @@ lsb_heka_sandbox* lsb_heka_create_output(void *parent,
   lsb_add_function(hsb->lsb, heka_encode_message, "encode_message");
   lsb_add_function(hsb->lsb, update_checkpoint, LSB_HEKA_UPDATE_CHECKPOINT);
   lsb_add_function(hsb->lsb, mm_create, "create_message_matcher");
+
+  // start io.write override with zero copy functionality
+  lua_getfield(lua, LUA_REGISTRYINDEX, "_PRELOADED");
+  lua_pushstring(lua, LUA_IOLIBNAME);
+  lua_pushcfunction(lua, zc_luaopen_io);
+  lua_rawset(lua, -3);
+  lua_pop(lua, 1);
+  // end io.write override
 
   if (lsb_init(hsb->lsb, state_file)) {
     if (logger && logger->cb) {
@@ -855,7 +992,6 @@ int lsb_heka_timer_event(lsb_heka_sandbox *hsb, time_t t, bool shutdown)
     lsb_terminate(hsb->lsb, err);
     return 1;
   }
-  // todo change if we need more than 1 sec resolution
   lua_pushnumber(lua, t * 1e9);
   lua_pushboolean(lua, shutdown);
 

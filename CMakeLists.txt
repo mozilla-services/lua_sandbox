@@ -3,7 +3,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 cmake_minimum_required(VERSION 3.0 FATAL_ERROR)
-project(luasandbox VERSION 1.1.0 LANGUAGES C)
+project(luasandbox VERSION 1.2.0 LANGUAGES C)
 
 set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "Generic Lua sandbox for dynamic data analysis")
 set(CPACK_PACKAGE_VERSION_MAJOR ${PROJECT_VERSION_MAJOR})
@@ -35,7 +35,7 @@ configure_package_config_file(cmake/${PROJECT_NAME}Config.cmake.in
                               INSTALL_DESTINATION ${INSTALL_CMAKE_DIR}
                               PATH_VARS CMAKE_INSTALL_INCLUDEDIR CMAKE_INSTALL_LIBDIR)
 write_basic_package_version_file(${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}ConfigVersion.cmake
-                                 COMPATIBILITY AnyNewerVersion ) # todo change to SameMajorVersion after 1.0
+                                 COMPATIBILITY SameMajorVersion)
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Config.cmake 
               ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}ConfigVersion.cmake
         DESTINATION ${INSTALL_CMAKE_DIR})

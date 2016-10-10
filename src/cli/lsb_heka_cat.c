@@ -121,6 +121,7 @@ static void output_text(lsb_heka_message *msg)
           p = read_string(wiretype, p, e, &cs);
           if (p) {
             fprintf(stdout, "%.*s", (int)cs.len, cs.s);
+            if (p < e) fprintf(stdout, "|");
           }
         }
       }
@@ -145,6 +146,7 @@ static void output_text(lsb_heka_message *msg)
                 fprintf(stdout, "\\x%02hhx", (unsigned char)cs.s[i]);
               }
             }
+            if (p < e) fprintf(stdout, "|");
           }
         }
       }
@@ -156,6 +158,7 @@ static void output_text(lsb_heka_message *msg)
           p = lsb_pb_read_varint(p, e, &ll);
           if (p) {
             fprintf(stdout, "%lld", ll);
+            if (p < e) fprintf(stdout, "|");
           }
         }
       }
@@ -165,9 +168,7 @@ static void output_text(lsb_heka_message *msg)
         double d;
         for (int i = 0; p <= (e - sizeof(double)); p += sizeof(double), ++i) {
           memcpy(&d, p, sizeof(double));
-          if (i > 0) {
-            fprintf(stdout, ",");
-          }
+          if (i > 0) fprintf(stdout, "|");
           fprintf(stdout, "%.17g", d);
         }
       }
@@ -179,6 +180,7 @@ static void output_text(lsb_heka_message *msg)
           p = lsb_pb_read_varint(p, e, &ll);
           if (p) {
             fprintf(stdout, "%s", ll == 0 ? "false" : "true");
+            if (p < e) fprintf(stdout, "|");
           }
         }
       }
@@ -193,11 +195,9 @@ static void output_text(lsb_heka_message *msg)
 
 static void output_heka(lsb_heka_message *msg)
 {
-  static char header[14] = "\x1e\x00\x08"; // up to 10 varint bytes and a \x1f
-  int hlen = lsb_pb_output_varint(header + 3, msg->raw.len) + 1;
-  header[1] = (char)hlen;
-  header[hlen + 2] = '\x1f';
-  if (fwrite(header, hlen + 3, 1, stdout) != 1) {
+  static char header[LSB_MIN_HDR_SIZE];
+  size_t hlen = lsb_write_heka_header(header, msg->raw.len);
+  if (fwrite(header, hlen, 1, stdout) != 1) {
     log_cb(NULL, NULL, 0, "error outputting header");
     exit(1);
   }

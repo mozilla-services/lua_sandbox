@@ -20,6 +20,7 @@
 #define LSB_UUID_SIZE         16
 #define LSB_UUID_STR_SIZE     36
 #define LSB_HDR_FRAME_SIZE    3
+#define LSB_MIN_HDR_SIZE      14
 #define LSB_MAX_HDR_SIZE      (255 + LSB_HDR_FRAME_SIZE)
 
 #define LSB_UUID          "Uuid"
@@ -32,6 +33,9 @@
 #define LSB_PID           "Pid"
 #define LSB_HOSTNAME      "Hostname"
 #define LSB_FIELDS        "Fields"
+#define LSB_RAW           "raw"
+#define LSB_FRAMED        "framed"
+#define LSB_SIZE          "size"
 
 typedef enum {
   LSB_PB_UUID         = 1,
@@ -204,6 +208,17 @@ LSB_UTIL_EXPORT bool lsb_read_heka_field(const lsb_heka_message *m,
  */
 LSB_UTIL_EXPORT lsb_err_value
 lsb_write_heka_uuid(lsb_output_buffer *ob, const char *uuid, size_t len);
+
+/**
+ * Writes the Heka framing header to the specified buffer.
+ *
+ * @param buf Buffer to write the header to must be at least LSB_MIN_HDR_SIZE
+ *            size.
+ * @param len Length of the message to encode into the header
+ *
+ * @return LSB_UTIL_EXPORT size_t
+ */
+LSB_UTIL_EXPORT size_t lsb_write_heka_header(char *buf, size_t len);
 
 #ifdef __cplusplus
 }

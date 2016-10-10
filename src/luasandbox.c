@@ -710,6 +710,12 @@ void* lsb_get_parent(lsb_lua_sandbox *lsb)
 }
 
 
+const lsb_logger* lsb_get_logger(lsb_lua_sandbox *lsb)
+{
+  return lsb ? &lsb->logger : NULL;
+}
+
+
 lsb_state lsb_get_state(lsb_lua_sandbox *lsb)
 {
   return lsb ? lsb->state : LSB_UNKNOWN;

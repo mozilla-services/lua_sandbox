@@ -224,6 +224,17 @@ LSB_EXPORT const char* lsb_get_lua_file(lsb_lua_sandbox *lsb);
 LSB_EXPORT void* lsb_get_parent(lsb_lua_sandbox *lsb);
 
 /**
+ * Access the logger struct stored in the sandbox. The logger callback is only
+ * available to modules in debug mode (same as print).
+ *
+ * @param lsb Pointer to the sandbox.
+ *
+ * @return lsb_logger Pointer to the logger struct
+ *
+ */
+LSB_EXPORT const lsb_logger* lsb_get_logger(lsb_lua_sandbox *lsb);
+
+/**
  * Create a CFunction for use by the Sandbox. The Lua sandbox pointer is pushed
  * to upvalue index 1.
  *

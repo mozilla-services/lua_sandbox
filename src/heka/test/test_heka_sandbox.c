@@ -8,13 +8,16 @@
 
 #include "test.h"
 
+#include <ctype.h>
 #include <errno.h>
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
+#include "../sandbox_impl.h"
 #include "luasandbox/heka/sandbox.h"
+#include "luasandbox_output.h"
 
 // {Uuid="" Timestamp = 1e9, Type="type", Logger="logger", Payload="payload", EnvVersion="env_version", Hostname="hostname", Severity=9, Fields = {number=1,numbers={value={1,2,3}, representation="count"},string="string",strings={"s1","s2","s3"}, bool=true, bools={true,false,false}}}
 static char pb[] = "\x0a\x10" "abcdefghijklmnop" "\x10\x80\x94\xeb\xdc\x03\x1a\x04\x74\x79\x70\x65\x22\x06\x6c\x6f\x67\x67\x65\x72\x28\x09\x32\x07\x70\x61\x79\x6c\x6f\x61\x64\x3a\x0b\x65\x6e\x76\x5f\x76\x65\x72\x73\x69\x6f\x6e\x4a\x08\x68\x6f\x73\x74\x6e\x61\x6d\x65\x52\x13\x0a\x06\x6e\x75\x6d\x62\x65\x72\x10\x03\x39\x00\x00\x00\x00\x00\x00\xf0\x3f\x52\x2c\x0a\x07\x6e\x75\x6d\x62\x65\x72\x73\x10\x03\x1a\x05\x63\x6f\x75\x6e\x74\x3a\x18\x00\x00\x00\x00\x00\x00\xf0\x3f\x00\x00\x00\x00\x00\x00\x00\x40\x00\x00\x00\x00\x00\x00\x08\x40\x52\x0e\x0a\x05\x62\x6f\x6f\x6c\x73\x10\x04\x42\x03\x01\x00\x00\x52\x0a\x0a\x04\x62\x6f\x6f\x6c\x10\x04\x40\x01\x52\x10\x0a\x06\x73\x74\x72\x69\x6e\x67\x22\x06\x73\x74\x72\x69\x6e\x67\x52\x15\x0a\x07\x73\x74\x72\x69\x6e\x67\x73\x22\x02\x73\x31\x22\x02\x73\x32\x22\x02\x73\x33";
@@ -173,6 +176,34 @@ static int aim(void *parent, const char *pb, size_t pb_len)
     if (!rv) return 1;
   }
   cnt++;
+  return 0;
+}
+
+static int aim1(void *parent, const char *pb, size_t pb_len)
+{
+  if (parent) {
+    fprintf(stderr, "parent set\n");
+    return 1;
+  }
+  if (!pb) {
+    fprintf(stderr, "pb null set\n");
+    return 1;
+  }
+  size_t expected = 306;
+  if (pb_len != expected) {
+    fprintf(stderr, "pb_len expected: %" PRIuSIZE " received: %" PRIuSIZE "\n",
+            expected, pb_len);
+
+    for (size_t i = 0; i < pb_len; ++i) {
+      if (isprint(pb[i])) {
+        fprintf(stderr, "%c", pb[i]);
+      } else {
+        fprintf(stderr, "\\x%02hhx", pb[i]);
+      }
+    }
+    fprintf(stderr, "\n");
+    return 1;
+  }
   return 0;
 }
 
@@ -417,7 +448,7 @@ static char* test_pm_input()
   lsb_heka_sandbox *hsb;
   hsb = lsb_heka_create_input(NULL, "lua/input.lua", NULL, NULL, &logger, iim);
   mu_assert(hsb, "lsb_heka_create_input failed");
-  for (unsigned i = 0; i < sizeof results / sizeof results[0]; ++i){
+  for (unsigned i = 0; i < sizeof results / sizeof results[0];++i){
     int rv = lsb_heka_pm_input(hsb, results[i].ncp, results[i].scp, true);
     const char *err = lsb_heka_get_error(hsb);
     mu_assert(strcmp(results[i].err, err) == 0, "expected: %s received: %s",
@@ -457,7 +488,7 @@ static char* test_pm_error()
   };
 
   lsb_heka_sandbox *hsb;
-  for (unsigned i = 0; i < sizeof results / sizeof results[0]; ++i){
+  for (unsigned i = 0; i < sizeof results / sizeof results[0];++i){
     hsb = lsb_heka_create_input(NULL, "lua/input.lua", NULL, NULL, &logger, iim);
     mu_assert(hsb, "lsb_heka_create_input failed");
     int rv = lsb_heka_pm_input(hsb, results[i].ncp, results[i].scp, true);
@@ -604,9 +635,14 @@ static char* test_decode_message()
 {
   lsb_heka_message m;
   mu_assert(!lsb_init_heka_message(&m, 1), "failed to init message");
+  mu_assert(lsb_decode_heka_message(&m, pb, sizeof(pb) - 1, &logger), "failed");
+
   lsb_heka_sandbox *hsb;
   hsb = lsb_heka_create_output(NULL, "lua/decode_message.lua", NULL, NULL, &logger, ucp);
   mu_assert(hsb, "lsb_heka_create_output failed");
+  int rv = lsb_heka_pm_output(hsb, &m, NULL, false);
+  mu_assert(0 == rv, "expected: %d received: %d %s", 0, rv,
+            lsb_heka_get_error(hsb));
   e = lsb_heka_destroy_sandbox(hsb);
   lsb_free_heka_message(&m);
   return NULL;
@@ -621,7 +657,69 @@ static char* test_read_message()
 
   lsb_heka_sandbox *hsb;
   hsb = lsb_heka_create_analysis(NULL, "lua/read_message.lua", NULL, NULL, &logger, aim);
-  mu_assert(hsb, "lsb_heka_create_analysist failed");
+  mu_assert(hsb, "lsb_heka_create_analysis failed");
+  int rv = lsb_heka_pm_analysis(hsb, &m, false);
+  mu_assert(0 == rv, "expected: %d received: %d %s", 0, rv,
+            lsb_heka_get_error(hsb));
+  e = lsb_heka_destroy_sandbox(hsb);
+  lsb_free_heka_message(&m);
+  return NULL;
+}
+
+
+static int rm_zc(lua_State *lua)
+{
+  int n = lua_gettop(lua);
+  luaL_argcheck(lua, n == 1, n, "incorrect number of arguments");
+  luaL_checktype(lua, 1, LUA_TUSERDATA);
+  lua_CFunction fp = lsb_get_zero_copy_function(lua, 1);
+  if (!fp) {
+    return luaL_argerror(lua, 1, "no zero copy support");
+  }
+  int results = fp(lua);
+  int start = n + 1;
+  int end = start + results;
+  int cnt = 0;
+  for (int i = start; i < end; ++i) {
+    switch (lua_type(lua, i)) {
+    case LUA_TSTRING:
+      lua_pushvalue(lua, i);
+      ++cnt;
+      break;
+    case LUA_TLIGHTUSERDATA:
+      {
+        const char *s = lua_touserdata(lua, i++);
+        size_t len = (size_t)lua_tointeger(lua, i);
+        if (s && len > 0) {
+          lua_pushlstring(lua, s, len);
+          ++cnt;
+        }
+      }
+      break;
+    default:
+      return luaL_error(lua, "invalid zero copy return");
+    }
+  }
+  if (cnt) {
+    lua_concat(lua, cnt);
+  } else {
+    lua_pushnil(lua);
+  }
+  return 1;
+}
+
+
+static char* test_read_message_zc()
+{
+  lsb_heka_message m;
+  mu_assert(!lsb_init_heka_message(&m, 1), "failed to init message");
+  mu_assert(lsb_decode_heka_message(&m, pb, sizeof(pb) - 1, &logger), "failed");
+
+  lsb_heka_sandbox *hsb;
+  hsb = lsb_heka_create_analysis(NULL, "lua/read_message_zc.lua", NULL, NULL, &logger, aim1);
+  mu_assert(hsb, "lsb_heka_create_analysis failed");
+
+  lsb_add_function(hsb->lsb, rm_zc, "read_message_zc");
   int rv = lsb_heka_pm_analysis(hsb, &m, false);
   mu_assert(0 == rv, "expected: %d received: %d %s", 0, rv,
             lsb_heka_get_error(hsb));
@@ -647,7 +745,7 @@ static char* test_get_type()
   lsb_heka_sandbox *hsb;
   hsb = lsb_heka_create_analysis(NULL, "lua/read_message.lua", NULL, NULL, &logger, aim);
   char t = lsb_heka_get_type(NULL);
-  mu_assert( t == '\0', "received %c", t);
+  mu_assert(t == '\0', "received %c", t);
   t = lsb_heka_get_type(hsb);
   mu_assert(t == 'a', "received %c", t);
   e = lsb_heka_destroy_sandbox(hsb);
@@ -699,6 +797,7 @@ static char* all_tests()
   mu_run_test(test_encode_message);
   mu_run_test(test_decode_message);
   mu_run_test(test_read_message);
+  mu_run_test(test_read_message_zc);
   mu_run_test(test_get_message);
   mu_run_test(test_get_type);
 

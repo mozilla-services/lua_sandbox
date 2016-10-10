@@ -4,6 +4,7 @@
 
 set(HEKA_SRC
 message.c
+read_message_zc.c
 sandbox.c
 stream_reader.c
 )

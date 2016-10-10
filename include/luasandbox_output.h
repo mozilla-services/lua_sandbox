@@ -45,6 +45,31 @@ LSB_EXPORT void lsb_add_output_function(lua_State *lua, lua_CFunction fp);
 LSB_EXPORT lua_CFunction lsb_get_output_function(lua_State *lua, int index);
 
 /**
+ * Add a zero copy function to the environment table. The environment table must
+ * be on the top of the stack. This function will receive the userdata as a
+ * pointer on the Lua stack.
+ *
+ * ud_object* ud = (ud_object*)lua_touserdata(lua, -1);
+ *
+ * @param lua Pointer the Lua state.
+ * @param fp Function pointer to the zero copy function.
+ *
+ * @return int Number of segments (pointer and length for each)
+ */
+LSB_EXPORT void lsb_add_zero_copy_function(lua_State *lua, lua_CFunction fp);
+
+
+/**
+ * Utility function to retrieve a user data zero copy function
+ *
+ * @param lua
+ * @param index
+ *
+ * @return lua_CFunction
+ */
+LSB_EXPORT lua_CFunction lsb_get_zero_copy_function(lua_State *lua, int index);
+
+/**
  * Write an array of variables on the Lua stack to the output buffer.
  *
  * @param lsb Pointer to the sandbox.
