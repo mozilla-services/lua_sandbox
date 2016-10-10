@@ -46,7 +46,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
   <link rel="stylesheet" href="/lua_sandbox/docs.css" type="text/css" />
 </head>
 <body>
-<div id="title">Lua Sandbox Library (1.1.0)<hr/></div>
+<div id="title">Lua Sandbox Library (1.2.0)<hr/></div>
 <div class="menu">
         <ul>
             <li><a href="/lua_sandbox/index.html">Overview</a></li>
@@ -432,60 +432,7 @@ db_config <span class="ot">=</span> <span class="ot">{</span>
 <li>When an asynchronously sent message is acknowledged <a href="#update_checkpoint">update_checkpoint</a> <strong>MUST</strong> be called to advance the checkpoint to that specific message</li>
 </ul>
 <h4 id="example-kafka-output">Example Kafka Output</h4>
-<div class="sourceCode"><pre class="sourceCode lua"><code class="sourceCode lua"><span class="co">-- cfg</span>
-message_matcher        <span class="ot">=</span> <span class="st">&quot;TRUE&quot;</span>
-output_limit           <span class="ot">=</span> <span class="dv">8</span> <span class="ot">*</span> <span class="dv">1024</span> <span class="ot">*</span> <span class="dv">1024</span>
-brokers                <span class="ot">=</span> <span class="st">&quot;localhost:9092&quot;</span>
-ticker_interval        <span class="ot">=</span> <span class="dv">60</span>
-async_buffer_size      <span class="ot">=</span> <span class="dv">20000</span>
-
-topic_constant <span class="ot">=</span> <span class="st">&quot;test&quot;</span>
-producer_conf <span class="ot">=</span> <span class="ot">{</span>
-    <span class="ot">[</span><span class="st">&quot;queue.buffering.max.messages&quot;</span><span class="ot">]</span> <span class="ot">=</span> async_buffer_size<span class="ot">,</span>
-    <span class="ot">[</span><span class="st">&quot;batch.num.messages&quot;</span><span class="ot">]</span> <span class="ot">=</span> <span class="dv">200</span><span class="ot">,</span>
-    <span class="ot">[</span><span class="st">&quot;message.max.bytes&quot;</span><span class="ot">]</span> <span class="ot">=</span> output_limit<span class="ot">,</span>
-    <span class="ot">[</span><span class="st">&quot;queue.buffering.max.ms&quot;</span><span class="ot">]</span> <span class="ot">=</span> <span class="dv">10</span><span class="ot">,</span>
-    <span class="ot">[</span><span class="st">&quot;topic.metadata.refresh.interval.ms&quot;</span><span class="ot">]</span> <span class="ot">=</span> <span class="ot">-</span><span class="dv">1</span><span class="ot">,</span>
-<span class="ot">}</span></code></pre></div>
-<div class="sourceCode"><pre class="sourceCode lua"><code class="sourceCode lua"><span class="co">-- This Source Code Form is subject to the terms of the Mozilla Public</span>
-<span class="co">-- License, v. 2.0. If a copy of the MPL was not distributed with this</span>
-<span class="co">-- file, You can obtain one at http://mozilla.org/MPL/2.0/.</span>
-
-<span class="kw">local</span> brokerlist <span class="ot">=</span> read_config<span class="ot">(</span><span class="st">&quot;brokerlist&quot;</span><span class="ot">)</span> <span class="kw">or</span> <span class="fu">error</span><span class="ot">(</span><span class="st">&quot;brokerlist must be set&quot;</span><span class="ot">)</span>
-<span class="kw">local</span> topic_constant <span class="ot">=</span> read_config<span class="ot">(</span><span class="st">&quot;topic_constant&quot;</span><span class="ot">)</span>
-<span class="kw">local</span> topic_variable <span class="ot">=</span> read_config<span class="ot">(</span><span class="st">&quot;topic_variable&quot;</span><span class="ot">)</span> <span class="kw">or</span> <span class="st">&quot;Logger&quot;</span>
-<span class="kw">local</span> producer_conf <span class="ot">=</span> read_config<span class="ot">(</span><span class="st">&quot;producer_conf&quot;</span><span class="ot">)</span>
-
-<span class="kw">local</span> producer <span class="ot">=</span> kafka<span class="ot">.</span>producer<span class="ot">(</span>brokerlist<span class="ot">,</span> producer_conf<span class="ot">)</span>
-
-<span class="kw">function</span> process_message<span class="ot">(</span>sequence_id<span class="ot">)</span>
-    <span class="kw">local</span> topic <span class="ot">=</span> topic_constant
-    <span class="kw">if</span> <span class="kw">not</span> topic <span class="kw">then</span>
-        topic <span class="ot">=</span> read_message<span class="ot">(</span>topic_variable<span class="ot">)</span> <span class="kw">or</span> <span class="st">&quot;unknown&quot;</span>
-    <span class="kw">end</span>
-    producer:create_topic<span class="ot">(</span>topic<span class="ot">)</span> <span class="co">-- creates the topic if it does not exist</span>
-
-    producer:poll<span class="ot">()</span>
-    <span class="kw">local</span> ret <span class="ot">=</span> producer:send<span class="ot">(</span>topic<span class="ot">,</span> <span class="ot">-</span><span class="dv">1</span><span class="ot">,</span> sequence_id<span class="ot">)</span> <span class="co">-- sends the current message</span>
-
-    <span class="kw">if</span> ret <span class="ot">~=</span> <span class="dv">0</span> <span class="kw">then</span>
-        <span class="kw">if</span> ret <span class="ot">==</span> <span class="dv">105</span> <span class="kw">then</span>
-            <span class="kw">return</span> <span class="ot">-</span><span class="dv">3</span><span class="ot">,</span> <span class="st">&quot;queue full&quot;</span> <span class="co">-- retry</span>
-        <span class="kw">elseif</span> ret <span class="ot">==</span> <span class="dv">90</span> <span class="kw">then</span>
-            <span class="kw">return</span> <span class="ot">-</span><span class="dv">1</span><span class="ot">,</span> <span class="st">&quot;message too large&quot;</span> <span class="co">-- fail</span>
-        <span class="kw">elseif</span> ret <span class="ot">==</span> <span class="dv">2</span> <span class="kw">then</span>
-            <span class="fu">error</span><span class="ot">(</span><span class="st">&quot;unknown topic: &quot;</span> <span class="ot">..</span> topic<span class="ot">)</span>
-        <span class="kw">elseif</span> ret <span class="ot">==</span> <span class="dv">3</span> <span class="kw">then</span>
-            <span class="fu">error</span><span class="ot">(</span><span class="st">&quot;unknown partition&quot;</span><span class="ot">)</span>
-        <span class="kw">end</span>
-    <span class="kw">end</span>
-
-    <span class="kw">return</span> <span class="ot">-</span><span class="dv">5</span> <span class="co">-- asynchronous checkpoint management</span>
-<span class="kw">end</span>
-
-<span class="kw">function</span> timer_event<span class="ot">(</span>ns<span class="ot">)</span>
-    producer:poll<span class="ot">()</span>
-<span class="kw">end</span></code></pre></div>
+<p><a href="https://github.com/mozilla-services/lua_sandbox_extensions/blob/master/kafka/sandboxes/heka/output/kafka.lua">kafka.lua</a></p>
 </div>
 </body>
 </html>

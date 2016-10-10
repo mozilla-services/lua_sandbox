@@ -24,7 +24,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">luasandbox
-   &#160;<span id="projectnumber">1.1.0</span>
+   &#160;<span id="projectnumber">1.2.0</span>
    </div>
    <div id="projectbrief">Generic Lua sandbox for dynamic data analysis</div>
   </td>
@@ -113,6 +113,9 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <li>lsb_add_serialize_function()
 : <a class="el" href="luasandbox__serialize_8h.html#a0bb439e83f3aa082f2a282c6e1f41042">luasandbox_serialize.h</a>
 </li>
+<li>lsb_add_zero_copy_function()
+: <a class="el" href="luasandbox__output_8h.html#a2c17d0aa89ab02a56b96b719ffcb1a7d">luasandbox_output.h</a>
+</li>
 <li>lsb_clear_heka_message()
 : <a class="el" href="heka__message_8h.html#abb0e027fc6303ee48ac7130643110b00">heka_message.h</a>
 </li>
@@ -194,6 +197,9 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <li>lsb_find_heka_message()
 : <a class="el" href="heka__message_8h.html#ac3e8f36a4920814db39c760b84490dfd">heka_message.h</a>
 </li>
+<li>LSB_FRAMED
+: <a class="el" href="heka__message_8h.html#a8f60b25231f5b44cc471e7f22f1d269f">heka_message.h</a>
+</li>
 <li>lsb_free_heka_message()
 : <a class="el" href="heka__message_8h.html#aac710e5acf4cecebfc52b2065499d064">heka_message.h</a>
 </li>
@@ -205,6 +211,9 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </li>
 <li>lsb_get_error()
 : <a class="el" href="luasandbox_8h.html#ad53d686678270e8f1fe7ea56dc7fbd83">luasandbox.h</a>
+</li>
+<li>lsb_get_logger()
+: <a class="el" href="luasandbox_8h.html#ab423c2442e9dfe2086279f356ee9b45f">luasandbox.h</a>
 </li>
 <li>lsb_get_lua()
 : <a class="el" href="luasandbox_8h.html#aa6f00183b6dd9e2c414ef443b4216e5b">luasandbox.h</a>
@@ -229,6 +238,9 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </li>
 <li>lsb_get_timestamp()
 : <a class="el" href="util_8h.html#ae12a2ddf7fcca16762fce07f11334d0a">util.h</a>
+</li>
+<li>lsb_get_zero_copy_function()
+: <a class="el" href="luasandbox__output_8h.html#ad9cf22421d19ae60d23b38301c6f63a2">luasandbox_output.h</a>
 </li>
 <li>LSB_HDR_FRAME_SIZE
 : <a class="el" href="heka__message_8h.html#afefe9d0ce2beed9b7d5cc685bc8e7562">heka_message.h</a>
@@ -335,11 +347,11 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <li>lsb_heka_timer_event()
 : <a class="el" href="heka_2sandbox_8h.html#a90d002a420fe60d087748b87d03e42f3">sandbox.h</a>
 </li>
-<li>LSB_HEKA_UPDATE_CHECKPOINT
-: <a class="el" href="heka_2sandbox_8h.html#a61bc21eef3e514e16d7fa2a75dc7c0da">sandbox.h</a>
-</li>
 <li>lsb_heka_update_checkpoint
 : <a class="el" href="heka_2sandbox_8h.html#ab73bea0ae205ae75807be9e151dd04ab">sandbox.h</a>
+</li>
+<li>LSB_HEKA_UPDATE_CHECKPOINT
+: <a class="el" href="heka_2sandbox_8h.html#a61bc21eef3e514e16d7fa2a75dc7c0da">sandbox.h</a>
 </li>
 <li>LSB_HOSTNAME
 : <a class="el" href="heka__message_8h.html#aef5432a906dddf0e1f0dcb30950dc9f5">heka_message.h</a>
@@ -403,6 +415,9 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </li>
 <li>lsb_message_matcher
 : <a class="el" href="heka__message__matcher_8h.html#ab6ea95744b82af8aff9954c791c47183">heka_message_matcher.h</a>
+</li>
+<li>LSB_MIN_HDR_SIZE
+: <a class="el" href="heka__message_8h.html#a625cbb5cd769ccb3a2f83def48051d0c">heka_message.h</a>
 </li>
 <li>LSB_NIL_ERROR
 : <a class="el" href="luasandbox_8h.html#a33b02f9d4c9ec5334c290b57fd10d5ff">luasandbox.h</a>
@@ -572,6 +587,9 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <li>LSB_PID
 : <a class="el" href="heka__message_8h.html#a2d87af0ede709257a06518ca175b041c">heka_message.h</a>
 </li>
+<li>LSB_RAW
+: <a class="el" href="heka__message_8h.html#a7b4dcb435bd44cd283384c9d245037a2">heka_message.h</a>
+</li>
 <li>LSB_READ_BOOL
 : <a class="el" href="heka__message_8h.html#a4625ec77bbe3cfc4414653164d63611fae3b7ad9551aa6d50e53fb148fc826338">heka_message.h</a>
 </li>
@@ -619,6 +637,9 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </li>
 <li>LSB_SHUTTING_DOWN
 : <a class="el" href="luasandbox_8h.html#ae22c72449928827573574083bfc928dc">luasandbox.h</a>
+</li>
+<li>LSB_SIZE
+: <a class="el" href="heka__message_8h.html#a79ddaebc2a27d1fa51b2c57def1f7251">heka_message.h</a>
 </li>
 <li>lsb_state
 : <a class="el" href="luasandbox_8h.html#a6c44052ea49bca2e9b3aabebff9e3424">luasandbox.h</a>
@@ -721,6 +742,9 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </li>
 <li>LSB_UUID_STR_SIZE
 : <a class="el" href="heka__message_8h.html#a675a9a05e35afb60955db9588c41519b">heka_message.h</a>
+</li>
+<li>lsb_write_heka_header()
+: <a class="el" href="heka__message_8h.html#aa75fd53d2cf9166b096b5c67b143c20f">heka_message.h</a>
 </li>
 <li>lsb_write_heka_uuid()
 : <a class="el" href="heka__message_8h.html#ab530fe3dd496f1ca0a72bf21ef1b4ebb">heka_message.h</a>
@@ -956,11 +980,11 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <li>lua_insert()
 : <a class="el" href="lua_8h.html#a9185776cc77b691daca1eb94fd8e9807">lua.h</a>
 </li>
-<li>LUA_INTEGER
-: <a class="el" href="luaconf_8h.html#a6f5fe82d222b54d1913327404c8d18c5">luaconf.h</a>
-</li>
 <li>lua_Integer
 : <a class="el" href="lua_8h.html#a362144baa0cfb14dc38fd21438053d73">lua.h</a>
+</li>
+<li>LUA_INTEGER
+: <a class="el" href="luaconf_8h.html#a6f5fe82d222b54d1913327404c8d18c5">luaconf.h</a>
 </li>
 <li>LUA_INTFRM_T
 : <a class="el" href="luaconf_8h.html#a9eb7198f9f7a644efa7144fcc5726ea8">luaconf.h</a>

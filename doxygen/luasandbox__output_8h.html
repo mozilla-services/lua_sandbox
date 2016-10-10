@@ -24,7 +24,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">luasandbox
-   &#160;<span id="projectnumber">1.1.0</span>
+   &#160;<span id="projectnumber">1.2.0</span>
    </div>
    <div id="projectbrief">Generic Lua sandbox for dynamic data analysis</div>
   </td>
@@ -128,6 +128,12 @@ Functions</h2></td></tr>
 <tr class="memitem:a45fddab7b79ed82bd3a669ce0f09b26a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="luasandbox_8h.html#a1fe1b28ef15a5cc442f06c26c2eae3cc">LSB_EXPORT</a> <a class="el" href="lua_8h.html#a878b7e392e78661a374cf1c3073029b9">lua_CFunction</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="luasandbox__output_8h.html#a45fddab7b79ed82bd3a669ce0f09b26a">lsb_get_output_function</a> (<a class="el" href="lua_8h.html#a28186297f2e9f2de0652504633de8fb3">lua_State</a> *lua, int index)</td></tr>
 <tr class="memdesc:a45fddab7b79ed82bd3a669ce0f09b26a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Utility function to retrieve a user data output function.  <a href="#a45fddab7b79ed82bd3a669ce0f09b26a">More...</a><br /></td></tr>
 <tr class="separator:a45fddab7b79ed82bd3a669ce0f09b26a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2c17d0aa89ab02a56b96b719ffcb1a7d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="luasandbox_8h.html#a1fe1b28ef15a5cc442f06c26c2eae3cc">LSB_EXPORT</a> void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="luasandbox__output_8h.html#a2c17d0aa89ab02a56b96b719ffcb1a7d">lsb_add_zero_copy_function</a> (<a class="el" href="lua_8h.html#a28186297f2e9f2de0652504633de8fb3">lua_State</a> *lua, <a class="el" href="lua_8h.html#a878b7e392e78661a374cf1c3073029b9">lua_CFunction</a> fp)</td></tr>
+<tr class="memdesc:a2c17d0aa89ab02a56b96b719ffcb1a7d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Add a zero copy function to the environment table.  <a href="#a2c17d0aa89ab02a56b96b719ffcb1a7d">More...</a><br /></td></tr>
+<tr class="separator:a2c17d0aa89ab02a56b96b719ffcb1a7d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad9cf22421d19ae60d23b38301c6f63a2"><td class="memItemLeft" align="right" valign="top"><a class="el" href="luasandbox_8h.html#a1fe1b28ef15a5cc442f06c26c2eae3cc">LSB_EXPORT</a> <a class="el" href="lua_8h.html#a878b7e392e78661a374cf1c3073029b9">lua_CFunction</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="luasandbox__output_8h.html#ad9cf22421d19ae60d23b38301c6f63a2">lsb_get_zero_copy_function</a> (<a class="el" href="lua_8h.html#a28186297f2e9f2de0652504633de8fb3">lua_State</a> *lua, int index)</td></tr>
+<tr class="memdesc:ad9cf22421d19ae60d23b38301c6f63a2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Utility function to retrieve a user data zero copy function.  <a href="#ad9cf22421d19ae60d23b38301c6f63a2">More...</a><br /></td></tr>
+<tr class="separator:ad9cf22421d19ae60d23b38301c6f63a2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a381fe2ea2343234241910fd755d4fd69"><td class="memItemLeft" align="right" valign="top"><a class="el" href="luasandbox_8h.html#a1fe1b28ef15a5cc442f06c26c2eae3cc">LSB_EXPORT</a> void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="luasandbox__output_8h.html#a381fe2ea2343234241910fd755d4fd69">lsb_output</a> (<a class="el" href="luasandbox_8h.html#ad2faa95e9a2ada80510c0d2942862c6e">lsb_lua_sandbox</a> *lsb, int start, int end, int append)</td></tr>
 <tr class="memdesc:a381fe2ea2343234241910fd755d4fd69"><td class="mdescLeft">&#160;</td><td class="mdescRight">Write an array of variables on the Lua stack to the output buffer.  <a href="#a381fe2ea2343234241910fd755d4fd69">More...</a><br /></td></tr>
 <tr class="separator:a381fe2ea2343234241910fd755d4fd69"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -175,6 +181,44 @@ Functions</h2></td></tr>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>int Zero on success, non-zero on failure. </dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="a2c17d0aa89ab02a56b96b719ffcb1a7d"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="luasandbox_8h.html#a1fe1b28ef15a5cc442f06c26c2eae3cc">LSB_EXPORT</a> void lsb_add_zero_copy_function </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="lua_8h.html#a28186297f2e9f2de0652504633de8fb3">lua_State</a> *&#160;</td>
+          <td class="paramname"><em>lua</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="lua_8h.html#a878b7e392e78661a374cf1c3073029b9">lua_CFunction</a>&#160;</td>
+          <td class="paramname"><em>fp</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Add a zero copy function to the environment table. </p>
+<p>The environment table must be on the top of the stack. This function will receive the userdata as a pointer on the Lua stack.</p>
+<p>ud_object* ud = (ud_object*)lua_touserdata(lua, -1);</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">lua</td><td>Pointer the Lua state. </td></tr>
+    <tr><td class="paramname">fp</td><td>Function pointer to the zero copy function.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>int Number of segments (pointer and length for each) </dd></dl>
 
 </div>
 </div>
@@ -240,6 +284,42 @@ Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Utility function to retrieve a user data output function. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">lua</td><td></td></tr>
+    <tr><td class="paramname">index</td><td></td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>lua_CFunction </dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="ad9cf22421d19ae60d23b38301c6f63a2"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="luasandbox_8h.html#a1fe1b28ef15a5cc442f06c26c2eae3cc">LSB_EXPORT</a> <a class="el" href="lua_8h.html#a878b7e392e78661a374cf1c3073029b9">lua_CFunction</a> lsb_get_zero_copy_function </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="lua_8h.html#a28186297f2e9f2de0652504633de8fb3">lua_State</a> *&#160;</td>
+          <td class="paramname"><em>lua</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Utility function to retrieve a user data zero copy function. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">lua</td><td></td></tr>

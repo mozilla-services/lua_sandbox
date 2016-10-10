@@ -46,7 +46,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
   <link rel="stylesheet" href="/lua_sandbox/docs.css" type="text/css" />
 </head>
 <body>
-<div id="title">Lua Sandbox Library (1.1.0)<hr/></div>
+<div id="title">Lua Sandbox Library (1.2.0)<hr/></div>
 <div class="menu">
         <ul>
             <li><a href="/lua_sandbox/index.html">Overview</a></li>
@@ -161,16 +161,17 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 </ul></li>
 <li>fieldIndex (unsigned) - only used in combination with the Fields variableName use to retrieve a specific instance of a repeated field <em>name</em>; zero indexed</li>
 <li>arrayIndex (unsigned) - only used in combination with the Fields variableName use to retrieve a specific element out of a field containing an array; zero indexed</li>
+<li>zeroCopy (bool, optional default false) - returns a userdata place holder for the message variable (only valid for string types). Non string headers throw an error during construction, non string fields throw an error on data retrieval.</li>
 </ul>
 <p><em>Return</em></p>
 <ul>
-<li>value (number, string, bool, nil depending on the type of variable requested)</li>
+<li>value (number, string, bool, nil, userdata depending on the type of variable requested)</li>
 </ul>
 <h3 id="decode_message">decode_message</h3>
 <p>Converts a Heka protobuf encoded message string into a Lua table or throws an error.</p>
 <p><em>Arguments</em></p>
 <ul>
-<li>heka_pb (string) - Heka protobuf binary string</li>
+<li>heka_pb (string, userdata) - Heka protobuf binary string or a zero copy userdata object containing a Heka protobuf binary string.</li>
 </ul>
 <p><em>Return</em></p>
 <ul>

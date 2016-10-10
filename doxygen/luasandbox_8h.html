@@ -24,7 +24,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">luasandbox
-   &#160;<span id="projectnumber">1.1.0</span>
+   &#160;<span id="projectnumber">1.2.0</span>
    </div>
    <div id="projectbrief">Generic Lua sandbox for dynamic data analysis</div>
   </td>
@@ -213,6 +213,9 @@ Functions</h2></td></tr>
 <tr class="memitem:a4a99254395042511ab1dfd81cbde4159"><td class="memItemLeft" align="right" valign="top"><a class="el" href="luasandbox_8h.html#a1fe1b28ef15a5cc442f06c26c2eae3cc">LSB_EXPORT</a> void *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="luasandbox_8h.html#a4a99254395042511ab1dfd81cbde4159">lsb_get_parent</a> (<a class="el" href="luasandbox_8h.html#ad2faa95e9a2ada80510c0d2942862c6e">lsb_lua_sandbox</a> *lsb)</td></tr>
 <tr class="memdesc:a4a99254395042511ab1dfd81cbde4159"><td class="mdescLeft">&#160;</td><td class="mdescRight">Access the parent pointer stored in the sandbox.  <a href="#a4a99254395042511ab1dfd81cbde4159">More...</a><br /></td></tr>
 <tr class="separator:a4a99254395042511ab1dfd81cbde4159"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab423c2442e9dfe2086279f356ee9b45f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="luasandbox_8h.html#a1fe1b28ef15a5cc442f06c26c2eae3cc">LSB_EXPORT</a> const <a class="el" href="structlsb__logger.html">lsb_logger</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="luasandbox_8h.html#ab423c2442e9dfe2086279f356ee9b45f">lsb_get_logger</a> (<a class="el" href="luasandbox_8h.html#ad2faa95e9a2ada80510c0d2942862c6e">lsb_lua_sandbox</a> *lsb)</td></tr>
+<tr class="memdesc:ab423c2442e9dfe2086279f356ee9b45f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Access the logger struct stored in the sandbox.  <a href="#ab423c2442e9dfe2086279f356ee9b45f">More...</a><br /></td></tr>
+<tr class="separator:ab423c2442e9dfe2086279f356ee9b45f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aefa569b319d920b134f8936812d71b50"><td class="memItemLeft" align="right" valign="top"><a class="el" href="luasandbox_8h.html#a1fe1b28ef15a5cc442f06c26c2eae3cc">LSB_EXPORT</a> void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="luasandbox_8h.html#aefa569b319d920b134f8936812d71b50">lsb_add_function</a> (<a class="el" href="luasandbox_8h.html#ad2faa95e9a2ada80510c0d2942862c6e">lsb_lua_sandbox</a> *lsb, <a class="el" href="lua_8h.html#a878b7e392e78661a374cf1c3073029b9">lua_CFunction</a> func, const char *func_name)</td></tr>
 <tr class="memdesc:aefa569b319d920b134f8936812d71b50"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a CFunction for use by the Sandbox.  <a href="#aefa569b319d920b134f8936812d71b50">More...</a><br /></td></tr>
 <tr class="separator:aefa569b319d920b134f8936812d71b50"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -624,6 +627,32 @@ Variables</h2></td></tr>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>const char* error message </dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="ab423c2442e9dfe2086279f356ee9b45f"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="luasandbox_8h.html#a1fe1b28ef15a5cc442f06c26c2eae3cc">LSB_EXPORT</a> const <a class="el" href="structlsb__logger.html">lsb_logger</a>* lsb_get_logger </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="luasandbox_8h.html#ad2faa95e9a2ada80510c0d2942862c6e">lsb_lua_sandbox</a> *&#160;</td>
+          <td class="paramname"><em>lsb</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Access the logger struct stored in the sandbox. </p>
+<p>The logger callback is only available to modules in debug mode (same as print).</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">lsb</td><td>Pointer to the sandbox.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd><a class="el" href="structlsb__logger.html">lsb_logger</a> Pointer to the logger struct </dd></dl>
 
 </div>
 </div>

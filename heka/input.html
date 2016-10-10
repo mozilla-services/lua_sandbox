@@ -46,7 +46,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
   <link rel="stylesheet" href="/lua_sandbox/docs.css" type="text/css" />
 </head>
 <body>
-<div id="title">Lua Sandbox Library (1.1.0)<hr/></div>
+<div id="title">Lua Sandbox Library (1.2.0)<hr/></div>
 <div class="menu">
         <ul>
             <li><a href="/lua_sandbox/index.html">Overview</a></li>
@@ -175,7 +175,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <li>none - throws an error on failure</li>
 </ul>
 <h5 id="read_message">read_message</h5>
-<p>Provides access to the Heka message data within the reader object.</p>
+<p>Provides access to the Heka message data within the reader object. The zeroCopy flag is not accepted here.</p>
 <div class="sourceCode"><pre class="sourceCode lua"><code class="sourceCode lua"><span class="kw">local</span> ts <span class="ot">=</span> hsr:read_message<span class="ot">(</span><span class="st">&quot;Timestamp&quot;</span><span class="ot">)</span></code></pre></div>
 <p>See <a href="analysis.html#read_message">read_message</a> for details.</p>
 <h2 id="modes-of-operation">Modes of Operation</h2>
