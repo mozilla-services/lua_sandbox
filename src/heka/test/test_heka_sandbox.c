@@ -716,7 +716,7 @@ static char* test_read_message_zc()
   mu_assert(lsb_decode_heka_message(&m, pb, sizeof(pb) - 1, &logger), "failed");
 
   lsb_heka_sandbox *hsb;
-  hsb = lsb_heka_create_analysis(NULL, "lua/read_message_zc.lua", NULL, NULL, &logger, aim1);
+  hsb = lsb_heka_create_analysis(NULL, "lua/read_message_zc.lua", NULL, "Hostname = 'ubuntu'", &logger, aim1);
   mu_assert(hsb, "lsb_heka_create_analysis failed");
 
   lsb_add_function(hsb->lsb, rm_zc, "read_message_zc");
