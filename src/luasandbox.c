@@ -432,13 +432,6 @@ lsb_lua_sandbox* lsb_create(void *parent,
     return NULL;
   }
 
-  if (!lsb_set_tz(NULL)) {
-    if (logger && logger->cb) {
-      logger->cb(logger->context, __func__, 3, "fail to set the TZ to UTC");
-    }
-    return NULL;
-  }
-
   set_random_seed();
 
   lsb_lua_sandbox *lsb = calloc(1, sizeof(*lsb));
