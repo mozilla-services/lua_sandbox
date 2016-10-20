@@ -198,6 +198,14 @@ static int inject_message_input(lua_State *lua)
     output.len = 0;
     output.s = lsb_get_output(lsb, &output.len);
     break;
+  case LUA_TNIL:
+    if (lua_isnoneornil(lua, 2)) {
+      return luaL_error(lua, "%s() message cannot be nil without a checkpoint"
+                             " update", im_func_name);
+    }
+    output.len = 0;
+    output.s = NULL;
+    break;
   default:
     return luaL_error(lua, "%s() unsupported message type: %s",
                       im_func_name, lua_typename(lua, t));

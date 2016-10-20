@@ -591,7 +591,7 @@ static char* test_im_input()
                               "Logger = 'iim'\n",
                               &logger, iim);
   lsb_heka_stats stats = lsb_heka_get_stats(hsb);
-  mu_assert(6 == stats.im_cnt, "received %llu", stats.im_cnt);
+  mu_assert(8 == stats.im_cnt, "received %llu", stats.im_cnt);
   mu_assert(332 == stats.im_bytes, "received %llu", stats.im_bytes);
   mu_assert(hsb, "lsb_heka_create_input failed");
   e = lsb_heka_destroy_sandbox(hsb);

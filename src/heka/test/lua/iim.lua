@@ -11,12 +11,14 @@ local msgs = {
     {{Timestamp = 1, Uuid = "00000000-0000-0000-0000-000000000000"}, nil},
     {{Timestamp = 2, Uuid = "00000000-0000-0000-0000-000000000000", Logger = "logger", Hostname = "hostname", Type = "type", Payload = "payload", EnvVersion = "envversion", Pid = 99, Severity = 5}, 99},
     {{Timestamp = 3, Uuid = "00000000-0000-0000-0000-000000000000", Fields = {number=1,numbers={value={1,2,3}, representation="count"},string="string",strings={"s1","s2","s3"}, bool=true, bools={true,false,false}}}, "foo.log:123"},
+    {nil, "foo.log:123"},
+    {nil, 123},
 }
 
 local err_msgs = {
     {msg = {Timestamp = 1e9, Fields = {counts={2,"ten",4}}}, err = "inject_message() failed: array has mixed types"},
     {msg = {Timestamp = 1e9, Fields = {counts={}}}, err = "inject_message() failed: unsupported type: nil"},
-    {err = "inject_message() unsupported message type: nil"},
+    {err = "inject_message() message cannot be nil without a checkpoint update"},
     {msg = {Timestamp = 1e9, Fields = {counts={{1},{2}}}}, err = "inject_message() failed: unsupported array type: table"},
     {msg = {Timestamp = 1e9, Fields = {counts={value="s", value_type=2}}}, err = "inject_message() failed: invalid string value_type: 2"},
     {msg = {Timestamp = 1e9, Fields = {counts={value="s", value_type=3}}}, err = "inject_message() failed: invalid string value_type: 3"},
