@@ -243,7 +243,7 @@ static const char* process_fields(lua_State *lua, const char *p, const char *e)
  * Retrieve the string value for a Lua table entry (the table should be on top
  * of the stack).  If the entry is not found or not a string nothing is encoded.
  *
- * @param lsb  Pointer to the sandbox.
+ * @param lua Pointer to the lua_State.
  * @param ob  Pointer to the output data buffer.
  * @param tag Field identifier.
  * @param name Key used for the Lua table entry lookup.
@@ -252,17 +252,17 @@ static const char* process_fields(lua_State *lua, const char *p, const char *e)
  * @return lsb_err_value NULL on success error message on failure
  */
 static lsb_err_value
-encode_string(lsb_lua_sandbox *lsb, lsb_output_buffer *ob, char tag,
-              const char *name, int index)
+encode_string(lua_State *lua, lsb_output_buffer *ob, char tag, const char *name,
+              int index)
 {
   lsb_err_value ret = NULL;
-  lua_getfield(lsb->lua, index, name);
-  if (lua_isstring(lsb->lua, -1)) {
+  lua_getfield(lua, index, name);
+  if (lua_isstring(lua, -1)) {
     size_t len;
-    const char *s = lua_tolstring(lsb->lua, -1, &len);
+    const char *s = lua_tolstring(lua, -1, &len);
     ret = lsb_pb_write_string(ob, tag, s, len);
   }
-  lua_pop(lsb->lua, 1);
+  lua_pop(lua, 1);
   return ret;
 }
 
@@ -272,7 +272,7 @@ encode_string(lsb_lua_sandbox *lsb, lsb_output_buffer *ob, char tag,
  * of the stack).  If the entry is not found or not a number nothing is encoded,
  * otherwise the number is varint encoded.
  *
- * @param lsb  Pointer to the sandbox.
+ * @param lua Pointer to the lua_State.
  * @param ob  Pointer to the output data buffer.
  * @param tag Field identifier.
  * @param name Key used for the Lua table entry lookup.
@@ -281,17 +281,17 @@ encode_string(lsb_lua_sandbox *lsb, lsb_output_buffer *ob, char tag,
  * @return lsb_err_value NULL on success error message on failure
  */
 static lsb_err_value
-encode_int(lsb_lua_sandbox *lsb, lsb_output_buffer *ob, char tag,
-           const char *name, int index)
+encode_int(lua_State *lua, lsb_output_buffer *ob, char tag, const char *name,
+           int index)
 {
   lsb_err_value ret = NULL;
-  lua_getfield(lsb->lua, index, name);
-  if (lua_isnumber(lsb->lua, -1)) {
-    unsigned long long i = (unsigned long long)lua_tonumber(lsb->lua, -1);
+  lua_getfield(lua, index, name);
+  if (lua_isnumber(lua, -1)) {
+    unsigned long long i = (unsigned long long)lua_tonumber(lua, -1);
     ret = lsb_pb_write_key(ob, tag, LSB_PB_WT_VARINT);
     if (!ret) ret = lsb_pb_write_varint(ob, i);
   }
-  lua_pop(lsb->lua, 1);
+  lua_pop(lua, 1);
   return ret;
 }
 
@@ -300,6 +300,7 @@ encode_int(lsb_lua_sandbox *lsb, lsb_output_buffer *ob, char tag,
  * Encodes the field value.
  *
  * @param lsb  Pointer to the sandbox.
+ * @param lua Pointer to the lua_State.
  * @param ob  Pointer to the output data buffer.
  * @param first Boolean indicator used to add addition protobuf data in the
  *              correct order.
@@ -309,14 +310,15 @@ encode_int(lsb_lua_sandbox *lsb, lsb_output_buffer *ob, char tag,
  * @return lsb_err_value NULL on success error message on failure
  */
 static lsb_err_value
-encode_field_value(lsb_lua_sandbox *lsb, lsb_output_buffer *ob, int first,
-                   const char *representation, int value_type);
+encode_field_value(lsb_lua_sandbox *lsb, lua_State *lua, lsb_output_buffer *ob,
+                   int first, const char *representation, int value_type);
 
 
 /**
  * Encodes a field that has an array of values.
  *
  * @param lsb  Pointer to the sandbox.
+ * @param lua Pointer to the lua_State.
  * @param ob  Pointer to the output data buffer.
  * @param t Lua type of the array values.
  * @param representation String representation of the field i.e., "ms"
@@ -324,27 +326,27 @@ encode_field_value(lsb_lua_sandbox *lsb, lsb_output_buffer *ob, int first,
  * @return lsb_err_value NULL on success error message on failure
  */
 static lsb_err_value
-encode_field_array(lsb_lua_sandbox *lsb, lsb_output_buffer *ob, int t,
-                   const char *representation, int value_type)
+encode_field_array(lsb_lua_sandbox *lsb, lua_State *lua, lsb_output_buffer *ob,
+                   int t, const char *representation, int value_type)
 {
   lsb_err_value ret = NULL;
-  int first = (int)lua_objlen(lsb->lua, -1);
+  int first = (int)lua_objlen(lua, -1);
   int multiple = first > 1 ? first : 0;
   size_t len_pos = 0;
-  lua_checkstack(lsb->lua, 2);
-  lua_pushnil(lsb->lua);
-  while (!ret && lua_next(lsb->lua, -2) != 0) {
-    if (lua_type(lsb->lua, -1) != t) {
+  lua_checkstack(lua, 2);
+  lua_pushnil(lua);
+  while (!ret && lua_next(lua, -2) != 0) {
+    if (lua_type(lua, -1) != t) {
       snprintf(lsb->error_message, LSB_ERROR_SIZE, "array has mixed types");
       return LSB_ERR_HEKA_INPUT;
     }
-    ret = encode_field_value(lsb, ob, first, representation, value_type);
+    ret = encode_field_value(lsb, lua, ob, first, representation, value_type);
     if (first) {
       len_pos = ob->pos;
       first = 0;
     }
-    lua_pop(lsb->lua, 1); // Remove the value leaving the key on top for
-                          // the next interation.
+    lua_pop(lua, 1); // Remove the value leaving the key on top for
+                     // the next interation.
   }
   if (!ret && multiple && value_type == LSB_PB_INTEGER) {
     // fix up the varint packed length
@@ -370,41 +372,43 @@ encode_field_array(lsb_lua_sandbox *lsb, lsb_output_buffer *ob, int t,
  * Encodes a field that contains metadata in addition to its value.
  *
  * @param lsb  Pointer to the sandbox.
+ * @param lua Pointer to the lua_State.
  * @param ob  Pointer to the output data buffer.
  *
  * @return lsb_err_value NULL on success error message on failure
  */
 static lsb_err_value
-encode_field_object(lsb_lua_sandbox *lsb, lsb_output_buffer *ob)
+encode_field_object(lsb_lua_sandbox *lsb, lua_State *lua, lsb_output_buffer *ob)
 {
   const char *representation = NULL;
-  lua_getfield(lsb->lua, -1, "representation");
-  if (lua_isstring(lsb->lua, -1)) {
-    representation = lua_tostring(lsb->lua, -1);
+  lua_getfield(lua, -1, "representation");
+  if (lua_isstring(lua, -1)) {
+    representation = lua_tostring(lua, -1);
   }
 
   int value_type = -1;
-  lua_getfield(lsb->lua, -2, "value_type");
-  if (lua_isnumber(lsb->lua, -1)) {
-    value_type = (int)lua_tointeger(lsb->lua, -1);
+  lua_getfield(lua, -2, "value_type");
+  if (lua_isnumber(lua, -1)) {
+    value_type = (int)lua_tointeger(lua, -1);
   }
 
-  lua_getfield(lsb->lua, -3, "value");
-  lsb_err_value ret = encode_field_value(lsb, ob, 1, representation, value_type);
-  lua_pop(lsb->lua, 3); // remove representation, value_type and  value
+  lua_getfield(lua, -3, "value");
+  lsb_err_value ret = encode_field_value(lsb, lua, ob, 1, representation,
+                                         value_type);
+  lua_pop(lua, 3); // remove representation, value_type and  value
   return ret;
 }
 
 
 static lsb_err_value
-encode_field_value(lsb_lua_sandbox *lsb, lsb_output_buffer *ob, int first,
-                   const char *representation, int value_type)
+encode_field_value(lsb_lua_sandbox *lsb, lua_State *lua, lsb_output_buffer *ob,
+                   int first, const char *representation, int value_type)
 {
   lsb_err_value ret = NULL;
   size_t len;
   const char *s;
 
-  int t = lua_type(lsb->lua, -1);
+  int t = lua_type(lua, -1);
   switch (t) {
   case LUA_TSTRING:
     switch (value_type) {
@@ -431,7 +435,7 @@ encode_field_value(lsb_lua_sandbox *lsb, lsb_output_buffer *ob, int first,
         if (ret) return ret;
       }
     }
-    s = lua_tolstring(lsb->lua, -1, &len);
+    s = lua_tolstring(lua, -1, &len);
     if (value_type == LSB_PB_BYTES) {
       ret = lsb_pb_write_string(ob, LSB_PB_VALUE_BYTES, s, len);
       if (ret) return ret;
@@ -481,9 +485,9 @@ encode_field_value(lsb_lua_sandbox *lsb, lsb_output_buffer *ob, int first,
       }
     }
     if (value_type == LSB_PB_INTEGER) {
-      ret = lsb_pb_write_varint(ob, lua_tointeger(lsb->lua, -1));
+      ret = lsb_pb_write_varint(ob, lua_tointeger(lua, -1));
     } else {
-      ret = lsb_pb_write_double(ob, lua_tonumber(lsb->lua, -1));
+      ret = lsb_pb_write_double(ob, lua_tonumber(lua, -1));
     }
     if (ret) return ret;
     break;
@@ -512,34 +516,34 @@ encode_field_value(lsb_lua_sandbox *lsb, lsb_output_buffer *ob, int first,
       }
       if (ret) return ret;
     }
-    ret = lsb_pb_write_bool(ob, lua_toboolean(lsb->lua, -1));
+    ret = lsb_pb_write_bool(ob, lua_toboolean(lua, -1));
     break;
 
   case LUA_TTABLE:
     {
-      lua_rawgeti(lsb->lua, -1, 1);
-      int t = lua_type(lsb->lua, -1);
-      lua_pop(lsb->lua, 1); // remove the array test value
+      lua_rawgeti(lua, -1, 1);
+      int t = lua_type(lua, -1);
+      lua_pop(lua, 1); // remove the array test value
       switch (t) {
       case LUA_TNIL:
-        ret = encode_field_object(lsb, ob);
+        ret = encode_field_object(lsb, lua, ob);
         break;
       case LUA_TNUMBER:
       case LUA_TSTRING:
       case LUA_TBOOLEAN:
-        ret = encode_field_array(lsb, ob, t, representation, value_type);
+        ret = encode_field_array(lsb, lua, ob, t, representation, value_type);
         break;
       default:
         snprintf(lsb->error_message, LSB_ERROR_SIZE,
-                 "unsupported array type: %s", lua_typename(lsb->lua, t));
+                 "unsupported array type: %s", lua_typename(lua, t));
         return LSB_ERR_LUA;
       }
     }
     break;
 
   case LUA_TLIGHTUSERDATA:
-    lua_getfield(lsb->lua, -4, "userdata");
-    if (lua_type(lsb->lua, -1) != LUA_TUSERDATA) {
+    lua_getfield(lua, -4, "userdata");
+    if (lua_type(lua, -1) != LUA_TUSERDATA) {
       snprintf(lsb->error_message, LSB_ERROR_SIZE,
                "a lightuserdata output must also specify a userdata value");
       return LSB_ERR_LUA;
@@ -548,7 +552,7 @@ encode_field_value(lsb_lua_sandbox *lsb, lsb_output_buffer *ob, int first,
 
   case LUA_TUSERDATA:
     {
-      lua_CFunction fp = lsb_get_output_function(lsb->lua, -1);
+      lua_CFunction fp = lsb_get_output_function(lua, -1);
       size_t len_pos = 0;
       if (!fp) {
         snprintf(lsb->error_message, LSB_ERROR_SIZE,
@@ -577,9 +581,9 @@ encode_field_value(lsb_lua_sandbox *lsb, lsb_output_buffer *ob, int first,
       ret = lsb_pb_write_varint(ob, 0);  // length tbd later
       if (ret) return ret;
 
-      lua_pushlightuserdata(lsb->lua, ob);
-      int result = fp(lsb->lua);
-      lua_pop(lsb->lua, 1); // remove output function
+      lua_pushlightuserdata(lua, ob);
+      int result = fp(lua);
+      lua_pop(lua, 1); // remove output function
       if (result) {
         snprintf(lsb->error_message, LSB_ERROR_SIZE,
                  "userdata output callback failed: %d", result);
@@ -587,12 +591,12 @@ encode_field_value(lsb_lua_sandbox *lsb, lsb_output_buffer *ob, int first,
       }
       ret = lsb_pb_update_field_length(ob, len_pos);
     }
-    if (t == LUA_TLIGHTUSERDATA) lua_pop(lsb->lua, 1); // remove the userdata
+    if (t == LUA_TLIGHTUSERDATA) lua_pop(lua, 1); // remove the userdata
     break;
 
   default:
     snprintf(lsb->error_message, LSB_ERROR_SIZE, "unsupported type: %s",
-             lua_typename(lsb->lua, t));
+             lua_typename(lua, t));
     return LSB_ERR_LUA;
   }
   return ret;
@@ -604,6 +608,7 @@ encode_field_value(lsb_lua_sandbox *lsb, lsb_output_buffer *ob, int first,
  * message fields.
  *
  * @param lsb  Pointer to the sandbox.
+ * @param lua Pointer to the lua_State
  * @param ob  Pointer to the output data buffer.
  * @param tag Field identifier.
  * @param name Key used for the Lua table entry lookup.
@@ -612,18 +617,18 @@ encode_field_value(lsb_lua_sandbox *lsb, lsb_output_buffer *ob, int first,
  * @return lsb_err_value NULL on success error message on failure
  */
 static lsb_err_value
-encode_fields(lsb_lua_sandbox *lsb, lsb_output_buffer *ob, char tag,
-              const char *name, int index)
+encode_fields(lsb_lua_sandbox *lsb, lua_State *lua, lsb_output_buffer *ob,
+              char tag, const char *name, int index)
 {
   lsb_err_value ret = NULL;
-  lua_getfield(lsb->lua, index, name);
-  if (!lua_istable(lsb->lua, -1)) {
+  lua_getfield(lua, index, name);
+  if (!lua_istable(lua, -1)) {
     return ret;
   }
 
-  lua_rawgeti(lsb->lua, -1, 1); // test for the array notation
+  lua_rawgeti(lua, -1, 1); // test for the array notation
   size_t len_pos, len;
-  if (lua_istable(lsb->lua, -1)) {
+  if (lua_istable(lua, -1)) {
     int i = 1;
     do {
       ret = lsb_pb_write_key(ob, tag, LSB_PB_WT_LENGTH);
@@ -633,30 +638,30 @@ encode_fields(lsb_lua_sandbox *lsb, lsb_output_buffer *ob, char tag,
       ret = lsb_pb_write_varint(ob, 0);  // length tbd later
       if (ret) return ret;
 
-      lua_getfield(lsb->lua, -1, "name");
-      if (lua_isstring(lsb->lua, -1)) {
-        const char *s = lua_tolstring(lsb->lua, -1, &len);
+      lua_getfield(lua, -1, "name");
+      if (lua_isstring(lua, -1)) {
+        const char *s = lua_tolstring(lua, -1, &len);
         ret = lsb_pb_write_string(ob, LSB_PB_NAME, s, len);
       } else {
         snprintf(lsb->error_message, LSB_ERROR_SIZE,
                  "field name must be a string");
         ret = LSB_ERR_HEKA_INPUT;
       }
-      lua_pop(lsb->lua, 1); // remove the name
+      lua_pop(lua, 1); // remove the name
       if (ret) return ret;
 
-      ret = encode_field_object(lsb, ob);
+      ret = encode_field_object(lsb, lua, ob);
       if (!ret) ret = lsb_pb_update_field_length(ob, len_pos);
       if (ret) return ret;
 
-      lua_pop(lsb->lua, 1); // remove the current field object
-      lua_rawgeti(lsb->lua, -1, ++i); // grab the next field object
-    } while (!ret && !lua_isnil(lsb->lua, -1));
+      lua_pop(lua, 1); // remove the current field object
+      lua_rawgeti(lua, -1, ++i); // grab the next field object
+    } while (!ret && !lua_isnil(lua, -1));
   } else {
-    lua_pop(lsb->lua, 1); // remove the array test value
-    lua_checkstack(lsb->lua, 2);
-    lua_pushnil(lsb->lua);
-    while (lua_next(lsb->lua, -2) != 0) {
+    lua_pop(lua, 1); // remove the array test value
+    lua_checkstack(lua, 2);
+    lua_pushnil(lua);
+    while (lua_next(lua, -2) != 0) {
       ret = lsb_pb_write_key(ob, tag, LSB_PB_WT_LENGTH);
       if (ret) return ret;
 
@@ -664,8 +669,8 @@ encode_fields(lsb_lua_sandbox *lsb, lsb_output_buffer *ob, char tag,
       ret = lsb_pb_write_varint(ob, 0);  // length tbd later
       if (ret) return ret;
 
-      if (lua_isstring(lsb->lua, -2)) {
-        const char *s = lua_tolstring(lsb->lua, -2, &len);
+      if (lua_isstring(lua, -2)) {
+        const char *s = lua_tolstring(lua, -2, &len);
         ret = lsb_pb_write_string(ob, LSB_PB_NAME, s, len);
       } else {
         snprintf(lsb->error_message, LSB_ERROR_SIZE,
@@ -674,15 +679,15 @@ encode_fields(lsb_lua_sandbox *lsb, lsb_output_buffer *ob, char tag,
       }
       if (ret) return ret;
 
-      ret = encode_field_value(lsb, ob, 1, NULL, -1);
+      ret = encode_field_value(lsb, lua, ob, 1, NULL, -1);
       if (!ret) ret = lsb_pb_update_field_length(ob, len_pos);
       if (ret) return ret;
 
-      lua_pop(lsb->lua, 1); // Remove the value leaving the key on top for
-                            // the next interation.
+      lua_pop(lua, 1); // Remove the value leaving the key on top for
+                       // the next interation.
     }
   }
-  lua_pop(lsb->lua, 1); // remove the fields table
+  lua_pop(lua, 1); // remove the fields table
   return ret;
 }
 
@@ -854,7 +859,7 @@ int heka_encode_message(lua_State *lua)
   if (!lsb) return luaL_error(lua, "encode_message() invalid " LSB_THIS_PTR);
 
   lsb->output.pos = 0;
-  lsb_err_value ret = heka_encode_message_table(lsb, 1);
+  lsb_err_value ret = heka_encode_message_table(lsb, lua, 1);
   if (ret) {
     const char *err = lsb_get_error(lsb);
     if (strlen(err) == 0) err = ret;
@@ -887,51 +892,52 @@ int heka_encode_message(lua_State *lua)
 }
 
 
-lsb_err_value heka_encode_message_table(lsb_lua_sandbox *lsb, int idx)
+lsb_err_value
+heka_encode_message_table(lsb_lua_sandbox *lsb, lua_State *lua, int idx)
 {
   lsb_err_value ret = NULL;
   lsb_output_buffer *ob = &lsb->output;
   ob->pos = 0;
 
   // use existing or create a type 4 uuid
-  lua_getfield(lsb->lua, idx, LSB_UUID);
+  lua_getfield(lua, idx, LSB_UUID);
   size_t len;
-  const char *uuid = lua_tolstring(lsb->lua, -1, &len);
+  const char *uuid = lua_tolstring(lua, -1, &len);
   ret = lsb_write_heka_uuid(ob, uuid, len);
-  lua_pop(lsb->lua, 1); // remove uuid
+  lua_pop(lua, 1); // remove uuid
   if (ret) return ret;
 
   // use existing or create a timestamp
-  lua_getfield(lsb->lua, idx, LSB_TIMESTAMP);
+  lua_getfield(lua, idx, LSB_TIMESTAMP);
   long long ts;
-  if (lua_isnumber(lsb->lua, -1)) {
-    ts = (long long)lua_tonumber(lsb->lua, -1);
+  if (lua_isnumber(lua, -1)) {
+    ts = (long long)lua_tonumber(lua, -1);
   } else {
     ts = lsb_get_timestamp();
   }
-  lua_pop(lsb->lua, 1); // remove timestamp
+  lua_pop(lua, 1); // remove timestamp
 
   lsb_heka_sandbox *hsb = lsb_get_parent(lsb);
   if (hsb->restricted_headers) {
-    lua_pushstring(lsb->lua, hsb->name);
-    lua_setfield(lsb->lua, idx, LSB_LOGGER);
-    lua_pushstring(lsb->lua, hsb->hostname);
-    lua_setfield(lsb->lua, idx, LSB_HOSTNAME);
+    lua_pushstring(lua, hsb->name);
+    lua_setfield(lua, idx, LSB_LOGGER);
+    lua_pushstring(lua, hsb->hostname);
+    lua_setfield(lua, idx, LSB_HOSTNAME);
   } else {
-    set_missing_headers(lsb->lua, idx, hsb);
+    set_missing_headers(lua, idx, hsb);
   }
 
   ret = lsb_pb_write_key(ob, LSB_PB_TIMESTAMP, LSB_PB_WT_VARINT);
   if (!ret) ret = lsb_pb_write_varint(ob, ts);
-  if (!ret) ret = encode_string(lsb, ob, LSB_PB_TYPE, LSB_TYPE, idx);
-  if (!ret) ret = encode_string(lsb, ob, LSB_PB_LOGGER, LSB_LOGGER, idx);
-  if (!ret) ret = encode_int(lsb, ob, LSB_PB_SEVERITY, LSB_SEVERITY, idx);
-  if (!ret) ret = encode_string(lsb, ob, LSB_PB_PAYLOAD, LSB_PAYLOAD, idx);
-  if (!ret) ret = encode_string(lsb, ob, LSB_PB_ENV_VERSION, LSB_ENV_VERSION,
+  if (!ret) ret = encode_string(lua, ob, LSB_PB_TYPE, LSB_TYPE, idx);
+  if (!ret) ret = encode_string(lua, ob, LSB_PB_LOGGER, LSB_LOGGER, idx);
+  if (!ret) ret = encode_int(lua, ob, LSB_PB_SEVERITY, LSB_SEVERITY, idx);
+  if (!ret) ret = encode_string(lua, ob, LSB_PB_PAYLOAD, LSB_PAYLOAD, idx);
+  if (!ret) ret = encode_string(lua, ob, LSB_PB_ENV_VERSION, LSB_ENV_VERSION,
                                 idx);
-  if (!ret) ret = encode_int(lsb, ob, LSB_PB_PID, LSB_PID, idx);
-  if (!ret) ret = encode_string(lsb, ob, LSB_PB_HOSTNAME, LSB_HOSTNAME, idx);
-  if (!ret) ret = encode_fields(lsb, ob, LSB_PB_FIELDS, LSB_FIELDS, idx);
+  if (!ret) ret = encode_int(lua, ob, LSB_PB_PID, LSB_PID, idx);
+  if (!ret) ret = encode_string(lua, ob, LSB_PB_HOSTNAME, LSB_HOSTNAME, idx);
+  if (!ret) ret = encode_fields(lsb, lua, ob, LSB_PB_FIELDS, LSB_FIELDS, idx);
   if (!ret) ret = lsb_expand_output_buffer(ob, 1);
   ob->buf[ob->pos] = 0; // prevent possible overrun if treated as a string
   return ret;

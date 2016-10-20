@@ -190,7 +190,7 @@ static int inject_message_input(lua_State *lua)
     }
     break;
   case LUA_TTABLE:
-    if (heka_encode_message_table(lsb, 1)) {
+    if (heka_encode_message_table(lsb, lua, 1)) {
       const char *err = lsb_get_error(lsb);
       if (strlen(err) == 0) err = "exceeded output_limit";
       return luaL_error(lua, "%s() failed: %s", im_func_name, err);
@@ -201,7 +201,7 @@ static int inject_message_input(lua_State *lua)
   case LUA_TNIL:
     if (lua_isnoneornil(lua, 2)) {
       return luaL_error(lua, "%s() message cannot be nil without a checkpoint"
-                             " update", im_func_name);
+                        " update", im_func_name);
     }
     output.len = 0;
     output.s = NULL;
@@ -230,7 +230,7 @@ static int inject_message_analysis(lua_State *lua)
   lua_pop(lua, 1); // remove this ptr
   if (!lsb) return luaL_error(lua, "%s() invalid " LSB_THIS_PTR, im_func_name);
 
-  if (heka_encode_message_table(lsb, 1)) {
+  if (heka_encode_message_table(lsb, lua, 1)) {
     return luaL_error(lua, "%s() failed: %s", im_func_name, lsb_get_error(lsb));
   }
 
@@ -273,7 +273,7 @@ static int inject_payload(lua_State *lua)
   }
 
   if (n > 2) {
-    lsb_output(lsb, 3, n, 1);
+    lsb_output_coroutine(lsb, lua, 3, n, 1);
     lua_pop(lua, n - 2);
   }
   size_t len = 0;
