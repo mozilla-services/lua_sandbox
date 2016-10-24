@@ -46,7 +46,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
   <link rel="stylesheet" href="/lua_sandbox/docs.css" type="text/css" />
 </head>
 <body>
-<div id="title">Lua Sandbox Library (1.2.0)<hr/></div>
+<div id="title">Lua Sandbox Library (1.2.1)<hr/></div>
 <div class="menu">
         <ul>
             <li><a href="/lua_sandbox/index.html">Overview</a></li>
@@ -132,7 +132,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <p>Sends a Heka protocol buffer message into the host. For the Heka message table argument <code>Logger</code> and <code>Hostname</code> are restricted header values. An override configuration option is provided <code>restricted_headers</code>; when true the headers are always set to the configuration values; when false (default) the headers are set to the values provide in the message table, if no value is provided it defaults to the appropriate configuration value.</p>
 <p><em>Arguments</em></p>
 <ul>
-<li>msg (<a href="message.html">Heka message table</a>, <a href="#heka-stream-reader-methods">Heka stream reader</a> or Heka protobuf string)</li>
+<li>msg (<a href="message.html">Heka message table</a>, <a href="#heka-stream-reader-methods">Heka stream reader</a>, Heka protobuf string, or nil (if only updating the checkpoint))</li>
 <li>checkpoint (optional: number, string) - checkpoint to be returned in the <code>process_message</code> call</li>
 </ul>
 <p><em>Return</em></p>

@@ -24,7 +24,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">luasandbox
-   &#160;<span id="projectnumber">1.2.0</span>
+   &#160;<span id="projectnumber">1.2.1</span>
    </div>
    <div id="projectbrief">Generic Lua sandbox for dynamic data analysis</div>
   </td>
@@ -313,7 +313,7 @@ Variables</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>0 on success </dd></dl>
 
-<p>Definition at line <a class="el" href="heka_2sandbox_8h_source.html#l00104">104</a> of file <a class="el" href="heka_2sandbox_8h_source.html">sandbox.h</a>.</p>
+<p>Definition at line <a class="el" href="heka_2sandbox_8h_source.html#l00105">105</a> of file <a class="el" href="heka_2sandbox_8h_source.html">sandbox.h</a>.</p>
 
 </div>
 </div>
@@ -328,7 +328,7 @@ Variables</h2></td></tr>
 </div><div class="memdoc">
 
 <p>inject_message callback function provided by the host. </p>
-<p>Only one (or neither) of the checkpoint values will be set in a call. Numeric checkpoints can have a measurable performance benefit but are not always applicable so both options are provided to support various types of input plugins. This function can be called with a NULL pb pointer by the 'is_running' API; it should be treated as a no-op and used as a synchronization point to collect statistics and communicate shutdown status.</p>
+<p>Only one (or neither) of the checkpoint values will be set in a call. Numeric checkpoints can have a measurable performance benefit but are not always applicable so both options are provided to support various types of input plugins. This function can be called with a NULL pb pointer by the 'is_running' API or if only a checkpoint update is being performed; it should be treated as a no-op and used as a synchronization point to collect statistics and communicate shutdown status.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">parent</td><td>Opaque pointer the host object owning this sandbox </td></tr>
@@ -341,7 +341,7 @@ Variables</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>0 on success </dd></dl>
 
-<p>Definition at line <a class="el" href="heka_2sandbox_8h_source.html#l00089">89</a> of file <a class="el" href="heka_2sandbox_8h_source.html">sandbox.h</a>.</p>
+<p>Definition at line <a class="el" href="heka_2sandbox_8h_source.html#l00090">90</a> of file <a class="el" href="heka_2sandbox_8h_source.html">sandbox.h</a>.</p>
 
 </div>
 </div>
@@ -391,7 +391,7 @@ Variables</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>0 on success </dd></dl>
 
-<p>Definition at line <a class="el" href="heka_2sandbox_8h_source.html#l00117">117</a> of file <a class="el" href="heka_2sandbox_8h_source.html">sandbox.h</a>.</p>
+<p>Definition at line <a class="el" href="heka_2sandbox_8h_source.html#l00118">118</a> of file <a class="el" href="heka_2sandbox_8h_source.html">sandbox.h</a>.</p>
 
 </div>
 </div>
