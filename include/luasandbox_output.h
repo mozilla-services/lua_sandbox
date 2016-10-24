@@ -14,7 +14,8 @@
 #include "luasandbox.h"
 
 #ifdef __cplusplus
-extern "C" {
+extern "C"
+{
 #endif
 
 #include "luasandbox/lua.h"
@@ -80,6 +81,22 @@ LSB_EXPORT lua_CFunction lsb_get_zero_copy_function(lua_State *lua, int index);
  */
 LSB_EXPORT void
 lsb_output(lsb_lua_sandbox *lsb, int start, int end, int append);
+
+/**
+ * Write an array of variables on the Lua stack to the output buffer. After
+ * adding support for coroutines we need an extra variable to specify the
+ * correct Lua state.
+ *
+ * @param lsb Pointer to the sandbox.
+ * @param lua Pointer the Lua state
+ * @param start Lua stack index of first variable.
+ * @param end Lua stack index of the last variable.
+ * @param append 0 to overwrite the output buffer, 1 to append the output to it
+ *
+ */
+LSB_EXPORT void
+lsb_output_coroutine(lsb_lua_sandbox *lsb, lua_State *lua, int start,
+                     int end, int append);
 
 /**
  * Retrieve the data in the output buffer and reset the buffer. The returned

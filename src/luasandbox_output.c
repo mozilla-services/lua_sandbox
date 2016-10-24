@@ -63,22 +63,29 @@ lua_CFunction lsb_get_zero_copy_function(lua_State *lua, int index)
 
 void lsb_output(lsb_lua_sandbox *lsb, int start, int end, int append)
 {
+  lsb_output_coroutine(lsb, lsb->lua, start, end, append);
+}
+
+
+void lsb_output_coroutine(lsb_lua_sandbox *lsb, lua_State *lua, int start,
+                          int end, int append)
+{
   if (!append) {
     lsb->output.pos = 0;
   }
 
   int result = 0;
   for (int i = start; result == 0 && i <= end; ++i) {
-    switch (lua_type(lsb->lua, i)) {
+    switch (lua_type(lua, i)) {
     case LUA_TNUMBER:
-      if (lsb_outputd(&lsb->output, lua_tonumber(lsb->lua, i))) {
+      if (lsb_outputd(&lsb->output, lua_tonumber(lua, i))) {
         result = 1;
       }
       break;
     case LUA_TSTRING:
       {
         size_t len;
-        const char *s = lua_tolstring(lsb->lua, i, &len);
+        const char *s = lua_tolstring(lua, i, &len);
         if (lsb_outputs(&lsb->output, s, len)) {
           result = 1;
         }
@@ -90,26 +97,26 @@ void lsb_output(lsb_lua_sandbox *lsb, int start, int end, int append)
       }
       break;
     case LUA_TBOOLEAN:
-      if (lsb_outputf(&lsb->output, "%s", lua_toboolean(lsb->lua, i)
-                       ? "true" : "false")) {
+      if (lsb_outputf(&lsb->output, "%s", lua_toboolean(lua, i)
+                      ? "true" : "false")) {
         result = 1;
       }
       break;
     case LUA_TUSERDATA:
       {
-        lua_CFunction fp = lsb_get_output_function(lsb->lua, i);
+        lua_CFunction fp = lsb_get_output_function(lua, i);
         if (!fp) {
-          luaL_argerror(lsb->lua, i, "unknown userdata type");
+          luaL_argerror(lua, i, "unknown userdata type");
           return; // never reaches here but the compiler doesn't know it
         }
-        lua_pushvalue(lsb->lua, i);
-        lua_pushlightuserdata(lsb->lua, &lsb->output);
-        result = fp(lsb->lua);
-        lua_pop(lsb->lua, 2); // remove the copy of the value and the output
+        lua_pushvalue(lua, i);
+        lua_pushlightuserdata(lua, &lsb->output);
+        result = fp(lua);
+        lua_pop(lua, 2); // remove the copy of the value and the output
       }
       break;
     default:
-      luaL_argerror(lsb->lua, i, "unsupported type");
+      luaL_argerror(lua, i, "unsupported type");
       break;
     }
   }
@@ -117,14 +124,14 @@ void lsb_output(lsb_lua_sandbox *lsb, int start, int end, int append)
   if (lsb->usage[LSB_UT_OUTPUT][LSB_US_CURRENT]
       > lsb->usage[LSB_UT_OUTPUT][LSB_US_MAXIMUM]) {
     lsb->usage[LSB_UT_OUTPUT][LSB_US_MAXIMUM] =
-      lsb->usage[LSB_UT_OUTPUT][LSB_US_CURRENT];
+        lsb->usage[LSB_UT_OUTPUT][LSB_US_CURRENT];
   }
 
   if (result != 0) {
     if (lsb->error_message[0] == 0) {
-      luaL_error(lsb->lua, "output_limit exceeded");
+      luaL_error(lua, "output_limit exceeded");
     }
-    luaL_error(lsb->lua, lsb->error_message);
+    luaL_error(lua, lsb->error_message);
   }
 }
 

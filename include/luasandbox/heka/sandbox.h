@@ -74,9 +74,10 @@ LSB_HEKA_EXPORT extern lsb_err_id LSB_ERR_HEKA_INPUT;
  * of the checkpoint values will be set in a call.  Numeric checkpoints can have
  * a measurable performance benefit but are not always applicable so both
  * options are provided to support various types of input plugins. This function
- * can be called with a NULL pb pointer by the 'is_running' API; it should be
- * treated as a no-op and used as a synchronization point to collect statistics
- * and communicate shutdown status.
+ * can be called with a NULL pb pointer by the 'is_running' API or if only a
+ * checkpoint update is being performed; it should be treated as a no-op and
+ * used as a synchronization point to collect statistics and communicate
+ * shutdown status.
  *
  * @param parent Opaque pointer the host object owning this sandbox
  * @param pb Pointer to a Heka protobuf encoded message being injected.

@@ -43,11 +43,13 @@ int heka_encode_message(lua_State *lua);
  * sandbox with heka_encode_message.
  *
  * @param lsb Pointer to the sandbox.
+ * @param lua Pointer to the lua_State.
  * @param idx Lua stack index of the message table.
  *
  * @return lsb_err_value NULL on success error message on failure
  */
-lsb_err_value heka_encode_message_table(lsb_lua_sandbox *lsb, int idx);
+lsb_err_value
+heka_encode_message_table(lsb_lua_sandbox *lsb, lua_State *lua, int idx);
 
 
 /**

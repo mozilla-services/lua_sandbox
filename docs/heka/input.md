@@ -68,15 +68,19 @@ to the values provide in the message table, if no value is provided it defaults
 to the appropriate configuration value.
 
 *Arguments*
-* msg ([Heka message table](message.html), [Heka stream reader](#heka-stream-reader-methods) or Heka protobuf string)
-* checkpoint (optional: number, string) - checkpoint to be returned in the `process_message` call
+* msg ([Heka message table](message.html),
+  [Heka stream reader](#heka-stream-reader-methods),
+  Heka protobuf string,
+  or nil (if only updating the checkpoint))
+* checkpoint (optional: number, string) - checkpoint to be returned in the
+ `process_message` call
 
 *Return*
 * none - throws an error on invalid input
 
 ### create_stream_reader
 Creates a Heka stream reader to enable parsing of a framed Heka protobuf stream
-in a Lua sandbox. See: 
+in a Lua sandbox. See:
 [Example of a Heka protobuf reader](#example-of-a-heka-protobuf-stdin-reader)
 
 *Arguments*
@@ -97,19 +101,23 @@ local found, consumed, need = hsr:find_message(buf)
 ```
 
 *Arguments*
-* buf (string, userdata (FILE*)) - buffer containing a Heka protobuf stream data or a userdate file object
-* decode (bool default: true) - true if the framed message should be protobuf decoded
+* buf (string, userdata (FILE*)) - buffer containing a Heka protobuf stream data
+  or a userdate file object
+* decode (bool default: true) - true if the framed message should be protobuf
+  decoded
 
 *Return*
 * found (bool) - true if a message was found
-* consumed (number) - number of bytes consumed so the offset can be tracked for checkpointing purposes
-* need/read (number) - number of bytes needed to complete the message or fill the underlying buffer
-  or in the case of a file object the number of bytes added to the buffer
+* consumed (number) - number of bytes consumed so the offset can be tracked for
+  checkpointing purposes
+* need/read (number) - number of bytes needed to complete the message or fill
+  the underlying buffer or in the case of a file object the number of bytes
+  added to the buffer
 
 ##### decode_message
 
-Converts a Heka protobuf encoded message string into a stream reader representation.
-Note: this operation clears the internal stream reader buffer.
+Converts a Heka protobuf encoded message string into a stream reader
+representation. Note: this operation clears the internal stream reader buffer.
 
 *Arguments*
 * heka_pb (string) - Heka protobuf binary string

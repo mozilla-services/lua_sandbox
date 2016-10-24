@@ -130,7 +130,7 @@ static int output(lua_State *lua)
   if (n == 0) {
     return luaL_argerror(lsb->lua, 0, "must have at least one argument");
   }
-  lsb_output(lsb, 1, n, 1);
+  lsb_output_coroutine(lsb, lua, 1, n, 1);
   return 0;
 }
 
