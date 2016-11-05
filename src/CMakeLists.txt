@@ -69,3 +69,4 @@ if(NOT WIN32) # todo need to add getopt support for Windows
   add_subdirectory(cli)
 endif()
 add_subdirectory(test)
+add_subdirectory(lua)
