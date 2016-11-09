@@ -40,6 +40,7 @@
 #define ERRLIB    1
 #define ERRFUNC   2
 
+#define setprogdir(L)      ((void)0)
 
 #define LSB_CONFIG "lsb_config"
 
@@ -92,6 +93,23 @@ static lua_CFunction ll_sym (lua_State *L, void *lib, const char *sym) {
 */
 
 #include <windows.h>
+
+#undef setprogdir
+
+static void setprogdir (lua_State *L) {
+  char buff[MAX_PATH + 1];
+  char *lb;
+  DWORD nsize = sizeof(buff)/sizeof(char);
+  DWORD n = GetModuleFileNameA(NULL, buff, nsize);
+  if (n == 0 || n == nsize || (lb = strrchr(buff, '\\')) == NULL)
+    luaL_error(L, "unable to get ModuleFileName");
+  else {
+    *lb = '\0';
+    luaL_gsub(L, lua_tostring(L, -1), LUA_EXECDIR, buff);
+    lua_remove(L, -2);  /* remove original string */
+  }
+}
+
 
 static void pusherror (lua_State *L) {
   int error = GetLastError();
@@ -632,8 +650,83 @@ static int ll_seeall (lua_State *L) {
 }
 
 
+static int ll_index (lua_State *L) {
+  lua_getfield(L, LUA_REGISTRYINDEX, LSB_CONFIG);
+  if (lua_type(L, -1) != LUA_TTABLE) {
+    lua_pop(L, 1);
+    return 0;
+  }
+  lua_getfield(L, -1, "sandboxed");
+  if (!lua_isboolean(L, -1) || lua_toboolean(L, -1)) {
+    lua_pop(L, 2);
+    return 0;
+  }
+  lua_pop(L, 1);
+  const char *key = lua_tostring(L, 2);
+  if ((strcmp(key, "cpath") == 0) || (strcmp(key, "path") == 0) || (strcmp(key, "sandboxed") == 0)) {
+    lua_getfield(L, -1, key);
+    return 1;
+  }
+  if ((strcmp(key, "preload") == 0)) {
+    lua_pop(L, 1);
+    lua_getfield(L, LUA_ENVIRONINDEX, key);
+    return 1;
+  }
+  lua_pop(L, 1);
+  return 0;
+}
+
+
+static int ll_newindex (lua_State *L) {
+  lua_getfield(L, LUA_REGISTRYINDEX, LSB_CONFIG);
+  if (lua_type(L, -1) != LUA_TTABLE) {
+    lua_pop(L, 1);
+    return 0;
+  }
+  lua_getfield(L, -1, "sandboxed");
+  if (!lua_isboolean(L, -1) || lua_toboolean(L, -1)) {
+    lua_pop(L, 2);
+    return 0;
+  }
+  lua_pop(L, 1);
+  const char *key = lua_tostring(L, 2);
+  if ((strcmp(key, "cpath") == 0) || (strcmp(key, "path") == 0) || (strcmp(key, "sandboxed") == 0)) {
+    lua_pushvalue(L, 3); // value
+    lua_setfield(L, -2, key);
+  }
+  if ((strcmp(key, "preload") == 0)) {
+    lua_pop(L, 1);
+    lua_getfield(L, LUA_ENVIRONINDEX, key);
+    lua_setfield(L, 3, key);
+    return 1;
+  }
+  lua_pop(L, 1);
+  return 0;
+}
+
+
+/* }====================================================== */
 /* }====================================================== */
 
+
+/* auxiliary mark (for internal use) */
+#define AUXMARK        "\1"
+
+static void setpath (lua_State *L, const char *fieldname, const char *envname,
+                                   const char *def) {
+  const char *path = getenv(envname);
+  if (path == NULL)  /* no environment variable? */
+    lua_pushstring(L, def);  /* use default */
+  else {
+    /* replace ";;" by ";AUXMARK;" and then AUXMARK by default path */
+    path = luaL_gsub(L, path, LUA_PATHSEP LUA_PATHSEP,
+                              LUA_PATHSEP AUXMARK LUA_PATHSEP);
+    luaL_gsub(L, path, AUXMARK, def);
+    lua_remove(L, -2);
+  }
+  setprogdir(L);
+  lua_setfield(L, -2, fieldname);
+}
 
 
 static const luaL_Reg pk_funcs[] = {
@@ -655,6 +748,7 @@ static const lua_CFunction loaders[] =
 
 LUALIB_API int luaopen_package (lua_State *L) {
   int i;
+  int sandboxed = lua_toboolean(L, 2);
   /* create new type _LOADLIB */
   luaL_newmetatable(L, "_LOADLIB");
   lua_pushcfunction(L, gctm);
@@ -676,11 +770,38 @@ LUALIB_API int luaopen_package (lua_State *L) {
   luaL_findtable(L, LUA_REGISTRYINDEX, "_PRELOADED", 0);
   lua_setfield(L, -2, "preload");
 
-  /* open lib into global table */
   lua_pushvalue(L, LUA_GLOBALSINDEX);
-  luaL_register(L, NULL, ll_funcs);
+  luaL_register(L, NULL, ll_funcs);  /* open lib into global table */
   lua_pop(L, 1);
 
+  if (!sandboxed) {
+    lua_getfield(L, LUA_REGISTRYINDEX, LSB_CONFIG);
+    if (lua_type(L, -1) == LUA_TNIL) {
+      lua_pop(L, 1);
+      lua_newtable(L);
+      lua_setfield(L, LUA_REGISTRYINDEX, LSB_CONFIG);
+      lua_getfield(L, LUA_REGISTRYINDEX, LSB_CONFIG);
+    }
+    if (lua_type(L, -1) == LUA_TTABLE) {
+      lua_pushboolean(L, sandboxed);
+      lua_setfield(L, -2, "sandboxed");
+      setpath(L, "path", LUA_PATH, LUA_PATH_DEFAULT);  /* set field `path' */
+      setpath(L, "cpath", LUA_CPATH, LUA_CPATH_DEFAULT); /* set field `cpath' */
+    }
+    lua_pop(L, 1);
+  }
   luaL_register(L, LUA_LOADLIBNAME, pk_funcs);
+  if (!sandboxed) {
+    // package metatable
+    luaL_checktype(L, -1, LUA_TTABLE);
+    if (luaL_newmetatable(L, "package") == 1) {
+      lua_pushcfunction(L, ll_index);
+      lua_setfield(L, -2, "__index");
+      lua_pushcfunction(L, ll_newindex);
+      lua_setfield(L, -2, "__newindex");
+    }
+    lua_setmetatable(L, -2);
+    lua_pop(L, 1);
+  }
   return 1;  /* return 'package' table */
 }
