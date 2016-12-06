@@ -340,14 +340,14 @@ static char* test_write_heka_header()
   char header[LSB_MIN_HDR_SIZE];
   size_t hlen;
 
-  for (unsigned i = 0; i < 7; ++i) {
+  for (unsigned i = 0; i < 4; ++i) {
     hlen = lsb_write_heka_header(header, 1LL << (i * 8));
     mu_assert(hlen == 5 + i, "i: %u received %" PRIuSIZE, i, hlen);
   }
-  hlen = lsb_write_heka_header(header, 1LL << 56);
-  mu_assert(hlen == 13, "received %" PRIuSIZE, hlen);
-  hlen = lsb_write_heka_header(header, 1LL << 63);
-  mu_assert(hlen == 14, "received %" PRIuSIZE, hlen);
+  hlen = lsb_write_heka_header(header, 1LL << 24);
+  mu_assert(hlen == 8, "received %" PRIuSIZE, hlen);
+  hlen = lsb_write_heka_header(header, 1LL << 31);
+  mu_assert(hlen == 9, "received %" PRIuSIZE, hlen);
   return NULL;
 }
 
