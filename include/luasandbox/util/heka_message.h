@@ -108,6 +108,7 @@ typedef struct {
   {
     lsb_const_string  s;
     double            d;
+    long long         ll;
   } u;
   lsb_read_type type;
 } lsb_read_value;
