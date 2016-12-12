@@ -6,6 +6,7 @@
 
 /** @brief lsb_input_buffer unit tests @file */
 
+#include <stdlib.h>
 #include <string.h>
 
 #include "luasandbox/test/mu_test.h"
@@ -47,14 +48,15 @@ static char* test_success()
 
   for (unsigned i = 0; i < sizeof tests / sizeof(testcase); ++i){
     testcase *tc = &tests[i];
-    char d[strlen(tc->s) + 1];
-    size_t len = sizeof(d);
+    size_t len = strlen(tc->s) + 1;
+    char *d = malloc(len);
     char *us = lsb_lua_string_unescape(d, tc->s, &len);
     mu_assert(us, "test: %d valid string: %s", i, tc->s);
     mu_assert(len == tc->len, "test: %d string: %s expected len: %" PRIuSIZE
               " received: %" PRIuSIZE, i, tc->s, tc->len, len);
     mu_assert(memcmp(us, tc->r, len) == 0, "test: %d memcmp string: %s", i,
               tc->s);
+    free(d);
   }
   return NULL;
 }
@@ -71,10 +73,11 @@ static char* test_failure()
 
   for (unsigned i = 0; i < sizeof tests / sizeof(testcase); ++i){
     testcase *tc = &tests[i];
-    char d[tc->len + 1];
-    size_t len = sizeof(d);
+    size_t len = tc->len + 1;
+    char *d = malloc(len);
     mu_assert(!lsb_lua_string_unescape(d, tc->s, &len),
               "test: %d invalid string: %s", i, tc->s);
+    free(d);
   }
   mu_assert(!lsb_lua_string_unescape(NULL, tests[0].s, &tests[0].len),
             "NULL destination");
