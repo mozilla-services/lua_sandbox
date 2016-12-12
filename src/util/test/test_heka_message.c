@@ -333,23 +333,51 @@ static char* test_write_heka_uuid()
   return NULL;
 }
 
-
+#if SIZE_MAX < 65536
 static char* test_write_heka_header()
 {
+  char header[LSB_MIN_HDR_SIZE];
+  size_t hlen;
 
+  for (unsigned i = 0; i < sizeof(size_t); ++i) {
+    hlen = lsb_write_heka_header(header, (size_t)1 << (i * 8));
+    mu_assert(hlen == 5 + i, "i: %u received %" PRIuSIZE, i, hlen);
+  }
+  hlen = lsb_write_heka_header(header, (size_t)1 << 15);
+  mu_assert(hlen == 7, "received %" PRIuSIZE, hlen);
+  return NULL;
+}
+#elif SIZE_MAX < 4294967296
+static char* test_write_heka_header()
+{
+  char header[LSB_MIN_HDR_SIZE];
+  size_t hlen;
+
+  for (unsigned i = 0; i < sizeof(size_t); ++i) {
+    hlen = lsb_write_heka_header(header, (size_t)1 << (i * 8));
+    mu_assert(hlen == 5 + i, "i: %u received %" PRIuSIZE, i, hlen);
+  }
+  hlen = lsb_write_heka_header(header, (size_t)1 << 31);
+  mu_assert(hlen == 9, "received %" PRIuSIZE, hlen);
+  return NULL;
+}
+#else
+static char* test_write_heka_header() // limit to 8 byte test
+{
   char header[LSB_MIN_HDR_SIZE];
   size_t hlen;
 
   for (unsigned i = 0; i < 7; ++i) {
-    hlen = lsb_write_heka_header(header, 1LL << (i * 8));
+    hlen = lsb_write_heka_header(header, (size_t)1 << (i * 8));
     mu_assert(hlen == 5 + i, "i: %u received %" PRIuSIZE, i, hlen);
   }
-  hlen = lsb_write_heka_header(header, 1LL << 56);
+  hlen = lsb_write_heka_header(header, (size_t)1 << 56);
   mu_assert(hlen == 13, "received %" PRIuSIZE, hlen);
-  hlen = lsb_write_heka_header(header, 1LL << 63);
+  hlen = lsb_write_heka_header(header, (size_t)1 << 63);
   mu_assert(hlen == 14, "received %" PRIuSIZE, hlen);
   return NULL;
 }
+#endif
 
 
 static char* all_tests()

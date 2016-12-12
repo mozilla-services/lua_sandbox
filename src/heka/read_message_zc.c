@@ -9,13 +9,14 @@
 #include <stdio.h>
 #include <string.h>
 
+#include "../luasandbox_defines.h"
 #include "lauxlib.h"
 #include "lua.h"
 #include "lualib.h"
+#include "luasandbox/heka/sandbox.h"
+#include "luasandbox/util/heka_message.h"
 #include "luasandbox_output.h"
 #include "luasandbox_serialize.h"
-#include "luasandbox/util/heka_message.h"
-#include "luasandbox/heka/sandbox.h"
 
 static const char *metatable_name = "lsb.read_message_zc";
 
