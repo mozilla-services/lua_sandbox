@@ -49,7 +49,6 @@ if(CMAKE_BUILD_TYPE MATCHES "^[Dd][Ee][Bb][Uu][Gg]$")
 else()
     set(CPACK_STRIP_FILES TRUE)
 endif()
-set(CPACK_DEBIAN_PACKAGE_SHLIBDEPS ON)
 
 include(CPack)
 include(CTest)
