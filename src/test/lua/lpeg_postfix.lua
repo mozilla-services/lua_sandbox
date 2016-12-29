@@ -809,6 +809,17 @@ local tests = {
       postfix_relay_ip = "74.208.5.4",
     }
   },
+  ["smtp_0023.yaml"] = {
+    "POSTFIX_SMTP",
+    "644D53D: host gmail-smtp-in.l.google.com[74.125.136.26] said: 421-4.7.0 [1.2.3.4      15] Our system has detected an unusual rate of 421-4.7.0 unsolicited mail originating from your IP address. To protect our 421-4.7.0 users from spam, mail sent from your IP address has been temporarily 421-4.7.0 rate limited. Please visit 421-4.7.0  https://support.google.com/mail/answer/81126 to review our Bulk Email 421 4.7.0 Senders Guidelines. bv15si15610322wjb.142 - gsmtp (in reply to end of DATA command)",
+    {
+      postfix_queueid = "644D53D",
+      postfix_relay_hostname = "gmail-smtp-in.l.google.com",
+      postfix_relay_ip = "74.125.136.26",
+      postfix_smtp_response = "421-4.7.0 [1.2.3.4      15] Our system has detected an unusual rate of 421-4.7.0 unsolicited mail originating from your IP address. To protect our 421-4.7.0 users from spam, mail sent from your IP address has been temporarily 421-4.7.0 rate limited. Please visit 421-4.7.0  https://support.google.com/mail/answer/81126 to review our Bulk Email 421 4.7.0 Senders Guidelines. bv15si15610322wjb.142 - gsmtp",
+      postfix_smtp_stage = "end of DATA",
+    }
+  },
   ["smtpd_0001.yaml"] = {
     "POSTFIX_SMTPD",
     "connect from 061238241086.static.ctinets.com[61.238.241.86]",
