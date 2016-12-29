@@ -406,7 +406,8 @@ local postfix_patterns = {
          * (l.P'> orig_id='
            * l.Cg(l.P(1)^1, 'postfix_orig_id'))^-1
          ),
-  tlsproxy = l.Ct(postfix_tlsproxy_conn_cg),
+  tlsproxy = l.Ct(postfix_tlsproxy_conn_cg
+           + postfix_warning_cg),
   master = l.Ct(postfix_master_start_cg
          + postfix_master_exit_cg
          + postfix_warning_cg),
