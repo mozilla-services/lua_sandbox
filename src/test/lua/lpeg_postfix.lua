@@ -225,6 +225,13 @@ local tests = {
       postfix_version = "2.11.0"
     }
   },
+  ["master_0004.yaml"] = {
+    "POSTFIX_MASTER",
+    "warning: process /usr/local/libexec/postfix/smtpd pid 46234 killed by signal 11",
+    {
+      postfix_warning = "process /usr/local/libexec/postfix/smtpd pid 46234 killed by signal 11",
+    }
+  },
   ["pickup_0001.yaml"] = {
     "POSTFIX_PICKUP",
     "D2FAE20586: uid=0 from=<fail2ban>",

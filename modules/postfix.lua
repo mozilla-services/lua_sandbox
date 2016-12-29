@@ -389,7 +389,8 @@ local postfix_patterns = {
          ),
   tlsproxy = l.Ct(postfix_tlsproxy_conn_cg),
   master = l.Ct(postfix_master_start_cg
-         + postfix_master_exit_cg),
+         + postfix_master_exit_cg
+         + postfix_warning_cg),
   bounce = l.Ct(postfix_bounce_notification_cg),
   sendmail = l.Ct(postfix_warning_cg),
   postdrop = l.Ct(postfix_warning_cg),
