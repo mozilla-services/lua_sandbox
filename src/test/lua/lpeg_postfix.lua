@@ -1033,6 +1033,16 @@ local tests = {
       postfix_warning = "dict_ldap_lookup: Search error -1: Can't contact LDAP server "
     }
   },
+  ["virtual_0001.yaml"] = {
+    "POSTFIX_VIRTUAL",
+    "B657F2DB195D: to=<postmaster@example.com>, relay=virtual, delay=0.52, delays=0.51/0.01/0/0, dsn=2.0.0, status=sent (delivered to maildir)",
+    {
+      postfix_queueid = "B657F2DB195D",
+      postfix_keyvalue_data = "to=<postmaster@example.com>, relay=virtual, delay=0.52, delays=0.51/0.01/0/0, dsn=2.0.0,",
+      postfix_status = "sent",
+      postfix_smtp_response = "delivered to maildir",
+    }
+  },
   -- testsuite additions, not in postfix-grok-patterns
   ["keyvalue_data_0001.yaml"] = {
     "POSTFIX_KEYVALUE_DATA",

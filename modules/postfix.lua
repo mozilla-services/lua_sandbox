@@ -399,6 +399,7 @@ local postfix_patterns = {
   trivial_rewrite = l.Ct(postfix_warning_cg),
   tlsmgr = l.Ct(postfix_warning_cg),
   ['local'] = l.Ct(postfix_keyvalue_greedy_cg),
+  virtual = l.Ct(postfix_smtp_delivery_cg),
 }
 postfix_patterns['lmtp'] = postfix_patterns['smtp']
 
