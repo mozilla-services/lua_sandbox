@@ -589,6 +589,24 @@ local tests = {
       postfix_warning = "bounce_queue_lifetime is larger than maximal_queue_lifetime - adjusting bounce_queue_lifetime"
     }
   },
+  ["qmgr_0004.yaml"] = {
+    "POSTFIX_QMGR",
+    "585BC3F: from=<>, status=expired, returned to sender",
+    {
+      postfix_queueid = "585BC3F",
+      postfix_from = "",
+      postfix_status = "expired",
+    }
+  },
+  ["qmgr_0005.yaml"] = {
+    "POSTFIX_QMGR",
+    "66C15648577B: from=<uvnhbl@yahoo.com.tw>, status=expired, returned to sender",
+    {
+      postfix_queueid = "66C15648577B",
+      postfix_from = "uvnhbl@yahoo.com.tw",
+      postfix_status = "expired",
+    }
+  },
   ["relay_info_0001.yaml"] = {
     "POSTFIX_RELAY_INFO",
     "1.example.com.si[private/dovecot-lmtp]",

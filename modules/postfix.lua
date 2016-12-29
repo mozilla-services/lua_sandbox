@@ -197,6 +197,13 @@ local postfix_qmgr_active_cg = postfix_queueid_cg
                              * l.P': '
                              * l.Cg((l.P(1) - l.P' (')^1, 'postfix_keyvalue_data')
                              * l.P' (queue active)'
+local postfix_qmgr_expired_cg = postfix_queueid_cg
+                              * l.P': '
+                              * l.P'from=<'
+                              * l.Cg((l.P(1) - l.P'>, status=')^0, 'postfix_from')
+                              * l.P'>, status='
+                              * l.Cg((l.P(1) - l.P', returned to sender')^1, 'postfix_status')
+                              * l.P', returned to sender'
 
 -- pipe patterns
 local postfix_pipe_delivered_cg = postfix_queueid_cg
@@ -367,6 +374,7 @@ local postfix_patterns = {
           + postfix_keyvalue_greedy_cg),
   qmgr = l.Ct(postfix_qmgr_removed_cg
        + postfix_qmgr_active_cg
+       + postfix_qmgr_expired_cg
        + postfix_warning_cg),
   pipe = l.Ct(postfix_pipe_delivered_cg
        + postfix_pipe_forward_cg),
