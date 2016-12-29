@@ -69,6 +69,7 @@ local postfix_smtp_stage = l.P'CONNECT'
                          + l.P'STARTTLS'
                          + l.P'AUTH'
                          + l.P'MAIL'
+                         + l.P'RCPT TO'
                          + l.P'RCPT'
                          + l.P'DATA'
                          + l.P'RSET'
@@ -301,6 +302,14 @@ local postfix_smtp_lostconn_cg = postfix_queueid_cg
                                * postfix_lostconn
                                * l.P' with '
                                * postfix_relay_info_cg
+local postfix_smtp_relayerr_cg = postfix_queueid_cg
+                               * l.P': host '
+                               * postfix_relay_info_cg
+                               * l.P' said: '
+                               * l.Cg((l.P(1) - l.P' (in reply to ')^1, 'postfix_smtp_response')
+                               * l.P' (in reply to '
+                               * postfix_smtp_stage_cg
+                               * l.P' command)'
 
 -- master patterns
 local postfix_master_start_cg = (l.P'daemon started' + l.P'reload')
@@ -371,6 +380,7 @@ local postfix_patterns = {
   smtp = l.Ct(postfix_smtp_delivery_cg
        + postfix_smtp_connerr_cg
        + postfix_smtp_lostconn_cg
+       + postfix_smtp_relayerr_cg
        + postfix_tlsconn_cg
        + postfix_warning_cg),
   discard = l.Ct(postfix_queueid_cg

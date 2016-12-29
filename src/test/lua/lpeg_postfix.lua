@@ -753,6 +753,28 @@ local tests = {
       postfix_warning = "problem talking to service private/scache: Connection timed out"
     }
   },
+  ["smtp_0020.yaml"] = {
+    "POSTFIX_SMTP",
+    "ED59C3D: host mail2.example.com[1.74.253.23] said: 450 4.7.1 <user@example.com>: Recipient address rejected: Greylisted for 5 minutes (in reply to RCPT TO command)",
+    {
+      postfix_queueid = "ED59C3D",
+      postfix_relay_hostname = "mail2.example.com",
+      postfix_relay_ip = "1.74.253.23",
+      postfix_smtp_response = "450 4.7.1 <user@example.com>: Recipient address rejected: Greylisted for 5 minutes",
+      postfix_smtp_stage = "RCPT TO",
+    }
+  },
+  ["smtp_0021.yaml"] = {
+    "POSTFIX_SMTP",
+    "1234ABCDEF: host relay.example.com[192.0.2.1] said: 450 4.1.8 root@localhost.localdomain: Sender address rejected: Domain not found (in reply to RCPT TO command)",
+    {
+      postfix_queueid = "1234ABCDEF",
+      postfix_relay_hostname = "relay.example.com",
+      postfix_relay_ip = "192.0.2.1",
+      postfix_smtp_response = "450 4.1.8 root@localhost.localdomain: Sender address rejected: Domain not found",
+      postfix_smtp_stage = "RCPT TO",
+    }
+  },
   ["smtpd_0001.yaml"] = {
     "POSTFIX_SMTPD",
     "connect from 061238241086.static.ctinets.com[61.238.241.86]",
