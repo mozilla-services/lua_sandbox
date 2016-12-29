@@ -149,6 +149,15 @@ local tests = {
       postfix_warning = "dict_ldap_get_values[1]: DN uid=mguiraud,ou=people,dc=neotion,dc=com not found, skipping "
     }
   },
+  ["cleanup_0006.yaml"] = {
+    "POSTFIX_CLEANUP",
+    "D8B07E3DB6: warning: header Subject: https://drive.google.com/file/d/0B8wxcvprDYVdlVsdf1kzOVkdisarmed/view?usp=sharing from o1678917x173.outbound-mail.sendgrid.net[167.89.17.173]; from=<bounces+2320708-7653-frank.test=hsdjasdd.co.uk@sendgrid.net> to=<frank.test@hsdjasdd.co.uk> proto=ESMTP helo=<o1678917x173.outbound-mail.sendgrid.net>",
+    {
+      postfix_queueid = "D8B07E3DB6",
+      postfix_warning = "header Subject: https://drive.google.com/file/d/0B8wxcvprDYVdlVsdf1kzOVkdisarmed/view?usp=sharing from o1678917x173.outbound-mail.sendgrid.net[167.89.17.173]",
+      postfix_keyvalue_data = "from=<bounces+2320708-7653-frank.test=hsdjasdd.co.uk@sendgrid.net> to=<frank.test@hsdjasdd.co.uk> proto=ESMTP helo=<o1678917x173.outbound-mail.sendgrid.net>",
+    }
+  },
   ["delays_0001.yaml"] = {
     "POSTFIX_DELAYS",
     "0.2/0.02/0.04/3.3",

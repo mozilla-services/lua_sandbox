@@ -122,7 +122,13 @@ local postfix_time_unit = l.digit^1 * l.S'smhd'
 local postfix_keyvalue_greedy_cg = postfix_queueid_cg
                                  * l.P': '
                                  * l.Cg(l.P(1)^1, 'postfix_keyvalue_data')
-local postfix_warning_cg = (l.P'warning' + l.P'fatal') * ': ' * l.Cg(l.P(1)^1, 'postfix_warning')
+local postfix_warning_cg = (postfix_queueid_cg * l.P': ')^-1
+                         * (l.P'warning' + l.P'fatal')
+                         * ': '
+                         * l.Cg((l.P(1)-l.P'; ')^1, 'postfix_warning')
+                         * (l.P'; '
+                           * l.Cg(l.P(1)^1, 'postfix_keyvalue_data')
+                           )^-1
 local postfix_tlsconn_cg = (l.P'Anonymous' + l.P'Trusted' + l.P'Untrusted' + l.P'Verified')
                       * l.P' TLS connection established '
                       * ((l.P'to ' * postfix_relay_info_cg) + (l.P'from ' * postfix_client_info_cg)) * l.P': '
