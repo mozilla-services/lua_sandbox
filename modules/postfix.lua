@@ -82,7 +82,8 @@ local postfix_smtp_stage = l.P'CONNECT'
 local postfix_smtp_stage_cg = l.Cg(postfix_smtp_stage, 'postfix_smtp_stage')
 local postfix_proxy_smtp_stage_cg = l.Cg(postfix_smtp_stage, 'postfix_proxy_smtp_stage')
 
-local postfix_action = l.P'reject'
+local postfix_action = l.P'discard'
+                     + l.P'reject'
                      + l.P'defer'
                      + l.P'accept'
                      + l.P'header-redirect'
@@ -159,11 +160,16 @@ local postfix_smtpd_noqueue_cg = l.P'NOQUEUE: '
                                * postfix_smtp_stage_cg
                                * l.P' from '
                                * postfix_client_info_cg
-                               * l.P': '
-                               * postfix_status_code_cg
-                               * l.P' '
-                               * postfix_status_code_enhanced_cg
-                               * (l.P' <' * l.Cg((l.P(1) - l.P'>')^1, 'postfix_status_data') * l.P'>:')^-1
+                               * l.P':'
+                               * (l.P' '
+                                 * postfix_status_code_cg
+                                 * l.P' '
+                                 * postfix_status_code_enhanced_cg
+                                 )^-1
+                               * (l.P' <'
+                                 * l.Cg((l.P(1) - l.P'>')^1, 'postfix_status_data')
+                                 * l.P'>:'
+                                 )^-1
                                * l.P' '
                                * (postfix_dnsbl_message_cg + (l.Cg((l.P(1)-l.P';')^0, 'postfix_status_message') * l.P';'))
                                * l.P' '
