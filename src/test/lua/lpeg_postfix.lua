@@ -186,6 +186,13 @@ local tests = {
       postfix_dnsbl_result = "127.0.5.1"
     }
   },
+  ["dnsblog_0003.yaml"] = {
+    "POSTFIX_DNSBLOG",
+    "warning: dnsblog_query: lookup error for DNS query 198.204.82.110.list.dnswl.org: Host or domain name not found. Name service error for name=198.204.82.110.list.dnswl.org type=A: Host not found, try again",
+    {
+      postfix_warning = "dnsblog_query: lookup error for DNS query 198.204.82.110.list.dnswl.org: Host or domain name not found. Name service error for name=198.204.82.110.list.dnswl.org type=A: Host not found, try again",
+    }
+  },
   ["local_0001.yaml"] = {
     "POSTFIX_LOCAL",
     "2A22C263F6: to=user@hostname.example.com, orig_to=root@localhost, relay=local, delay=0.07, delays=0.04/0/0/0.03, dsn=2.0.0, status=sent (delivered to command: procmail -a \"$EXTENSION\")",

@@ -378,7 +378,8 @@ local postfix_patterns = {
              + postfix_ps_dnsbl_cg
              + postfix_ps_violations_cg
              + postfix_warning_cg),
-  dnsblog = l.Ct(postfix_dnsblog_listing_cg),
+  dnsblog = l.Ct(postfix_dnsblog_listing_cg
+          + postfix_warning_cg),
   anvil = l.Ct(postfix_anvil_conn_rate_cg
         + postfix_anvil_conn_cache_cg
         + postfix_anvil_conn_count_cg),
