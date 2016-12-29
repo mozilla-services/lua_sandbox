@@ -1132,6 +1132,19 @@ local tests = {
       postfix_keyvalue_data = "from=<bsdbdsfbw==_4343_sdfbddw==@in.constantcontact.com> proto=ESMTP helo=<ccm231.constantcontact.com>",
     }
   },
+  ["smtpd_0027.yaml"] = {
+    "POSTFIX_SMTPD",
+    "NOQUEUE: filter: RCPT from unknown[85.25.255.255]: <mail@sender.com>: Sender address triggers FILTER smtp-amavis:[127.0.0.1]:10024; from=<mail@sender.com> to=<user@domain.com> proto=ESMTP helo=<plutoapp.biz>",
+    {
+      postfix_action = "filter",
+      postfix_smtp_stage = "RCPT",
+      postfix_client_hostname = "unknown",
+      postfix_client_ip = "85.25.255.255",
+      postfix_status_data = "mail@sender.com",
+      postfix_status_message = "Sender address triggers FILTER smtp-amavis:[127.0.0.1]:10024",
+      postfix_keyvalue_data = "from=<mail@sender.com> to=<user@domain.com> proto=ESMTP helo=<plutoapp.biz>",
+    }
+  },
   ["tlsmgr_0001.yaml"] = {
     "POSTFIX_TLSMGR",
     "warning: request to update table btree:/var/spool/postfix/smtpd_scache in non-postfix directory /var/spool/postfix",

@@ -85,6 +85,7 @@ local postfix_proxy_smtp_stage_cg = l.Cg(postfix_smtp_stage, 'postfix_proxy_smtp
 local postfix_action = l.P'accept'
                      + l.P'defer'
                      + l.P'discard'
+                     + l.P'filter'
                      + l.P'header-redirect'
                      + l.P'reject'
 local postfix_action_cg = l.Cg(postfix_action, 'postfix_action')
