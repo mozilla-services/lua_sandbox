@@ -862,6 +862,16 @@ local tests = {
       postfix_relay_port = 25,
     }
   },
+  ["smtp_0026.yaml"] = {
+    "POSTFIX_SMTP",
+    "A0E85200BD: to=<whatever-user@lists.example.org>, relay=open.example.nl[10.49.140.10]:25, delay=2.3, delays=0.25/0.05/2/0.04, dsn=4.2.0, status=deferred (host open.example.nl[10.49.140.10] said: 450 4.2.0 <whatever-user@lists.example.org>: Recipient address rejected: Greylisted, see http://postgrey.schweikert.ch/help/lists.example.org.html (in reply to RCPT TO command))",
+    {
+      postfix_queueid = "A0E85200BD",
+      postfix_keyvalue_data = "to=<whatever-user@lists.example.org>, relay=open.example.nl[10.49.140.10]:25, delay=2.3, delays=0.25/0.05/2/0.04, dsn=4.2.0,",
+      postfix_status = "deferred",
+      postfix_smtp_response = "host open.example.nl[10.49.140.10] said: 450 4.2.0 <whatever-user@lists.example.org>: Recipient address rejected: Greylisted, see http://postgrey.schweikert.ch/help/lists.example.org.html (in reply to RCPT TO command)",
+    }
+  },
   ["smtpd_0001.yaml"] = {
     "POSTFIX_SMTPD",
     "connect from 061238241086.static.ctinets.com[61.238.241.86]",
