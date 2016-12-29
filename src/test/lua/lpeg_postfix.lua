@@ -820,6 +820,17 @@ local tests = {
       postfix_smtp_stage = "end of DATA",
     }
   },
+  ["smtp_0024.yaml"] = {
+    "POSTFIX_SMTP",
+    "2690D8044: host mta7.am0.yahoodns.net[66.196.118.34] said: 451 4.3.2 Internal error reading data (in reply to MAIL FROM command)",
+    {
+      postfix_queueid = "2690D8044",
+      postfix_relay_hostname = "mta7.am0.yahoodns.net",
+      postfix_relay_ip = "66.196.118.34",
+      postfix_smtp_response = "451 4.3.2 Internal error reading data",
+      postfix_smtp_stage = "MAIL FROM",
+    }
+  },
   ["smtpd_0001.yaml"] = {
     "POSTFIX_SMTPD",
     "connect from 061238241086.static.ctinets.com[61.238.241.86]",
