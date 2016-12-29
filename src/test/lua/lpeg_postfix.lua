@@ -253,27 +253,40 @@ local tests = {
     "POSTFIX_PIPE",
     "0F5383D: to=<tom@example.com>, relay=dovecot, delay=4.3, delays=4.1/0.01/0/0.15, dsn=2.0.0, status=sent (delivered via dovecot service)",
     {
-      postfix_keyvalue_data = "to=<tom@example.com>, relay=dovecot, delay=4.3, delays=4.1/0.01/0/0.15, dsn=2.0.0, status=sent",
-      postfix_pipe_service = "dovecot",
-      postfix_queueid = "0F5383D"
+      postfix_queueid = "0F5383D",
+      postfix_keyvalue_data = "to=<tom@example.com>, relay=dovecot, delay=4.3, delays=4.1/0.01/0/0.15, dsn=2.0.0",
+      postfix_status = "sent",
+      postfix_pipe_response = "delivered via dovecot service",
     }
   },
   ["pipe_0002.yaml"] = {
     "POSTFIX_PIPE",
     "153053D: to=<tom@example.com>, orig_to=<admin@example.com>, relay=dovecot, delay=3.4, delays=3.3/0.03/0/0.12, dsn=2.0.0, status=sent (delivered via dovecot service)",
     {
-      postfix_keyvalue_data = "to=<tom@example.com>, orig_to=<admin@example.com>, relay=dovecot, delay=3.4, delays=3.3/0.03/0/0.12, dsn=2.0.0, status=sent",
-      postfix_pipe_service = "dovecot",
-      postfix_queueid = "153053D"
+      postfix_queueid = "153053D",
+      postfix_keyvalue_data = "to=<tom@example.com>, orig_to=<admin@example.com>, relay=dovecot, delay=3.4, delays=3.3/0.03/0/0.12, dsn=2.0.0",
+      postfix_status = "sent",
+      postfix_pipe_response = "delivered via dovecot service",
     }
   },
   ["pipe_0003.yaml"] = {
     "POSTFIX_PIPE",
     "95ECE24E0: to=<tom@example.com>, relay=dovecot, delay=0.12, delays=0.03/0/0/0.08, dsn=5.4.6, status=bounced (mail forwarding loop for tom@example.com)",
     {
-      postfix_keyvalue_data = "to=<tom@example.com>, relay=dovecot, delay=0.12, delays=0.03/0/0/0.08, dsn=5.4.6, status=bounced",
       postfix_queueid = "95ECE24E0",
-      postfix_to = "tom@example.com"
+      postfix_keyvalue_data = "to=<tom@example.com>, relay=dovecot, delay=0.12, delays=0.03/0/0/0.08, dsn=5.4.6",
+      postfix_status = "bounced",
+      postfix_pipe_response = "mail forwarding loop for tom@example.com",
+    }
+  },
+  ["pipe_0004.yaml"] = {
+    "POSTFIX_PIPE",
+    "2F6C83D: to=<user@example.org>, relay=dovecot, delay=5.1, delays=4.4/0.02/0/0.61, dsn=5.1.1, status=bounced (user unknown)",
+    {
+      postfix_queueid = "2F6C83D",
+      postfix_keyvalue_data = "to=<user@example.org>, relay=dovecot, delay=5.1, delays=4.4/0.02/0/0.61, dsn=5.1.1",
+      postfix_status = "bounced",
+      postfix_pipe_response = "user unknown",
     }
   },
   ["postdrop_0001.yaml"] = {

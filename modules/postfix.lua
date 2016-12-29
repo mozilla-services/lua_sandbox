@@ -209,16 +209,13 @@ local postfix_qmgr_expired_cg = postfix_queueid_cg
                               * l.P', returned to sender'
 
 -- pipe patterns
-local postfix_pipe_delivered_cg = postfix_queueid_cg
-                                * l.P': '
-                                * l.Cg((l.P(1) - l.P' (')^1, 'postfix_keyvalue_data')
-                                * l.P' (delivered via '
-                                * l.Cg(l.alnum^1, 'postfix_pipe_service')
-local postfix_pipe_forward_cg = postfix_queueid_cg
-                              * l.P': '
-                              * l.Cg((l.P(1) - l.P' (')^1, 'postfix_keyvalue_data')
-                              * l.P' (mail forwarding loop for '
-                              * l.Cg((l.P(1) - l.P')')^1, 'postfix_to')
+local postfix_pipe_any_cg = postfix_queueid_cg
+                          * l.P': '
+                          * l.Cg((l.P(1) - l.P', status=')^1, 'postfix_keyvalue_data')
+                          * l.P', status='
+                          * l.Cg((l.P(1) - l.P' (')^1, 'postfix_status')
+                          * l.P' ('
+                          * l.Cg((l.P(1) - l.P')')^1, 'postfix_pipe_response')
 
 -- postscreen patterns
 local postfix_ps_connect_cg = l.P'CONNECT from '
@@ -379,8 +376,7 @@ local postfix_patterns = {
        + postfix_qmgr_active_cg
        + postfix_qmgr_expired_cg
        + postfix_warning_cg),
-  pipe = l.Ct(postfix_pipe_delivered_cg
-       + postfix_pipe_forward_cg),
+  pipe = l.Ct(postfix_pipe_any_cg),
   postscreen = l.Ct(postfix_ps_connect_cg
              + postfix_ps_access_cg
              + postfix_ps_noqueue_cg
