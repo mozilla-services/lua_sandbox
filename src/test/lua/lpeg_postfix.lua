@@ -844,6 +844,15 @@ local tests = {
       postfix_smtp_stage = "MAIL FROM",
     }
   },
+  ["smtp_0025.yaml"] = {
+    "POSTFIX_SMTP",
+    "connect to aspmx.l.google.com[2a00:1450:400b:c02::1a]:25: Network is unreachable",
+    {
+      postfix_relay_hostname = "aspmx.l.google.com",
+      postfix_relay_ip = "2a00:1450:400b:c02::1a",
+      postfix_relay_port = 25,
+    }
+  },
   ["smtpd_0001.yaml"] = {
     "POSTFIX_SMTPD",
     "connect from 061238241086.static.ctinets.com[61.238.241.86]",

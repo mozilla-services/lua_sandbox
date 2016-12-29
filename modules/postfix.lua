@@ -304,7 +304,7 @@ local postfix_smtp_delivery_cg = postfix_queueid_cg
 local postfix_smtp_connerr_cg = l.P'connect to '
                               * postfix_relay_info_cg
                               * l.P': '
-                              * (l.P'Connection timed out' + l.P'No route to host' + l.P'Connection refused')
+                              * (l.P'Connection timed out' + l.P'No route to host' + l.P'Connection refused' + l.P'Network is unreachable')
 local postfix_smtp_lostconn_cg = postfix_queueid_cg
                                * l.P': '
                                * postfix_lostconn
