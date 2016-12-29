@@ -137,8 +137,7 @@ local postfix_delays_ct = l.Ct(l.Cg(number, 'postfix_delay_before_qmgr')
                         * l.Cg(number, 'postfix_delay_transmission'))
 local postfix_lostconn = l.P'lost connection'
                        + l.P'timeout'
-                       + l.P'Connection timed out'
-                       + l.P'-1'
+                       + l.P'SSL_accept error'
 local postfix_smtpd_lostconn_data_cg = l.Cg(postfix_lostconn, 'postfix_smtpd_lostconn_data')
 local postfix_proxy_message_cg = (l.Cg(postfix_status_code, 'postfix_proxy_status_code') * l.P' ')^-1 * (l.Cg(postfix_status_code_enhanced, 'postfix_proxy_status_code_enhanced') * l.P' ')^-1 * (l.P(1) - l.P';')^0
 
@@ -147,17 +146,13 @@ local postfix_smtpd_connect_cg = l.P'connect from '
                                * postfix_client_info_cg
 local postfix_smtpd_disconnect_cg = l.P'disconnect from '
                                   * postfix_client_info_cg
-local postfix_smtpd_lostconn_cg = (postfix_smtpd_lostconn_data_cg
-                                * l.P' after '
-                                * postfix_smtp_stage_cg
-                                * (l.P' (' * l.digit^1 * l.P' bytes)') ^-1
-                                * l.P' from '
-                                * postfix_client_info_cg)
-                                + (l.Cg((l.P(1) - l.P' from ')^1, 'postfix_action')
+local postfix_smtpd_lostconn_cg = postfix_smtpd_lostconn_data_cg
+                                * ( l.P' after '
+                                  * postfix_smtp_stage_cg
+                                  * (l.P' (' * l.digit^1 * l.P' bytes)') ^-1
+                                  )^-1
                                 * l.P' from '
                                 * postfix_client_info_cg
-                                * l.P': '
-                                * postfix_smtpd_lostconn_data_cg)
 local postfix_smtpd_noqueue_cg = l.P'NOQUEUE: '
                                * postfix_action_cg
                                * l.P': '

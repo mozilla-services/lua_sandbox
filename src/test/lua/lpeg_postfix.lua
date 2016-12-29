@@ -1044,10 +1044,9 @@ local tests = {
     "POSTFIX_SMTPD",
     "SSL_accept error from unknown[72.13.58.7]: lost connection",
     {
-      postfix_action = "SSL_accept error",
+      postfix_smtpd_lostconn_data = "SSL_accept error",
       postfix_client_hostname = "unknown",
       postfix_client_ip = "72.13.58.7",
-      postfix_smtpd_lostconn_data = "lost connection"
     }
   },
   ["smtpd_0020.yaml"] = {
@@ -1088,20 +1087,27 @@ local tests = {
     "POSTFIX_SMTPD",
     "SSL_accept error from unknown[72.13.58.7]: Connection timed out",
     {
-      postfix_action = "SSL_accept error",
+      postfix_smtpd_lostconn_data = "SSL_accept error",
       postfix_client_hostname = "unknown",
       postfix_client_ip = "72.13.58.7",
-      postfix_smtpd_lostconn_data = "Connection timed out"
     }
   },
   ["smtpd_0024.yaml"] = {
     "POSTFIX_SMTPD",
     "SSL_accept error from ssl-tools.net[185.55.116.145]: -1",
     {
-      postfix_action = "SSL_accept error",
+      postfix_smtpd_lostconn_data = "SSL_accept error",
       postfix_client_hostname = "ssl-tools.net",
       postfix_client_ip = "185.55.116.145",
-      postfix_smtpd_lostconn_data = "-1",
+    }
+  },
+  ["smtpd_0025.yaml"] = {
+    "POSTFIX_SMTPD",
+    "SSL_accept error from eu-smtp-delivery-201.mimecast.com[207.82.80.201]: 0",
+    {
+      postfix_smtpd_lostconn_data = "SSL_accept error",
+      postfix_client_hostname = "eu-smtp-delivery-201.mimecast.com",
+      postfix_client_ip = "207.82.80.201",
     }
   },
   ["tlsmgr_0001.yaml"] = {
