@@ -302,6 +302,11 @@ local postfix_smtp_lostconn_cg = postfix_queueid_cg
                                * postfix_lostconn
                                * l.P' with '
                                * postfix_relay_info_cg
+local postfix_smtp_timeout_cg = postfix_queueid_cg
+                              * l.P': '
+                              * l.P'conversation with '
+                              * postfix_relay_info_cg
+                              * l.P' timed out while receiving the initial server greeting'
 local postfix_smtp_relayerr_cg = postfix_queueid_cg
                                * l.P': host '
                                * postfix_relay_info_cg
@@ -380,6 +385,7 @@ local postfix_patterns = {
   smtp = l.Ct(postfix_smtp_delivery_cg
        + postfix_smtp_connerr_cg
        + postfix_smtp_lostconn_cg
+       + postfix_smtp_timeout_cg
        + postfix_smtp_relayerr_cg
        + postfix_tlsconn_cg
        + postfix_warning_cg),

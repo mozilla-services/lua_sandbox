@@ -775,6 +775,15 @@ local tests = {
       postfix_smtp_stage = "RCPT TO",
     }
   },
+  ["smtp_0022.yaml"] = {
+    "POSTFIX_SMTP",
+    "78D6B41: conversation with mx00.gmx.com[74.208.5.4] timed out while receiving the initial server greeting",
+    {
+      postfix_queueid = "78D6B41",
+      postfix_relay_hostname = "mx00.gmx.com",
+      postfix_relay_ip = "74.208.5.4",
+    }
+  },
   ["smtpd_0001.yaml"] = {
     "POSTFIX_SMTPD",
     "connect from 061238241086.static.ctinets.com[61.238.241.86]",
@@ -1089,6 +1098,9 @@ local tests = {
 }
 
 function process_one(filename, programmname, message, expect, extract_keyvalue_data)
+   if not expect then
+      error(string.format("%s: Test case is flawed, no results are defined", filename))
+   end
    local ret = pf.postfix_match(programmname, message, extract_keyvalue_data)
    if not ret then
      error(string.format("%s: failed match", filename))
