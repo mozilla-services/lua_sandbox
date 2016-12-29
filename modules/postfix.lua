@@ -136,6 +136,7 @@ local postfix_delays_ct = l.Ct(l.Cg(number, 'postfix_delay_before_qmgr')
 local postfix_lostconn = l.P'lost connection'
                        + l.P'timeout'
                        + l.P'Connection timed out'
+                       + l.P'-1'
 local postfix_smtpd_lostconn_data_cg = l.Cg(postfix_lostconn, 'postfix_smtpd_lostconn_data')
 local postfix_proxy_message_cg = (l.Cg(postfix_status_code, 'postfix_proxy_status_code') * l.P' ')^-1 * (l.Cg(postfix_status_code_enhanced, 'postfix_proxy_status_code_enhanced') * l.P' ')^-1 * (l.P(1) - l.P';')^0
 

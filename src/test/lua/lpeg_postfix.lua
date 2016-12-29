@@ -1059,6 +1059,16 @@ local tests = {
       postfix_smtpd_lostconn_data = "Connection timed out"
     }
   },
+  ["smtpd_0024.yaml"] = {
+    "POSTFIX_SMTPD",
+    "SSL_accept error from ssl-tools.net[185.55.116.145]: -1",
+    {
+      postfix_action = "SSL_accept error",
+      postfix_client_hostname = "ssl-tools.net",
+      postfix_client_ip = "185.55.116.145",
+      postfix_smtpd_lostconn_data = "-1",
+    }
+  },
   ["tlsmgr_0001.yaml"] = {
     "POSTFIX_TLSMGR",
     "warning: request to update table btree:/var/spool/postfix/smtpd_scache in non-postfix directory /var/spool/postfix",
