@@ -40,7 +40,7 @@ local port          = l.Ct(l.Cg(integer, 'value') * l.Cg(l.Cc'2', 'value_type'))
 
 -- Postfix grammar
 -- Inspired by https://github.com/whyscream/postfix-grok-patterns
--- 2015-05-26 8fdd562d159845b97bf8d9c273e5357f3a143a94
+-- 2016-12-18 e7796156e5b212c038b05c12a49317a70e318c05
 -- Original under BSD-3-clause license
 -- Adaptation 2015 Mathieu Parent <math.parent@gmail.com>
 local postfix_queueid = l.xdigit ^ 6 + l.alnum ^ 15
