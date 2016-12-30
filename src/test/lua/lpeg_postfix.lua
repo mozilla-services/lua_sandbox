@@ -146,7 +146,8 @@ local tests = {
     "POSTFIX_CLEANUP",
     "warning: dict_ldap_get_values[1]: DN uid=mguiraud,ou=people,dc=neotion,dc=com not found, skipping ",
     {
-      postfix_warning = "dict_ldap_get_values[1]: DN uid=mguiraud,ou=people,dc=neotion,dc=com not found, skipping "
+      postfix_message_level = "warning",
+      postfix_message = "dict_ldap_get_values[1]: DN uid=mguiraud,ou=people,dc=neotion,dc=com not found, skipping ",
     }
   },
   ["cleanup_0006.yaml"] = {
@@ -154,8 +155,19 @@ local tests = {
     "D8B07E3DB6: warning: header Subject: https://drive.google.com/file/d/0B8wxcvprDYVdlVsdf1kzOVkdisarmed/view?usp=sharing from o1678917x173.outbound-mail.sendgrid.net[167.89.17.173]; from=<bounces+2320708-7653-frank.test=hsdjasdd.co.uk@sendgrid.net> to=<frank.test@hsdjasdd.co.uk> proto=ESMTP helo=<o1678917x173.outbound-mail.sendgrid.net>",
     {
       postfix_queueid = "D8B07E3DB6",
-      postfix_warning = "header Subject: https://drive.google.com/file/d/0B8wxcvprDYVdlVsdf1kzOVkdisarmed/view?usp=sharing from o1678917x173.outbound-mail.sendgrid.net[167.89.17.173]",
+      postfix_message_level = "warning",
+      postfix_message = "header Subject: https://drive.google.com/file/d/0B8wxcvprDYVdlVsdf1kzOVkdisarmed/view?usp=sharing from o1678917x173.outbound-mail.sendgrid.net[167.89.17.173]",
       postfix_keyvalue_data = "from=<bounces+2320708-7653-frank.test=hsdjasdd.co.uk@sendgrid.net> to=<frank.test@hsdjasdd.co.uk> proto=ESMTP helo=<o1678917x173.outbound-mail.sendgrid.net>",
+    }
+  },
+  ["cleanup_0007.yaml"] = {
+    "POSTFIX_CLEANUP",
+    "D95341E50350: info: header Subject: =?utf-8?Q?Gr=C3=BC=C3=9Fe?= =?utf-8?Q?_=E2=80=92?= test from local; from=<from@example.com> to=<to@example.com>",
+    {
+      postfix_queueid = "D95341E50350",
+      postfix_message_level = "info",
+      postfix_message = "header Subject: =?utf-8?Q?Gr=C3=BC=C3=9Fe?= =?utf-8?Q?_=E2=80=92?= test from local",
+      postfix_keyvalue_data = "from=<from@example.com> to=<to@example.com>",
     }
   },
   ["delays_0001.yaml"] = {
@@ -199,8 +211,9 @@ local tests = {
     "POSTFIX_DNSBLOG",
     "warning: dnsblog_query: lookup error for DNS query 198.204.82.110.list.dnswl.org: Host or domain name not found. Name service error for name=198.204.82.110.list.dnswl.org type=A: Host not found, try again",
     {
-      postfix_warning = "dnsblog_query: lookup error for DNS query 198.204.82.110.list.dnswl.org: Host or domain name not found. Name service error for name=198.204.82.110.list.dnswl.org type=A: Host not found, try again",
-    }
+      postfix_message_level = "warning",
+      postfix_message =  "dnsblog_query: lookup error for DNS query 198.204.82.110.list.dnswl.org: Host or domain name not found. Name service error for name=198.204.82.110.list.dnswl.org type=A: Host not found, try again",
+    },
   },
   ["error_0001.yaml"] = {
     "POSTFIX_ERROR",
@@ -265,7 +278,8 @@ local tests = {
     "POSTFIX_MASTER",
     "warning: process /usr/local/libexec/postfix/smtpd pid 46234 killed by signal 11",
     {
-      postfix_warning = "process /usr/local/libexec/postfix/smtpd pid 46234 killed by signal 11",
+      postfix_message_level = "warning",
+      postfix_message =  "process /usr/local/libexec/postfix/smtpd pid 46234 killed by signal 11",
     }
   },
   ["pickup_0001.yaml"] = {
@@ -320,7 +334,8 @@ local tests = {
     "POSTFIX_POSTDROP",
     "warning: uid=0: File too large",
     {
-      postfix_warning = "uid=0: File too large"
+      postfix_message_level = "warning",
+      postfix_message = "uid=0: File too large"
     }
   },
   ["postscreen_0001.yaml"] = {
@@ -604,7 +619,8 @@ local tests = {
     "POSTFIX_POSTSCREEN",
     "warning: getpeername: Transport endpoint is not connected -- dropping this connection",
     {
-      postfix_warning = "getpeername: Transport endpoint is not connected -- dropping this connection"
+      postfix_message_level = "warning",
+      postfix_message = "getpeername: Transport endpoint is not connected -- dropping this connection"
     }
   },
   ["postsuper_0001.yaml"] = {
@@ -690,7 +706,8 @@ local tests = {
     "POSTFIX_QMGR",
     "warning: bounce_queue_lifetime is larger than maximal_queue_lifetime - adjusting bounce_queue_lifetime",
     {
-      postfix_warning = "bounce_queue_lifetime is larger than maximal_queue_lifetime - adjusting bounce_queue_lifetime"
+      postfix_message_level = "warning",
+      postfix_message = "bounce_queue_lifetime is larger than maximal_queue_lifetime - adjusting bounce_queue_lifetime"
     }
   },
   ["qmgr_0004.yaml"] = {
@@ -757,7 +774,8 @@ local tests = {
     "POSTFIX_SENDMAIL",
     "fatal: root(0): message file too big",
     {
-      postfix_warning = "root(0): message file too big"
+      postfix_message_level = "fatal",
+      postfix_message = "root(0): message file too big"
     }
   },
   ["smtp_0001.yaml"] = {
@@ -879,7 +897,8 @@ local tests = {
     "POSTFIX_SMTP",
     "warning: problem talking to service private/scache: Connection timed out",
     {
-      postfix_warning = "problem talking to service private/scache: Connection timed out"
+      postfix_message_level = "warning",
+      postfix_message = "problem talking to service private/scache: Connection timed out"
     }
   },
   ["smtp_0020.yaml"] = {
@@ -1007,7 +1026,8 @@ local tests = {
     "POSTFIX_SMTPD",
     "warning: hostname exemple.com does not resolve to address 185.14.29.32",
     {
-      postfix_warning = "hostname exemple.com does not resolve to address 185.14.29.32"
+      postfix_message_level = "warning",
+      postfix_message = "hostname exemple.com does not resolve to address 185.14.29.32"
     }
   },
   ["smtpd_0007.yaml"] = {
@@ -1250,7 +1270,8 @@ local tests = {
     "POSTFIX_TLSMGR",
     "warning: request to update table btree:/var/spool/postfix/smtpd_scache in non-postfix directory /var/spool/postfix",
     {
-      postfix_warning = "request to update table btree:/var/spool/postfix/smtpd_scache in non-postfix directory /var/spool/postfix"
+      postfix_message_level = "warning",
+      postfix_message = "request to update table btree:/var/spool/postfix/smtpd_scache in non-postfix directory /var/spool/postfix"
     }
   },
   ["tlsproxy_0001.yaml"] = {
@@ -1273,14 +1294,16 @@ local tests = {
     "POSTFIX_TRIVIAL_REWRITE",
     "warning: virtual_alias_domains lookup failure",
     {
-      postfix_warning = "virtual_alias_domains lookup failure"
+      postfix_message_level = "warning",
+      postfix_message = "virtual_alias_domains lookup failure"
     }
   },
   ["trivial_rewrite_0002.yaml"] = {
     "POSTFIX_TRIVIAL_REWRITE",
     "warning: dict_ldap_lookup: Search error -1: Can't contact LDAP server ",
     {
-      postfix_warning = "dict_ldap_lookup: Search error -1: Can't contact LDAP server "
+      postfix_message_level = "warning",
+      postfix_message = "dict_ldap_lookup: Search error -1: Can't contact LDAP server "
     }
   },
   ["virtual_0001.yaml"] = {

@@ -122,10 +122,11 @@ local postfix_time_unit = l.digit^1 * l.S'smhd'
 local postfix_keyvalue_greedy_cg = postfix_queueid_cg
                                  * l.P': '
                                  * l.Cg(l.P(1)^1, 'postfix_keyvalue_data')
+local postfix_warning_level = l.P'warning' + l.P'fatal' + l.P'info'
 local postfix_warning_cg = (postfix_queueid_cg * l.P': ')^-1
-                         * (l.P'warning' + l.P'fatal')
+                         * l.Cg(postfix_warning_level, 'postfix_message_level')
                          * ': '
-                         * l.Cg((l.P(1)-l.P'; ')^1, 'postfix_warning')
+                         * l.Cg((l.P(1)-l.P'; ')^1, 'postfix_message')
                          * (l.P'; '
                            * l.Cg(l.P(1)^1, 'postfix_keyvalue_data')
                            )^-1
