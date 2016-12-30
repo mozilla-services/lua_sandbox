@@ -146,7 +146,28 @@ local tests = {
     "POSTFIX_CLEANUP",
     "warning: dict_ldap_get_values[1]: DN uid=mguiraud,ou=people,dc=neotion,dc=com not found, skipping ",
     {
-      postfix_warning = "dict_ldap_get_values[1]: DN uid=mguiraud,ou=people,dc=neotion,dc=com not found, skipping "
+      postfix_message_level = "warning",
+      postfix_message = "dict_ldap_get_values[1]: DN uid=mguiraud,ou=people,dc=neotion,dc=com not found, skipping ",
+    }
+  },
+  ["cleanup_0006.yaml"] = {
+    "POSTFIX_CLEANUP",
+    "D8B07E3DB6: warning: header Subject: https://drive.google.com/file/d/0B8wxcvprDYVdlVsdf1kzOVkdisarmed/view?usp=sharing from o1678917x173.outbound-mail.sendgrid.net[167.89.17.173]; from=<bounces+2320708-7653-frank.test=hsdjasdd.co.uk@sendgrid.net> to=<frank.test@hsdjasdd.co.uk> proto=ESMTP helo=<o1678917x173.outbound-mail.sendgrid.net>",
+    {
+      postfix_queueid = "D8B07E3DB6",
+      postfix_message_level = "warning",
+      postfix_message = "header Subject: https://drive.google.com/file/d/0B8wxcvprDYVdlVsdf1kzOVkdisarmed/view?usp=sharing from o1678917x173.outbound-mail.sendgrid.net[167.89.17.173]",
+      postfix_keyvalue_data = "from=<bounces+2320708-7653-frank.test=hsdjasdd.co.uk@sendgrid.net> to=<frank.test@hsdjasdd.co.uk> proto=ESMTP helo=<o1678917x173.outbound-mail.sendgrid.net>",
+    }
+  },
+  ["cleanup_0007.yaml"] = {
+    "POSTFIX_CLEANUP",
+    "D95341E50350: info: header Subject: =?utf-8?Q?Gr=C3=BC=C3=9Fe?= =?utf-8?Q?_=E2=80=92?= test from local; from=<from@example.com> to=<to@example.com>",
+    {
+      postfix_queueid = "D95341E50350",
+      postfix_message_level = "info",
+      postfix_message = "header Subject: =?utf-8?Q?Gr=C3=BC=C3=9Fe?= =?utf-8?Q?_=E2=80=92?= test from local",
+      postfix_keyvalue_data = "from=<from@example.com> to=<to@example.com>",
     }
   },
   ["delays_0001.yaml"] = {
@@ -184,6 +205,34 @@ local tests = {
       postfix_client_ip = "2607:f8b0:4003:c01::23a",
       postfix_dnsbl_domain = "list.dnswl.org",
       postfix_dnsbl_result = "127.0.5.1"
+    }
+  },
+  ["dnsblog_0003.yaml"] = {
+    "POSTFIX_DNSBLOG",
+    "warning: dnsblog_query: lookup error for DNS query 198.204.82.110.list.dnswl.org: Host or domain name not found. Name service error for name=198.204.82.110.list.dnswl.org type=A: Host not found, try again",
+    {
+      postfix_message_level = "warning",
+      postfix_message =  "dnsblog_query: lookup error for DNS query 198.204.82.110.list.dnswl.org: Host or domain name not found. Name service error for name=198.204.82.110.list.dnswl.org type=A: Host not found, try again",
+    },
+  },
+  ["error_0001.yaml"] = {
+    "POSTFIX_ERROR",
+    "2DC5552A34: to=<user@yahoo.com>, relay=none, delay=63495, delays=63350/144/0/0, dsn=4.4.2, status=deferred (delivery temporarily suspended: lost connection with mta7.am0.yahoodns.net[98.136.216.22] while sending RCPT TO)",
+    {
+      postfix_queueid = "2DC5552A34",
+      postfix_keyvalue_data = "to=<user@yahoo.com>, relay=none, delay=63495, delays=63350/144/0/0, dsn=4.4.2",
+      postfix_status = "deferred",
+      postfix_error_response = "delivery temporarily suspended: lost connection with mta7.am0.yahoodns.net[98.136.216.22] while sending RCPT TO",
+    }
+  },
+  ["lmtp_0001.yaml"] = {
+    "POSTFIX_LMTP",
+    "7EE668039: to=<admin@example.com>, relay=127.0.0.1[127.0.0.1]:2525, delay=3.6, delays=0.2/0.02/0.04/3.3, dsn=2.0.0, status=sent (250 2.0.0 Ok: queued as 153053D)",
+    {
+      postfix_queueid = "7EE668039",
+      postfix_keyvalue_data = "to=<admin@example.com>, relay=127.0.0.1[127.0.0.1]:2525, delay=3.6, delays=0.2/0.02/0.04/3.3, dsn=2.0.0,",
+      postfix_status = "sent",
+      postfix_smtp_response = "250 2.0.0 Ok: queued as 153053D",
     }
   },
   ["local_0001.yaml"] = {
@@ -225,48 +274,83 @@ local tests = {
       postfix_version = "2.11.0"
     }
   },
+  ["master_0004.yaml"] = {
+    "POSTFIX_MASTER",
+    "warning: process /usr/local/libexec/postfix/smtpd pid 46234 killed by signal 11",
+    {
+      postfix_message_level = "warning",
+      postfix_message =  "process /usr/local/libexec/postfix/smtpd pid 46234 killed by signal 11",
+    }
+  },
+  ["mc_milter_0001.yaml"] = {
+    "POSTFIX_MC-MILTER",
+    "D087C1A7A0D: from=<toto@example.com>, firstto=<titi@example.org>, nrcpt=1, size=8879, status=WHITE, subject=\"  =?Windows-1252?Q?RE_:_ollicitation_pour_intervention_sur_for...\" ",
+    {
+      postfix_queueid = "D087C1A7A0D",
+      postfix_keyvalue_data = "from=<toto@example.com>, firstto=<titi@example.org>, nrcpt=1, size=8879, status=WHITE, subject=\"  =?Windows-1252?Q?RE_:_ollicitation_pour_intervention_sur_for...\" ",
+    }
+  },
+  ["mc_milter_0002.yaml"] = {
+    "POSTFIX_MC-MILTER",
+    "userstats=true, from=<toto@example.com>, rcpt=<titi@example.org>, vrscore=300, vrstate=1, status=spam, action=quser(1)",
+    {
+      postfix_keyvalue_data = "userstats=true, from=<toto@example.com>, rcpt=<titi@example.org>, vrscore=300, vrstate=1, status=spam, action=quser(1)",
+    }
+  },
   ["pickup_0001.yaml"] = {
     "POSTFIX_PICKUP",
     "D2FAE20586: uid=0 from=<fail2ban>",
     {
       postfix_queueid = "D2FAE20586",
-      -- from postfix_keyvalue_data = "uid=0 from=<fail2ban>",
-      postfix_uid = 0,
-      postfix_from = 'fail2ban'
+      postfix_keyvalue_data = "uid=0 from=<fail2ban>",
     }
   },
   ["pipe_0001.yaml"] = {
     "POSTFIX_PIPE",
     "0F5383D: to=<tom@example.com>, relay=dovecot, delay=4.3, delays=4.1/0.01/0/0.15, dsn=2.0.0, status=sent (delivered via dovecot service)",
     {
-      postfix_keyvalue_data = "to=<tom@example.com>, relay=dovecot, delay=4.3, delays=4.1/0.01/0/0.15, dsn=2.0.0, status=sent",
-      postfix_pipe_service = "dovecot",
-      postfix_queueid = "0F5383D"
+      postfix_queueid = "0F5383D",
+      postfix_keyvalue_data = "to=<tom@example.com>, relay=dovecot, delay=4.3, delays=4.1/0.01/0/0.15, dsn=2.0.0",
+      postfix_status = "sent",
+      postfix_pipe_response = "delivered via dovecot service",
     }
   },
   ["pipe_0002.yaml"] = {
     "POSTFIX_PIPE",
     "153053D: to=<tom@example.com>, orig_to=<admin@example.com>, relay=dovecot, delay=3.4, delays=3.3/0.03/0/0.12, dsn=2.0.0, status=sent (delivered via dovecot service)",
     {
-      postfix_keyvalue_data = "to=<tom@example.com>, orig_to=<admin@example.com>, relay=dovecot, delay=3.4, delays=3.3/0.03/0/0.12, dsn=2.0.0, status=sent",
-      postfix_pipe_service = "dovecot",
-      postfix_queueid = "153053D"
+      postfix_queueid = "153053D",
+      postfix_keyvalue_data = "to=<tom@example.com>, orig_to=<admin@example.com>, relay=dovecot, delay=3.4, delays=3.3/0.03/0/0.12, dsn=2.0.0",
+      postfix_status = "sent",
+      postfix_pipe_response = "delivered via dovecot service",
     }
   },
   ["pipe_0003.yaml"] = {
     "POSTFIX_PIPE",
     "95ECE24E0: to=<tom@example.com>, relay=dovecot, delay=0.12, delays=0.03/0/0/0.08, dsn=5.4.6, status=bounced (mail forwarding loop for tom@example.com)",
     {
-      postfix_keyvalue_data = "to=<tom@example.com>, relay=dovecot, delay=0.12, delays=0.03/0/0/0.08, dsn=5.4.6, status=bounced",
       postfix_queueid = "95ECE24E0",
-      postfix_to = "tom@example.com"
+      postfix_keyvalue_data = "to=<tom@example.com>, relay=dovecot, delay=0.12, delays=0.03/0/0/0.08, dsn=5.4.6",
+      postfix_status = "bounced",
+      postfix_pipe_response = "mail forwarding loop for tom@example.com",
+    }
+  },
+  ["pipe_0004.yaml"] = {
+    "POSTFIX_PIPE",
+    "2F6C83D: to=<user@example.org>, relay=dovecot, delay=5.1, delays=4.4/0.02/0/0.61, dsn=5.1.1, status=bounced (user unknown)",
+    {
+      postfix_queueid = "2F6C83D",
+      postfix_keyvalue_data = "to=<user@example.org>, relay=dovecot, delay=5.1, delays=4.4/0.02/0/0.61, dsn=5.1.1",
+      postfix_status = "bounced",
+      postfix_pipe_response = "user unknown",
     }
   },
   ["postdrop_0001.yaml"] = {
     "POSTFIX_POSTDROP",
     "warning: uid=0: File too large",
     {
-      postfix_warning = "uid=0: File too large"
+      postfix_message_level = "warning",
+      postfix_message = "uid=0: File too large"
     }
   },
   ["postscreen_0001.yaml"] = {
@@ -550,7 +634,72 @@ local tests = {
     "POSTFIX_POSTSCREEN",
     "warning: getpeername: Transport endpoint is not connected -- dropping this connection",
     {
-      postfix_warning = "getpeername: Transport endpoint is not connected -- dropping this connection"
+      postfix_message_level = "warning",
+      postfix_message = "getpeername: Transport endpoint is not connected -- dropping this connection"
+    }
+  },
+  ["postsuper_0001.yaml"] = {
+    "POSTFIX_POSTSUPER",
+    "D4F2023DB: removed",
+    {
+      postfix_queueid = "D4F2023DB",
+      postfix_postsuper_action = "removed",
+    }
+  },
+  ["postsuper_0002.yaml"] = {
+    "POSTFIX_POSTSUPER",
+    "D4F2023DB: requeued",
+    {
+      postfix_queueid = "D4F2023DB",
+      postfix_postsuper_action = "requeued",
+    }
+  },
+  ["postsuper_0003.yaml"] = {
+    "POSTFIX_POSTSUPER",
+    "D4F2023DB: placed on hold",
+    {
+      postfix_queueid = "D4F2023DB",
+      postfix_postsuper_action = "placed on hold",
+    }
+  },
+  ["postsuper_0004.yaml"] = {
+    "POSTFIX_POSTSUPER",
+    "D4F2023DB: released from hold",
+    {
+      postfix_queueid = "D4F2023DB",
+      postfix_postsuper_action = "released from hold",
+    }
+  },
+  ["postsuper_0005.yaml"] = {
+    "POSTFIX_POSTSUPER",
+    "Deleted: 115 messages",
+    {
+      postfix_postsuper_summary_action = "Deleted",
+      postfix_postsuper_summary_count = 115,
+    }
+  },
+  ["postsuper_0006.yaml"] = {
+    "POSTFIX_POSTSUPER",
+    "Requeued: 1 message",
+    {
+      postfix_postsuper_summary_action = "Requeued",
+      postfix_postsuper_summary_count = 1,
+    }
+  },
+  ["postsuper_0007.yaml"] = {
+    "POSTFIX_POSTSUPER",
+    "Placed on hold: 67 messages",
+    {
+      postfix_postsuper_summary_action = "Placed on hold",
+      postfix_postsuper_summary_count = 67,
+    }
+  },
+  ["postsuper_0008.yaml"] = {
+    "POSTFIX_POSTSUPER",
+    "Released from hold: 13 messages",
+    {
+      postfix_postsuper_summary_action = "Released from hold",
+      postfix_postsuper_summary_count = 13,
     }
   },
   ["qmgr_0001.yaml"] = {
@@ -572,7 +721,26 @@ local tests = {
     "POSTFIX_QMGR",
     "warning: bounce_queue_lifetime is larger than maximal_queue_lifetime - adjusting bounce_queue_lifetime",
     {
-      postfix_warning = "bounce_queue_lifetime is larger than maximal_queue_lifetime - adjusting bounce_queue_lifetime"
+      postfix_message_level = "warning",
+      postfix_message = "bounce_queue_lifetime is larger than maximal_queue_lifetime - adjusting bounce_queue_lifetime"
+    }
+  },
+  ["qmgr_0004.yaml"] = {
+    "POSTFIX_QMGR",
+    "585BC3F: from=<>, status=expired, returned to sender",
+    {
+      postfix_queueid = "585BC3F",
+      postfix_from = "",
+      postfix_status = "expired",
+    }
+  },
+  ["qmgr_0005.yaml"] = {
+    "POSTFIX_QMGR",
+    "66C15648577B: from=<uvnhbl@yahoo.com.tw>, status=expired, returned to sender",
+    {
+      postfix_queueid = "66C15648577B",
+      postfix_from = "uvnhbl@yahoo.com.tw",
+      postfix_status = "expired",
     }
   },
   ["relay_info_0001.yaml"] = {
@@ -621,7 +789,8 @@ local tests = {
     "POSTFIX_SENDMAIL",
     "fatal: root(0): message file too big",
     {
-      postfix_warning = "root(0): message file too big"
+      postfix_message_level = "fatal",
+      postfix_message = "root(0): message file too big"
     }
   },
   ["smtp_0001.yaml"] = {
@@ -743,7 +912,88 @@ local tests = {
     "POSTFIX_SMTP",
     "warning: problem talking to service private/scache: Connection timed out",
     {
-      postfix_warning = "problem talking to service private/scache: Connection timed out"
+      postfix_message_level = "warning",
+      postfix_message = "problem talking to service private/scache: Connection timed out"
+    }
+  },
+  ["smtp_0020.yaml"] = {
+    "POSTFIX_SMTP",
+    "ED59C3D: host mail2.example.com[1.74.253.23] said: 450 4.7.1 <user@example.com>: Recipient address rejected: Greylisted for 5 minutes (in reply to RCPT TO command)",
+    {
+      postfix_queueid = "ED59C3D",
+      postfix_relay_hostname = "mail2.example.com",
+      postfix_relay_ip = "1.74.253.23",
+      postfix_smtp_response = "450 4.7.1 <user@example.com>: Recipient address rejected: Greylisted for 5 minutes",
+      postfix_smtp_stage = "RCPT TO",
+    }
+  },
+  ["smtp_0021.yaml"] = {
+    "POSTFIX_SMTP",
+    "1234ABCDEF: host relay.example.com[192.0.2.1] said: 450 4.1.8 root@localhost.localdomain: Sender address rejected: Domain not found (in reply to RCPT TO command)",
+    {
+      postfix_queueid = "1234ABCDEF",
+      postfix_relay_hostname = "relay.example.com",
+      postfix_relay_ip = "192.0.2.1",
+      postfix_smtp_response = "450 4.1.8 root@localhost.localdomain: Sender address rejected: Domain not found",
+      postfix_smtp_stage = "RCPT TO",
+    }
+  },
+  ["smtp_0022.yaml"] = {
+    "POSTFIX_SMTP",
+    "78D6B41: conversation with mx00.gmx.com[74.208.5.4] timed out while receiving the initial server greeting",
+    {
+      postfix_queueid = "78D6B41",
+      postfix_relay_hostname = "mx00.gmx.com",
+      postfix_relay_ip = "74.208.5.4",
+    }
+  },
+  ["smtp_0023.yaml"] = {
+    "POSTFIX_SMTP",
+    "644D53D: host gmail-smtp-in.l.google.com[74.125.136.26] said: 421-4.7.0 [1.2.3.4      15] Our system has detected an unusual rate of 421-4.7.0 unsolicited mail originating from your IP address. To protect our 421-4.7.0 users from spam, mail sent from your IP address has been temporarily 421-4.7.0 rate limited. Please visit 421-4.7.0  https://support.google.com/mail/answer/81126 to review our Bulk Email 421 4.7.0 Senders Guidelines. bv15si15610322wjb.142 - gsmtp (in reply to end of DATA command)",
+    {
+      postfix_queueid = "644D53D",
+      postfix_relay_hostname = "gmail-smtp-in.l.google.com",
+      postfix_relay_ip = "74.125.136.26",
+      postfix_smtp_response = "421-4.7.0 [1.2.3.4      15] Our system has detected an unusual rate of 421-4.7.0 unsolicited mail originating from your IP address. To protect our 421-4.7.0 users from spam, mail sent from your IP address has been temporarily 421-4.7.0 rate limited. Please visit 421-4.7.0  https://support.google.com/mail/answer/81126 to review our Bulk Email 421 4.7.0 Senders Guidelines. bv15si15610322wjb.142 - gsmtp",
+      postfix_smtp_stage = "end of DATA",
+    }
+  },
+  ["smtp_0024.yaml"] = {
+    "POSTFIX_SMTP",
+    "2690D8044: host mta7.am0.yahoodns.net[66.196.118.34] said: 451 4.3.2 Internal error reading data (in reply to MAIL FROM command)",
+    {
+      postfix_queueid = "2690D8044",
+      postfix_relay_hostname = "mta7.am0.yahoodns.net",
+      postfix_relay_ip = "66.196.118.34",
+      postfix_smtp_response = "451 4.3.2 Internal error reading data",
+      postfix_smtp_stage = "MAIL FROM",
+    }
+  },
+  ["smtp_0025.yaml"] = {
+    "POSTFIX_SMTP",
+    "connect to aspmx.l.google.com[2a00:1450:400b:c02::1a]:25: Network is unreachable",
+    {
+      postfix_relay_hostname = "aspmx.l.google.com",
+      postfix_relay_ip = "2a00:1450:400b:c02::1a",
+      postfix_relay_port = 25,
+    }
+  },
+  ["smtp_0026.yaml"] = {
+    "POSTFIX_SMTP",
+    "A0E85200BD: to=<whatever-user@lists.example.org>, relay=open.example.nl[10.49.140.10]:25, delay=2.3, delays=0.25/0.05/2/0.04, dsn=4.2.0, status=deferred (host open.example.nl[10.49.140.10] said: 450 4.2.0 <whatever-user@lists.example.org>: Recipient address rejected: Greylisted, see http://postgrey.schweikert.ch/help/lists.example.org.html (in reply to RCPT TO command))",
+    {
+      postfix_queueid = "A0E85200BD",
+      postfix_keyvalue_data = "to=<whatever-user@lists.example.org>, relay=open.example.nl[10.49.140.10]:25, delay=2.3, delays=0.25/0.05/2/0.04, dsn=4.2.0,",
+      postfix_status = "deferred",
+      postfix_smtp_response = "host open.example.nl[10.49.140.10] said: 450 4.2.0 <whatever-user@lists.example.org>: Recipient address rejected: Greylisted, see http://postgrey.schweikert.ch/help/lists.example.org.html (in reply to RCPT TO command)",
+    }
+  },
+  ["smtp_0027.yaml"] = {
+    "POSTFIX_SMTP",
+    "virtual_dns_lookup: example.com (MX)",
+    {
+      dns_name = "example.com",
+      dns_type = "MX",
     }
   },
   ["smtpd_0001.yaml"] = {
@@ -799,7 +1049,8 @@ local tests = {
     "POSTFIX_SMTPD",
     "warning: hostname exemple.com does not resolve to address 185.14.29.32",
     {
-      postfix_warning = "hostname exemple.com does not resolve to address 185.14.29.32"
+      postfix_message_level = "warning",
+      postfix_message = "hostname exemple.com does not resolve to address 185.14.29.32"
     }
   },
   ["smtpd_0007.yaml"] = {
@@ -946,10 +1197,9 @@ local tests = {
     "POSTFIX_SMTPD",
     "SSL_accept error from unknown[72.13.58.7]: lost connection",
     {
-      postfix_action = "SSL_accept error",
+      postfix_smtpd_lostconn_data = "SSL_accept error",
       postfix_client_hostname = "unknown",
       postfix_client_ip = "72.13.58.7",
-      postfix_smtpd_lostconn_data = "lost connection"
     }
   },
   ["smtpd_0020.yaml"] = {
@@ -990,17 +1240,61 @@ local tests = {
     "POSTFIX_SMTPD",
     "SSL_accept error from unknown[72.13.58.7]: Connection timed out",
     {
-      postfix_action = "SSL_accept error",
+      postfix_smtpd_lostconn_data = "SSL_accept error",
       postfix_client_hostname = "unknown",
       postfix_client_ip = "72.13.58.7",
-      postfix_smtpd_lostconn_data = "Connection timed out"
+    }
+  },
+  ["smtpd_0024.yaml"] = {
+    "POSTFIX_SMTPD",
+    "SSL_accept error from ssl-tools.net[185.55.116.145]: -1",
+    {
+      postfix_smtpd_lostconn_data = "SSL_accept error",
+      postfix_client_hostname = "ssl-tools.net",
+      postfix_client_ip = "185.55.116.145",
+    }
+  },
+  ["smtpd_0025.yaml"] = {
+    "POSTFIX_SMTPD",
+    "SSL_accept error from eu-smtp-delivery-201.mimecast.com[207.82.80.201]: 0",
+    {
+      postfix_smtpd_lostconn_data = "SSL_accept error",
+      postfix_client_hostname = "eu-smtp-delivery-201.mimecast.com",
+      postfix_client_ip = "207.82.80.201",
+    }
+  },
+  ["smtpd_0026.yaml"] = {
+    "POSTFIX_SMTPD",
+    "NOQUEUE: discard: MAIL from ccm231.constantcontact.com[208.75.123.231]: <bsdbdsfbw==_4343_sdfbddw==@in.constantcontact.com>: Sender address SPAM; from=<bsdbdsfbw==_4343_sdfbddw==@in.constantcontact.com> proto=ESMTP helo=<ccm231.constantcontact.com>",
+    {
+      postfix_action = "discard",
+      postfix_smtp_stage = "MAIL",
+      postfix_client_hostname = "ccm231.constantcontact.com",
+      postfix_client_ip = "208.75.123.231",
+      postfix_status_data = "bsdbdsfbw==_4343_sdfbddw==@in.constantcontact.com",
+      postfix_status_message = "Sender address SPAM",
+      postfix_keyvalue_data = "from=<bsdbdsfbw==_4343_sdfbddw==@in.constantcontact.com> proto=ESMTP helo=<ccm231.constantcontact.com>",
+    }
+  },
+  ["smtpd_0027.yaml"] = {
+    "POSTFIX_SMTPD",
+    "NOQUEUE: filter: RCPT from unknown[85.25.255.255]: <mail@sender.com>: Sender address triggers FILTER smtp-amavis:[127.0.0.1]:10024; from=<mail@sender.com> to=<user@domain.com> proto=ESMTP helo=<plutoapp.biz>",
+    {
+      postfix_action = "filter",
+      postfix_smtp_stage = "RCPT",
+      postfix_client_hostname = "unknown",
+      postfix_client_ip = "85.25.255.255",
+      postfix_status_data = "mail@sender.com",
+      postfix_status_message = "Sender address triggers FILTER smtp-amavis:[127.0.0.1]:10024",
+      postfix_keyvalue_data = "from=<mail@sender.com> to=<user@domain.com> proto=ESMTP helo=<plutoapp.biz>",
     }
   },
   ["tlsmgr_0001.yaml"] = {
     "POSTFIX_TLSMGR",
     "warning: request to update table btree:/var/spool/postfix/smtpd_scache in non-postfix directory /var/spool/postfix",
     {
-      postfix_warning = "request to update table btree:/var/spool/postfix/smtpd_scache in non-postfix directory /var/spool/postfix"
+      postfix_message_level = "warning",
+      postfix_message = "request to update table btree:/var/spool/postfix/smtpd_scache in non-postfix directory /var/spool/postfix"
     }
   },
   ["tlsproxy_0001.yaml"] = {
@@ -1023,14 +1317,26 @@ local tests = {
     "POSTFIX_TRIVIAL_REWRITE",
     "warning: virtual_alias_domains lookup failure",
     {
-      postfix_warning = "virtual_alias_domains lookup failure"
+      postfix_message_level = "warning",
+      postfix_message = "virtual_alias_domains lookup failure"
     }
   },
   ["trivial_rewrite_0002.yaml"] = {
     "POSTFIX_TRIVIAL_REWRITE",
     "warning: dict_ldap_lookup: Search error -1: Can't contact LDAP server ",
     {
-      postfix_warning = "dict_ldap_lookup: Search error -1: Can't contact LDAP server "
+      postfix_message_level = "warning",
+      postfix_message = "dict_ldap_lookup: Search error -1: Can't contact LDAP server "
+    }
+  },
+  ["virtual_0001.yaml"] = {
+    "POSTFIX_VIRTUAL",
+    "B657F2DB195D: to=<postmaster@example.com>, relay=virtual, delay=0.52, delays=0.51/0.01/0/0, dsn=2.0.0, status=sent (delivered to maildir)",
+    {
+      postfix_queueid = "B657F2DB195D",
+      postfix_keyvalue_data = "to=<postmaster@example.com>, relay=virtual, delay=0.52, delays=0.51/0.01/0/0, dsn=2.0.0,",
+      postfix_status = "sent",
+      postfix_smtp_response = "delivered to maildir",
     }
   },
   -- testsuite additions, not in postfix-grok-patterns
@@ -1050,6 +1356,9 @@ local tests = {
 }
 
 function process_one(filename, programmname, message, expect, extract_keyvalue_data)
+   if not expect then
+      error(string.format("%s: Test case is flawed, no results are defined", filename))
+   end
    local ret = pf.postfix_match(programmname, message, extract_keyvalue_data)
    if not ret then
      error(string.format("%s: failed match", filename))
