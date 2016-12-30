@@ -282,6 +282,21 @@ local tests = {
       postfix_message =  "process /usr/local/libexec/postfix/smtpd pid 46234 killed by signal 11",
     }
   },
+  ["mc_milter_0001.yaml"] = {
+    "POSTFIX_MC-MILTER",
+    "D087C1A7A0D: from=<toto@example.com>, firstto=<titi@example.org>, nrcpt=1, size=8879, status=WHITE, subject=\"  =?Windows-1252?Q?RE_:_ollicitation_pour_intervention_sur_for...\" ",
+    {
+      postfix_queueid = "D087C1A7A0D",
+      postfix_keyvalue_data = "from=<toto@example.com>, firstto=<titi@example.org>, nrcpt=1, size=8879, status=WHITE, subject=\"  =?Windows-1252?Q?RE_:_ollicitation_pour_intervention_sur_for...\" ",
+    }
+  },
+  ["mc_milter_0002.yaml"] = {
+    "POSTFIX_MC-MILTER",
+    "userstats=true, from=<toto@example.com>, rcpt=<titi@example.org>, vrscore=300, vrstate=1, status=spam, action=quser(1)",
+    {
+      postfix_keyvalue_data = "userstats=true, from=<toto@example.com>, rcpt=<titi@example.org>, vrscore=300, vrstate=1, status=spam, action=quser(1)",
+    }
+  },
   ["pickup_0001.yaml"] = {
     "POSTFIX_PICKUP",
     "D2FAE20586: uid=0 from=<fail2ban>",

@@ -443,6 +443,10 @@ local postfix_scache_simultaneous_cg = l.P'statistics: max simultaneous domains=
 local postfix_scache_timestamp_cg = l.P'statistics: start interval '
                                   * l.Cg(l.P(1)^1, 'postfix_scache_timestamp')
 
+-- mc-milter patterns
+local postfix_mc_milter_any_cg = (postfix_queueid_cg * l.P': ')^-1
+                               * l.Cg(l.P(1)^1, 'postfix_keyvalue_data')
+
 -- aggregate all patterns
 local postfix_patterns = {
   smtpd = l.Ct(postfix_smtpd_connect_cg
@@ -505,6 +509,7 @@ local postfix_patterns = {
   error = l.Ct(postfix_error_any_cg) * -1,
   postsuper = l.Ct(postfix_postsuper_action_cg
            + postfix_postsuper_summary_cg) * -1,
+  ['mc-milter'] = l.Ct(postfix_mc_milter_any_cg) * -1
 }
 postfix_patterns['lmtp'] = postfix_patterns['smtp']
 
@@ -536,6 +541,8 @@ local integer_fields = {
   'postfix_status_code',
   'postfix_termination_signal',
   'postfix_uid',
+  'postfix_vrscore',
+  'postfix_vrstate',
 }
 local float_fields = {
   'postfix_delay',
