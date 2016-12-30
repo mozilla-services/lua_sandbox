@@ -400,6 +400,12 @@ local postfix_smtp_relayerr_cg = postfix_queueid_cg
                                * l.P' (in reply to '
                                * postfix_smtp_stage_cg
                                * l.P' command)'
+local postfix_smtp_virtual_dns_lookup_cg = l.P'virtual_dns_lookup: '
+                                         * l.Cg((l.P(1) - l.P' (')^1, 'dns_name')
+                                         * l.P' ('
+                                         * l.Cg((l.P(1) - l.P')')^1, 'dns_type')
+                                         * l.P')'
+
 
 -- master patterns
 local postfix_master_start_cg = (l.P'daemon started' + l.P'reload')
@@ -474,6 +480,7 @@ local postfix_patterns = {
        + postfix_smtp_lostconn_cg
        + postfix_smtp_timeout_cg
        + postfix_smtp_relayerr_cg
+       + postfix_smtp_virtual_dns_lookup_cg
        + postfix_tlsconn_cg
        + postfix_warning_cg) * -1,
   discard = l.Ct(postfix_discard_any_cg

@@ -973,6 +973,14 @@ local tests = {
       postfix_smtp_response = "host open.example.nl[10.49.140.10] said: 450 4.2.0 <whatever-user@lists.example.org>: Recipient address rejected: Greylisted, see http://postgrey.schweikert.ch/help/lists.example.org.html (in reply to RCPT TO command)",
     }
   },
+  ["smtp_0027.yaml"] = {
+    "POSTFIX_SMTP",
+    "virtual_dns_lookup: example.com (MX)",
+    {
+      dns_name = "example.com",
+      dns_type = "MX",
+    }
+  },
   ["smtpd_0001.yaml"] = {
     "POSTFIX_SMTPD",
     "connect from 061238241086.static.ctinets.com[61.238.241.86]",
