@@ -146,6 +146,9 @@ local postfix_delays_ct = l.Ct(l.Cg(number, 'postfix_delay_before_qmgr')
 local postfix_lostconn = l.P'lost connection'
                        + l.P'timeout'
                        + l.P'SSL_accept error'
+local postfix_lostconn_reasons = l.P'receiving the initial server greeting'
+                               + l.P'sending message body'
+                               + l.P'sending end of data -- message may be sent more than once'
 local postfix_smtpd_lostconn_data_cg = l.Cg(postfix_lostconn, 'postfix_smtpd_lostconn_data')
 local postfix_proxy_message_cg = (l.Cg(postfix_status_code, 'postfix_proxy_status_code') * l.P' ')^-1 * (l.Cg(postfix_status_code_enhanced, 'postfix_proxy_status_code_enhanced') * l.P' ')^-1 * (l.P(1) - l.P';')^0
 
@@ -161,6 +164,9 @@ local postfix_smtpd_lostconn_cg = postfix_smtpd_lostconn_data_cg
                                   )^-1
                                 * l.P' from '
                                 * postfix_client_info_cg
+                                * (l.P': '
+                                  * l.Cg(l.P(1)^1, 'postfix_smtpd_lostconn_reason')
+                                  )^-1
 local postfix_smtpd_noqueue_cg = l.P'NOQUEUE: '
                                * postfix_action_cg
                                * l.P': '
@@ -181,7 +187,12 @@ local postfix_smtpd_noqueue_cg = l.P'NOQUEUE: '
                                * (postfix_dnsbl_message_cg + (l.Cg((l.P(1)-l.P';')^0, 'postfix_status_message') * l.P';'))
                                * l.P' '
                                * l.Cg(l.P(1)^1, 'postfix_keyvalue_data')
-local postfix_smtpd_pipelining_cg = l.P'improper command pipelining after ' * postfix_smtp_stage_cg * l.P' from ' * postfix_client_info_cg * l.P':'
+local postfix_smtpd_pipelining_cg = l.P'improper command pipelining after '
+                                  * postfix_smtp_stage_cg
+                                  * l.P' from '
+                                  * postfix_client_info_cg
+                                  * l.P':'
+                                  * l.Cg(l.P(1)^1, 'postfix_improper_pipelining_data')
 local postfix_smtpd_proxy_cg = l.P'proxy-'
                              * postfix_proxy_result_cg
                              * l.P': '
@@ -201,6 +212,15 @@ local postfix_cleanup_milter_cg = postfix_queueid_cg
                                 * l.P'; '
                                 * l.Cg((l.P(1)-l.P':')^1, 'postfix_keyvalue_data')
                                 *(l.P': ' * l.Cg(l.P(1)^1, 'postfix_milter_data'))^-1
+
+-- discard patterns
+local postfix_discard_any_cg = postfix_queueid_cg
+                             * l.P': '
+                             * l.Cg((l.P(1) - l.P' status=')^1, 'postfix_keyvalue_data')
+                             * l.P' status='
+                             * l.Cg(l.alnum^1, 'postfix_status')
+                             * l.P' '
+                             * l.P(1)^1
 
 -- qmgr patterns
 local postfix_qmgr_removed_cg = postfix_queueid_cg * l.P': removed'
@@ -224,6 +244,7 @@ local postfix_pipe_any_cg = postfix_queueid_cg
                           * l.Cg((l.P(1) - l.P' (')^1, 'postfix_status')
                           * l.P' ('
                           * l.Cg((l.P(1) - l.P')')^1, 'postfix_pipe_response')
+                          * l.P')'
 
 -- error patterns
 local postfix_error_any_cg = postfix_queueid_cg
@@ -233,6 +254,25 @@ local postfix_error_any_cg = postfix_queueid_cg
                            * l.Cg((l.P(1) - l.P' (')^1, 'postfix_status')
                            * l.P' ('
                            * l.Cg((l.P(1) - l.P')')^1, 'postfix_error_response')
+                           * l.P')'
+
+-- postsuper patterns
+local postfix_postsuper_actions = l.P'removed'
+                                + l.P'requeued'
+                                + l.P'placed on hold'
+                                + l.P'released from hold'
+local postfix_postsuper_action_cg = postfix_queueid_cg
+                                  * l.P': '
+                                  * l.Cg(postfix_postsuper_actions, 'postfix_postsuper_action')
+local postfix_postsuper_summary_actions = l.P'Deleted'
+                                        + l.P'Requeued'
+                                        + l.P'Placed on hold'
+                                        + l.P'Released from hold'
+local postfix_postsuper_summary_cg = l.Cg(postfix_postsuper_summary_actions, 'postfix_postsuper_summary_action')
+                                   * l.P': '
+                                   * l.Cg(integer, 'postfix_postsuper_summary_count')
+                                   * l.P' message'
+                                   * l.P's'^-1
 
 -- postscreen patterns
 local postfix_ps_connect_cg = l.P'CONNECT from '
@@ -261,12 +301,26 @@ local postfix_ps_cache_cg = l.P'cache '
                           * l.P' dropped='
                           * l.Cg(integer, 'postfix_postscreen_cache_dropped')
                           * l.P' entries'
+
 local postfix_ps_violations_cg = postfix_ps_violation_cg
-                               * (l.P' ' * l.digit^1)^-1
-                               * (l.P' after ' * l.Cg(number, 'postfix_postscreen_violation_time'))^-1
+                               * ( l.P' '
+                                 * l.digit^1
+                                 )^-1
+                               * ( l.P' after '
+                                 * l.Cg(number, 'postfix_postscreen_violation_time')
+                                 )^-1
                                * l.P' from '
                                * postfix_client_info_cg
-                               * (l.P' after ' * postfix_smtp_stage_cg)^-1
+                               * (
+                                   ( (l.P' after ' * postfix_smtp_stage_cg)^-1
+                                   * (l.P': ' * l.Cg(l.P(1)^1, 'postfix_postscreen_data'))^-1
+                                   * -1
+                                   )
+                                 + ( l.P' in tests '
+                                   * (l.P'after' + l.P'before')
+                                   * l.P' SMTP handshake'
+                                   )
+                                 )
 
 -- dnsblog patterns
 local postfix_dnsblog_listing_cg = l.P'addr '
@@ -323,14 +377,20 @@ local postfix_smtp_connerr_cg = l.P'connect to '
                               * (l.P'Connection timed out' + l.P'No route to host' + l.P'Connection refused' + l.P'Network is unreachable')
 local postfix_smtp_lostconn_cg = postfix_queueid_cg
                                * l.P': '
-                               * postfix_lostconn
+                               * l.Cg(postfix_lostconn, 'postfix_smtp_lostconn_data')
                                * l.P' with '
                                * postfix_relay_info_cg
+                               * ( l.P' while '
+                                 * l.Cg(postfix_lostconn_reasons, 'postfix_smtp_lostconn_reason')
+                                 )^-1
 local postfix_smtp_timeout_cg = postfix_queueid_cg
                               * l.P': '
                               * l.P'conversation with '
                               * postfix_relay_info_cg
-                              * l.P' timed out while receiving the initial server greeting'
+                              * l.P' timed out'
+                              * ( l.P' while '
+                                * l.Cg(postfix_lostconn_reasons, 'postfix_smtp_lostconn_reason')
+                                )^-1
 local postfix_smtp_relayerr_cg = postfix_queueid_cg
                                * l.P': host '
                                * postfix_relay_info_cg
@@ -366,6 +426,7 @@ local postfix_scache_lookups_cg = l.P'statistics: '
                                 * l.Cg(integer,  'postfix_scache_miss')
                                 * l.P' success='
                                 * l.Cg(integer, 'postfix_scache_success')
+                                * l.P'%'
 local postfix_scache_simultaneous_cg = l.P'statistics: max simultaneous domains='
                                      * l.Cg(integer, 'postfix_scache_domains')
                                      * l.P' addresses='
@@ -385,15 +446,15 @@ local postfix_patterns = {
         + postfix_tlsconn_cg
         + postfix_warning_cg
         + postfix_smtpd_proxy_cg
-        + postfix_keyvalue_greedy_cg),
+        + postfix_keyvalue_greedy_cg) * -1,
   cleanup =  l.Ct(postfix_cleanup_milter_cg
           + postfix_warning_cg
-          + postfix_keyvalue_greedy_cg),
+          + postfix_keyvalue_greedy_cg) * -1,
   qmgr = l.Ct(postfix_qmgr_removed_cg
        + postfix_qmgr_active_cg
        + postfix_qmgr_expired_cg
-       + postfix_warning_cg),
-  pipe = l.Ct(postfix_pipe_any_cg),
+       + postfix_warning_cg) * -1,
+  pipe = l.Ct(postfix_pipe_any_cg) * -1,
   postscreen = l.Ct(postfix_ps_connect_cg
              + postfix_ps_access_cg
              + postfix_ps_noqueue_cg
@@ -401,49 +462,41 @@ local postfix_patterns = {
              + postfix_ps_cache_cg
              + postfix_ps_dnsbl_cg
              + postfix_ps_violations_cg
-             + postfix_warning_cg),
+             + postfix_warning_cg) * -1,
   dnsblog = l.Ct(postfix_dnsblog_listing_cg
-          + postfix_warning_cg),
+          + postfix_warning_cg) * -1,
   anvil = l.Ct(postfix_anvil_conn_rate_cg
         + postfix_anvil_conn_cache_cg
-        + postfix_anvil_conn_count_cg),
+        + postfix_anvil_conn_count_cg) * -1,
   smtp = l.Ct(postfix_smtp_delivery_cg
        + postfix_smtp_connerr_cg
        + postfix_smtp_lostconn_cg
        + postfix_smtp_timeout_cg
        + postfix_smtp_relayerr_cg
        + postfix_tlsconn_cg
-       + postfix_warning_cg),
-  discard = l.Ct(postfix_queueid_cg
-          * l.P': '
-          * l.Cg((l.P(1) - l.P' status=')^1, 'postfix_keyvalue_data')
-          * l.P' status='
-          * l.Cg(l.alnum^1, 'postfix_status')),
+       + postfix_warning_cg) * -1,
+  discard = l.Ct(postfix_discard_any_cg
+          + postfix_warning_cg) * -1,
   -- lmtp = smtp,
-  pickup = l.Ct(postfix_queueid_cg
-         * l.P': uid='
-         * l.Cg((l.P(1) - l.P' from=')^1, 'postfix_uid')
-         * l.P' from=<'
-         * l.Cg((l.P(1) - l.P'>')^1, 'postfix_from')
-         * (l.P'> orig_id='
-           * l.Cg(l.P(1)^1, 'postfix_orig_id'))^-1
-         ),
+  pickup = l.Ct(postfix_keyvalue_greedy_cg) * -1,
   tlsproxy = l.Ct(postfix_tlsproxy_conn_cg
-           + postfix_warning_cg),
+           + postfix_warning_cg) * -1,
   master = l.Ct(postfix_master_start_cg
          + postfix_master_exit_cg
-         + postfix_warning_cg),
-  bounce = l.Ct(postfix_bounce_notification_cg),
-  sendmail = l.Ct(postfix_warning_cg),
-  postdrop = l.Ct(postfix_warning_cg),
+         + postfix_warning_cg) * -1,
+  bounce = l.Ct(postfix_bounce_notification_cg) * -1,
+  sendmail = l.Ct(postfix_warning_cg) * -1,
+  postdrop = l.Ct(postfix_warning_cg) * -1,
   scache = l.Ct(postfix_scache_lookups_cg
          + postfix_scache_simultaneous_cg
-         + postfix_scache_timestamp_cg),
-  trivial_rewrite = l.Ct(postfix_warning_cg),
-  tlsmgr = l.Ct(postfix_warning_cg),
-  ['local'] = l.Ct(postfix_keyvalue_greedy_cg),
-  virtual = l.Ct(postfix_smtp_delivery_cg),
-  error = l.Ct(postfix_error_any_cg),
+         + postfix_scache_timestamp_cg) * -1,
+  trivial_rewrite = l.Ct(postfix_warning_cg) * -1,
+  tlsmgr = l.Ct(postfix_warning_cg) * -1,
+  ['local'] = l.Ct(postfix_keyvalue_greedy_cg) * -1,
+  virtual = l.Ct(postfix_smtp_delivery_cg) * -1,
+  error = l.Ct(postfix_error_any_cg) * -1,
+  postsuper = l.Ct(postfix_postsuper_action_cg
+           + postfix_postsuper_summary_cg) * -1,
 }
 postfix_patterns['lmtp'] = postfix_patterns['smtp']
 

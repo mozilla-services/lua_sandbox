@@ -212,6 +212,16 @@ local tests = {
       postfix_error_response = "delivery temporarily suspended: lost connection with mta7.am0.yahoodns.net[98.136.216.22] while sending RCPT TO",
     }
   },
+  ["lmtp_0001.yaml"] = {
+    "POSTFIX_LMTP",
+    "7EE668039: to=<admin@example.com>, relay=127.0.0.1[127.0.0.1]:2525, delay=3.6, delays=0.2/0.02/0.04/3.3, dsn=2.0.0, status=sent (250 2.0.0 Ok: queued as 153053D)",
+    {
+      postfix_queueid = "7EE668039",
+      postfix_keyvalue_data = "to=<admin@example.com>, relay=127.0.0.1[127.0.0.1]:2525, delay=3.6, delays=0.2/0.02/0.04/3.3, dsn=2.0.0,",
+      postfix_status = "sent",
+      postfix_smtp_response = "250 2.0.0 Ok: queued as 153053D",
+    }
+  },
   ["local_0001.yaml"] = {
     "POSTFIX_LOCAL",
     "2A22C263F6: to=user@hostname.example.com, orig_to=root@localhost, relay=local, delay=0.07, delays=0.04/0/0/0.03, dsn=2.0.0, status=sent (delivered to command: procmail -a \"$EXTENSION\")",
@@ -263,9 +273,7 @@ local tests = {
     "D2FAE20586: uid=0 from=<fail2ban>",
     {
       postfix_queueid = "D2FAE20586",
-      -- from postfix_keyvalue_data = "uid=0 from=<fail2ban>",
-      postfix_uid = 0,
-      postfix_from = 'fail2ban'
+      postfix_keyvalue_data = "uid=0 from=<fail2ban>",
     }
   },
   ["pipe_0001.yaml"] = {
@@ -597,6 +605,70 @@ local tests = {
     "warning: getpeername: Transport endpoint is not connected -- dropping this connection",
     {
       postfix_warning = "getpeername: Transport endpoint is not connected -- dropping this connection"
+    }
+  },
+  ["postsuper_0001.yaml"] = {
+    "POSTFIX_POSTSUPER",
+    "D4F2023DB: removed",
+    {
+      postfix_queueid = "D4F2023DB",
+      postfix_postsuper_action = "removed",
+    }
+  },
+  ["postsuper_0002.yaml"] = {
+    "POSTFIX_POSTSUPER",
+    "D4F2023DB: requeued",
+    {
+      postfix_queueid = "D4F2023DB",
+      postfix_postsuper_action = "requeued",
+    }
+  },
+  ["postsuper_0003.yaml"] = {
+    "POSTFIX_POSTSUPER",
+    "D4F2023DB: placed on hold",
+    {
+      postfix_queueid = "D4F2023DB",
+      postfix_postsuper_action = "placed on hold",
+    }
+  },
+  ["postsuper_0004.yaml"] = {
+    "POSTFIX_POSTSUPER",
+    "D4F2023DB: released from hold",
+    {
+      postfix_queueid = "D4F2023DB",
+      postfix_postsuper_action = "released from hold",
+    }
+  },
+  ["postsuper_0005.yaml"] = {
+    "POSTFIX_POSTSUPER",
+    "Deleted: 115 messages",
+    {
+      postfix_postsuper_summary_action = "Deleted",
+      postfix_postsuper_summary_count = 115,
+    }
+  },
+  ["postsuper_0006.yaml"] = {
+    "POSTFIX_POSTSUPER",
+    "Requeued: 1 message",
+    {
+      postfix_postsuper_summary_action = "Requeued",
+      postfix_postsuper_summary_count = 1,
+    }
+  },
+  ["postsuper_0007.yaml"] = {
+    "POSTFIX_POSTSUPER",
+    "Placed on hold: 67 messages",
+    {
+      postfix_postsuper_summary_action = "Placed on hold",
+      postfix_postsuper_summary_count = 67,
+    }
+  },
+  ["postsuper_0008.yaml"] = {
+    "POSTFIX_POSTSUPER",
+    "Released from hold: 13 messages",
+    {
+      postfix_postsuper_summary_action = "Released from hold",
+      postfix_postsuper_summary_count = 13,
     }
   },
   ["qmgr_0001.yaml"] = {
