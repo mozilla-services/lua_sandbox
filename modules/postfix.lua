@@ -225,6 +225,15 @@ local postfix_pipe_any_cg = postfix_queueid_cg
                           * l.P' ('
                           * l.Cg((l.P(1) - l.P')')^1, 'postfix_pipe_response')
 
+-- error patterns
+local postfix_error_any_cg = postfix_queueid_cg
+                           * l.P': '
+                           * l.Cg((l.P(1) - l.P', status=')^1, 'postfix_keyvalue_data')
+                           * l.P', status='
+                           * l.Cg((l.P(1) - l.P' (')^1, 'postfix_status')
+                           * l.P' ('
+                           * l.Cg((l.P(1) - l.P')')^1, 'postfix_error_response')
+
 -- postscreen patterns
 local postfix_ps_connect_cg = l.P'CONNECT from '
                             * postfix_client_info_cg
@@ -434,6 +443,7 @@ local postfix_patterns = {
   tlsmgr = l.Ct(postfix_warning_cg),
   ['local'] = l.Ct(postfix_keyvalue_greedy_cg),
   virtual = l.Ct(postfix_smtp_delivery_cg),
+  error = l.Ct(postfix_error_any_cg),
 }
 postfix_patterns['lmtp'] = postfix_patterns['smtp']
 
