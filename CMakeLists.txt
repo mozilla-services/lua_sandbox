@@ -40,7 +40,9 @@ install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Config.cmake
               ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}ConfigVersion.cmake
         DESTINATION ${INSTALL_CMAKE_DIR})
 
-find_library(LIBM_LIBRARY m)
+if(CMAKE_HOST_UNIX)
+  find_library(LIBM_LIBRARY m)
+endif()
 
 include_directories("${CMAKE_SOURCE_DIR}/include" "${CMAKE_SOURCE_DIR}/include/luasandbox" )
 install(DIRECTORY "${CMAKE_SOURCE_DIR}/include/" DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
