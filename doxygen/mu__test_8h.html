@@ -24,7 +24,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">luasandbox
-   &#160;<span id="projectnumber">1.2.1</span>
+   &#160;<span id="projectnumber">1.2.2</span>
    </div>
    <div id="projectbrief">Generic Lua sandbox for dynamic data analysis</div>
   </td>
@@ -153,10 +153,10 @@ Variables</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<b>Value:</b><div class="fragment"><div class="line"><span class="keywordflow">do</span> {                                                                           \</div><div class="line">  if (!(cond)) {                                                               \</div><div class="line">    int cnt = snprintf(<a class="code" href="mu__test_8h.html#a77d75128d22d11aa16439ea5a99b7908">mu_err</a>, <a class="code" href="mu__test_8h.html#a260a439ad15d1d74c546bdad0a333db4">MU_ERR_LEN</a>, <span class="stringliteral">&quot;line: %d (%s) &quot;</span>, __LINE__, #cond); \</div><div class="line">    if (cnt &gt; 0 &amp;&amp; cnt &lt; <a class="code" href="mu__test_8h.html#a260a439ad15d1d74c546bdad0a333db4">MU_ERR_LEN</a>) {                                         \</div><div class="line">      cnt = snprintf(<a class="code" href="mu__test_8h.html#a77d75128d22d11aa16439ea5a99b7908">mu_err</a>+cnt, <a class="code" href="mu__test_8h.html#a260a439ad15d1d74c546bdad0a333db4">MU_ERR_LEN</a>-cnt, __VA_ARGS__);                 \</div><div class="line">      if (cnt &gt; 0 &amp;&amp; cnt &lt; <a class="code" href="mu__test_8h.html#a260a439ad15d1d74c546bdad0a333db4">MU_ERR_LEN</a>) {                                       \</div><div class="line">        return <a class="code" href="mu__test_8h.html#a77d75128d22d11aa16439ea5a99b7908">mu_err</a>;                                                         \</div><div class="line">      }                                                                        \</div><div class="line">    }                                                                          <a class="code" href="mu__test_8h.html#a77d75128d22d11aa16439ea5a99b7908">\</a></div><div class="line"><a class="code" href="mu__test_8h.html#a77d75128d22d11aa16439ea5a99b7908">    mu_err</a>[<a class="code" href="mu__test_8h.html#a260a439ad15d1d74c546bdad0a333db4">MU_ERR_LEN</a> - 1] = 0;                                                \</div><div class="line">    return <a class="code" href="mu__test_8h.html#a77d75128d22d11aa16439ea5a99b7908">mu_err</a>;                                                             \</div><div class="line">  }                                                                            \</div><div class="line">} <span class="keywordflow">while</span> (0)</div><div class="ttc" id="mu__test_8h_html_a77d75128d22d11aa16439ea5a99b7908"><div class="ttname"><a href="mu__test_8h.html#a77d75128d22d11aa16439ea5a99b7908">mu_err</a></div><div class="ttdeci">char mu_err[MU_ERR_LEN]</div><div class="ttdef"><b>Definition:</b> <a href="mu__test_8h_source.html#l00064">mu_test.h:64</a></div></div>
-<div class="ttc" id="mu__test_8h_html_a260a439ad15d1d74c546bdad0a333db4"><div class="ttname"><a href="mu__test_8h.html#a260a439ad15d1d74c546bdad0a333db4">MU_ERR_LEN</a></div><div class="ttdeci">#define MU_ERR_LEN</div><div class="ttdef"><b>Definition:</b> <a href="mu__test_8h_source.html#l00024">mu_test.h:24</a></div></div>
+<b>Value:</b><div class="fragment"><div class="line"><span class="keywordflow">do</span> {                                                                           \</div><div class="line">  if (!(cond)) {                                                               \</div><div class="line">    int cnt = snprintf(<a class="code" href="mu__test_8h.html#a77d75128d22d11aa16439ea5a99b7908">mu_err</a>, <a class="code" href="mu__test_8h.html#a260a439ad15d1d74c546bdad0a333db4">MU_ERR_LEN</a>, <span class="stringliteral">&quot;line: %d (%s) &quot;</span>, __LINE__, #cond); \</div><div class="line">    if (cnt &gt; 0 &amp;&amp; cnt &lt; <a class="code" href="mu__test_8h.html#a260a439ad15d1d74c546bdad0a333db4">MU_ERR_LEN</a>) {                                         \</div><div class="line">      cnt = snprintf(<a class="code" href="mu__test_8h.html#a77d75128d22d11aa16439ea5a99b7908">mu_err</a>+cnt, <a class="code" href="mu__test_8h.html#a260a439ad15d1d74c546bdad0a333db4">MU_ERR_LEN</a>-cnt, __VA_ARGS__);                 \</div><div class="line">      if (cnt &gt; 0 &amp;&amp; cnt &lt; <a class="code" href="mu__test_8h.html#a260a439ad15d1d74c546bdad0a333db4">MU_ERR_LEN</a>) {                                       \</div><div class="line">        return <a class="code" href="mu__test_8h.html#a77d75128d22d11aa16439ea5a99b7908">mu_err</a>;                                                         \</div><div class="line">      }                                                                        \</div><div class="line">    }                                                                          <a class="code" href="mu__test_8h.html#a77d75128d22d11aa16439ea5a99b7908">\</a></div><div class="line"><a class="code" href="mu__test_8h.html#a77d75128d22d11aa16439ea5a99b7908">    mu_err</a>[<a class="code" href="mu__test_8h.html#a260a439ad15d1d74c546bdad0a333db4">MU_ERR_LEN</a> - 1] = 0;                                                \</div><div class="line">    return <a class="code" href="mu__test_8h.html#a77d75128d22d11aa16439ea5a99b7908">mu_err</a>;                                                             \</div><div class="line">  }                                                                            \</div><div class="line">} <span class="keywordflow">while</span> (0)</div><div class="ttc" id="mu__test_8h_html_a77d75128d22d11aa16439ea5a99b7908"><div class="ttname"><a href="mu__test_8h.html#a77d75128d22d11aa16439ea5a99b7908">mu_err</a></div><div class="ttdeci">char mu_err[MU_ERR_LEN]</div><div class="ttdef"><b>Definition:</b> <a href="mu__test_8h_source.html#l00066">mu_test.h:66</a></div></div>
+<div class="ttc" id="mu__test_8h_html_a260a439ad15d1d74c546bdad0a333db4"><div class="ttname"><a href="mu__test_8h.html#a260a439ad15d1d74c546bdad0a333db4">MU_ERR_LEN</a></div><div class="ttdeci">#define MU_ERR_LEN</div><div class="ttdef"><b>Definition:</b> <a href="mu__test_8h_source.html#l00026">mu_test.h:26</a></div></div>
 </div><!-- fragment -->
-<p>Definition at line <a class="el" href="mu__test_8h_source.html#l00026">26</a> of file <a class="el" href="mu__test_8h_source.html">mu_test.h</a>.</p>
+<p>Definition at line <a class="el" href="mu__test_8h_source.html#l00028">28</a> of file <a class="el" href="mu__test_8h_source.html">mu_test.h</a>.</p>
 
 </div>
 </div>
@@ -183,10 +183,10 @@ Variables</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<b>Value:</b><div class="fragment"><div class="line"><span class="keywordflow">do</span> {                                                                           \</div><div class="line">  int result = fn;                                                             \</div><div class="line">  if (rv != result) {                                                          \</div><div class="line">    int cnt = snprintf(<a class="code" href="mu__test_8h.html#a77d75128d22d11aa16439ea5a99b7908">mu_err</a>, <a class="code" href="mu__test_8h.html#a260a439ad15d1d74c546bdad0a333db4">MU_ERR_LEN</a>, <span class="stringliteral">&quot;line: %d %s expected: %d &quot;</span>         \</div><div class="line">    <span class="stringliteral">&quot; received: %d&quot;</span>, __LINE__, #fn, rv, result);                               \</div><div class="line">    if (cnt &gt; 0 &amp;&amp; cnt &lt; <a class="code" href="mu__test_8h.html#a260a439ad15d1d74c546bdad0a333db4">MU_ERR_LEN</a>) {                                         \</div><div class="line">      return <a class="code" href="mu__test_8h.html#a77d75128d22d11aa16439ea5a99b7908">mu_err</a>;                                                           \</div><div class="line">    }                                                                          <a class="code" href="mu__test_8h.html#a77d75128d22d11aa16439ea5a99b7908">\</a></div><div class="line"><a class="code" href="mu__test_8h.html#a77d75128d22d11aa16439ea5a99b7908">    mu_err</a>[<a class="code" href="mu__test_8h.html#a260a439ad15d1d74c546bdad0a333db4">MU_ERR_LEN</a> - 1] = 0;                                                \</div><div class="line">    return <a class="code" href="mu__test_8h.html#a77d75128d22d11aa16439ea5a99b7908">mu_err</a>;                                                             \</div><div class="line">  }                                                                            \</div><div class="line">} <span class="keywordflow">while</span> (0)</div><div class="ttc" id="mu__test_8h_html_a77d75128d22d11aa16439ea5a99b7908"><div class="ttname"><a href="mu__test_8h.html#a77d75128d22d11aa16439ea5a99b7908">mu_err</a></div><div class="ttdeci">char mu_err[MU_ERR_LEN]</div><div class="ttdef"><b>Definition:</b> <a href="mu__test_8h_source.html#l00064">mu_test.h:64</a></div></div>
-<div class="ttc" id="mu__test_8h_html_a260a439ad15d1d74c546bdad0a333db4"><div class="ttname"><a href="mu__test_8h.html#a260a439ad15d1d74c546bdad0a333db4">MU_ERR_LEN</a></div><div class="ttdeci">#define MU_ERR_LEN</div><div class="ttdef"><b>Definition:</b> <a href="mu__test_8h_source.html#l00024">mu_test.h:24</a></div></div>
+<b>Value:</b><div class="fragment"><div class="line"><span class="keywordflow">do</span> {                                                                           \</div><div class="line">  int result = fn;                                                             \</div><div class="line">  if (rv != result) {                                                          \</div><div class="line">    int cnt = snprintf(<a class="code" href="mu__test_8h.html#a77d75128d22d11aa16439ea5a99b7908">mu_err</a>, <a class="code" href="mu__test_8h.html#a260a439ad15d1d74c546bdad0a333db4">MU_ERR_LEN</a>, <span class="stringliteral">&quot;line: %d %s expected: %d &quot;</span>         \</div><div class="line">    <span class="stringliteral">&quot; received: %d&quot;</span>, __LINE__, #fn, rv, result);                               \</div><div class="line">    if (cnt &gt; 0 &amp;&amp; cnt &lt; <a class="code" href="mu__test_8h.html#a260a439ad15d1d74c546bdad0a333db4">MU_ERR_LEN</a>) {                                         \</div><div class="line">      return <a class="code" href="mu__test_8h.html#a77d75128d22d11aa16439ea5a99b7908">mu_err</a>;                                                           \</div><div class="line">    }                                                                          <a class="code" href="mu__test_8h.html#a77d75128d22d11aa16439ea5a99b7908">\</a></div><div class="line"><a class="code" href="mu__test_8h.html#a77d75128d22d11aa16439ea5a99b7908">    mu_err</a>[<a class="code" href="mu__test_8h.html#a260a439ad15d1d74c546bdad0a333db4">MU_ERR_LEN</a> - 1] = 0;                                                \</div><div class="line">    return <a class="code" href="mu__test_8h.html#a77d75128d22d11aa16439ea5a99b7908">mu_err</a>;                                                             \</div><div class="line">  }                                                                            \</div><div class="line">} <span class="keywordflow">while</span> (0)</div><div class="ttc" id="mu__test_8h_html_a77d75128d22d11aa16439ea5a99b7908"><div class="ttname"><a href="mu__test_8h.html#a77d75128d22d11aa16439ea5a99b7908">mu_err</a></div><div class="ttdeci">char mu_err[MU_ERR_LEN]</div><div class="ttdef"><b>Definition:</b> <a href="mu__test_8h_source.html#l00066">mu_test.h:66</a></div></div>
+<div class="ttc" id="mu__test_8h_html_a260a439ad15d1d74c546bdad0a333db4"><div class="ttname"><a href="mu__test_8h.html#a260a439ad15d1d74c546bdad0a333db4">MU_ERR_LEN</a></div><div class="ttdeci">#define MU_ERR_LEN</div><div class="ttdef"><b>Definition:</b> <a href="mu__test_8h_source.html#l00026">mu_test.h:26</a></div></div>
 </div><!-- fragment -->
-<p>Definition at line <a class="el" href="mu__test_8h_source.html#l00041">41</a> of file <a class="el" href="mu__test_8h_source.html">mu_test.h</a>.</p>
+<p>Definition at line <a class="el" href="mu__test_8h_source.html#l00043">43</a> of file <a class="el" href="mu__test_8h_source.html">mu_test.h</a>.</p>
 
 </div>
 </div>
@@ -200,7 +200,7 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="mu__test_8h_source.html#l00024">24</a> of file <a class="el" href="mu__test_8h_source.html">mu_test.h</a>.</p>
+<p>Definition at line <a class="el" href="mu__test_8h_source.html#l00026">26</a> of file <a class="el" href="mu__test_8h_source.html">mu_test.h</a>.</p>
 
 </div>
 </div>
@@ -217,9 +217,9 @@ Variables</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<b>Value:</b><div class="fragment"><div class="line"><span class="keywordflow">do</span> {                                                                           \</div><div class="line">  char *message = test();                                                      <a class="code" href="mu__test_8h.html#ad444399107711749e2c65f3f9a6fbe86">\</a></div><div class="line"><a class="code" href="mu__test_8h.html#ad444399107711749e2c65f3f9a6fbe86">  mu_tests_run</a>++;                                                              \</div><div class="line">  if (message)                                                                 \</div><div class="line">    return message;                                                            \</div><div class="line">} <span class="keywordflow">while</span> (0)</div><div class="ttc" id="mu__test_8h_html_ad444399107711749e2c65f3f9a6fbe86"><div class="ttname"><a href="mu__test_8h.html#ad444399107711749e2c65f3f9a6fbe86">mu_tests_run</a></div><div class="ttdeci">int mu_tests_run</div><div class="ttdef"><b>Definition:</b> <a href="mu__test_8h_source.html#l00063">mu_test.h:63</a></div></div>
+<b>Value:</b><div class="fragment"><div class="line"><span class="keywordflow">do</span> {                                                                           \</div><div class="line">  char *message = test();                                                      <a class="code" href="mu__test_8h.html#ad444399107711749e2c65f3f9a6fbe86">\</a></div><div class="line"><a class="code" href="mu__test_8h.html#ad444399107711749e2c65f3f9a6fbe86">  mu_tests_run</a>++;                                                              \</div><div class="line">  if (message)                                                                 \</div><div class="line">    return message;                                                            \</div><div class="line">} <span class="keywordflow">while</span> (0)</div><div class="ttc" id="mu__test_8h_html_ad444399107711749e2c65f3f9a6fbe86"><div class="ttname"><a href="mu__test_8h.html#ad444399107711749e2c65f3f9a6fbe86">mu_tests_run</a></div><div class="ttdeci">int mu_tests_run</div><div class="ttdef"><b>Definition:</b> <a href="mu__test_8h_source.html#l00065">mu_test.h:65</a></div></div>
 </div><!-- fragment -->
-<p>Definition at line <a class="el" href="mu__test_8h_source.html#l00055">55</a> of file <a class="el" href="mu__test_8h_source.html">mu_test.h</a>.</p>
+<p>Definition at line <a class="el" href="mu__test_8h_source.html#l00057">57</a> of file <a class="el" href="mu__test_8h_source.html">mu_test.h</a>.</p>
 
 </div>
 </div>
@@ -233,7 +233,7 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="mu__test_8h_source.html#l00021">21</a> of file <a class="el" href="mu__test_8h_source.html">mu_test.h</a>.</p>
+<p>Definition at line <a class="el" href="mu__test_8h_source.html#l00023">23</a> of file <a class="el" href="mu__test_8h_source.html">mu_test.h</a>.</p>
 
 </div>
 </div>
@@ -248,7 +248,7 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="mu__test_8h_source.html#l00064">64</a> of file <a class="el" href="mu__test_8h_source.html">mu_test.h</a>.</p>
+<p>Definition at line <a class="el" href="mu__test_8h_source.html#l00066">66</a> of file <a class="el" href="mu__test_8h_source.html">mu_test.h</a>.</p>
 
 </div>
 </div>
@@ -262,7 +262,7 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="mu__test_8h_source.html#l00063">63</a> of file <a class="el" href="mu__test_8h_source.html">mu_test.h</a>.</p>
+<p>Definition at line <a class="el" href="mu__test_8h_source.html#l00065">65</a> of file <a class="el" href="mu__test_8h_source.html">mu_test.h</a>.</p>
 
 </div>
 </div>
