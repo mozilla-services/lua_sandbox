@@ -42,6 +42,13 @@ enum lsb_heka_pm_rv {
   LSB_HEKA_PM_ASYNC = -5
 };
 
+enum lsb_heka_im_rv {
+  LSB_HEKA_IM_SUCCESS    = 0,
+  LSB_HEKA_IM_ERROR      = 1, // generic error for backward compatibility
+  LSB_HEKA_IM_CHECKPOINT = 2,
+  LSB_HEKA_IM_LIMIT      = 3,
+};
+
 typedef struct lsb_heka_sandbox lsb_heka_sandbox;
 
 typedef struct lsb_heka_stats {

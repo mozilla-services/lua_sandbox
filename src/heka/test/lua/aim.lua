@@ -62,4 +62,8 @@ assert("inject_message() failed: array has mixed types" == err, string.format("r
 
 ok, err = pcall(inject_message, {})
 assert(not ok)
-assert("inject_message() failed: rejected by the callback" == err, string.format("received: %s", err))
+assert("inject_message() failed: rejected by the callback rv: 99" == err, string.format("received: %s", err))
+
+ok, err = pcall(inject_message, {})
+assert(not ok)
+assert("inject_message() failed: injection limit exceeded" == err, string.format("received: %s", err))
