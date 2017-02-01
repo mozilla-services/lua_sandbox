@@ -480,10 +480,10 @@ static char* test_pm_error()
   };
 
   struct pm_result results[] = {
-    { .ncp = 3, .scp = NULL, .rv = 1,  .err = "process_message() lua/input.lua:27: boom" },
+    { .ncp = 3, .scp = NULL, .rv = 1,  .err = "process_message() lua/input.lua:37: boom" },
     { .ncp = 4, .scp = NULL, .rv = 1,  .err = "process_message() must return a nil or string error message" },
     { .ncp = 5, .scp = NULL, .rv = 1,  .err = "process_message() must return a numeric status code" },
-    { .ncp = 6, .scp = NULL, .rv = 1,  .err = "process_message() lua/input.lua:33: aaaaaaaaaaaaaaaaaaaaaaaaa"
+    { .ncp = 6, .scp = NULL, .rv = 1,  .err = "process_message() lua/input.lua:43: aaaaaaaaaaaaaaaaaaaaaaaaa"
       "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
       "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
     }, // >max error message
