@@ -18,7 +18,7 @@ msg = {Timestamp = 8}
 
 local function add_work()
     local cnt = 0
-    for i = 1, 1000 do
+    for i = 1, 10000 do
         cnt = cnt + 1
     end
 end
