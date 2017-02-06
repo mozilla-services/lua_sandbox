@@ -16,12 +16,22 @@ assert(not inject_payload)
 require "string"
 msg = {Timestamp = 8}
 
+local function add_work()
+    local cnt = 0
+    for i = 1, 10000 do
+        cnt = cnt + 1
+    end
+end
+
 function process_message(cp)
     if cp == 0 then
+        add_work()
         return -2, "host specific failure"
     elseif cp == 1 then
+        add_work()
         return -1, "failed"
     elseif cp == 2 then
+        add_work()
         return 0, "ok"
     elseif cp == 3 then
         error("boom")
@@ -32,6 +42,7 @@ function process_message(cp)
     elseif cp == 6 then
         error(string.rep("a", 255))
     elseif cp == "string" then
+        add_work()
         return 0, "string"
     elseif cp == 7 then
         error(nil)
@@ -40,5 +51,6 @@ function process_message(cp)
     elseif cp == 9 then
         assert(not is_running(), "not running")
     end
+    add_work()
     return 0, "no cp"
 end

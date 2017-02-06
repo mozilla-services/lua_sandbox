@@ -42,7 +42,7 @@ static int iim(void *parent, const char *pb, size_t pb_len, double cp_numeric,
                const char *cp_string)
 {
   if (!pb) {
-    return 0;
+    return LSB_HEKA_IM_SUCCESS;
   }
 
   static int cnt = 0;
@@ -60,11 +60,12 @@ static int iim(void *parent, const char *pb, size_t pb_len, double cp_numeric,
     { .pb = "\x0a\x10\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x10\x03\x22\x03iim\x4a\x02hn\x52\x13\x0a\x06\x6e\x75\x6d\x62\x65\x72\x10\x03\x39\x00\x00\x00\x00\x00\x00\xf0\x3f\x52\x2c\x0a\x07\x6e\x75\x6d\x62\x65\x72\x73\x10\x03\x1a\x05\x63\x6f\x75\x6e\x74\x3a\x18\x00\x00\x00\x00\x00\x00\xf0\x3f\x00\x00\x00\x00\x00\x00\x00\x40\x00\x00\x00\x00\x00\x00\x08\x40\x52\x0e\x0a\x05\x62\x6f\x6f\x6c\x73\x10\x04\x42\x03\x01\x00\x00\x52\x0a\x0a\x04\x62\x6f\x6f\x6c\x10\x04\x40\x01\x52\x10\x0a\x06\x73\x74\x72\x69\x6e\x67\x22\x06\x73\x74\x72\x69\x6e\x67\x52\x15\x0a\x07\x73\x74\x72\x69\x6e\x67\x73\x22\x02\x73\x31\x22\x02\x73\x32\x22\x02\x73\x33", .pb_len = 165, .cp_numeric = NAN, .cp_string = "foo.log:123" },
     { .pb = "\x0a\x10\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x10\x04", .pb_len = 20, .cp_numeric = NAN, .cp_string = NULL },
     { .pb = "\x0a\x10\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x10\x05", .pb_len = 20, .cp_numeric = NAN, .cp_string = NULL },
+    { .pb = "\x0a\x10\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x10\x05", .pb_len = 20, .cp_numeric = NAN, .cp_string = NULL },
   };
 
   if (cnt >= (int)(sizeof results / sizeof results[0])) {
     fprintf(stderr, "tests and results are mis-matched\n");
-    return 1;
+    return LSB_HEKA_IM_ERROR;
   }
 
   if (parent) {
@@ -101,7 +102,7 @@ static int iim(void *parent, const char *pb, size_t pb_len, double cp_numeric,
   if (ncp_failed) {
     fprintf(stderr, "test: %d cp_numeric expected: %g received: %g\n", cnt,
             results[cnt].cp_numeric, cp_numeric);
-    return 1;
+    return LSB_HEKA_IM_CHECKPOINT;
   }
 
   bool ncs_failed = false;
@@ -116,10 +117,10 @@ static int iim(void *parent, const char *pb, size_t pb_len, double cp_numeric,
     fprintf(stderr, "test: %d cp_string expected: %s received: %s\n", cnt,
             results[cnt].cp_string ? results[cnt].cp_string : "NULL",
             cp_string ? cp_string : "NULL");
-    return 1;
+    return LSB_HEKA_IM_CHECKPOINT;
   }
   cnt++;
-  return 0;
+  return LSB_HEKA_IM_SUCCESS;
 }
 
 
@@ -138,11 +139,12 @@ static int aim(void *parent, const char *pb, size_t pb_len)
     { .pb = "\x0a\x10\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x10\x01\x22\x03\x61\x69\x6d\x4a\x07\x66\x6f\x6f\x2e\x63\x6f\x6d", .pb_len = 34, .cp_numeric = NAN, .cp_string = NULL },
     { .pb = "\x0a\x10\x1f\x7d\x09\x9e\xf5\x9d\x40\x1d\xa8\xaf\x6a\xff\xc3\x21\xeb\x42\x10\x80\x88\xe4\xaa\xa0\xa9\xbc\x95\x14\x1a\x0e\x69\x6e\x6a\x65\x63\x74\x5f\x70\x61\x79\x6c\x6f\x61\x64\x22\x03\x61\x69\x6d\x32\x07\x66\x6f\x6f\x20\x62\x61\x72\x4a\x07\x66\x6f\x6f\x2e\x63\x6f\x6d\x52\x13\x0a\x0c\x70\x61\x79\x6c\x6f\x61\x64\x5f\x74\x79\x70\x65\x22\x03\x74\x78\x74", .pb_len = 88, .cp_numeric = NAN, .cp_string = NULL },
     { .pb = "\x0a\x10\x5b\x7d\xee\xa0\x02\xbc\x45\xbb\xaf\xa9\xcc\x2c\xdd\x65\xde\x45\x10\x80\x88\xdc\xad\xcd\xbf\xbc\x95\x14\x1a\x0e\x69\x6e\x6a\x65\x63\x74\x5f\x70\x61\x79\x6c\x6f\x61\x64\x22\x03\x61\x69\x6d\x32\x07\x66\x6f\x6f\x20\x62\x61\x72\x4a\x07\x66\x6f\x6f\x2e\x63\x6f\x6d\x52\x13\x0a\x0c\x70\x61\x79\x6c\x6f\x61\x64\x5f\x74\x79\x70\x65\x22\x03\x64\x61\x74\x52\x14\x0a\x0c\x70\x61\x79\x6c\x6f\x61\x64\x5f\x6e\x61\x6d\x65\x22\x04\x74\x65\x73\x74", .pb_len = 110, .cp_numeric = NAN, .cp_string = NULL },
+    { .pb = "\x0a\x10\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x10\x00\x22\x03\x61\x69\x6d\x4a\x07\x66\x6f\x6f\x2e\x63\x6f\x6d", .pb_len = 34, .cp_numeric = NAN, .cp_string = NULL },
   };
 
   if (cnt >= (int)(sizeof results / sizeof results[0])) {
     fprintf(stderr, "tests and results are mis-matched\n");
-    return 1;
+    return LSB_HEKA_IM_LIMIT;
   }
 
   if (parent) {
@@ -152,7 +154,8 @@ static int aim(void *parent, const char *pb, size_t pb_len)
   if (pb_len != results[cnt].pb_len) {
     fprintf(stderr, "test: %d pb len expected: %" PRIuSIZE " received: %"
             PRIuSIZE "\n", cnt, results[cnt].pb_len, pb_len);
-    return 1;
+    cnt++;
+    return 99;
   }
 
   if (cnt == 0) {
@@ -176,7 +179,7 @@ static int aim(void *parent, const char *pb, size_t pb_len)
     if (!rv) return 1;
   }
   cnt++;
-  return 0;
+  return LSB_HEKA_IM_SUCCESS;
 }
 
 static int aim1(void *parent, const char *pb, size_t pb_len)
@@ -204,7 +207,7 @@ static int aim1(void *parent, const char *pb, size_t pb_len)
     fprintf(stderr, "\n");
     return 1;
   }
-  return 0;
+  return LSB_HEKA_IM_SUCCESS;
 }
 
 
@@ -477,10 +480,10 @@ static char* test_pm_error()
   };
 
   struct pm_result results[] = {
-    { .ncp = 3, .scp = NULL, .rv = 1,  .err = "process_message() lua/input.lua:27: boom" },
+    { .ncp = 3, .scp = NULL, .rv = 1,  .err = "process_message() lua/input.lua:37: boom" },
     { .ncp = 4, .scp = NULL, .rv = 1,  .err = "process_message() must return a nil or string error message" },
     { .ncp = 5, .scp = NULL, .rv = 1,  .err = "process_message() must return a numeric status code" },
-    { .ncp = 6, .scp = NULL, .rv = 1,  .err = "process_message() lua/input.lua:33: aaaaaaaaaaaaaaaaaaaaaaaaa"
+    { .ncp = 6, .scp = NULL, .rv = 1,  .err = "process_message() lua/input.lua:43: aaaaaaaaaaaaaaaaaaaaaaaaa"
       "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
       "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
     }, // >max error message

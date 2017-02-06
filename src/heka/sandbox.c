@@ -212,9 +212,18 @@ static int inject_message_input(lua_State *lua)
   }
 
   lsb_heka_sandbox *hsb = lsb_get_parent(lsb);
-  if (hsb->cb.iim(hsb->parent, output.s, output.len, ncp, scp) != 0) {
-    return luaL_error(lua, "%s() failed: rejected by the callback",
+  int rv = hsb->cb.iim(hsb->parent, output.s, output.len, ncp, scp);
+  switch (rv) {
+  case LSB_HEKA_IM_SUCCESS:
+    break;
+  case LSB_HEKA_IM_CHECKPOINT:
+    return luaL_error(lua, "%s() failed: checkpoint update",
                       im_func_name);
+  case LSB_HEKA_IM_ERROR:
+    // fall through
+  default:
+    return luaL_error(lua, "%s() failed: rejected by the callback rv: %d",
+                      im_func_name, rv);
   }
   ++hsb->stats.im_cnt;
   hsb->stats.im_bytes += output.len;
@@ -237,9 +246,18 @@ static int inject_message_analysis(lua_State *lua)
   size_t output_len = 0;
   const char *output = lsb_get_output(lsb, &output_len);
   lsb_heka_sandbox *hsb = lsb_get_parent(lsb);
-  if (hsb->cb.aim(hsb->parent, output, output_len) != 0) {
-    return luaL_error(lua, "%s() failed: rejected by the callback",
+  int rv = hsb->cb.aim(hsb->parent, output, output_len);
+  switch (rv) {
+  case LSB_HEKA_IM_SUCCESS:
+    break;
+  case LSB_HEKA_IM_LIMIT:
+    return luaL_error(lua, "%s() failed: injection limit exceeded",
                       im_func_name);
+  case LSB_HEKA_IM_ERROR:
+    // fall through
+  default:
+    return luaL_error(lua, "%s() failed: rejected by the callback rv: %d",
+                      im_func_name, rv);
   }
   ++hsb->stats.im_cnt;
   hsb->stats.im_bytes += output_len;

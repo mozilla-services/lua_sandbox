@@ -119,7 +119,13 @@ assert("bad argument #1 to '?' (lsb.heka_stream_reader expected, got number)" ==
 
 
 -- String tests
-inject_message("\010\016\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\016\005")
+local pbstr = "\010\016\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\016\005"
+inject_message(pbstr)
+
+ok, err = pcall(inject_message, pbstr, 2)
+if ok then error(string.format("test should have failed")) end
+eerr = "inject_message() failed: checkpoint update"
+assert(eerr == err, string.format("expected: %s received: %s", eerr, err))
 
 ok, err = pcall(inject_message, "\000")
 if ok then error(string.format("string test should have failed")) end
@@ -128,5 +134,5 @@ assert(eerr == err, string.format("expected: %s received: %s", eerr, err))
 
 ok, err = pcall(inject_message, {})
 if ok then error(string.format("test should have failed")) end
-eerr = "inject_message() failed: rejected by the callback"
+eerr = "inject_message() failed: rejected by the callback rv: 1"
 assert(eerr == err, string.format("expected: %s received: %s", eerr, err))
