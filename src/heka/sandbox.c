@@ -225,8 +225,10 @@ static int inject_message_input(lua_State *lua)
     return luaL_error(lua, "%s() failed: rejected by the callback rv: %d",
                       im_func_name, rv);
   }
-  ++hsb->stats.im_cnt;
-  hsb->stats.im_bytes += output.len;
+  if (output.s) {
+    ++hsb->stats.im_cnt;
+    hsb->stats.im_bytes += output.len;
+  }
   return 0;
 }
 
