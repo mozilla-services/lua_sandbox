@@ -27,15 +27,16 @@
 
 #define LSB_ERROR_SIZE 256
 
-#define LSB_SHUTTING_DOWN     "shutting down"
-#define LSB_CONFIG_TABLE      "lsb_config"
-#define LSB_THIS_PTR          "lsb_this_ptr"
-#define LSB_MEMORY_LIMIT      "memory_limit"
-#define LSB_INSTRUCTION_LIMIT "instruction_limit"
-#define LSB_OUTPUT_LIMIT      "output_limit"
-#define LSB_LUA_PATH          "path"
-#define LSB_LUA_CPATH         "cpath"
-#define LSB_NIL_ERROR         "<nil error message>"
+#define LSB_SHUTTING_DOWN         "shutting down"
+#define LSB_CONFIG_TABLE          "lsb_config"
+#define LSB_THIS_PTR              "lsb_this_ptr"
+#define LSB_MEMORY_LIMIT          "memory_limit"
+#define LSB_EXTERNAL_MEMORY_LIMIT "external_memory_limit"
+#define LSB_INSTRUCTION_LIMIT     "instruction_limit"
+#define LSB_OUTPUT_LIMIT          "output_limit"
+#define LSB_LUA_PATH              "path"
+#define LSB_LUA_CPATH             "cpath"
+#define LSB_NIL_ERROR             "<nil error message>"
 
 typedef enum {
   LSB_UNKNOWN     = 0,
@@ -53,9 +54,10 @@ typedef enum {
 } lsb_usage_stat;
 
 typedef enum {
-  LSB_UT_MEMORY       = 0,
-  LSB_UT_INSTRUCTION  = 1,
-  LSB_UT_OUTPUT       = 2,
+  LSB_UT_MEMORY          = 0,
+  LSB_UT_INSTRUCTION     = 1,
+  LSB_UT_OUTPUT          = 2,
+  LSB_UT_EXTERNAL_MEMORY = 3,
 
   LSB_UT_MAX
 } lsb_usage_type;
