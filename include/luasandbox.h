@@ -33,6 +33,7 @@
 #define LSB_MEMORY_LIMIT      "memory_limit"
 #define LSB_INSTRUCTION_LIMIT "instruction_limit"
 #define LSB_OUTPUT_LIMIT      "output_limit"
+#define LSB_LOG_LEVEL         "log_level"
 #define LSB_LUA_PATH          "path"
 #define LSB_LUA_CPATH         "cpath"
 #define LSB_NIL_ERROR         "<nil error message>"
