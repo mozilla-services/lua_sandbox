@@ -10,6 +10,7 @@
 
 #include <errno.h>
 #include <math.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -1058,24 +1059,40 @@ const char* lsb_heka_get_lua_file(lsb_heka_sandbox *hsb)
 
 lsb_heka_stats lsb_heka_get_stats(lsb_heka_sandbox *hsb)
 {
-  if (!hsb) return (struct lsb_heka_stats){ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+  if (!hsb) return (struct lsb_heka_stats){ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 
   return (struct lsb_heka_stats){
-    .mem_cur      = lsb_usage(hsb->lsb, LSB_UT_MEMORY, LSB_US_CURRENT),
-    .mem_max      = lsb_usage(hsb->lsb, LSB_UT_MEMORY, LSB_US_MAXIMUM),
-    .out_max      = lsb_usage(hsb->lsb, LSB_UT_OUTPUT, LSB_US_MAXIMUM),
-    .ins_max      = lsb_usage(hsb->lsb, LSB_UT_INSTRUCTION, LSB_US_MAXIMUM),
-    .im_cnt       = hsb->stats.im_cnt,
-    .im_bytes     = hsb->stats.im_bytes,
-    .pm_cnt       = hsb->stats.pm_cnt,
-    .pm_failures  = hsb->stats.pm_failures,
-    .pm_avg       = hsb->stats.pm.mean,
-    .pm_sd        = lsb_sd_running_stats(&hsb->stats.pm),
-    .te_avg       = hsb->stats.te.mean,
-    .te_sd        = lsb_sd_running_stats(&hsb->stats.te)
+    .mem_cur     = lsb_usage(hsb->lsb, LSB_UT_MEMORY, LSB_US_CURRENT),
+    .mem_max     = lsb_usage(hsb->lsb, LSB_UT_MEMORY, LSB_US_MAXIMUM),
+    .ext_mem_cur = lsb_usage(hsb->lsb, LSB_UT_EXTERNAL_MEMORY, LSB_US_CURRENT),
+    .ext_mem_max = lsb_usage(hsb->lsb, LSB_UT_EXTERNAL_MEMORY, LSB_US_MAXIMUM),
+    .out_max     = lsb_usage(hsb->lsb, LSB_UT_OUTPUT, LSB_US_MAXIMUM),
+    .ins_max     = lsb_usage(hsb->lsb, LSB_UT_INSTRUCTION, LSB_US_MAXIMUM),
+    .im_cnt      = hsb->stats.im_cnt,
+    .im_bytes    = hsb->stats.im_bytes,
+    .pm_cnt      = hsb->stats.pm_cnt,
+    .pm_failures = hsb->stats.pm_failures,
+    .pm_avg      = hsb->stats.pm.mean,
+    .pm_sd       = lsb_sd_running_stats(&hsb->stats.pm),
+    .te_avg      = hsb->stats.te.mean,
+    .te_sd       = lsb_sd_running_stats(&hsb->stats.te)
   };
 }
 
+size_t lsb_heka_get_ext_memory_limit(lsb_heka_sandbox *hsb)
+{
+  return hsb ? lsb_usage(hsb->lsb, LSB_UT_EXTERNAL_MEMORY, LSB_US_LIMIT) : 0;
+}
+
+void lsb_heka_adjust_ext_memory_usage(lsb_heka_sandbox *hsb, int sizechange)
+{
+  size_t newsize = hsb->lsb->usage[LSB_UT_EXTERNAL_MEMORY][LSB_US_CURRENT] + sizechange;
+
+  if (newsize > hsb->lsb->usage[LSB_UT_EXTERNAL_MEMORY][LSB_US_MAXIMUM]) {
+    hsb->lsb->usage[LSB_UT_EXTERNAL_MEMORY][LSB_US_MAXIMUM] = newsize;
+  }
+  hsb->lsb->usage[LSB_UT_EXTERNAL_MEMORY][LSB_US_CURRENT] = newsize;
+}
 
 bool lsb_heka_is_running(lsb_heka_sandbox *hsb)
 {

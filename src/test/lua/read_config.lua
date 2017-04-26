@@ -1,5 +1,6 @@
 assert(type(read_config) == "function")
 assert(read_config("memory_limit") == 65765)
+assert(read_config("external_memory_limit") == 1610612736)
 assert(read_config("instruction_limit") == 1000)
 assert(read_config("output_limit") == 1024)
 

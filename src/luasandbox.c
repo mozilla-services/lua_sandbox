@@ -297,6 +297,9 @@ static lua_State* load_sandbox_config(const char *cfg, lsb_logger *logger)
   ret = check_int(L, LUA_GLOBALSINDEX, LSB_MEMORY_LIMIT, 8 * 1024 * 1024);
   if (ret) goto cleanup;
 
+  ret = check_int(L, LUA_GLOBALSINDEX, LSB_EXTERNAL_MEMORY_LIMIT, 0);
+  if (ret) goto cleanup;
+
   ret = check_int(L, LUA_GLOBALSINDEX, LSB_INSTRUCTION_LIMIT, 1000000);
   if (ret) goto cleanup;
 
@@ -477,6 +480,7 @@ lsb_lua_sandbox* lsb_create(void *parent,
   lua_pop(lua_cfg, 2);
   lua_close(lua_cfg);
   size_t ml = get_int(lsb->lua, -1, "memory_limit");
+  size_t eml = get_int(lsb->lua, -1, "external_memory_limit");
   size_t il = get_int(lsb->lua, -1, "instruction_limit");
   size_t ol = get_int(lsb->lua, -1, "output_limit");
   int log_level = get_int(lsb->lua, -1, "log_level");
@@ -492,6 +496,7 @@ lsb_lua_sandbox* lsb_create(void *parent,
 
   lsb->parent = parent;
   lsb->usage[LSB_UT_MEMORY][LSB_US_LIMIT] = ml;
+  lsb->usage[LSB_UT_EXTERNAL_MEMORY][LSB_US_LIMIT] = eml;
   lsb->usage[LSB_UT_INSTRUCTION][LSB_US_LIMIT] = il;
   lsb->usage[LSB_UT_OUTPUT][LSB_US_LIMIT] = ol;
   lsb->state = LSB_UNKNOWN;

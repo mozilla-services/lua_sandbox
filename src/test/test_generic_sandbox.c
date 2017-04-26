@@ -223,6 +223,7 @@ static char* test_create_error()
 static char* test_read_config()
 {
   const char *cfg = "memory_limit = 65765\n"
+      "external_memory_limit = 1610612736\n"
       "instruction_limit = 1000\n"
       "output_limit = 1024\n"
       "array = {'foo', 99}\n"

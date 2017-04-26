@@ -4,6 +4,7 @@
 
 * **output_limit** - the largest output string an input or analysis plugin can inject into the host (bytes, default 64KiB)
 * **memory_limit** - the maximum amount of memory a plugin can use before being terminated (bytes, default 8MiB)
+* **external_memory_limit** - the maximum amount of memory external libraries (exposed to the sandbox as userdata) can use before plugin is terminated; set to 0 for unlimited (bytes, default unlimited)
 * **instruction_limit** - the maximum number of Lua instructions a plugin can execute in a single API function call (count, default 1MM)
 * **path** - The path used by require to search for a Lua loader. See [package loaders](http://www.lua.org/manual/5.1/manual.html#pdf-package.loaders)
   for the path syntax.  By default no paths are set in the sandbox and everything has been moved to a sandbox configuration table.

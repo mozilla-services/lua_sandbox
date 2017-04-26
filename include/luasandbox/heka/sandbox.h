@@ -54,6 +54,8 @@ typedef struct lsb_heka_sandbox lsb_heka_sandbox;
 typedef struct lsb_heka_stats {
   unsigned long long mem_cur;
   unsigned long long mem_max;
+  unsigned long long ext_mem_cur;
+  unsigned long long ext_mem_max;
   unsigned long long ins_max;
   unsigned long long out_max;
   unsigned long long im_cnt;
@@ -337,6 +339,16 @@ LSB_HEKA_EXPORT const char* lsb_heka_get_lua_file(lsb_heka_sandbox *hsb);
  * @return lsb_heka_stats A copy of the stats structure
  */
 LSB_HEKA_EXPORT lsb_heka_stats lsb_heka_get_stats(lsb_heka_sandbox *hsb);
+
+/**
+ * Retrieve the limit on external memory allocation by native modules, or 0 if none is set.
+ * @param hsb Heka sandbox
+ *
+ * @return size_t Memory allocation limit
+ */
+LSB_HEKA_EXPORT size_t lsb_heka_get_ext_memory_limit(lsb_heka_sandbox *hsb);
+
+LSB_HEKA_EXPORT void lsb_heka_adjust_ext_memory_usage(lsb_heka_sandbox *hsb, int sizechange);
 
 /**
  * Queries the state of the sandbox.

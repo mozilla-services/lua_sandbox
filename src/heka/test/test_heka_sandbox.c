@@ -350,6 +350,8 @@ static char* test_timer_event()
   lsb_heka_stats stats = lsb_heka_get_stats(hsb);
   mu_assert(0 < stats.mem_cur, "received %llu", stats.mem_cur);
   mu_assert(0 < stats.mem_max, "received %llu", stats.mem_max);
+  mu_assert(0 == stats.ext_mem_cur, "received %llu", stats.ext_mem_cur);
+  mu_assert(0 == stats.ext_mem_max, "received %llu", stats.ext_mem_max);
   mu_assert(0 == stats.out_max, "received %llu", stats.out_max);
   mu_assert(0 < stats.ins_max, "received %llu", stats.ins_max);
   mu_assert(0 == stats.pm_cnt, "received %llu", stats.pm_cnt);
