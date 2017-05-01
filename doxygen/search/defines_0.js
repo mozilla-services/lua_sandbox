@@ -15,6 +15,7 @@ var searchData=
   ['lsb_5fheka_5fupdate_5fcheckpoint',['LSB_HEKA_UPDATE_CHECKPOINT',['../heka_2sandbox_8h.html#a61bc21eef3e514e16d7fa2a75dc7c0da',1,'sandbox.h']]],
   ['lsb_5fhostname',['LSB_HOSTNAME',['../heka__message_8h.html#aef5432a906dddf0e1f0dcb30950dc9f5',1,'heka_message.h']]],
   ['lsb_5finstruction_5flimit',['LSB_INSTRUCTION_LIMIT',['../luasandbox_8h.html#a28f00ccb88f58254b667c9590aef4348',1,'luasandbox.h']]],
+  ['lsb_5flog_5flevel',['LSB_LOG_LEVEL',['../luasandbox_8h.html#a43ca5bcece1f47a53a7094be6791da8c',1,'luasandbox.h']]],
   ['lsb_5flogger',['LSB_LOGGER',['../heka__message_8h.html#a9aaeb2f129d99472671208e95da2caf8',1,'heka_message.h']]],
   ['lsb_5flua_5fcpath',['LSB_LUA_CPATH',['../luasandbox_8h.html#ab854fc8a502d99499d5faf00d3f42d96',1,'luasandbox.h']]],
   ['lsb_5flua_5fpath',['LSB_LUA_PATH',['../luasandbox_8h.html#ae378b7f207decd4a953cc06844d2c066',1,'luasandbox.h']]],

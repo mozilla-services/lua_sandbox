@@ -46,7 +46,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
   <link rel="stylesheet" href="/lua_sandbox/docs.css" type="text/css" />
 </head>
 <body>
-<div id="title">Lua Sandbox Library (1.2.4)<hr/></div>
+<div id="title">Lua Sandbox Library (1.2.5)<hr/></div>
 <div class="menu">
         <ul>
             <li><a href="/lua_sandbox/index.html">Overview</a></li>
@@ -76,33 +76,34 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <h1 id="generic-sandbox-interface">Generic Sandbox Interface</h1>
 <h2 id="configuration">Configuration</h2>
 <ul>
-<li><strong>output_limit</strong> - the largest output string an input or analysis plugin can inject into the host (bytes, default 64KiB)</li>
-<li><strong>memory_limit</strong> - the maximum amount of memory a plugin can use before being terminated (bytes, default 8MiB)</li>
-<li><strong>instruction_limit</strong> - the maximum number of Lua instructions a plugin can execute in a single API function call (count, default 1MM)</li>
+<li><strong>output_limit</strong> - the largest output string an input or analysis plugin can inject into the host (bytes (unsigned), default 65536, 0 for unlimited*)</li>
+<li><strong>memory_limit</strong> - the maximum amount of memory a plugin can use before being terminated (bytes (unsigned), default 8388608, 0 for unlimited*)</li>
+<li><strong>instruction_limit</strong> - the maximum number of Lua instructions a plugin can execute in a single API function call (count (unsigned), default 1000000, 0 for unlimited)</li>
 <li><strong>path</strong> - The path used by require to search for a Lua loader. See <a href="http://www.lua.org/manual/5.1/manual.html#pdf-package.loaders">package loaders</a> for the path syntax. By default no paths are set in the sandbox and everything has been moved to a sandbox configuration table.</li>
 <li><strong>cpath</strong> - The path used by require to search for a C loader (same notes as above)</li>
 <li><p><strong>disabled_modules</strong> - Hash specifying which modules should be completely inaccessible. The existence of the key in the table will disable the module.</p>
 <div class="sourceCode"><pre class="sourceCode lua"><code class="sourceCode lua">disabled_modules <span class="ot">=</span> <span class="ot">{</span>io <span class="ot">=</span> <span class="dv">1</span><span class="ot">}</span></code></pre></div></li>
-<li><p><strong>remove_entries</strong> - Hash specifying which functions within a module should be inaccessible.</p>
+<li><p><strong>remove_entries</strong> - Hash specifying which functions within a module should be inaccessible</p>
 <div class="sourceCode"><pre class="sourceCode lua"><code class="sourceCode lua">remove_entries <span class="ot">=</span> <span class="ot">{</span>
 os <span class="ot">=</span> <span class="ot">{</span><span class="st">&quot;getenv&quot;</span><span class="ot">,</span> <span class="st">&quot;execute&quot;</span><span class="ot">},</span>
 string <span class="ot">=</span> <span class="ot">{</span><span class="st">&quot;dump&quot;</span><span class="ot">}</span>
 <span class="ot">}</span></code></pre></div></li>
-<li><strong>log_level</strong> - Integer specifying the syslog severity level, when set to debug (7) the print function will be wired to the specified logger</li>
+<li><strong>log_level</strong> - syslog severity level, when set to debug (7) the print function will be wired to the specified logger (default error (3))</li>
 <li><p><em>user defined</em> any other variable (string, bool, number, table) is passed through as-is and available via <a href="#read_config">read_config</a></p></li>
 </ul>
+<p>*<em>0 == SIZE_MAX which in not necessarily the upper limit of the configuration range UINT_MAX</em></p>
 <h2 id="lua-functions-exposed-to-c-by-the-core-sandbox">Lua functions exposed to C by the core sandbox</h2>
 <p>There are no functions exposed by default, see lsb_pcall_setup() and lsb_pcall_teardown() when defining an API.</p>
 <h2 id="functions-exposed-to-lua-by-the-core-sandbox">Functions exposed to Lua by the core sandbox</h2>
 <h3 id="require">require</h3>
-<p>By default only the base library is loaded additional libraries must be loaded with require().</p>
+<p>By default only the base library is loaded, additional libraries must be loaded with require().</p>
 <p><em>Arguments</em></p>
 <ul>
 <li>libraryName (string)</li>
 </ul>
 <p><em>Return</em></p>
 <ul>
-<li>a table - For non user provided libraries the table is also globally registered with the library name. User provided libraries may implement there own semantics i.e. the grammar libraries return a table but do not globally register the table name (see the individual module documentation for the correct usage).</li>
+<li>a table - For non user provided libraries the table is also globally registered with the library name. User provided libraries may implement their own semantics i.e. the grammar libraries return a table but do not globally register the table name (see the individual module documentation for the correct usage).</li>
 </ul>
 <p><em>Notes</em></p>
 <p>The following modules have been modified, as described, for use in the sandbox.</p>
@@ -178,7 +179,7 @@ string <span class="ot">=</span> <span class="ot">{</span><span class="st">&quot
 </ul></li>
 </ul>
 <h3 id="heka-sandbox-api">Heka Sandbox API</h3>
-<p><a href="/lua_sandbox/doxygen/heka_2sandbox_8h.html">Heka Sandbox API</a></p>
+<p><a href="/lua_sandbox/doxygen/heka_2sandbox_8h.html">Heka Sandbox API</a> q</p>
 </div>
 </body>
 </html>
