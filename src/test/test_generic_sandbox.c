@@ -189,6 +189,9 @@ static char* test_create()
   sb = lsb_create(NULL, "lua/counter.lua", cfg, NULL);
   mu_assert(sb, "lsb_create() failed");
   lsb_destroy(sb);
+  sb = lsb_create(NULL, "lua/counter.lua", "memory_limit = 3e9", NULL);
+  mu_assert(sb, "lsb_create() failed");
+  lsb_destroy(sb);
   return NULL;
 }
 
@@ -202,6 +205,12 @@ static char* test_create_error()
   mu_assert(!sb, "lsb_create() invalid config");
 
   sb = lsb_create(NULL, "lua/counter.lua", "memory_limit = 'aaa'", NULL);
+  mu_assert(!sb, "lsb_create() invalid config");
+
+  sb = lsb_create(NULL, "lua/counter.lua", "memory_limit = -1", NULL);
+  mu_assert(!sb, "lsb_create() invalid config");
+
+  sb = lsb_create(NULL, "lua/counter.lua", "memory_limit = 5e9", NULL);
   mu_assert(!sb, "lsb_create() invalid config");
 
   sb = lsb_create(NULL, "lua/counter.lua", "instruction_limit = 'aaa'", NULL);
