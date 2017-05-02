@@ -1,103 +1,392 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-  <meta http-equiv="Content-Style-Type" content="text/css" />
-  <meta name="generator" content="pandoc" />
-  <title></title>
-  <style type="text/css">code{white-space: pre;}</style>
-  <style type="text/css">
-div.sourceCode { overflow-x: auto; }
-table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
-  margin: 0; padding: 0; vertical-align: baseline; border: none; }
-table.sourceCode { width: 100%; line-height: 100%; }
-td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; color: #aaaaaa; border-right: 1px solid #aaaaaa; }
-td.sourceCode { padding-left: 5px; }
-code > span.kw { color: #007020; font-weight: bold; } /* Keyword */
-code > span.dt { color: #902000; } /* DataType */
-code > span.dv { color: #40a070; } /* DecVal */
-code > span.bn { color: #40a070; } /* BaseN */
-code > span.fl { color: #40a070; } /* Float */
-code > span.ch { color: #4070a0; } /* Char */
-code > span.st { color: #4070a0; } /* String */
-code > span.co { color: #60a0b0; font-style: italic; } /* Comment */
-code > span.ot { color: #007020; } /* Other */
-code > span.al { color: #ff0000; font-weight: bold; } /* Alert */
-code > span.fu { color: #06287e; } /* Function */
-code > span.er { color: #ff0000; font-weight: bold; } /* Error */
-code > span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
-code > span.cn { color: #880000; } /* Constant */
-code > span.sc { color: #4070a0; } /* SpecialChar */
-code > span.vs { color: #4070a0; } /* VerbatimString */
-code > span.ss { color: #bb6688; } /* SpecialString */
-code > span.im { } /* Import */
-code > span.va { color: #19177c; } /* Variable */
-code > span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
-code > span.op { color: #666666; } /* Operator */
-code > span.bu { } /* BuiltIn */
-code > span.ex { } /* Extension */
-code > span.pp { color: #bc7a00; } /* Preprocessor */
-code > span.at { color: #7d9029; } /* Attribute */
-code > span.do { color: #ba2121; font-style: italic; } /* Documentation */
-code > span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
-code > span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
-code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
-  </style>
-  <link rel="stylesheet" href="/lua_sandbox/docs.css" type="text/css" />
-</head>
-<body>
-<div id="title">Lua Sandbox Library (1.2.5)<hr/></div>
-<div class="menu">
-        <ul>
-            <li><a href="/lua_sandbox/index.html">Overview</a></li>
-        </ul>
-        <ul>
-            <li><a href="/lua_sandbox/sandbox.html">Generic Sandbox</a></li>
-        </ul>
-        <ul>
-            <li><a href="/lua_sandbox/heka/index.html">Heka Sandbox</a></li>
-        <ul>
-            <li><a href="/lua_sandbox/heka/analysis.html">Analysis Interface</a></li>
-            <li><a href="/lua_sandbox/heka/input.html">Input Interface</a></li>
-            <li><a href="/lua_sandbox/heka/output.html">Output Interface</a></li>
-        </ul>
-        </ul>
-        <ul>
-           <li><a href="/lua_sandbox/cli/index.html">Command Line Tools</a></li>
-        </ul>
-        <ul>
-            <li><a href="/lua_sandbox/doxygen/index.html">Source Documentation</a></li>
-        </ul>
-        <ul>
-            <li><a href="/lua_sandbox_extensions/index.html">Sandbox Extensions</a></li>
-        </ul>
-    </div>
-    <div class="main-content">
-<h1 id="heka-message-table">Heka Message Table</h1>
-<h2 id="hash-based-message-fields">Hash Based Message Fields</h2>
-<div class="sourceCode"><pre class="sourceCode lua"><code class="sourceCode lua"><span class="ot">{</span>
-Uuid        <span class="ot">=</span> <span class="st">&quot;data&quot;</span><span class="ot">,</span>               <span class="co">-- auto generated if not a 16 byte raw binary UUID or a 36 character human readable UUID</span>
-Logger      <span class="ot">=</span> <span class="st">&quot;nginx&quot;</span><span class="ot">,</span>              <span class="co">-- defaults to the Logger configuration value but can be overridden with the `restricted_headers` configuration</span>
-Hostname    <span class="ot">=</span> <span class="st">&quot;example.com&quot;</span><span class="ot">,</span>        <span class="co">-- defaults to the Hostname configuration value but can be overridden with the `restricted_headers` configuration</span>
-Timestamp   <span class="ot">=</span> <span class="dv">1e9</span><span class="ot">,</span>                  <span class="co">-- auto generated if not a number</span>
-Type        <span class="ot">=</span> <span class="st">&quot;TEST&quot;</span><span class="ot">,</span>
-Payload     <span class="ot">=</span> <span class="st">&quot;Test Payload&quot;</span><span class="ot">,</span>
-EnvVersion  <span class="ot">=</span> <span class="st">&quot;0.8&quot;</span><span class="ot">,</span>
-Pid         <span class="ot">=</span> <span class="dv">1234</span><span class="ot">,</span>
-Severity    <span class="ot">=</span> <span class="dv">6</span><span class="ot">,</span>
-Fields      <span class="ot">=</span> <span class="ot">{</span>
-            http_status     <span class="ot">=</span> <span class="dv">200</span><span class="ot">,</span>  <span class="co">-- encoded as a double</span>
-            request_size    <span class="ot">=</span> <span class="ot">{</span>value<span class="ot">=</span><span class="dv">1413</span><span class="ot">,</span> value_type<span class="ot">=</span><span class="dv">2</span><span class="ot">,</span> representation<span class="ot">=</span><span class="st">&quot;B&quot;</span><span class="ot">}</span> <span class="co">-- encoded as an integer</span>
-            <span class="ot">}</span>
-<span class="ot">}</span></code></pre></div>
-<h2 id="array-based-message-fields">Array Based Message Fields</h2>
-<div class="sourceCode"><pre class="sourceCode lua"><code class="sourceCode lua"><span class="ot">{</span>
-<span class="co">-- Message headers are the same as above</span>
-Fields      <span class="ot">=</span> <span class="ot">{</span>
-            <span class="ot">{</span>name<span class="ot">=</span><span class="st">&quot;http_status&quot;</span> <span class="ot">,</span> value<span class="ot">=</span><span class="dv">200</span><span class="ot">},</span> <span class="co">-- encoded as a double</span>
-            <span class="ot">{</span>name<span class="ot">=</span><span class="st">&quot;request_size&quot;</span><span class="ot">,</span> value<span class="ot">=</span><span class="dv">1413</span><span class="ot">,</span> value_type<span class="ot">=</span><span class="dv">2</span><span class="ot">,</span> representation<span class="ot">=</span><span class="st">&quot;B&quot;</span><span class="ot">}</span> <span class="co">-- encoded as an integer</span>
-            <span class="ot">}</span>
-<span class="ot">}</span></code></pre></div>
+
+<!DOCTYPE HTML>
+<html lang="" >
+    <head>
+        <meta charset="UTF-8">
+        <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+        <title>Message Schema · GitBook</title>
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="description" content="">
+        <meta name="generator" content="GitBook 3.2.2">
+        
+        
+        
+    
+    <link rel="stylesheet" href="../gitbook/style.css">
+
+    
+            
+                
+                <link rel="stylesheet" href="../gitbook/gitbook-plugin-highlight/website.css">
+                
+            
+                
+                <link rel="stylesheet" href="../gitbook/gitbook-plugin-search/search.css">
+                
+            
+                
+                <link rel="stylesheet" href="../gitbook/gitbook-plugin-fontsettings/website.css">
+                
+            
+        
+
+    
+
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+
+        
+    
+    
+    <meta name="HandheldFriendly" content="true"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <link rel="apple-touch-icon-precomposed" sizes="152x152" href="../gitbook/images/apple-touch-icon-precomposed-152.png">
+    <link rel="shortcut icon" href="../gitbook/images/favicon.ico" type="image/x-icon">
+
+    
+    <link rel="next" href="../util/message_matcher.html" />
+    
+    
+    <link rel="prev" href="output.html" />
+    
+
+    </head>
+    <body>
+        
+<div class="book">
+    <div class="book-summary">
+        
+            
+<div id="book-search-input" role="search">
+    <input type="text" placeholder="Type to search" />
 </div>
-</body>
+
+            
+                <nav role="navigation">
+                
+
+
+<ul class="summary">
+    
+    
+
+    
+
+    
+        
+        
+    
+        <li class="chapter " data-level="1.1" data-path="../">
+            
+                <a href="../">
+            
+                    
+                    Lua Sandbox Library (1.2.5)
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.2" data-path="../sandbox.html">
+            
+                <a href="../sandbox.html">
+            
+                    
+                    Generic Sandbox
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3" data-path="./">
+            
+                <a href="./">
+            
+                    
+                    Heka Sandbox
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.3.1" data-path="input.html">
+            
+                <a href="input.html">
+            
+                    
+                    Input Interface
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2" data-path="analysis.html">
+            
+                <a href="analysis.html">
+            
+                    
+                    Analysis Interface
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.3" data-path="output.html">
+            
+                <a href="output.html">
+            
+                    
+                    Output Interface
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter active" data-level="1.3.4" data-path="message.html">
+            
+                <a href="message.html">
+            
+                    
+                    Message Schema
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.5" data-path="../util/message_matcher.html">
+            
+                <a href="../util/message_matcher.html">
+            
+                    
+                    Message Matcher
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4" data-path="../cli/">
+            
+                <a href="../cli/">
+            
+                    
+                    Command Line Tools
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.5" >
+            
+                <a target="_blank" href="https://mozilla-services.github.io/lua_sandbox/doxygen/index.html">
+            
+                    
+                    Source Documentation
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.6" >
+            
+                <a target="_blank" href="https://mozilla-services.github.io/lua_sandbox_extensions">
+            
+                    
+                    Sandbox Extensions
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+    
+
+    <li class="divider"></li>
+
+    <li>
+        <a href="https://www.gitbook.com" target="blank" class="gitbook-link">
+            Published with GitBook
+        </a>
+    </li>
+</ul>
+
+
+                </nav>
+            
+        
+    </div>
+
+    <div class="book-body">
+        
+            <div class="body-inner">
+                
+                    
+
+<div class="book-header" role="navigation">
+    
+
+    <!-- Title -->
+    <h1>
+        <i class="fa fa-circle-o-notch fa-spin"></i>
+        <a href=".." >Message Schema</a>
+    </h1>
+</div>
+
+
+
+
+                    <div class="page-wrapper" tabindex="-1" role="main">
+                        <div class="page-inner">
+                            
+<div id="book-search-results">
+    <div class="search-noresults">
+    
+                                <section class="normal markdown-section">
+                                
+                                <h1 id="heka-message-table">Heka Message Table</h1>
+<h2 id="hash-based-message-fields">Hash Based Message Fields</h2>
+<pre><code class="lang-lua">{
+Uuid        = <span class="hljs-string">&quot;data&quot;</span>,               <span class="hljs-comment">-- auto generated if not a 16 byte raw binary UUID or a 36 character human readable UUID</span>
+Logger      = <span class="hljs-string">&quot;nginx&quot;</span>,              <span class="hljs-comment">-- defaults to the Logger configuration value but can be overridden with the `restricted_headers` configuration</span>
+Hostname    = <span class="hljs-string">&quot;example.com&quot;</span>,        <span class="hljs-comment">-- defaults to the Hostname configuration value but can be overridden with the `restricted_headers` configuration</span>
+Timestamp   = <span class="hljs-number">1e9</span>,                  <span class="hljs-comment">-- auto generated if not a number</span>
+Type        = <span class="hljs-string">&quot;TEST&quot;</span>,
+Payload     = <span class="hljs-string">&quot;Test Payload&quot;</span>,
+EnvVersion  = <span class="hljs-string">&quot;0.8&quot;</span>,
+Pid         = <span class="hljs-number">1234</span>,
+Severity    = <span class="hljs-number">6</span>,
+Fields      = {
+            http_status     = <span class="hljs-number">200</span>,  <span class="hljs-comment">-- encoded as a double</span>
+            request_size    = {value=<span class="hljs-number">1413</span>, value_type=<span class="hljs-number">2</span>, representation=<span class="hljs-string">&quot;B&quot;</span>} <span class="hljs-comment">-- encoded as an integer</span>
+            }
+}
+</code></pre>
+<h2 id="array-based-message-fields">Array Based Message Fields</h2>
+<pre><code class="lang-lua">{
+<span class="hljs-comment">-- Message headers are the same as above</span>
+Fields      = {
+            {name=<span class="hljs-string">&quot;http_status&quot;</span> , value=<span class="hljs-number">200</span>}, <span class="hljs-comment">-- encoded as a double</span>
+            {name=<span class="hljs-string">&quot;request_size&quot;</span>, value=<span class="hljs-number">1413</span>, value_type=<span class="hljs-number">2</span>, representation=<span class="hljs-string">&quot;B&quot;</span>} <span class="hljs-comment">-- encoded as an integer</span>
+            }
+}
+</code></pre>
+
+                                
+                                </section>
+                            
+    </div>
+    <div class="search-results">
+        <div class="has-results">
+            
+            <h1 class="search-results-title"><span class='search-results-count'></span> results matching "<span class='search-query'></span>"</h1>
+            <ul class="search-results-list"></ul>
+            
+        </div>
+        <div class="no-results">
+            
+            <h1 class="search-results-title">No results matching "<span class='search-query'></span>"</h1>
+            
+        </div>
+    </div>
+</div>
+
+                        </div>
+                    </div>
+                
+            </div>
+
+            
+                
+                <a href="output.html" class="navigation navigation-prev " aria-label="Previous page: Output Interface">
+                    <i class="fa fa-angle-left"></i>
+                </a>
+                
+                
+                <a href="../util/message_matcher.html" class="navigation navigation-next " aria-label="Next page: Message Matcher">
+                    <i class="fa fa-angle-right"></i>
+                </a>
+                
+            
+        
+    </div>
+
+    <script>
+        var gitbook = gitbook || [];
+        gitbook.push(function() {
+            gitbook.page.hasChanged({"page":{"title":"Message Schema","level":"1.3.4","depth":2,"next":{"title":"Message Matcher","level":"1.3.5","depth":2,"path":"util/message_matcher.md","ref":"util/message_matcher.md","articles":[]},"previous":{"title":"Output Interface","level":"1.3.3","depth":2,"path":"heka/output.md","ref":"heka/output.md","articles":[]},"dir":"ltr"},"config":{"gitbook":"*","theme":"default","variables":{},"plugins":[],"pluginsConfig":{"highlight":{},"search":{},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"sharing":{"facebook":true,"twitter":true,"google":false,"weibo":false,"instapaper":false,"vk":false,"all":["facebook","google","twitter","weibo","instapaper"]},"fontsettings":{"theme":"white","family":"sans","size":2},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false}},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56}},"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"}},"file":{"path":"heka/message.md","mtime":"2017-03-06T16:07:10.108Z","type":"markdown"},"gitbook":{"version":"3.2.2","time":"2017-05-15T14:55:58.796Z"},"basePath":"..","book":{"language":""}});
+        });
+    </script>
+</div>
+
+        
+    <script src="../gitbook/gitbook.js"></script>
+    <script src="../gitbook/theme.js"></script>
+    
+        
+        <script src="../gitbook/gitbook-plugin-search/search-engine.js"></script>
+        
+    
+        
+        <script src="../gitbook/gitbook-plugin-search/search.js"></script>
+        
+    
+        
+        <script src="../gitbook/gitbook-plugin-lunr/lunr.min.js"></script>
+        
+    
+        
+        <script src="../gitbook/gitbook-plugin-lunr/search-lunr.js"></script>
+        
+    
+        
+        <script src="../gitbook/gitbook-plugin-sharing/buttons.js"></script>
+        
+    
+        
+        <script src="../gitbook/gitbook-plugin-fontsettings/fontsettings.js"></script>
+        
+    
+
+    </body>
 </html>
+

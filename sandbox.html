@@ -1,131 +1,363 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-  <meta http-equiv="Content-Style-Type" content="text/css" />
-  <meta name="generator" content="pandoc" />
-  <title></title>
-  <style type="text/css">code{white-space: pre;}</style>
-  <style type="text/css">
-div.sourceCode { overflow-x: auto; }
-table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
-  margin: 0; padding: 0; vertical-align: baseline; border: none; }
-table.sourceCode { width: 100%; line-height: 100%; }
-td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; color: #aaaaaa; border-right: 1px solid #aaaaaa; }
-td.sourceCode { padding-left: 5px; }
-code > span.kw { color: #007020; font-weight: bold; } /* Keyword */
-code > span.dt { color: #902000; } /* DataType */
-code > span.dv { color: #40a070; } /* DecVal */
-code > span.bn { color: #40a070; } /* BaseN */
-code > span.fl { color: #40a070; } /* Float */
-code > span.ch { color: #4070a0; } /* Char */
-code > span.st { color: #4070a0; } /* String */
-code > span.co { color: #60a0b0; font-style: italic; } /* Comment */
-code > span.ot { color: #007020; } /* Other */
-code > span.al { color: #ff0000; font-weight: bold; } /* Alert */
-code > span.fu { color: #06287e; } /* Function */
-code > span.er { color: #ff0000; font-weight: bold; } /* Error */
-code > span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
-code > span.cn { color: #880000; } /* Constant */
-code > span.sc { color: #4070a0; } /* SpecialChar */
-code > span.vs { color: #4070a0; } /* VerbatimString */
-code > span.ss { color: #bb6688; } /* SpecialString */
-code > span.im { } /* Import */
-code > span.va { color: #19177c; } /* Variable */
-code > span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
-code > span.op { color: #666666; } /* Operator */
-code > span.bu { } /* BuiltIn */
-code > span.ex { } /* Extension */
-code > span.pp { color: #bc7a00; } /* Preprocessor */
-code > span.at { color: #7d9029; } /* Attribute */
-code > span.do { color: #ba2121; font-style: italic; } /* Documentation */
-code > span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
-code > span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
-code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
-  </style>
-  <link rel="stylesheet" href="/lua_sandbox/docs.css" type="text/css" />
-</head>
-<body>
-<div id="title">Lua Sandbox Library (1.2.5)<hr/></div>
-<div class="menu">
-        <ul>
-            <li><a href="/lua_sandbox/index.html">Overview</a></li>
-        </ul>
-        <ul>
-            <li><a href="/lua_sandbox/sandbox.html">Generic Sandbox</a></li>
-        </ul>
-        <ul>
-            <li><a href="/lua_sandbox/heka/index.html">Heka Sandbox</a></li>
-        <ul>
-            <li><a href="/lua_sandbox/heka/analysis.html">Analysis Interface</a></li>
-            <li><a href="/lua_sandbox/heka/input.html">Input Interface</a></li>
-            <li><a href="/lua_sandbox/heka/output.html">Output Interface</a></li>
-        </ul>
-        </ul>
-        <ul>
-           <li><a href="/lua_sandbox/cli/index.html">Command Line Tools</a></li>
-        </ul>
-        <ul>
-            <li><a href="/lua_sandbox/doxygen/index.html">Source Documentation</a></li>
-        </ul>
-        <ul>
-            <li><a href="/lua_sandbox_extensions/index.html">Sandbox Extensions</a></li>
-        </ul>
+
+<!DOCTYPE HTML>
+<html lang="" >
+    <head>
+        <meta charset="UTF-8">
+        <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+        <title>Generic Sandbox · GitBook</title>
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="description" content="">
+        <meta name="generator" content="GitBook 3.2.2">
+        
+        
+        
+    
+    <link rel="stylesheet" href="gitbook/style.css">
+
+    
+            
+                
+                <link rel="stylesheet" href="gitbook/gitbook-plugin-highlight/website.css">
+                
+            
+                
+                <link rel="stylesheet" href="gitbook/gitbook-plugin-search/search.css">
+                
+            
+                
+                <link rel="stylesheet" href="gitbook/gitbook-plugin-fontsettings/website.css">
+                
+            
+        
+
+    
+
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+
+        
+    
+    
+    <meta name="HandheldFriendly" content="true"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <link rel="apple-touch-icon-precomposed" sizes="152x152" href="gitbook/images/apple-touch-icon-precomposed-152.png">
+    <link rel="shortcut icon" href="gitbook/images/favicon.ico" type="image/x-icon">
+
+    
+    <link rel="next" href="heka/" />
+    
+    
+    <link rel="prev" href="./" />
+    
+
+    </head>
+    <body>
+        
+<div class="book">
+    <div class="book-summary">
+        
+            
+<div id="book-search-input" role="search">
+    <input type="text" placeholder="Type to search" />
+</div>
+
+            
+                <nav role="navigation">
+                
+
+
+<ul class="summary">
+    
+    
+
+    
+
+    
+        
+        
+    
+        <li class="chapter " data-level="1.1" data-path="./">
+            
+                <a href="./">
+            
+                    
+                    Lua Sandbox Library (1.2.5)
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter active" data-level="1.2" data-path="sandbox.html">
+            
+                <a href="sandbox.html">
+            
+                    
+                    Generic Sandbox
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3" data-path="heka/">
+            
+                <a href="heka/">
+            
+                    
+                    Heka Sandbox
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.3.1" data-path="heka/input.html">
+            
+                <a href="heka/input.html">
+            
+                    
+                    Input Interface
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2" data-path="heka/analysis.html">
+            
+                <a href="heka/analysis.html">
+            
+                    
+                    Analysis Interface
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.3" data-path="heka/output.html">
+            
+                <a href="heka/output.html">
+            
+                    
+                    Output Interface
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.4" data-path="heka/message.html">
+            
+                <a href="heka/message.html">
+            
+                    
+                    Message Schema
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.5" data-path="util/message_matcher.html">
+            
+                <a href="util/message_matcher.html">
+            
+                    
+                    Message Matcher
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4" data-path="cli/">
+            
+                <a href="cli/">
+            
+                    
+                    Command Line Tools
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.5" >
+            
+                <a target="_blank" href="https://mozilla-services.github.io/lua_sandbox/doxygen/index.html">
+            
+                    
+                    Source Documentation
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.6" >
+            
+                <a target="_blank" href="https://mozilla-services.github.io/lua_sandbox_extensions">
+            
+                    
+                    Sandbox Extensions
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+    
+
+    <li class="divider"></li>
+
+    <li>
+        <a href="https://www.gitbook.com" target="blank" class="gitbook-link">
+            Published with GitBook
+        </a>
+    </li>
+</ul>
+
+
+                </nav>
+            
+        
     </div>
-    <div class="main-content">
-<h1 id="generic-sandbox-interface">Generic Sandbox Interface</h1>
+
+    <div class="book-body">
+        
+            <div class="body-inner">
+                
+                    
+
+<div class="book-header" role="navigation">
+    
+
+    <!-- Title -->
+    <h1>
+        <i class="fa fa-circle-o-notch fa-spin"></i>
+        <a href="." >Generic Sandbox</a>
+    </h1>
+</div>
+
+
+
+
+                    <div class="page-wrapper" tabindex="-1" role="main">
+                        <div class="page-inner">
+                            
+<div id="book-search-results">
+    <div class="search-noresults">
+    
+                                <section class="normal markdown-section">
+                                
+                                <h1 id="generic-sandbox-interface">Generic Sandbox Interface</h1>
 <h2 id="configuration">Configuration</h2>
 <ul>
-<li><strong>output_limit</strong> - the largest output string an input or analysis plugin can inject into the host (bytes (unsigned), default 65536, 0 for unlimited*)</li>
-<li><strong>memory_limit</strong> - the maximum amount of memory a plugin can use before being terminated (bytes (unsigned), default 8388608, 0 for unlimited*)</li>
-<li><strong>instruction_limit</strong> - the maximum number of Lua instructions a plugin can execute in a single API function call (count (unsigned), default 1000000, 0 for unlimited)</li>
-<li><strong>path</strong> - The path used by require to search for a Lua loader. See <a href="http://www.lua.org/manual/5.1/manual.html#pdf-package.loaders">package loaders</a> for the path syntax. By default no paths are set in the sandbox and everything has been moved to a sandbox configuration table.</li>
-<li><strong>cpath</strong> - The path used by require to search for a C loader (same notes as above)</li>
-<li><p><strong>disabled_modules</strong> - Hash specifying which modules should be completely inaccessible. The existence of the key in the table will disable the module.</p>
-<div class="sourceCode"><pre class="sourceCode lua"><code class="sourceCode lua">disabled_modules <span class="ot">=</span> <span class="ot">{</span>io <span class="ot">=</span> <span class="dv">1</span><span class="ot">}</span></code></pre></div></li>
-<li><p><strong>remove_entries</strong> - Hash specifying which functions within a module should be inaccessible</p>
-<div class="sourceCode"><pre class="sourceCode lua"><code class="sourceCode lua">remove_entries <span class="ot">=</span> <span class="ot">{</span>
-os <span class="ot">=</span> <span class="ot">{</span><span class="st">&quot;getenv&quot;</span><span class="ot">,</span> <span class="st">&quot;execute&quot;</span><span class="ot">},</span>
-string <span class="ot">=</span> <span class="ot">{</span><span class="st">&quot;dump&quot;</span><span class="ot">}</span>
-<span class="ot">}</span></code></pre></div></li>
-<li><strong>log_level</strong> - syslog severity level, when set to debug (7) the print function will be wired to the specified logger (default error (3))</li>
-<li><p><em>user defined</em> any other variable (string, bool, number, table) is passed through as-is and available via <a href="#read_config">read_config</a></p></li>
+<li><strong>output_limit</strong> - the largest output string an input or analysis plugin can
+inject into the host (bytes (unsigned), default 65536, 0 for unlimited*)</li>
+<li><strong>memory_limit</strong> - the maximum amount of memory a plugin can use before being
+terminated (bytes (unsigned), default 8388608, 0 for unlimited*)</li>
+<li><strong>instruction_limit</strong> - the maximum number of Lua instructions a plugin can
+execute in a single API function call (count (unsigned), default 1000000, 0
+for unlimited)</li>
+<li><strong>path</strong> - The path used by require to search for a Lua loader. See
+<a href="http://www.lua.org/manual/5.1/manual.html#pdf-package.loaders" target="_blank">package loaders</a>
+for the path syntax.  By default no paths are set in the sandbox and
+everything has been moved to a sandbox configuration table.</li>
+<li><strong>cpath</strong> - The path used by require to search for a C loader (same notes as
+above)</li>
+<li><strong>disabled_modules</strong> - Hash specifying which modules should be completely
+inaccessible.  The existence of the key in the table will disable the module.<pre><code class="lang-lua">disabled_modules = {<span class="hljs-built_in">io</span> = <span class="hljs-number">1</span>}
+</code></pre>
+</li>
+<li><strong>remove_entries</strong> - Hash specifying which functions within a module should be
+inaccessible<pre><code class="lang-lua">remove_entries = {
+  <span class="hljs-built_in">os</span> = {<span class="hljs-string">&quot;getenv&quot;</span>, <span class="hljs-string">&quot;execute&quot;</span>},
+  <span class="hljs-built_in">string</span> = {<span class="hljs-string">&quot;dump&quot;</span>}
+}
+</code></pre>
+</li>
+<li><strong>log_level</strong> - syslog severity level, when set to  debug (7) the print
+function will be wired to the specified logger (default error (3))</li>
+<li><em>user defined</em>  any other variable (string, bool, number, table) is passed
+through as-is and available via <a href="#readconfig">read_config</a></li>
 </ul>
-<p>*<em>0 == SIZE_MAX which in not necessarily the upper limit of the configuration range UINT_MAX</em></p>
+<p>*<em>0 == SIZE_MAX which in not necessarily the upper limit of the
+configuration range UINT_MAX</em></p>
 <h2 id="lua-functions-exposed-to-c-by-the-core-sandbox">Lua functions exposed to C by the core sandbox</h2>
-<p>There are no functions exposed by default, see lsb_pcall_setup() and lsb_pcall_teardown() when defining an API.</p>
+<p>There are no functions exposed by default, see lsb_pcall_setup() and
+lsb_pcall_teardown() when defining an API.</p>
 <h2 id="functions-exposed-to-lua-by-the-core-sandbox">Functions exposed to Lua by the core sandbox</h2>
 <h3 id="require">require</h3>
-<p>By default only the base library is loaded, additional libraries must be loaded with require().</p>
+<p>By default only the base library is loaded, additional libraries must be loaded
+with require().</p>
 <p><em>Arguments</em></p>
 <ul>
 <li>libraryName (string)</li>
 </ul>
 <p><em>Return</em></p>
 <ul>
-<li>a table - For non user provided libraries the table is also globally registered with the library name. User provided libraries may implement their own semantics i.e. the grammar libraries return a table but do not globally register the table name (see the individual module documentation for the correct usage).</li>
+<li>a table - For non user provided libraries the table is also globally
+registered with the library name.  User provided libraries may implement their
+own semantics i.e. the grammar libraries return a table but do not globally
+register the table name (see the individual module documentation for the
+correct usage).</li>
 </ul>
 <p><em>Notes</em></p>
 <p>The following modules have been modified, as described, for use in the sandbox.</p>
 <ul>
-<li><a href="http://www.lua.org/manual/5.1/manual.html#5.1">base library</a>
-<ul>
-<li>The require() function has been modified to not expose any of the package table to the sandbox.</li>
-</ul></li>
-<li><a href="http://www.lua.org/manual/5.1/manual.html#5.6">math</a>
-<ul>
-<li>Added Functions
-<ul>
+<li><a href="http://www.lua.org/manual/5.1/manual.html#5.1" target="_blank">base library</a><ul>
+<li>The require() function has been modified to not expose any of the package
+table to the sandbox.</li>
+</ul>
+</li>
+<li><a href="http://www.lua.org/manual/5.1/manual.html#5.6" target="_blank">math</a><ul>
+<li>Added Functions<ul>
 <li>erf(x) - Returns the error function value for x.</li>
 <li>erfc(x)- Returns the complementary error function value for x.</li>
-</ul></li>
-</ul></li>
-<li><a href="http://www.lua.org/manual/5.1/manual.html#5.8">os</a>
-<ul>
-<li>The local timezone is set to UTC in all sandboxes.</li>
-</ul></li>
 </ul>
-<h3 id="read_config">read_config</h3>
+</li>
+</ul>
+</li>
+<li><a href="http://www.lua.org/manual/5.1/manual.html#5.8" target="_blank">os</a><ul>
+<li>The local timezone is set to UTC in all sandboxes.</li>
+</ul>
+</li>
+</ul>
+<h3 id="readconfig">read_config</h3>
 <p>Provides access to the sandbox configuration variables.</p>
 <p><em>Arguments</em></p>
 <ul>
@@ -136,17 +368,25 @@ string <span class="ot">=</span> <span class="ot">{</span><span class="st">&quot
 <li>value (string, number, bool, table)</li>
 </ul>
 <h3 id="output">output</h3>
-<p>Receives any number of arguments and appends data to the output buffer, which cannot exceed the output_limit configuration parameter. See lsb_get_output() to connect the output to the host application.</p>
+<p>Receives any number of arguments and appends data to the output buffer, which
+cannot exceed the output_limit configuration parameter. See lsb_get_output() to
+connect the output to the host application.</p>
 <p><em>Arguments</em></p>
 <ul>
-<li>arg (number, string, bool, nil, userdata implementing output support) - Lua variable or literal to be appended the output buffer</li>
+<li>arg (number, string, bool, nil, userdata implementing output support) - Lua
+variable or literal to be appended the output buffer</li>
 </ul>
 <p><em>Return</em></p>
 <ul>
 <li>none</li>
 </ul>
 <h3 id="print">print</h3>
-<p>Receives any number of arguments and sends a debug message to the host's logger function as a tab delimited message. The function clears and then uses the output buffer so if pending output has been queued and not flushed it will be lost (the same output_limit restrictions apply). Non-printable characters are replaced with spaces to preserve the host's log integrity and any embedded NULs terminate each argument.</p>
+<p>Receives any number of arguments and sends a debug message to the host&apos;s logger
+function as a tab delimited message. The function clears and then uses the
+output buffer so if pending output has been queued and not flushed it will be
+lost (the same output_limit restrictions apply).  Non-printable characters
+are replaced with spaces to preserve the host&apos;s log integrity and any embedded
+NULs terminate each argument.</p>
 <p><em>Arguments</em></p>
 <ul>
 <li>arg (anything that can be converted to a string with the tostring function)</li>
@@ -159,27 +399,108 @@ string <span class="ot">=</span> <span class="ot">{</span><span class="st">&quot
 <h2 id="how-to-interact-with-the-sandbox-creating-an-api">How to interact with the sandbox (creating an API)</h2>
 <p>The best place to start is with some examples:</p>
 <h3 id="unit-test-api">Unit Test API</h3>
-<p><a href="/lua_sandbox/doxygen/test_2sandbox_8h.html">Unit Test API</a></p>
+<p><a href="https://mozilla-services.github.io/lua_sandbox/doxygen/test_2sandbox_8h.html" target="_blank">Unit Test API</a></p>
 <h4 id="lua-functions-exposed-to-c">Lua Functions Exposed to C</h4>
 <ul>
-<li>int <strong>process</strong> (double)
-<ul>
-<li>exposes a process function that takes a test case number as its argument and returns and integer result code.</li>
-</ul></li>
-<li>void <strong>report</strong> (double)
-<ul>
-<li>exposes a report function that takes a test case number as its argument and returns nothing.</li>
-</ul></li>
+<li>int <strong>process</strong> (double)<ul>
+<li>exposes a process function that takes a test case number as its argument
+and returns and integer result code.</li>
+</ul>
+</li>
+<li>void <strong>report</strong> (double)<ul>
+<li>exposes a report function that takes a test case number as its argument
+and returns nothing.</li>
+</ul>
+</li>
 </ul>
 <h4 id="c-functions-exposed-to-lua">C Functions Exposed to Lua</h4>
 <ul>
-<li>void <strong>write_output</strong> (optionalArg1, optionalArg2, optionalArgN)
-<ul>
-<li>captures whatever is in the output buffer for use by the host application, appending any optional arguments (optional arguments have the same restriction as output).</li>
-</ul></li>
+<li>void <strong>write_output</strong> (optionalArg1, optionalArg2, optionalArgN)<ul>
+<li>captures whatever is in the output buffer for use by the host application,
+appending any optional arguments (optional arguments have the same
+restriction as output).</li>
+</ul>
+</li>
 </ul>
 <h3 id="heka-sandbox-api">Heka Sandbox API</h3>
-<p><a href="/lua_sandbox/doxygen/heka_2sandbox_8h.html">Heka Sandbox API</a> q</p>
+<p><a href="https://mozilla-services.github.io/lua_sandbox/doxygen/heka_2sandbox_8h.html" target="_blank">Heka Sandbox API</a></p>
+
+                                
+                                </section>
+                            
+    </div>
+    <div class="search-results">
+        <div class="has-results">
+            
+            <h1 class="search-results-title"><span class='search-results-count'></span> results matching "<span class='search-query'></span>"</h1>
+            <ul class="search-results-list"></ul>
+            
+        </div>
+        <div class="no-results">
+            
+            <h1 class="search-results-title">No results matching "<span class='search-query'></span>"</h1>
+            
+        </div>
+    </div>
 </div>
-</body>
+
+                        </div>
+                    </div>
+                
+            </div>
+
+            
+                
+                <a href="./" class="navigation navigation-prev " aria-label="Previous page: Lua Sandbox Library (1.2.5)">
+                    <i class="fa fa-angle-left"></i>
+                </a>
+                
+                
+                <a href="heka/" class="navigation navigation-next " aria-label="Next page: Heka Sandbox">
+                    <i class="fa fa-angle-right"></i>
+                </a>
+                
+            
+        
+    </div>
+
+    <script>
+        var gitbook = gitbook || [];
+        gitbook.push(function() {
+            gitbook.page.hasChanged({"page":{"title":"Generic Sandbox","level":"1.2","depth":1,"next":{"title":"Heka Sandbox","level":"1.3","depth":1,"path":"heka/index.md","ref":"heka/index.md","articles":[{"title":"Input Interface","level":"1.3.1","depth":2,"path":"heka/input.md","ref":"heka/input.md","articles":[]},{"title":"Analysis Interface","level":"1.3.2","depth":2,"path":"heka/analysis.md","ref":"heka/analysis.md","articles":[]},{"title":"Output Interface","level":"1.3.3","depth":2,"path":"heka/output.md","ref":"heka/output.md","articles":[]},{"title":"Message Schema","level":"1.3.4","depth":2,"path":"heka/message.md","ref":"heka/message.md","articles":[]},{"title":"Message Matcher","level":"1.3.5","depth":2,"path":"util/message_matcher.md","ref":"util/message_matcher.md","articles":[]}]},"previous":{"title":"Lua Sandbox Library (1.2.5)","level":"1.1","depth":1,"path":"README.md","ref":"README.md","articles":[]},"dir":"ltr"},"config":{"gitbook":"*","theme":"default","variables":{},"plugins":[],"pluginsConfig":{"highlight":{},"search":{},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"sharing":{"facebook":true,"twitter":true,"google":false,"weibo":false,"instapaper":false,"vk":false,"all":["facebook","google","twitter","weibo","instapaper"]},"fontsettings":{"theme":"white","family":"sans","size":2},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false}},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56}},"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"}},"file":{"path":"sandbox.md","mtime":"2017-05-15T14:52:09.958Z","type":"markdown"},"gitbook":{"version":"3.2.2","time":"2017-05-15T14:55:58.796Z"},"basePath":".","book":{"language":""}});
+        });
+    </script>
+</div>
+
+        
+    <script src="gitbook/gitbook.js"></script>
+    <script src="gitbook/theme.js"></script>
+    
+        
+        <script src="gitbook/gitbook-plugin-search/search-engine.js"></script>
+        
+    
+        
+        <script src="gitbook/gitbook-plugin-search/search.js"></script>
+        
+    
+        
+        <script src="gitbook/gitbook-plugin-lunr/lunr.min.js"></script>
+        
+    
+        
+        <script src="gitbook/gitbook-plugin-lunr/search-lunr.js"></script>
+        
+    
+        
+        <script src="gitbook/gitbook-plugin-sharing/buttons.js"></script>
+        
+    
+        
+        <script src="gitbook/gitbook-plugin-fontsettings/fontsettings.js"></script>
+        
+    
+
+    </body>
 </html>
+

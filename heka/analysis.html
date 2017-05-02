@@ -1,107 +1,320 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-  <meta http-equiv="Content-Style-Type" content="text/css" />
-  <meta name="generator" content="pandoc" />
-  <title></title>
-  <style type="text/css">code{white-space: pre;}</style>
-  <style type="text/css">
-div.sourceCode { overflow-x: auto; }
-table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
-  margin: 0; padding: 0; vertical-align: baseline; border: none; }
-table.sourceCode { width: 100%; line-height: 100%; }
-td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; color: #aaaaaa; border-right: 1px solid #aaaaaa; }
-td.sourceCode { padding-left: 5px; }
-code > span.kw { color: #007020; font-weight: bold; } /* Keyword */
-code > span.dt { color: #902000; } /* DataType */
-code > span.dv { color: #40a070; } /* DecVal */
-code > span.bn { color: #40a070; } /* BaseN */
-code > span.fl { color: #40a070; } /* Float */
-code > span.ch { color: #4070a0; } /* Char */
-code > span.st { color: #4070a0; } /* String */
-code > span.co { color: #60a0b0; font-style: italic; } /* Comment */
-code > span.ot { color: #007020; } /* Other */
-code > span.al { color: #ff0000; font-weight: bold; } /* Alert */
-code > span.fu { color: #06287e; } /* Function */
-code > span.er { color: #ff0000; font-weight: bold; } /* Error */
-code > span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
-code > span.cn { color: #880000; } /* Constant */
-code > span.sc { color: #4070a0; } /* SpecialChar */
-code > span.vs { color: #4070a0; } /* VerbatimString */
-code > span.ss { color: #bb6688; } /* SpecialString */
-code > span.im { } /* Import */
-code > span.va { color: #19177c; } /* Variable */
-code > span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
-code > span.op { color: #666666; } /* Operator */
-code > span.bu { } /* BuiltIn */
-code > span.ex { } /* Extension */
-code > span.pp { color: #bc7a00; } /* Preprocessor */
-code > span.at { color: #7d9029; } /* Attribute */
-code > span.do { color: #ba2121; font-style: italic; } /* Documentation */
-code > span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
-code > span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
-code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
-  </style>
-  <link rel="stylesheet" href="/lua_sandbox/docs.css" type="text/css" />
-</head>
-<body>
-<div id="title">Lua Sandbox Library (1.2.5)<hr/></div>
-<div class="menu">
-        <ul>
-            <li><a href="/lua_sandbox/index.html">Overview</a></li>
-        </ul>
-        <ul>
-            <li><a href="/lua_sandbox/sandbox.html">Generic Sandbox</a></li>
-        </ul>
-        <ul>
-            <li><a href="/lua_sandbox/heka/index.html">Heka Sandbox</a></li>
-        <ul>
-            <li><a href="/lua_sandbox/heka/analysis.html">Analysis Interface</a></li>
-            <li><a href="/lua_sandbox/heka/input.html">Input Interface</a></li>
-            <li><a href="/lua_sandbox/heka/output.html">Output Interface</a></li>
-        </ul>
-        </ul>
-        <ul>
-           <li><a href="/lua_sandbox/cli/index.html">Command Line Tools</a></li>
-        </ul>
-        <ul>
-            <li><a href="/lua_sandbox/doxygen/index.html">Source Documentation</a></li>
-        </ul>
-        <ul>
-            <li><a href="/lua_sandbox_extensions/index.html">Sandbox Extensions</a></li>
-        </ul>
+
+<!DOCTYPE HTML>
+<html lang="" >
+    <head>
+        <meta charset="UTF-8">
+        <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+        <title>Analysis Interface · GitBook</title>
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="description" content="">
+        <meta name="generator" content="GitBook 3.2.2">
+        
+        
+        
+    
+    <link rel="stylesheet" href="../gitbook/style.css">
+
+    
+            
+                
+                <link rel="stylesheet" href="../gitbook/gitbook-plugin-highlight/website.css">
+                
+            
+                
+                <link rel="stylesheet" href="../gitbook/gitbook-plugin-search/search.css">
+                
+            
+                
+                <link rel="stylesheet" href="../gitbook/gitbook-plugin-fontsettings/website.css">
+                
+            
+        
+
+    
+
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+
+        
+    
+    
+    <meta name="HandheldFriendly" content="true"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <link rel="apple-touch-icon-precomposed" sizes="152x152" href="../gitbook/images/apple-touch-icon-precomposed-152.png">
+    <link rel="shortcut icon" href="../gitbook/images/favicon.ico" type="image/x-icon">
+
+    
+    <link rel="next" href="output.html" />
+    
+    
+    <link rel="prev" href="input.html" />
+    
+
+    </head>
+    <body>
+        
+<div class="book">
+    <div class="book-summary">
+        
+            
+<div id="book-search-input" role="search">
+    <input type="text" placeholder="Type to search" />
+</div>
+
+            
+                <nav role="navigation">
+                
+
+
+<ul class="summary">
+    
+    
+
+    
+
+    
+        
+        
+    
+        <li class="chapter " data-level="1.1" data-path="../">
+            
+                <a href="../">
+            
+                    
+                    Lua Sandbox Library (1.2.5)
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.2" data-path="../sandbox.html">
+            
+                <a href="../sandbox.html">
+            
+                    
+                    Generic Sandbox
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3" data-path="./">
+            
+                <a href="./">
+            
+                    
+                    Heka Sandbox
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.3.1" data-path="input.html">
+            
+                <a href="input.html">
+            
+                    
+                    Input Interface
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter active" data-level="1.3.2" data-path="analysis.html">
+            
+                <a href="analysis.html">
+            
+                    
+                    Analysis Interface
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.3" data-path="output.html">
+            
+                <a href="output.html">
+            
+                    
+                    Output Interface
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.4" data-path="message.html">
+            
+                <a href="message.html">
+            
+                    
+                    Message Schema
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.5" data-path="../util/message_matcher.html">
+            
+                <a href="../util/message_matcher.html">
+            
+                    
+                    Message Matcher
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4" data-path="../cli/">
+            
+                <a href="../cli/">
+            
+                    
+                    Command Line Tools
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.5" >
+            
+                <a target="_blank" href="https://mozilla-services.github.io/lua_sandbox/doxygen/index.html">
+            
+                    
+                    Source Documentation
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.6" >
+            
+                <a target="_blank" href="https://mozilla-services.github.io/lua_sandbox_extensions">
+            
+                    
+                    Sandbox Extensions
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+    
+
+    <li class="divider"></li>
+
+    <li>
+        <a href="https://www.gitbook.com" target="blank" class="gitbook-link">
+            Published with GitBook
+        </a>
+    </li>
+</ul>
+
+
+                </nav>
+            
+        
     </div>
-    <div class="main-content">
-<h1 id="analysis-sandbox-interface">Analysis Sandbox Interface</h1>
+
+    <div class="book-body">
+        
+            <div class="body-inner">
+                
+                    
+
+<div class="book-header" role="navigation">
+    
+
+    <!-- Title -->
+    <h1>
+        <i class="fa fa-circle-o-notch fa-spin"></i>
+        <a href=".." >Analysis Interface</a>
+    </h1>
+</div>
+
+
+
+
+                    <div class="page-wrapper" tabindex="-1" role="main">
+                        <div class="page-inner">
+                            
+<div id="book-search-results">
+    <div class="search-noresults">
+    
+                                <section class="normal markdown-section">
+                                
+                                <h1 id="analysis-sandbox-interface">Analysis Sandbox Interface</h1>
 <h2 id="recommendations">Recommendations</h2>
-<p>Since the sandbox does not run in isolation there are some expectations of how the host infrastructure behaves. The current recommendation are based on the Hindsight reference implementation.</p>
+<p>Since the sandbox does not run in isolation there are some expectations of how
+the host infrastructure behaves.  The current recommendations are based on the
+Hindsight reference implementation.</p>
 <h2 id="disabled-functionality">Disabled Functionality</h2>
 <ul>
-<li><a href="http://www.lua.org/manual/5.1/manual.html#5.1">base library</a>
-<ul>
+<li><a href="http://www.lua.org/manual/5.1/manual.html#5.1" target="_blank">base library</a><ul>
 <li>collectgarbage, dofile, load, loadfile, loadstring, newproxy</li>
-</ul></li>
-<li><a href="http://www.lua.org/manual/5.1/manual.html#5.2">coroutine</a>
-<ul>
+</ul>
+</li>
+<li><a href="http://www.lua.org/manual/5.1/manual.html#5.2" target="_blank">coroutine</a><ul>
 <li>the entire module is inaccessible</li>
-</ul></li>
-<li><a href="http://www.lua.org/manual/5.1/manual.html#5.4">string</a>
-<ul>
+</ul>
+</li>
+<li><a href="http://www.lua.org/manual/5.1/manual.html#5.4" target="_blank">string</a><ul>
 <li>dump</li>
-</ul></li>
-<li><a href="http://www.lua.org/manual/5.1/manual.html#5.7">io</a>
-<ul>
+</ul>
+</li>
+<li><a href="http://www.lua.org/manual/5.1/manual.html#5.7" target="_blank">io</a><ul>
 <li>the entire module is inaccessible</li>
-</ul></li>
-<li><a href="http://www.lua.org/manual/5.1/manual.html#5.8">os</a>
-<ul>
+</ul>
+</li>
+<li><a href="http://www.lua.org/manual/5.1/manual.html#5.8" target="_blank">os</a><ul>
 <li>getenv, execute, exit, remove, rename, setlocale, tmpname</li>
-</ul></li>
+</ul>
+</li>
 </ul>
 <h2 id="required-lua-functions-called-by-the-host">Required Lua Functions (called by the host)</h2>
-<h3 id="process_message">process_message</h3>
-<p>Called when the host has a message available for analysis. Usually used in combination with a <a href="../util/message_matcher.html">message matcher</a> expression.</p>
+<h3 id="processmessage">process_message</h3>
+<p>Called when the host has a message available for analysis.  Usually used in
+combination with a <a href="../util/message_matcher.html">message matcher</a> expression.</p>
 <p>Recommenation: specify this as a <code>message_matcher</code> configuration option.</p>
 <p><em>Arguments</em></p>
 <ul>
@@ -109,19 +322,22 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 </ul>
 <p><em>Return</em></p>
 <ul>
-<li>status_code (number)
-<ul>
+<li>status_code (number)<ul>
 <li>success (less than or equal to zero)</li>
 <li>fatal error (greater than zero)</li>
-</ul></li>
-<li>status_message (optional: string) logged when the status code is less than zero</li>
 </ul>
-<h3 id="timer_event">timer_event</h3>
+</li>
+<li>status_message (optional: string) logged when the status code is less than
+zero</li>
+</ul>
+<h3 id="timerevent">timer_event</h3>
 <p>Called when the host timer expires or on shutdown.</p>
 <p>Recommendation: specify this as a <code>ticker_interval</code> configuration option.</p>
 <p><em>Arguments</em></p>
 <ul>
-<li>ns (number) - nanosecond timestamp of the function call (it is actually <code>time_t * 1e9</code> to keep the timestamp units consistent so it will only have a one second resolution)</li>
+<li>ns (number) - nanosecond timestamp of the function call (it is actually
+<code>time_t * 1e9</code> to keep the timestamp units consistent so it will only have a
+one second resolution)</li>
 <li>shutdown (bool) - true if timer_event is being called due to a shutdown</li>
 </ul>
 <p><em>Return</em></p>
@@ -129,7 +345,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <li>none</li>
 </ul>
 <h2 id="available-c-functions-called-from-the-plugin">Available C Functions (called from the plugin)</h2>
-<h3 id="read_config">read_config</h3>
+<h3 id="readconfig">read_config</h3>
 <p>Provides access to the sandbox configuration variables.</p>
 <p><em>Arguments</em></p>
 <ul>
@@ -139,13 +355,15 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <ul>
 <li>value (string, number, bool, table)</li>
 </ul>
-<h3 id="read_message">read_message</h3>
-<p>Provides access to the Heka message data. Note that both fieldIndex and arrayIndex are zero-based (i.e. the first element is 0) as opposed to Lua's standard indexing, which is one-based.</p>
+<h3 id="readmessage">read_message</h3>
+<p>Provides access to the Heka message data. Note that both fieldIndex and
+arrayIndex are zero-based (i.e. the first element is 0) as opposed to Lua&apos;s
+standard indexing, which is one-based.</p>
 <p><em>Arguments</em></p>
 <ul>
-<li>variableName (string)
-<ul>
-<li>framed (returns the Heka message protobuf string including the framing header)</li>
+<li>variableName (string)<ul>
+<li>framed (returns the Heka message protobuf string including the framing
+header)</li>
 <li>raw (returns the Heka message protobuf string)</li>
 <li>size (returns the size of the raw Heka message protobuf string)</li>
 <li>Uuid</li>
@@ -158,27 +376,46 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <li>Severity</li>
 <li>Pid</li>
 <li>Fields[<em>name</em>]</li>
-</ul></li>
-<li>fieldIndex (unsigned) - only used in combination with the Fields variableName use to retrieve a specific instance of a repeated field <em>name</em>; zero indexed</li>
-<li>arrayIndex (unsigned) - only used in combination with the Fields variableName use to retrieve a specific element out of a field containing an array; zero indexed</li>
-<li>zeroCopy (bool, optional default false) - returns a userdata place holder for the message variable (only valid for string types). Non string headers throw an error during construction, non string fields throw an error on data retrieval.</li>
+</ul>
+</li>
+<li>fieldIndex (unsigned) - only used in combination with the Fields variableName
+use to retrieve a specific instance of a repeated field <em>name</em>; zero indexed</li>
+<li>arrayIndex (unsigned) - only used in combination with the Fields variableName
+use to retrieve a specific element out of a field containing an array; zero
+indexed</li>
+<li>zeroCopy (bool, optional default false) - returns a userdata place holder for
+the message variable (only valid for string types). Non string headers throw an
+error during construction, non string fields throw an error on data retrieval.</li>
 </ul>
 <p><em>Return</em></p>
 <ul>
-<li>value (number, string, bool, nil, userdata depending on the type of variable requested)</li>
+<li>value (number, string, bool, nil, userdata depending on the type of variable
+requested)</li>
 </ul>
-<h3 id="decode_message">decode_message</h3>
-<p>Converts a Heka protobuf encoded message string into a Lua table or throws an error.</p>
+<h3 id="decodemessage">decode_message</h3>
+<p>Converts a Heka protobuf encoded message string into a Lua table or throws an
+error.</p>
 <p><em>Arguments</em></p>
 <ul>
-<li>heka_pb (string, userdata) - Heka protobuf binary string or a zero copy userdata object containing a Heka protobuf binary string.</li>
+<li>heka_pb (string, userdata) - Heka protobuf binary string or a zero copy
+userdata object containing a Heka protobuf binary string.</li>
 </ul>
 <p><em>Return</em></p>
 <ul>
-<li>msg (<a href="message.html#array-based-message-fields">Heka message table (array fields)</a>) with the value member always being an array (even if there is only a single item). This format makes working with the output more consistent. The wide variation in the inject table formats is to ease the construction of the message especially when using an LPeg grammar transformation.</li>
+<li>msg (<a href="message.html#array-based-message-fields">Heka message table (array fields)</a>)
+with the value member always being an array (even if there is only a
+single item). This format makes working with the output more consistent. The
+wide variation in the inject table formats is to ease the construction of the
+message especially when using an LPeg grammar transformation.</li>
 </ul>
-<h3 id="inject_message">inject_message</h3>
-<p>Creates a new Heka protocol buffer message using the contents of the specified Lua table (overwriting whatever is in the payload buffer). <code>Logger</code> and <code>Hostname</code> are restricted header values. An override configuration option is provided <code>restricted_headers</code>; when true (default) the headers are always set to the configuration values; when false the headers are set to the values provide in the message table, if no value is provided it defaults to the appropriate configuration value.</p>
+<h3 id="injectmessage">inject_message</h3>
+<p>Creates a new Heka protocol buffer message using the contents of the specified
+Lua table (overwriting whatever is in the payload buffer). <code>Logger</code> and
+<code>Hostname</code> are restricted header values.  An override configuration option is
+provided <code>restricted_headers</code>; when true (default) the headers are always set
+to the configuration values; when false the headers are set to the values
+provide in the message table, if no value is provided it defaults to the
+appropriate configuration value.</p>
 <p><em>Arguments</em></p>
 <ul>
 <li>msg (<a href="message.html">Heka message table</a>)</li>
@@ -187,8 +424,11 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <ul>
 <li>none (throws an error if the table does not match the Heka message schema)</li>
 </ul>
-<h3 id="add_to_payload">add_to_payload</h3>
-<p>Appends the arguments to the payload buffer for incremental construction of the final payload output (<code>inject_payload</code> finalizes the buffer and sends the message to the infrastructure). This function is a rename of the generic sandbox output function to improve the readability of the plugin code.</p>
+<h3 id="addtopayload">add_to_payload</h3>
+<p>Appends the arguments to the payload buffer for incremental construction of the
+final payload output (<code>inject_payload</code> finalizes the buffer and sends the
+message to the infrastructure). This function is a rename of the generic sandbox
+output function to improve the readability of the plugin code.</p>
 <p><em>Arguments</em></p>
 <ul>
 <li>arg (number, string, bool, nil, supported userdata)</li>
@@ -197,23 +437,32 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <ul>
 <li>none (throws an error if arg is an unsupported type)</li>
 </ul>
-<h3 id="inject_payload">inject_payload</h3>
-<p>This is a wrapper function for <code>inject_message</code> that is included for backwards compatibility. The function creates a new Heka message using the contents of the payload buffer (pre-populated with <code>add_to_payload</code>) and combined with any additional payload_args passed here. The payload buffer is cleared after the injection. The <code>payload_type</code> and <code>payload_name</code> arguments are two pieces of optional metadata stored is message fields. The resulting message is structured like this:</p>
-<div class="sourceCode"><pre class="sourceCode lua"><code class="sourceCode lua">msg <span class="ot">=</span> <span class="ot">{</span>
-Timestamp   <span class="ot">=</span> <span class="ot">&lt;</span>current time<span class="ot">&gt;</span>
-Uuid        <span class="ot">=</span> <span class="st">&quot;&lt;auto generated&gt;&quot;</span>
-Hostname    <span class="ot">=</span> <span class="st">&quot;&lt;the Hostname from the config&gt;&quot;</span>
-Logger      <span class="ot">=</span> <span class="st">&quot;&lt;the Logger name from the config&gt;&quot;</span>
-Type        <span class="ot">=</span> <span class="st">&quot;inject_payload&quot;</span>
-Payload     <span class="ot">=</span> <span class="st">&quot;&lt;payload buffer contents&gt;&quot;</span>
-Fields      <span class="ot">=</span> <span class="ot">{</span>
-    payload_type <span class="ot">=</span> <span class="st">&quot;txt&quot;</span><span class="ot">,</span>
-    payload_name <span class="ot">=</span> <span class="st">&quot;&quot;</span><span class="ot">,</span>
-<span class="ot">}</span></code></pre></div>
+<h3 id="injectpayload">inject_payload</h3>
+<p>This is a wrapper function for <code>inject_message</code> that is included for backwards
+compatibility. The function creates a new Heka message using the contents of the
+payload buffer (pre-populated with <code>add_to_payload</code>) and combined with any
+additional payload_args passed here. The payload buffer is cleared after the
+injection. The <code>payload_type</code> and <code>payload_name</code> arguments are two pieces of
+optional metadata stored is message fields. The resulting message is structured
+like this:</p>
+<pre><code class="lang-lua">msg = {
+Timestamp   = &lt;current time&gt;
+Uuid        = <span class="hljs-string">&quot;&lt;auto generated&gt;&quot;</span>
+Hostname    = <span class="hljs-string">&quot;&lt;the Hostname from the config&gt;&quot;</span>
+Logger      = <span class="hljs-string">&quot;&lt;the Logger name from the config&gt;&quot;</span>
+Type        = <span class="hljs-string">&quot;inject_payload&quot;</span>
+Payload     = <span class="hljs-string">&quot;&lt;payload buffer contents&gt;&quot;</span>
+Fields      = {
+    payload_type = <span class="hljs-string">&quot;txt&quot;</span>,
+    payload_name = <span class="hljs-string">&quot;&quot;</span>,
+}
+</code></pre>
 <p><em>Arguments</em></p>
 <ul>
-<li>payload_type (optional: string, default &quot;txt&quot;) - describes the content type of the injected payload data</li>
-<li>payload_name (optional: string, default &quot;&quot;) - names the content to aid in downstream filtering</li>
+<li>payload_type (optional: string, default &quot;txt&quot;) - describes the content type of
+the injected payload data</li>
+<li>payload_name (optional: string,  default &quot;&quot;) - names the content to aid in
+downstream filtering</li>
 <li>arg3 (optional) -ame type restrictions as <code>add_to_payload</code></li>
 <li>...</li>
 <li>argN</li>
@@ -225,26 +474,106 @@ Fields      <span class="ot">=</span> <span class="ot">{</span>
 <h3 id="modes-of-operation">Modes of Operation</h3>
 <h4 id="lock-step">Lock Step</h4>
 <ul>
-<li>Receives one call to <code>process_message</code>, operates on the message, and returns success (0) or failure (-1)</li>
+<li>Receives one call to <code>process_message</code>, operates on the message, and returns
+success (0) or failure (-1)</li>
 </ul>
 <h4 id="example-simple-counter-plugin">Example simple counter plugin</h4>
-<div class="sourceCode"><pre class="sourceCode lua"><code class="sourceCode lua"><span class="co">-- cfg</span>
-message_matcher <span class="ot">=</span> <span class="st">&quot;TRUE&quot;</span>
-ticker_interval <span class="ot">=</span> <span class="dv">5</span></code></pre></div>
-<div class="sourceCode"><pre class="sourceCode lua"><code class="sourceCode lua"><span class="co">-- This Source Code Form is subject to the terms of the Mozilla Public</span>
-<span class="co">-- License, v. 2.0. If a copy of the MPL was not distributed with this</span>
-<span class="co">-- file, You can obtain one at http://mozilla.org/MPL/2.0/.</span>
+<pre><code class="lang-lua"><span class="hljs-comment">-- cfg</span>
+message_matcher = <span class="hljs-string">&quot;TRUE&quot;</span>
+ticker_interval = <span class="hljs-number">5</span>
+</code></pre>
+<pre><code class="lang-lua"><span class="hljs-comment">-- This Source Code Form is subject to the terms of the Mozilla Public</span>
+<span class="hljs-comment">-- License, v. 2.0. If a copy of the MPL was not distributed with this</span>
+<span class="hljs-comment">-- file, You can obtain one at http://mozilla.org/MPL/2.0/.</span>
 
-<span class="kw">local</span> cnt <span class="ot">=</span> <span class="dv">0</span>
+<span class="hljs-keyword">local</span> cnt = <span class="hljs-number">0</span>
 
-<span class="kw">function</span> process_message<span class="ot">()</span>
-    cnt <span class="ot">=</span> cnt <span class="ot">+</span> <span class="dv">1</span>
-    <span class="kw">return</span> <span class="dv">0</span>
-<span class="kw">end</span>
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">process_message</span><span class="hljs-params">()</span></span>
+    cnt = cnt + <span class="hljs-number">1</span>
+    <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>
+<span class="hljs-keyword">end</span>
 
-<span class="kw">function</span> timer_event<span class="ot">()</span>
-    inject_payload<span class="ot">(</span><span class="st">&quot;txt&quot;</span><span class="ot">,</span> <span class="st">&quot;count&quot;</span><span class="ot">,</span> cnt<span class="ot">)</span>
-<span class="kw">end</span></code></pre></div>
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">timer_event</span><span class="hljs-params">()</span></span>
+    inject_payload(<span class="hljs-string">&quot;txt&quot;</span>, <span class="hljs-string">&quot;count&quot;</span>, cnt)
+<span class="hljs-keyword">end</span>
+</code></pre>
+
+                                
+                                </section>
+                            
+    </div>
+    <div class="search-results">
+        <div class="has-results">
+            
+            <h1 class="search-results-title"><span class='search-results-count'></span> results matching "<span class='search-query'></span>"</h1>
+            <ul class="search-results-list"></ul>
+            
+        </div>
+        <div class="no-results">
+            
+            <h1 class="search-results-title">No results matching "<span class='search-query'></span>"</h1>
+            
+        </div>
+    </div>
 </div>
-</body>
+
+                        </div>
+                    </div>
+                
+            </div>
+
+            
+                
+                <a href="input.html" class="navigation navigation-prev " aria-label="Previous page: Input Interface">
+                    <i class="fa fa-angle-left"></i>
+                </a>
+                
+                
+                <a href="output.html" class="navigation navigation-next " aria-label="Next page: Output Interface">
+                    <i class="fa fa-angle-right"></i>
+                </a>
+                
+            
+        
+    </div>
+
+    <script>
+        var gitbook = gitbook || [];
+        gitbook.push(function() {
+            gitbook.page.hasChanged({"page":{"title":"Analysis Interface","level":"1.3.2","depth":2,"next":{"title":"Output Interface","level":"1.3.3","depth":2,"path":"heka/output.md","ref":"heka/output.md","articles":[]},"previous":{"title":"Input Interface","level":"1.3.1","depth":2,"path":"heka/input.md","ref":"heka/input.md","articles":[]},"dir":"ltr"},"config":{"gitbook":"*","theme":"default","variables":{},"plugins":[],"pluginsConfig":{"highlight":{},"search":{},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"sharing":{"facebook":true,"twitter":true,"google":false,"weibo":false,"instapaper":false,"vk":false,"all":["facebook","google","twitter","weibo","instapaper"]},"fontsettings":{"theme":"white","family":"sans","size":2},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false}},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56}},"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"}},"file":{"path":"heka/analysis.md","mtime":"2017-05-15T14:52:09.954Z","type":"markdown"},"gitbook":{"version":"3.2.2","time":"2017-05-15T14:55:58.796Z"},"basePath":"..","book":{"language":""}});
+        });
+    </script>
+</div>
+
+        
+    <script src="../gitbook/gitbook.js"></script>
+    <script src="../gitbook/theme.js"></script>
+    
+        
+        <script src="../gitbook/gitbook-plugin-search/search-engine.js"></script>
+        
+    
+        
+        <script src="../gitbook/gitbook-plugin-search/search.js"></script>
+        
+    
+        
+        <script src="../gitbook/gitbook-plugin-lunr/lunr.min.js"></script>
+        
+    
+        
+        <script src="../gitbook/gitbook-plugin-lunr/search-lunr.js"></script>
+        
+    
+        
+        <script src="../gitbook/gitbook-plugin-sharing/buttons.js"></script>
+        
+    
+        
+        <script src="../gitbook/gitbook-plugin-fontsettings/fontsettings.js"></script>
+        
+    
+
+    </body>
 </html>
+

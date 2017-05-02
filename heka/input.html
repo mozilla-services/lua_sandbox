@@ -1,112 +1,328 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-  <meta http-equiv="Content-Style-Type" content="text/css" />
-  <meta name="generator" content="pandoc" />
-  <title></title>
-  <style type="text/css">code{white-space: pre;}</style>
-  <style type="text/css">
-div.sourceCode { overflow-x: auto; }
-table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
-  margin: 0; padding: 0; vertical-align: baseline; border: none; }
-table.sourceCode { width: 100%; line-height: 100%; }
-td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; color: #aaaaaa; border-right: 1px solid #aaaaaa; }
-td.sourceCode { padding-left: 5px; }
-code > span.kw { color: #007020; font-weight: bold; } /* Keyword */
-code > span.dt { color: #902000; } /* DataType */
-code > span.dv { color: #40a070; } /* DecVal */
-code > span.bn { color: #40a070; } /* BaseN */
-code > span.fl { color: #40a070; } /* Float */
-code > span.ch { color: #4070a0; } /* Char */
-code > span.st { color: #4070a0; } /* String */
-code > span.co { color: #60a0b0; font-style: italic; } /* Comment */
-code > span.ot { color: #007020; } /* Other */
-code > span.al { color: #ff0000; font-weight: bold; } /* Alert */
-code > span.fu { color: #06287e; } /* Function */
-code > span.er { color: #ff0000; font-weight: bold; } /* Error */
-code > span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
-code > span.cn { color: #880000; } /* Constant */
-code > span.sc { color: #4070a0; } /* SpecialChar */
-code > span.vs { color: #4070a0; } /* VerbatimString */
-code > span.ss { color: #bb6688; } /* SpecialString */
-code > span.im { } /* Import */
-code > span.va { color: #19177c; } /* Variable */
-code > span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
-code > span.op { color: #666666; } /* Operator */
-code > span.bu { } /* BuiltIn */
-code > span.ex { } /* Extension */
-code > span.pp { color: #bc7a00; } /* Preprocessor */
-code > span.at { color: #7d9029; } /* Attribute */
-code > span.do { color: #ba2121; font-style: italic; } /* Documentation */
-code > span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
-code > span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
-code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
-  </style>
-  <link rel="stylesheet" href="/lua_sandbox/docs.css" type="text/css" />
-</head>
-<body>
-<div id="title">Lua Sandbox Library (1.2.5)<hr/></div>
-<div class="menu">
-        <ul>
-            <li><a href="/lua_sandbox/index.html">Overview</a></li>
-        </ul>
-        <ul>
-            <li><a href="/lua_sandbox/sandbox.html">Generic Sandbox</a></li>
-        </ul>
-        <ul>
-            <li><a href="/lua_sandbox/heka/index.html">Heka Sandbox</a></li>
-        <ul>
-            <li><a href="/lua_sandbox/heka/analysis.html">Analysis Interface</a></li>
-            <li><a href="/lua_sandbox/heka/input.html">Input Interface</a></li>
-            <li><a href="/lua_sandbox/heka/output.html">Output Interface</a></li>
-        </ul>
-        </ul>
-        <ul>
-           <li><a href="/lua_sandbox/cli/index.html">Command Line Tools</a></li>
-        </ul>
-        <ul>
-            <li><a href="/lua_sandbox/doxygen/index.html">Source Documentation</a></li>
-        </ul>
-        <ul>
-            <li><a href="/lua_sandbox_extensions/index.html">Sandbox Extensions</a></li>
-        </ul>
+
+<!DOCTYPE HTML>
+<html lang="" >
+    <head>
+        <meta charset="UTF-8">
+        <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+        <title>Input Interface · GitBook</title>
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="description" content="">
+        <meta name="generator" content="GitBook 3.2.2">
+        
+        
+        
+    
+    <link rel="stylesheet" href="../gitbook/style.css">
+
+    
+            
+                
+                <link rel="stylesheet" href="../gitbook/gitbook-plugin-highlight/website.css">
+                
+            
+                
+                <link rel="stylesheet" href="../gitbook/gitbook-plugin-search/search.css">
+                
+            
+                
+                <link rel="stylesheet" href="../gitbook/gitbook-plugin-fontsettings/website.css">
+                
+            
+        
+
+    
+
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+
+        
+    
+    
+    <meta name="HandheldFriendly" content="true"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <link rel="apple-touch-icon-precomposed" sizes="152x152" href="../gitbook/images/apple-touch-icon-precomposed-152.png">
+    <link rel="shortcut icon" href="../gitbook/images/favicon.ico" type="image/x-icon">
+
+    
+    <link rel="next" href="analysis.html" />
+    
+    
+    <link rel="prev" href="./" />
+    
+
+    </head>
+    <body>
+        
+<div class="book">
+    <div class="book-summary">
+        
+            
+<div id="book-search-input" role="search">
+    <input type="text" placeholder="Type to search" />
+</div>
+
+            
+                <nav role="navigation">
+                
+
+
+<ul class="summary">
+    
+    
+
+    
+
+    
+        
+        
+    
+        <li class="chapter " data-level="1.1" data-path="../">
+            
+                <a href="../">
+            
+                    
+                    Lua Sandbox Library (1.2.5)
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.2" data-path="../sandbox.html">
+            
+                <a href="../sandbox.html">
+            
+                    
+                    Generic Sandbox
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3" data-path="./">
+            
+                <a href="./">
+            
+                    
+                    Heka Sandbox
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter active" data-level="1.3.1" data-path="input.html">
+            
+                <a href="input.html">
+            
+                    
+                    Input Interface
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2" data-path="analysis.html">
+            
+                <a href="analysis.html">
+            
+                    
+                    Analysis Interface
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.3" data-path="output.html">
+            
+                <a href="output.html">
+            
+                    
+                    Output Interface
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.4" data-path="message.html">
+            
+                <a href="message.html">
+            
+                    
+                    Message Schema
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.5" data-path="../util/message_matcher.html">
+            
+                <a href="../util/message_matcher.html">
+            
+                    
+                    Message Matcher
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4" data-path="../cli/">
+            
+                <a href="../cli/">
+            
+                    
+                    Command Line Tools
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.5" >
+            
+                <a target="_blank" href="https://mozilla-services.github.io/lua_sandbox/doxygen/index.html">
+            
+                    
+                    Source Documentation
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.6" >
+            
+                <a target="_blank" href="https://mozilla-services.github.io/lua_sandbox_extensions">
+            
+                    
+                    Sandbox Extensions
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+    
+
+    <li class="divider"></li>
+
+    <li>
+        <a href="https://www.gitbook.com" target="blank" class="gitbook-link">
+            Published with GitBook
+        </a>
+    </li>
+</ul>
+
+
+                </nav>
+            
+        
     </div>
-    <div class="main-content">
-<h1 id="input-sandbox-interface">Input Sandbox Interface</h1>
+
+    <div class="book-body">
+        
+            <div class="body-inner">
+                
+                    
+
+<div class="book-header" role="navigation">
+    
+
+    <!-- Title -->
+    <h1>
+        <i class="fa fa-circle-o-notch fa-spin"></i>
+        <a href=".." >Input Interface</a>
+    </h1>
+</div>
+
+
+
+
+                    <div class="page-wrapper" tabindex="-1" role="main">
+                        <div class="page-inner">
+                            
+<div id="book-search-results">
+    <div class="search-noresults">
+    
+                                <section class="normal markdown-section">
+                                
+                                <h1 id="input-sandbox-interface">Input Sandbox Interface</h1>
 <h2 id="recommendations">Recommendations</h2>
-<p>Since the sandbox does not run in isolation there are some expectations of how the host infrastructure behaves. The current recommendation are based on the Hindsight reference implementation.</p>
+<p>Since the sandbox does not run in isolation there are some expectations of how
+the host infrastructure behaves.  The current recommendations are based on the
+Hindsight reference implementation.</p>
 <h2 id="disabled-functionality">Disabled Functionality</h2>
 <ul>
-<li><a href="http://www.lua.org/manual/5.1/manual.html#5.1">base library</a>
-<ul>
+<li><a href="http://www.lua.org/manual/5.1/manual.html#5.1" target="_blank">base library</a><ul>
 <li>dofile, load, loadfile, loadstring, newproxy</li>
-</ul></li>
-<li><a href="http://www.lua.org/manual/5.1/manual.html#5.4">string</a>
-<ul>
+</ul>
+</li>
+<li><a href="http://www.lua.org/manual/5.1/manual.html#5.4" target="_blank">string</a><ul>
 <li>dump</li>
-</ul></li>
-<li><a href="http://www.lua.org/manual/5.1/manual.html#5.8">os</a>
-<ul>
+</ul>
+</li>
+<li><a href="http://www.lua.org/manual/5.1/manual.html#5.8" target="_blank">os</a><ul>
 <li>exit, setlocale</li>
-</ul></li>
+</ul>
+</li>
 </ul>
 <h2 id="required-lua-functions-called-by-the-host">Required Lua Functions (called by the host)</h2>
-<h3 id="process_message">process_message</h3>
+<h3 id="processmessage">process_message</h3>
 <p>Entry point for message creation.</p>
 <p><em>Arguments</em></p>
 <ul>
-<li>checkpoint (nil number, string) - value of the last checkpoint value passed into <code>inject_message</code></li>
+<li>checkpoint (nil number, string) - value of the last checkpoint value passed
+into <code>inject_message</code></li>
 </ul>
 <p><em>Return</em></p>
 <ul>
-<li>status_code (number)</li>
+<li>status_code (number)<ul>
 <li>success (less than or equal to zero)</li>
 <li>fatal error (greater than zero)</li>
-<li>status_message (optional: string) logged when the status code is less than zero</li>
+</ul>
+</li>
+<li>status_message (optional: string) logged when the status code is less than
+zero</li>
 </ul>
 <h2 id="available-c-functions-called-from-the-plugin">Available C Functions (called from the plugin)</h2>
-<h3 id="read_config">read_config</h3>
+<h3 id="readconfig">read_config</h3>
 <p>Provides access to the sandbox configuration variables.</p>
 <p><em>Arguments</em></p>
 <ul>
@@ -116,31 +332,45 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <ul>
 <li>value (string, number, bool, table)</li>
 </ul>
-<h3 id="is_running">is_running</h3>
-<p>Provides a synchronization point for collecting statistics and communicating shutdown status.</p>
+<h3 id="isrunning">is_running</h3>
+<p>Provides a synchronization point for collecting statistics and communicating
+shutdown status.</p>
 <p><em>Arguments</em></p>
 <ul>
 <li>none</li>
 </ul>
 <p><em>Return</em></p>
 <ul>
-<li>running (boolean) - true if a sandbox state is LSB_RUNNING, false if not or throws an error if the request to the host fails.</li>
+<li>running (boolean) - true if a sandbox state is LSB_RUNNING, false if not or
+throws an error if the request to the host fails.</li>
 </ul>
-<h3 id="decode_message">decode_message</h3>
-<p>Converts a Heka protobuf encoded message string into a Lua table. See <a href="analysis.html#decode_message">decode_message</a> for details.</p>
-<h3 id="inject_message">inject_message</h3>
-<p>Sends a Heka protocol buffer message into the host. For the Heka message table argument <code>Logger</code> and <code>Hostname</code> are restricted header values. An override configuration option is provided <code>restricted_headers</code>; when true the headers are always set to the configuration values; when false (default) the headers are set to the values provide in the message table, if no value is provided it defaults to the appropriate configuration value.</p>
+<h3 id="decodemessage">decode_message</h3>
+<p>Converts a Heka protobuf encoded message string into a Lua table. See
+<a href="analysis.html#decodemessage">decode_message</a> for details.</p>
+<h3 id="injectmessage">inject_message</h3>
+<p>Sends a Heka protocol buffer message into the host. For the Heka message table
+argument <code>Logger</code> and <code>Hostname</code> are restricted header values.  An override
+configuration option is provided <code>restricted_headers</code>; when true the headers are
+always set to the configuration values; when false (default) the headers are set
+to the values provide in the message table, if no value is provided it defaults
+to the appropriate configuration value.</p>
 <p><em>Arguments</em></p>
 <ul>
-<li>msg (<a href="message.html">Heka message table</a>, <a href="#heka-stream-reader-methods">Heka stream reader</a>, Heka protobuf string, or nil (if only updating the checkpoint))</li>
-<li>checkpoint (optional: number, string) - checkpoint to be returned in the <code>process_message</code> call</li>
+<li>msg (<a href="message.html">Heka message table</a>,
+<a href="#heka-stream-reader-methods">Heka stream reader</a>,
+Heka protobuf string,
+or nil (if only updating the checkpoint))</li>
+<li>checkpoint (optional: number, string) - checkpoint to be returned in the
+<code>process_message</code> call</li>
 </ul>
 <p><em>Return</em></p>
 <ul>
 <li>none - throws an error on invalid input</li>
 </ul>
-<h3 id="create_stream_reader">create_stream_reader</h3>
-<p>Creates a Heka stream reader to enable parsing of a framed Heka protobuf stream in a Lua sandbox. See: <a href="#example-of-a-heka-protobuf-stdin-reader">Example of a Heka protobuf reader</a></p>
+<h3 id="createstreamreader">create_stream_reader</h3>
+<p>Creates a Heka stream reader to enable parsing of a framed Heka protobuf stream
+in a Lua sandbox. See:
+<a href="#example-of-a-heka-protobuf-stdin-reader">Example of a Heka protobuf reader</a></p>
 <p><em>Arguments</em></p>
 <ul>
 <li>name (string) - name of the stream reader (used in the log)</li>
@@ -150,22 +380,29 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <li>hsr (userdata) - Heka stream reader or an error is thrown</li>
 </ul>
 <h4 id="heka-stream-reader-methods">Heka Stream Reader Methods</h4>
-<h5 id="find_message">find_message</h5>
+<h5 id="findmessage">find_message</h5>
 <p>Locates a Heka message within the stream.</p>
-<div class="sourceCode"><pre class="sourceCode lua"><code class="sourceCode lua"><span class="kw">local</span> found<span class="ot">,</span> consumed<span class="ot">,</span> need <span class="ot">=</span> hsr:find_message<span class="ot">(</span>buf<span class="ot">)</span></code></pre></div>
+<pre><code class="lang-lua"><span class="hljs-keyword">local</span> found, consumed, need = hsr:find_message(buf)
+</code></pre>
 <p><em>Arguments</em></p>
 <ul>
-<li>buf (string, userdata (FILE*)) - buffer containing a Heka protobuf stream data or a userdate file object</li>
-<li>decode (bool default: true) - true if the framed message should be protobuf decoded</li>
+<li>buf (string, userdata (FILE*)) - buffer containing a Heka protobuf stream data
+or a userdata file object</li>
+<li>decode (bool default: true) - true if the framed message should be protobuf
+decoded</li>
 </ul>
 <p><em>Return</em></p>
 <ul>
 <li>found (bool) - true if a message was found</li>
-<li>consumed (number) - number of bytes consumed so the offset can be tracked for checkpointing purposes</li>
-<li>need/read (number) - number of bytes needed to complete the message or fill the underlying buffer or in the case of a file object the number of bytes added to the buffer</li>
+<li>consumed (number) - number of bytes consumed so the offset can be tracked for
+checkpointing purposes</li>
+<li>need/read (number) - number of bytes needed to complete the message or fill
+the underlying buffer or in the case of a file object the number of bytes
+added to the buffer</li>
 </ul>
-<h5 id="decode_message-1">decode_message</h5>
-<p>Converts a Heka protobuf encoded message string into a stream reader representation. Note: this operation clears the internal stream reader buffer.</p>
+<h5 id="decodemessage">decode_message</h5>
+<p>Converts a Heka protobuf encoded message string into a stream reader
+representation. Note: this operation clears the internal stream reader buffer.</p>
 <p><em>Arguments</em></p>
 <ul>
 <li>heka_pb (string) - Heka protobuf binary string</li>
@@ -174,97 +411,183 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <ul>
 <li>none - throws an error on failure</li>
 </ul>
-<h5 id="read_message">read_message</h5>
-<p>Provides access to the Heka message data within the reader object. The zeroCopy flag is not accepted here.</p>
-<div class="sourceCode"><pre class="sourceCode lua"><code class="sourceCode lua"><span class="kw">local</span> ts <span class="ot">=</span> hsr:read_message<span class="ot">(</span><span class="st">&quot;Timestamp&quot;</span><span class="ot">)</span></code></pre></div>
-<p>See <a href="analysis.html#read_message">read_message</a> for details.</p>
+<h5 id="readmessage">read_message</h5>
+<p>Provides access to the Heka message data within the reader object. The zeroCopy
+flag is not accepted here.</p>
+<pre><code class="lang-lua"><span class="hljs-keyword">local</span> ts = hsr:read_message(<span class="hljs-string">&quot;Timestamp&quot;</span>)
+</code></pre>
+<p>See <a href="analysis.html#readmessage">read_message</a> for details.</p>
 <h2 id="modes-of-operation">Modes of Operation</h2>
 <h3 id="run-once">Run Once</h3>
 <ul>
-<li>Set the <code>ticker_interval</code> to zero and return from <code>process_message</code> when you are done.</li>
+<li>Set the <code>ticker_interval</code> to zero and return from <code>process_message</code> done.</li>
 <li>The <code>instruction_limit</code> configuration can be set if desired.</li>
 </ul>
 <h4 id="example-startup-ping">Example startup ping</h4>
-<div class="sourceCode"><pre class="sourceCode lua"><code class="sourceCode lua"><span class="co">-- cfg</span>
-<span class="co">-- send a simple &#39;hello&#39; messages every time the host is started</span>
-ticker_interval <span class="ot">=</span> <span class="dv">0</span></code></pre></div>
-<div class="sourceCode"><pre class="sourceCode lua"><code class="sourceCode lua"><span class="co">-- This Source Code Form is subject to the terms of the Mozilla Public</span>
-<span class="co">-- License, v. 2.0. If a copy of the MPL was not distributed with this</span>
-<span class="co">-- file, You can obtain one at http://mozilla.org/MPL/2.0/.</span>
+<pre><code class="lang-lua"><span class="hljs-comment">-- cfg</span>
+<span class="hljs-comment">-- send a simple &apos;hello&apos; messages every time the host is started</span>
+ticker_interval = <span class="hljs-number">0</span>
+</code></pre>
+<pre><code class="lang-lua"><span class="hljs-comment">-- This Source Code Form is subject to the terms of the Mozilla Public</span>
+<span class="hljs-comment">-- License, v. 2.0. If a copy of the MPL was not distributed with this</span>
+<span class="hljs-comment">-- file, You can obtain one at http://mozilla.org/MPL/2.0/.</span>
 
-<span class="co">-- the checkpoint is optional and not being used by this plugin</span>
-<span class="kw">function</span> process_message<span class="ot">()</span>
-    inject_message<span class="ot">({</span>Type <span class="ot">=</span> <span class="st">&quot;hello&quot;</span><span class="ot">})</span>
-    <span class="kw">return</span> <span class="dv">0</span>
-<span class="kw">end</span></code></pre></div>
+<span class="hljs-comment">-- the checkpoint is optional and not being used by this plugin</span>
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">process_message</span><span class="hljs-params">()</span></span>
+    inject_message({Type = <span class="hljs-string">&quot;hello&quot;</span>})
+    <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>
+<span class="hljs-keyword">end</span>
+</code></pre>
 <h3 id="polling">Polling</h3>
 <ul>
-<li>Set the <code>ticker_interval</code> greater than zero and non fatally (&lt;=0) return from <code>process_message</code>, when the ticker interval expires <code>process_message</code> will be called again.</li>
+<li>Set the <code>ticker_interval</code> greater than zero and non fatally (&lt;=0) return from
+<code>process_message</code>, when the ticker interval expires <code>process_message</code> will be
+called again.</li>
 <li>The <code>instruction_limit</code> configuration can be set if desired.</li>
 </ul>
 <h4 id="example-heartbeat-ping">Example heartbeat ping</h4>
-<div class="sourceCode"><pre class="sourceCode lua"><code class="sourceCode lua"><span class="co">-- cfg</span>
-ticker_interval <span class="ot">=</span> <span class="dv">60</span></code></pre></div>
-<div class="sourceCode"><pre class="sourceCode lua"><code class="sourceCode lua"><span class="co">-- This Source Code Form is subject to the terms of the Mozilla Public</span>
-<span class="co">-- License, v. 2.0. If a copy of the MPL was not distributed with this</span>
-<span class="co">-- file, You can obtain one at http://mozilla.org/MPL/2.0/.</span>
+<pre><code class="lang-lua"><span class="hljs-comment">-- cfg</span>
+ticker_interval = <span class="hljs-number">60</span>
+</code></pre>
+<pre><code class="lang-lua"><span class="hljs-comment">-- This Source Code Form is subject to the terms of the Mozilla Public</span>
+<span class="hljs-comment">-- License, v. 2.0. If a copy of the MPL was not distributed with this</span>
+<span class="hljs-comment">-- file, You can obtain one at http://mozilla.org/MPL/2.0/.</span>
 
-<span class="fu">require</span> <span class="st">&quot;io&quot;</span>
+<span class="hljs-built_in">require</span> <span class="hljs-string">&quot;io&quot;</span>
 
-<span class="kw">local</span> msg <span class="ot">=</span> <span class="ot">{</span>
-Type        <span class="ot">=</span> <span class="st">&quot;uptime&quot;</span><span class="ot">,</span>
-Payload     <span class="ot">=</span> <span class="st">&quot;&quot;</span><span class="ot">,</span>
-<span class="ot">}</span>
+<span class="hljs-keyword">local</span> msg = {
+Type        = <span class="hljs-string">&quot;uptime&quot;</span>,
+Payload     = <span class="hljs-string">&quot;&quot;</span>,
+}
 
-<span class="kw">function</span> process_message<span class="ot">()</span>
-    <span class="kw">local</span> fh <span class="ot">=</span> io<span class="ot">.</span>popen<span class="ot">(</span><span class="st">&quot;uptime&quot;</span><span class="ot">)</span>
-    <span class="kw">if</span> fh <span class="kw">then</span>
-        msg<span class="ot">.</span>Payload <span class="ot">=</span> fh:<span class="fu">read</span><span class="ot">(</span><span class="st">&quot;*a&quot;</span><span class="ot">)</span>
-        fh:<span class="fu">close</span><span class="ot">()</span>
-    <span class="kw">else</span>
-        <span class="kw">return</span> <span class="ot">-</span><span class="dv">1</span><span class="ot">,</span> <span class="st">&quot;popen failed&quot;</span>
-    <span class="kw">end</span>
-    <span class="kw">if</span> msg<span class="ot">.</span>Payload <span class="kw">then</span> inject_message<span class="ot">(</span>msg<span class="ot">)</span> <span class="kw">end</span>
-    <span class="kw">return</span> <span class="dv">0</span>
-<span class="kw">end</span></code></pre></div>
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">process_message</span><span class="hljs-params">()</span></span>
+    <span class="hljs-keyword">local</span> fh = <span class="hljs-built_in">io</span>.popen(<span class="hljs-string">&quot;uptime&quot;</span>)
+    <span class="hljs-keyword">if</span> fh <span class="hljs-keyword">then</span>
+        msg.Payload = fh:read(<span class="hljs-string">&quot;*a&quot;</span>)
+        fh:close()
+    <span class="hljs-keyword">else</span>
+        <span class="hljs-keyword">return</span> <span class="hljs-number">-1</span>, <span class="hljs-string">&quot;popen failed&quot;</span>
+    <span class="hljs-keyword">end</span>
+    <span class="hljs-keyword">if</span> msg.Payload <span class="hljs-keyword">then</span> inject_message(msg) <span class="hljs-keyword">end</span>
+    <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>
+<span class="hljs-keyword">end</span>
+</code></pre>
 <h3 id="continuous">Continuous</h3>
 <ul>
-<li>Don't return from <code>process_message</code>.</li>
+<li>Don&apos;t return from <code>process_message</code>.</li>
 <li>The <code>instruction_limit</code> configuration <strong>MUST</strong> be set to zero.</li>
 </ul>
 <h4 id="example-of-a-heka-protobuf-stdin-reader">Example of a Heka protobuf stdin reader</h4>
-<div class="sourceCode"><pre class="sourceCode lua"><code class="sourceCode lua"><span class="co">-- This Source Code Form is subject to the terms of the Mozilla Public</span>
-<span class="co">-- License, v. 2.0. If a copy of the MPL was not distributed with this</span>
-<span class="co">-- file, You can obtain one at http://mozilla.org/MPL/2.0/.</span>
+<pre><code class="lang-lua"><span class="hljs-comment">-- This Source Code Form is subject to the terms of the Mozilla Public</span>
+<span class="hljs-comment">-- License, v. 2.0. If a copy of the MPL was not distributed with this</span>
+<span class="hljs-comment">-- file, You can obtain one at http://mozilla.org/MPL/2.0/.</span>
 
-<span class="co">--[[</span>
-<span class="co">Reads a Heka protobuf stream from the stdin file handle</span>
+<span class="hljs-comment">--[[
+Reads a Heka protobuf stream from the stdin file handle
 
-<span class="co">-- .cfg</span>
-<span class="co">instruction_limit = 0</span>
+-- .cfg
+instruction_limit = 0
 
-<span class="co">--]]</span>
+--]]</span>
 
 
-<span class="kw">local</span> stdin <span class="ot">=</span> <span class="fu">require</span> <span class="st">&quot;io&quot;</span><span class="ot">.</span>stdin
-<span class="fu">require</span> <span class="st">&quot;string&quot;</span>
+<span class="hljs-keyword">local</span> stdin = <span class="hljs-built_in">require</span> <span class="hljs-string">&quot;io&quot;</span>.stdin
+<span class="hljs-built_in">require</span> <span class="hljs-string">&quot;string&quot;</span>
 
-<span class="kw">local</span> hsr <span class="ot">=</span> create_stream_reader<span class="ot">(</span>read_config<span class="ot">(</span><span class="st">&quot;Logger&quot;</span><span class="ot">))</span>
+<span class="hljs-keyword">local</span> hsr = create_stream_reader(read_config(<span class="hljs-string">&quot;Logger&quot;</span>))
 
-<span class="kw">function</span> process_message<span class="ot">()</span>
-    <span class="kw">local</span> cnt <span class="ot">=</span> <span class="dv">0</span>
-    <span class="kw">local</span> found<span class="ot">,</span> consumed<span class="ot">,</span> <span class="fu">read</span>
-    <span class="kw">repeat</span>
-        <span class="kw">repeat</span>
-            found<span class="ot">,</span> consumed<span class="ot">,</span> <span class="fu">read</span> <span class="ot">=</span> hsr:find_message<span class="ot">(</span>stdin<span class="ot">)</span>
-            <span class="kw">if</span> found <span class="kw">then</span>
-                inject_message<span class="ot">(</span>hsr<span class="ot">)</span>
-                cnt <span class="ot">=</span> cnt <span class="ot">+</span> <span class="dv">1</span>
-            <span class="kw">end</span>
-        <span class="kw">until</span> <span class="kw">not</span> found
-    <span class="kw">until</span> <span class="fu">read</span> <span class="ot">==</span> <span class="dv">0</span>
-    <span class="kw">return</span> <span class="dv">0</span><span class="ot">,</span> <span class="fu">string.format</span><span class="ot">(</span><span class="st">&quot;processed %d messages&quot;</span><span class="ot">,</span> cnt<span class="ot">)</span>
-<span class="kw">end</span></code></pre></div>
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">process_message</span><span class="hljs-params">()</span></span>
+    <span class="hljs-keyword">local</span> cnt = <span class="hljs-number">0</span>
+    <span class="hljs-keyword">local</span> found, consumed, read
+    <span class="hljs-keyword">repeat</span>
+        <span class="hljs-keyword">repeat</span>
+            found, consumed, read = hsr:find_message(stdin)
+            <span class="hljs-keyword">if</span> found <span class="hljs-keyword">then</span>
+                inject_message(hsr)
+                cnt = cnt + <span class="hljs-number">1</span>
+            <span class="hljs-keyword">end</span>
+        <span class="hljs-keyword">until</span> <span class="hljs-keyword">not</span> found
+    <span class="hljs-keyword">until</span> read == <span class="hljs-number">0</span>
+    <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>, <span class="hljs-built_in">string</span>.format(<span class="hljs-string">&quot;processed %d messages&quot;</span>, cnt)
+<span class="hljs-keyword">end</span>
+</code></pre>
+
+                                
+                                </section>
+                            
+    </div>
+    <div class="search-results">
+        <div class="has-results">
+            
+            <h1 class="search-results-title"><span class='search-results-count'></span> results matching "<span class='search-query'></span>"</h1>
+            <ul class="search-results-list"></ul>
+            
+        </div>
+        <div class="no-results">
+            
+            <h1 class="search-results-title">No results matching "<span class='search-query'></span>"</h1>
+            
+        </div>
+    </div>
 </div>
-</body>
+
+                        </div>
+                    </div>
+                
+            </div>
+
+            
+                
+                <a href="./" class="navigation navigation-prev " aria-label="Previous page: Heka Sandbox">
+                    <i class="fa fa-angle-left"></i>
+                </a>
+                
+                
+                <a href="analysis.html" class="navigation navigation-next " aria-label="Next page: Analysis Interface">
+                    <i class="fa fa-angle-right"></i>
+                </a>
+                
+            
+        
+    </div>
+
+    <script>
+        var gitbook = gitbook || [];
+        gitbook.push(function() {
+            gitbook.page.hasChanged({"page":{"title":"Input Interface","level":"1.3.1","depth":2,"next":{"title":"Analysis Interface","level":"1.3.2","depth":2,"path":"heka/analysis.md","ref":"heka/analysis.md","articles":[]},"previous":{"title":"Heka Sandbox","level":"1.3","depth":1,"path":"heka/index.md","ref":"heka/index.md","articles":[{"title":"Input Interface","level":"1.3.1","depth":2,"path":"heka/input.md","ref":"heka/input.md","articles":[]},{"title":"Analysis Interface","level":"1.3.2","depth":2,"path":"heka/analysis.md","ref":"heka/analysis.md","articles":[]},{"title":"Output Interface","level":"1.3.3","depth":2,"path":"heka/output.md","ref":"heka/output.md","articles":[]},{"title":"Message Schema","level":"1.3.4","depth":2,"path":"heka/message.md","ref":"heka/message.md","articles":[]},{"title":"Message Matcher","level":"1.3.5","depth":2,"path":"util/message_matcher.md","ref":"util/message_matcher.md","articles":[]}]},"dir":"ltr"},"config":{"gitbook":"*","theme":"default","variables":{},"plugins":[],"pluginsConfig":{"highlight":{},"search":{},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"sharing":{"facebook":true,"twitter":true,"google":false,"weibo":false,"instapaper":false,"vk":false,"all":["facebook","google","twitter","weibo","instapaper"]},"fontsettings":{"theme":"white","family":"sans","size":2},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false}},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56}},"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"}},"file":{"path":"heka/input.md","mtime":"2017-05-15T14:52:09.954Z","type":"markdown"},"gitbook":{"version":"3.2.2","time":"2017-05-15T14:55:58.796Z"},"basePath":"..","book":{"language":""}});
+        });
+    </script>
+</div>
+
+        
+    <script src="../gitbook/gitbook.js"></script>
+    <script src="../gitbook/theme.js"></script>
+    
+        
+        <script src="../gitbook/gitbook-plugin-search/search-engine.js"></script>
+        
+    
+        
+        <script src="../gitbook/gitbook-plugin-search/search.js"></script>
+        
+    
+        
+        <script src="../gitbook/gitbook-plugin-lunr/lunr.min.js"></script>
+        
+    
+        
+        <script src="../gitbook/gitbook-plugin-lunr/search-lunr.js"></script>
+        
+    
+        
+        <script src="../gitbook/gitbook-plugin-sharing/buttons.js"></script>
+        
+    
+        
+        <script src="../gitbook/gitbook-plugin-fontsettings/fontsettings.js"></script>
+        
+    
+
+    </body>
 </html>
+

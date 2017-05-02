@@ -1,44 +1,290 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-  <meta http-equiv="Content-Style-Type" content="text/css" />
-  <meta name="generator" content="pandoc" />
-  <title></title>
-  <style type="text/css">code{white-space: pre;}</style>
-  <link rel="stylesheet" href="/lua_sandbox/docs.css" type="text/css" />
-</head>
-<body>
-<div id="title">Lua Sandbox Library (1.2.5)<hr/></div>
-<div class="menu">
-        <ul>
-            <li><a href="/lua_sandbox/index.html">Overview</a></li>
-        </ul>
-        <ul>
-            <li><a href="/lua_sandbox/sandbox.html">Generic Sandbox</a></li>
-        </ul>
-        <ul>
-            <li><a href="/lua_sandbox/heka/index.html">Heka Sandbox</a></li>
-        <ul>
-            <li><a href="/lua_sandbox/heka/analysis.html">Analysis Interface</a></li>
-            <li><a href="/lua_sandbox/heka/input.html">Input Interface</a></li>
-            <li><a href="/lua_sandbox/heka/output.html">Output Interface</a></li>
-        </ul>
-        </ul>
-        <ul>
-           <li><a href="/lua_sandbox/cli/index.html">Command Line Tools</a></li>
-        </ul>
-        <ul>
-            <li><a href="/lua_sandbox/doxygen/index.html">Source Documentation</a></li>
-        </ul>
-        <ul>
-            <li><a href="/lua_sandbox_extensions/index.html">Sandbox Extensions</a></li>
-        </ul>
+
+<!DOCTYPE HTML>
+<html lang="" >
+    <head>
+        <meta charset="UTF-8">
+        <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+        <title>Command Line Tools · GitBook</title>
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="description" content="">
+        <meta name="generator" content="GitBook 3.2.2">
+        
+        
+        
+    
+    <link rel="stylesheet" href="../gitbook/style.css">
+
+    
+            
+                
+                <link rel="stylesheet" href="../gitbook/gitbook-plugin-highlight/website.css">
+                
+            
+                
+                <link rel="stylesheet" href="../gitbook/gitbook-plugin-search/search.css">
+                
+            
+                
+                <link rel="stylesheet" href="../gitbook/gitbook-plugin-fontsettings/website.css">
+                
+            
+        
+
+    
+
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+
+        
+    
+    
+    <meta name="HandheldFriendly" content="true"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <link rel="apple-touch-icon-precomposed" sizes="152x152" href="../gitbook/images/apple-touch-icon-precomposed-152.png">
+    <link rel="shortcut icon" href="../gitbook/images/favicon.ico" type="image/x-icon">
+
+    
+    
+    <link rel="prev" href="../util/message_matcher.html" />
+    
+
+    </head>
+    <body>
+        
+<div class="book">
+    <div class="book-summary">
+        
+            
+<div id="book-search-input" role="search">
+    <input type="text" placeholder="Type to search" />
+</div>
+
+            
+                <nav role="navigation">
+                
+
+
+<ul class="summary">
+    
+    
+
+    
+
+    
+        
+        
+    
+        <li class="chapter " data-level="1.1" data-path="../">
+            
+                <a href="../">
+            
+                    
+                    Lua Sandbox Library (1.2.5)
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.2" data-path="../sandbox.html">
+            
+                <a href="../sandbox.html">
+            
+                    
+                    Generic Sandbox
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3" data-path="../heka/">
+            
+                <a href="../heka/">
+            
+                    
+                    Heka Sandbox
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.3.1" data-path="../heka/input.html">
+            
+                <a href="../heka/input.html">
+            
+                    
+                    Input Interface
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2" data-path="../heka/analysis.html">
+            
+                <a href="../heka/analysis.html">
+            
+                    
+                    Analysis Interface
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.3" data-path="../heka/output.html">
+            
+                <a href="../heka/output.html">
+            
+                    
+                    Output Interface
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.4" data-path="../heka/message.html">
+            
+                <a href="../heka/message.html">
+            
+                    
+                    Message Schema
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.5" data-path="../util/message_matcher.html">
+            
+                <a href="../util/message_matcher.html">
+            
+                    
+                    Message Matcher
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter active" data-level="1.4" data-path="./">
+            
+                <a href="./">
+            
+                    
+                    Command Line Tools
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.5" >
+            
+                <a target="_blank" href="https://mozilla-services.github.io/lua_sandbox/doxygen/index.html">
+            
+                    
+                    Source Documentation
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.6" >
+            
+                <a target="_blank" href="https://mozilla-services.github.io/lua_sandbox_extensions">
+            
+                    
+                    Sandbox Extensions
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+    
+
+    <li class="divider"></li>
+
+    <li>
+        <a href="https://www.gitbook.com" target="blank" class="gitbook-link">
+            Published with GitBook
+        </a>
+    </li>
+</ul>
+
+
+                </nav>
+            
+        
     </div>
-    <div class="main-content">
-<h1 id="command-line-interface-tools">Command Line Interface Tools</h1>
-<h2 id="lsb_heka_cat">lsb_heka_cat</h2>
-<p>A command-line utility for counting, viewing, filtering, and extracting messages from a Heka protobuf log/stream.</p>
+
+    <div class="book-body">
+        
+            <div class="body-inner">
+                
+                    
+
+<div class="book-header" role="navigation">
+    
+
+    <!-- Title -->
+    <h1>
+        <i class="fa fa-circle-o-notch fa-spin"></i>
+        <a href=".." >Command Line Tools</a>
+    </h1>
+</div>
+
+
+
+
+                    <div class="page-wrapper" tabindex="-1" role="main">
+                        <div class="page-inner">
+                            
+<div id="book-search-results">
+    <div class="search-noresults">
+    
+                                <section class="normal markdown-section">
+                                
+                                <h1 id="command-line-interface-tools">Command Line Interface Tools</h1>
+<h2 id="lsbhekacat">lsb_heka_cat</h2>
+<p>A command-line utility for counting, viewing, filtering, and extracting messages
+from a Heka protobuf log/stream.</p>
 <pre><code>usage: lsb_heka_cat [-t|-c|-h] [-m message_matcher] [-f] [-n #] &lt;FILE&gt;
 description:
   -t output the messages in text format (default)
@@ -47,11 +293,84 @@ description:
   -f output appended data as the file grows
   -n output the last # of messages (simple header check so not 100% accurate)
   -m message_matcher expression (default &quot;TRUE&quot;)
-  FILE name of the file to cat or &#39;-&#39; for stdin
+  FILE name of the file to cat or &apos;-&apos; for stdin
 notes:
   All output is written to stdout and all log/error messages are written to stderr.
-</code></pre>
-<p>See the <a href="../util/message_matcher.html">message matcher</a> documentation for more details about the message_matcher expression.</p>
+</code></pre><p>See the <a href="../util/message_matcher.html">message matcher</a> documentation for more
+details about the message_matcher expression.</p>
+
+                                
+                                </section>
+                            
+    </div>
+    <div class="search-results">
+        <div class="has-results">
+            
+            <h1 class="search-results-title"><span class='search-results-count'></span> results matching "<span class='search-query'></span>"</h1>
+            <ul class="search-results-list"></ul>
+            
+        </div>
+        <div class="no-results">
+            
+            <h1 class="search-results-title">No results matching "<span class='search-query'></span>"</h1>
+            
+        </div>
+    </div>
 </div>
-</body>
+
+                        </div>
+                    </div>
+                
+            </div>
+
+            
+                
+                <a href="../util/message_matcher.html" class="navigation navigation-prev navigation-unique" aria-label="Previous page: Message Matcher">
+                    <i class="fa fa-angle-left"></i>
+                </a>
+                
+                
+            
+        
+    </div>
+
+    <script>
+        var gitbook = gitbook || [];
+        gitbook.push(function() {
+            gitbook.page.hasChanged({"page":{"title":"Command Line Tools","level":"1.4","depth":1,"next":{"title":"Source Documentation","level":"1.5","depth":1,"url":"https://mozilla-services.github.io/lua_sandbox/doxygen/index.html","ref":"https://mozilla-services.github.io/lua_sandbox/doxygen/index.html","articles":[]},"previous":{"title":"Message Matcher","level":"1.3.5","depth":2,"path":"util/message_matcher.md","ref":"util/message_matcher.md","articles":[]},"dir":"ltr"},"config":{"gitbook":"*","theme":"default","variables":{},"plugins":[],"pluginsConfig":{"highlight":{},"search":{},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"sharing":{"facebook":true,"twitter":true,"google":false,"weibo":false,"instapaper":false,"vk":false,"all":["facebook","google","twitter","weibo","instapaper"]},"fontsettings":{"theme":"white","family":"sans","size":2},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false}},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56}},"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"}},"file":{"path":"cli/index.md","mtime":"2017-05-15T14:52:09.954Z","type":"markdown"},"gitbook":{"version":"3.2.2","time":"2017-05-15T14:55:58.796Z"},"basePath":"..","book":{"language":""}});
+        });
+    </script>
+</div>
+
+        
+    <script src="../gitbook/gitbook.js"></script>
+    <script src="../gitbook/theme.js"></script>
+    
+        
+        <script src="../gitbook/gitbook-plugin-search/search-engine.js"></script>
+        
+    
+        
+        <script src="../gitbook/gitbook-plugin-search/search.js"></script>
+        
+    
+        
+        <script src="../gitbook/gitbook-plugin-lunr/lunr.min.js"></script>
+        
+    
+        
+        <script src="../gitbook/gitbook-plugin-lunr/search-lunr.js"></script>
+        
+    
+        
+        <script src="../gitbook/gitbook-plugin-sharing/buttons.js"></script>
+        
+    
+        
+        <script src="../gitbook/gitbook-plugin-fontsettings/fontsettings.js"></script>
+        
+    
+
+    </body>
 </html>
+
