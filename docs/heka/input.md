@@ -55,8 +55,8 @@ shutdown status.
 
 ### decode_message
 
-Converts a Heka protobuf encoded message string into a Lua table.
-See [decode_message](analysis.html#decode_message) for details.
+Converts a Heka protobuf encoded message string into a Lua table. See
+[decode_message](analysis.md#decodemessage) for details.
 
 ### inject_message
 
@@ -68,7 +68,7 @@ to the values provide in the message table, if no value is provided it defaults
 to the appropriate configuration value.
 
 *Arguments*
-* msg ([Heka message table](message.html),
+* msg ([Heka message table](message.md),
   [Heka stream reader](#heka-stream-reader-methods),
   Heka protobuf string,
   or nil (if only updating the checkpoint))
@@ -133,8 +133,7 @@ flag is not accepted here.
 ```lua
 local ts = hsr:read_message("Timestamp")
 
-```
-See [read_message](analysis.html#read_message) for details.
+``` See [read_message](analysis.md#readmessage) for details.
 
 ## Modes of Operation
 

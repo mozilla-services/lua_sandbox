@@ -3,8 +3,8 @@
 ## Overview
 
 This document describes the 1.0 release of the Heka sandbox API built on the
-[Generic Sandbox Interface](../sandbox.html). The 1.0 release is a refined
-implementation of its predecessor which was developed in 
+[Generic Sandbox Interface](/sandbox.md). The 1.0 release is a refined
+implementation of its predecessor which was developed in
 [Heka](https://github.com/mozilla-services/heka). The goal is to decople it from
 Go and make it easily embeddable in any language. The Go version of Heka has
 been deprecated and replaced by [Hindsight](https://github.com/mozilla-services/hindsight).
@@ -37,13 +37,14 @@ There are a few intentional changes between tho original Heka sandbox and this v
 
 #### Input Sandbox
 
-1. [create_stream_reader](input.html#create_stream_reader) function was added.
-1. [is_running](input.html#is_running) function was added.
+1. [create_stream_reader](input.md#createstreamreader) function was added. 1.
+[is_running](input.md#is_running) function was added.
 
 #### Output Sandbox
 
-1. [update_checkpoint](output.html#update_checkpoint) was added for batch and asynchronous processing.
-1. [create_message_matcher](output.html#create_message_matcher) function was added.
+1. [update_checkpoint](output.md#update_checkpoint) was added for batch and
+asynchronous processing. 1.
+[create_message_matcher](output.md#createmessagematcher) function was added.
 
 ### Removals
 

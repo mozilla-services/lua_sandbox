@@ -19,5 +19,6 @@ notes:
   All output is written to stdout and all log/error messages are written to stderr.
 
 ```
-See the [message matcher](../util/message_matcher.html) documentation for more details about the message_matcher expression.
+See the [message matcher](/util/message_matcher.md) documentation for more
+details about the message_matcher expression.
 
