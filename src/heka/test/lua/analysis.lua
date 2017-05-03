@@ -15,11 +15,13 @@ function process_message()
     return 0
 end
 
+local work_cnt = 1
 function timer_event(ns, shutdown)
     local cnt = 0
-    for i=1, 10000 do
-        cnt = cnt + 1 -- make sure we have something to measure even with a low res clock
+    for i=1, work_cnt * 1000 do
+        cnt = cnt + 1
     end
+    work_cnt = work_cnt + 1
 
     if ns == 1e9 then
         assert(shutdown, "not shutting down")
