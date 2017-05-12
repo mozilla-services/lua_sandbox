@@ -543,7 +543,8 @@ lsb_err_value lsb_init(lsb_lua_sandbox *lsb, const char *state_file)
   // load package module
   lua_pushcfunction(lsb->lua, luaopen_package);
   lua_pushstring(lsb->lua, LUA_LOADLIBNAME);
-  lua_call(lsb->lua, 1, 1);
+  lua_pushboolean(lsb->lua, 1); // sandboxed
+  lua_call(lsb->lua, 2, 1);
   lua_newtable(lsb->lua);
   lua_setmetatable(lsb->lua, -2);
   lua_pop(lsb->lua, 1);

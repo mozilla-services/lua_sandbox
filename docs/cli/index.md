@@ -21,3 +21,20 @@ notes:
 ```
 See the [message matcher](../util/message_matcher.html) documentation for more details about the message_matcher expression.
 
+## luasandbox
+
+Lua interpreter. It behaves like vanilia lua5.1 (i.e not sandboxed) and can be sandboxed by using:
+```
+package.sandboxed = true
+```
+
+```
+usage: luasandbox [options] [script [args]].
+Available options are:
+  -e stat  execute string 'stat'
+  -l name  require library 'name'
+  -i       enter interactive mode after executing 'script'
+  -v       show version information
+  --       stop handling options
+  -        execute stdin and stop handling options
+```

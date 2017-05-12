@@ -98,10 +98,11 @@
 #define LUA_LDIR  LUA_ROOT "share/lua/5.1/"
 #define LUA_CDIR  LUA_ROOT "lib/lua/5.1/"
 #define LUA_PATH_DEFAULT  \
-    "./?.lua;"  LUA_LDIR"?.lua;"  LUA_LDIR"?/init.lua;" \
-                LUA_CDIR"?.lua;"  LUA_CDIR"?/init.lua"
+    "/usr/lib/luasandbox/modules/?.lua" \
+    ";/usr/lib/luasandbox/io_modules/?.lua"
 #define LUA_CPATH_DEFAULT \
-  "./?.so;"  LUA_CDIR"?.so;" LUA_CDIR"loadall.so"
+  "/usr/lib/luasandbox/modules/?.so" \
+  ";/usr/lib/luasandbox/io_modules/?.so"
 #endif
 
 
