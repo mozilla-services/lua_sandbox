@@ -218,7 +218,7 @@ lsb_write_heka_uuid(lsb_output_buffer *ob, const char *uuid, size_t len);
  *
  * @return LSB_UTIL_EXPORT size_t
  */
-LSB_UTIL_EXPORT size_t lsb_write_heka_header(char *buf, size_t len);
+LSB_UTIL_EXPORT size_t lsb_write_heka_header(char *buf, long long len);
 
 #ifdef __cplusplus
 }

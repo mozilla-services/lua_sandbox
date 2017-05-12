@@ -576,7 +576,7 @@ lsb_write_heka_uuid(lsb_output_buffer *ob, const char *uuid, size_t len)
 }
 
 
-size_t lsb_write_heka_header(char *buf, size_t len)
+size_t lsb_write_heka_header(char *buf, long long len)
 {
   int hlen = lsb_pb_output_varint(buf + 3, len) + 1;
   buf[hlen + 2] = '\x1f';
