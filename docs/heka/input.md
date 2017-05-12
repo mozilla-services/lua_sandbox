@@ -2,7 +2,7 @@
 
 ## Recommendations
 Since the sandbox does not run in isolation there are some expectations of how
-the host infrastructure behaves.  The current recommendation are based on the
+the host infrastructure behaves.  The current recommendations are based on the
 Hindsight reference implementation.
 
 ## Disabled Functionality
@@ -21,13 +21,14 @@ Entry point for message creation.
 
 *Arguments*
 * checkpoint (nil number, string) - value of the last checkpoint value passed
-  into `inject_message`
+into `inject_message`
 
 *Return*
 * status_code (number)
   - success (less than or equal to zero)
   - fatal error (greater than zero)
-* status_message (optional: string) logged when the status code is less than zero
+* status_message (optional: string) logged when the status code is less than
+zero
 
 ## Available C Functions (called from the plugin)
 
@@ -102,7 +103,7 @@ local found, consumed, need = hsr:find_message(buf)
 
 *Arguments*
 * buf (string, userdata (FILE*)) - buffer containing a Heka protobuf stream data
-  or a userdate file object
+  or a userdata file object
 * decode (bool default: true) - true if the framed message should be protobuf
   decoded
 
@@ -133,13 +134,13 @@ flag is not accepted here.
 ```lua
 local ts = hsr:read_message("Timestamp")
 
-``` See [read_message](analysis.md#readmessage) for details.
+```
+See [read_message](analysis.md#readmessage) for details.
 
 ## Modes of Operation
 
 ### Run Once
-* Set the `ticker_interval` to zero and return from `process_message` when you
-  are done.
+* Set the `ticker_interval` to zero and return from `process_message` done.
 * The `instruction_limit` configuration can be set if desired.
 
 #### Example startup ping

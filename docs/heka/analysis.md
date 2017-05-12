@@ -2,7 +2,7 @@
 
 ## Recommendations
 Since the sandbox does not run in isolation there are some expectations of how
-the host infrastructure behaves.  The current recommendation are based on the
+the host infrastructure behaves.  The current recommendations are based on the
 Hindsight reference implementation.
 
 ## Disabled Functionality
