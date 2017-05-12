@@ -8,6 +8,7 @@
 
 #include <stdio.h>
 #include <string.h>
+#include <endian.h>
 
 #include "luasandbox/error.h"
 #include "luasandbox/test/mu_test.h"
@@ -143,11 +144,17 @@ static char* test_lsb_pb_write_bool()
 static char* test_lsb_pb_write_double()
 {
   double d = 7.13;
+  union {
+    double d;
+    long long ll;
+  } d_le;
+  d_le.d = d;
+  d_le.ll = htole64(d_le.ll);
   lsb_output_buffer ob;
   lsb_init_output_buffer(&ob, sizeof d);
   lsb_err_value ret = lsb_pb_write_double(&ob, d);
   mu_assert(!ret, "received %s", ret);
-  mu_assert(memcmp(ob.buf, &d, sizeof d) == 0, "received: %g",
+  mu_assert(memcmp(ob.buf, &d_le.d, sizeof d_le.d) == 0, "received: %g",
             *((double *)ob.buf));
   ret = lsb_pb_write_double(&ob, d);
   mu_assert(ret == LSB_ERR_UTIL_FULL, "received %s", lsb_err_string(ret));

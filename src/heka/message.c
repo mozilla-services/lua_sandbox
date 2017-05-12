@@ -12,6 +12,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
+#include <endian.h>
 
 #include "../luasandbox_impl.h" // todo the API should change so this doesn't
 // need access to the impl
@@ -166,16 +167,21 @@ static const char* process_fields(lua_State *lua, const char *p, const char *e)
 
     case 7: // value_double
       {
-        double val = 0;
+        union {
+          double    d;
+          long long ll;
+        } val;
+        val.d = 0;
         switch (wiretype) {
         case 1:
           if (p + sizeof(double) > e) {
             p = NULL;
             break;
           }
-          memcpy(&val, p, sizeof(double));
+          memcpy(&val.d, p, sizeof(double));
+          val.ll = le64toh(val.ll);
           p += sizeof(double);
-          lua_pushnumber(lua, val);
+          lua_pushnumber(lua, val.d);
           lua_rawseti(lua, 5, ++value_count);
           break;
         case 2:
@@ -185,9 +191,10 @@ static const char* process_fields(lua_State *lua, const char *p, const char *e)
             break;
           }
           do {
-            memcpy(&val, p, sizeof(double));
+            memcpy(&val.d, p, sizeof(double));
+            val.ll = le64toh(val.ll);
             p += sizeof(double);
-            lua_pushnumber(lua, val);
+            lua_pushnumber(lua, val.d);
             lua_rawseti(lua, 5, ++value_count);
           } while (p < e);
           break;

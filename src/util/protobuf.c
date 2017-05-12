@@ -8,6 +8,7 @@
 
 #include "luasandbox/util/protobuf.h"
 
+#include <endian.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -102,8 +103,13 @@ lsb_err_value lsb_pb_write_double(lsb_output_buffer *ob, double i)
 
   lsb_err_value ret = lsb_expand_output_buffer(ob, needed);
   if (!ret) {
-    // todo add big endian support if necessary
-    memcpy(&ob->buf[ob->pos], &i, needed);
+    union {
+      double    d;
+      long long ll;
+    } tmp;
+    tmp.d = i;
+    tmp.ll = htole64(tmp.ll);
+    memcpy(&ob->buf[ob->pos], &tmp.ll, needed);
     ob->pos += needed;
   }
   return ret;

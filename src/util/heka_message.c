@@ -8,6 +8,7 @@
 
 #include "luasandbox/util/heka_message.h"
 
+#include <endian.h>
 #include <limits.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -112,6 +113,7 @@ read_double_value(const char *p, const char *e, int ai, lsb_read_value *val)
   val->type = LSB_READ_NUMERIC;
   p += sizeof(double) * ai;
   memcpy(&val->u.d, p, sizeof(double));
+  val->u.ll = le64toh(val->u.ll);
   return true;
 }
 
