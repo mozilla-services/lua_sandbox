@@ -4,7 +4,7 @@
 
 find_package(Doxygen QUIET)
 find_program(LUA_EXE lua QUIET)
-find_program(PANDOC_EXE pandoc QUIET)
+find_program(gitbook gitbook QUIET)
 if(DOXYGEN_FOUND AND LUA_EXE AND PANDOC_EXE)
     set(DOXYCONF_IN  ${CMAKE_SOURCE_DIR}/doxygen.in.conf)
     set(DOXYCONF_OUT ${CMAKE_BINARY_DIR}/doxygen.conf)
@@ -37,7 +37,7 @@ PROJECT_NUMBER          = ${CPACK_PACKAGE_VERSION_MAJOR}.${CPACK_PACKAGE_VERSION
 
     add_custom_target(docs ${DOXYGEN_EXECUTABLE} ${DOXYCONF_OUT}
     COMMAND lua gen_gh_pages.lua "${CPACK_PACKAGE_VERSION_MAJOR}.${CPACK_PACKAGE_VERSION_MINOR}.${CPACK_PACKAGE_VERSION_PATCH}"
-    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR})
+    "${CMAKE_SOURCE_DIR}" "${CMAKE_BINARY_DIR}" WORKING_DIRECTORY ${CMAKE_SOURCE_DIR})
 else()
     message("The optional documentation tools were not found; the doc target has not been created")
 endif()

@@ -16,11 +16,13 @@ assert(not inject_payload)
 require "string"
 msg = {Timestamp = 8}
 
+local work_cnt = 1
 local function add_work()
     local cnt = 0
-    for i = 1, 10000 do
+    for i = 1, work_cnt * 1000 do
         cnt = cnt + 1
     end
+    work_cnt = work_cnt + 1
 end
 
 function process_message(cp)

@@ -2,7 +2,7 @@
 
 ## Recommendations
 Since the sandbox does not run in isolation there are some expectations of how
-the host infrastructure behaves.  The current recommendation are based on the
+the host infrastructure behaves.  The current recommendations are based on the
 Hindsight reference implementation.
 
 ## Disabled Functionality
@@ -22,7 +22,7 @@ Hindsight reference implementation.
 ### process_message
 
 Called when the host has a message available for analysis.  Usually used in
-combination with a [message matcher](../util/message_matcher.html) expression.
+combination with a [message matcher](/util/message_matcher.md) expression.
 
 Recommenation: specify this as a `message_matcher` configuration option.
 
@@ -86,15 +86,13 @@ standard indexing, which is one-based.
     * Pid
     * Fields[*name*]
 * fieldIndex (unsigned) - only used in combination with the Fields variableName
-        use to retrieve a specific instance of a repeated field *name*;
-        zero indexed
+use to retrieve a specific instance of a repeated field *name*; zero indexed
 * arrayIndex (unsigned) - only used in combination with the Fields variableName
-        use to retrieve a specific element out of a field containing an array;
-        zero indexed
+use to retrieve a specific element out of a field containing an array; zero
+indexed
 * zeroCopy (bool, optional default false) - returns a userdata place holder for
-        the message variable (only valid for string types). Non string headers
-        throw an error during construction, non string fields throw an error on
-        data retrieval.
+the message variable (only valid for string types). Non string headers throw an
+error during construction, non string fields throw an error on data retrieval.
 
 *Return*
 * value (number, string, bool, nil, userdata depending on the type of variable
@@ -110,11 +108,11 @@ error.
   userdata object containing a Heka protobuf binary string.
 
 *Return*
-* msg ([Heka message table (array fields)](message.html#array-based-message-fields))
-  with the value member always being an array (even if there is only a single
-  item). This format makes working with the output more consistent. The wide
-  variation in the inject table formats is to ease the construction of the
-  message especially when using an LPeg grammar transformation.
+* msg ([Heka message table (array fields)](message.md#array-based-message-fields))
+with the value member always being an array (even if there is only a
+single item). This format makes working with the output more consistent. The
+wide variation in the inject table formats is to ease the construction of the
+message especially when using an LPeg grammar transformation.
 
 ### inject_message
 
@@ -127,7 +125,7 @@ provide in the message table, if no value is provided it defaults to the
 appropriate configuration value.
 
 *Arguments*
-* msg ([Heka message table](message.html))
+* msg ([Heka message table](message.md))
 
 *Return*
 * none (throws an error if the table does not match the Heka message schema)

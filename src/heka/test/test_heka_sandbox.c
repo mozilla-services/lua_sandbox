@@ -19,6 +19,8 @@
 #include "luasandbox/heka/sandbox.h"
 #include "luasandbox_output.h"
 
+static unsigned long long clockres = 1;
+
 // {Uuid="" Timestamp = 1e9, Type="type", Logger="logger", Payload="payload", EnvVersion="env_version", Hostname="hostname", Severity=9, Fields = {number=1,numbers={value={1,2,3}, representation="count"},string="string",strings={"s1","s2","s3"}, bool=true, bools={true,false,false}}}
 static char pb[] = "\x0a\x10" "abcdefghijklmnop" "\x10\x80\x94\xeb\xdc\x03\x1a\x04\x74\x79\x70\x65\x22\x06\x6c\x6f\x67\x67\x65\x72\x28\x09\x32\x07\x70\x61\x79\x6c\x6f\x61\x64\x3a\x0b\x65\x6e\x76\x5f\x76\x65\x72\x73\x69\x6f\x6e\x4a\x08\x68\x6f\x73\x74\x6e\x61\x6d\x65\x52\x13\x0a\x06\x6e\x75\x6d\x62\x65\x72\x10\x03\x39\x00\x00\x00\x00\x00\x00\xf0\x3f\x52\x2c\x0a\x07\x6e\x75\x6d\x62\x65\x72\x73\x10\x03\x1a\x05\x63\x6f\x75\x6e\x74\x3a\x18\x00\x00\x00\x00\x00\x00\xf0\x3f\x00\x00\x00\x00\x00\x00\x00\x40\x00\x00\x00\x00\x00\x00\x08\x40\x52\x0e\x0a\x05\x62\x6f\x6f\x6c\x73\x10\x04\x42\x03\x01\x00\x00\x52\x0a\x0a\x04\x62\x6f\x6f\x6c\x10\x04\x40\x01\x52\x10\x0a\x06\x73\x74\x72\x69\x6e\x67\x22\x06\x73\x74\x72\x69\x6e\x67\x52\x15\x0a\x07\x73\x74\x72\x69\x6e\x67\x73\x22\x02\x73\x31\x22\x02\x73\x32\x22\x02\x73\x33";
 
@@ -375,8 +377,10 @@ static char* test_timer_event()
   mu_assert(0 == stats.pm_failures, "received %llu", stats.pm_failures);
   mu_assert(0 == stats.pm_avg, "received %g", stats.pm_avg);
   mu_assert(0 == stats.pm_sd, "received %g", stats.pm_sd);
-  mu_assert(0 < stats.te_avg, "received %g", stats.te_avg);
-  mu_assert(0 < stats.te_sd, "received %g", stats.te_sd);
+  if (clockres <= 100) {
+    mu_assert(0 < stats.te_avg, "received %g res %llu", stats.te_avg, clockres);
+    mu_assert(0 < stats.te_sd, "received %g", stats.te_sd);
+  }
 
   e = lsb_heka_destroy_sandbox(hsb);
 
@@ -464,8 +468,10 @@ static char* test_pm_input()
   mu_assert(5 == stats.pm_cnt, "expected %llu", stats.pm_cnt);
   mu_assert(1 == stats.pm_failures, "expected %llu", stats.pm_failures);
   mu_assert(0 < stats.mem_cur, "expected %llu", stats.mem_cur);
-  mu_assert(0 < stats.pm_avg, "received %g", stats.pm_avg);
-  mu_assert(0 < stats.pm_sd, "received %g", stats.pm_sd);
+  if (clockres <= 100) {
+    mu_assert(0 < stats.pm_avg, "received %g res %llu", stats.pm_avg, clockres);
+    mu_assert(0 < stats.pm_sd, "received %g", stats.pm_sd);
+  }
   e = lsb_heka_destroy_sandbox(hsb);
   return NULL;
 }
@@ -480,10 +486,10 @@ static char* test_pm_error()
   };
 
   struct pm_result results[] = {
-    { .ncp = 3, .scp = NULL, .rv = 1,  .err = "process_message() lua/input.lua:37: boom" },
+    { .ncp = 3, .scp = NULL, .rv = 1,  .err = "process_message() lua/input.lua:39: boom" },
     { .ncp = 4, .scp = NULL, .rv = 1,  .err = "process_message() must return a nil or string error message" },
     { .ncp = 5, .scp = NULL, .rv = 1,  .err = "process_message() must return a numeric status code" },
-    { .ncp = 6, .scp = NULL, .rv = 1,  .err = "process_message() lua/input.lua:43: aaaaaaaaaaaaaaaaaaaaaaaaa"
+    { .ncp = 6, .scp = NULL, .rv = 1,  .err = "process_message() lua/input.lua:45: aaaaaaaaaaaaaaaaaaaaaaaaa"
       "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
       "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
     }, // >max error message
@@ -783,6 +789,12 @@ static char* benchmark_decode_message()
 
 static char* all_tests()
 {
+#ifdef HAVE_CLOCK_GETTIME
+  struct timespec ts;
+  clock_getres(CLOCK_MONOTONIC, &ts);
+  clockres = ts.tv_sec * 1000000000ULL + ts.tv_nsec;
+#endif
+
   mu_run_test(test_api_assertion);
   mu_run_test(test_create_input_sandbox);
   mu_run_test(test_create_analysis_sandbox);

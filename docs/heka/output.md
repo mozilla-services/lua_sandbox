@@ -2,7 +2,7 @@
 
 ## Recommendations
 Since the sandbox does not run in isolation there are some expectations of how
-the host infrastructure behaves.  The current recommendation are based on the
+the host infrastructure behaves.  The current recommendations are based on the
 Hindsight reference implementation.
 
 ## Disabled Functionality
@@ -18,7 +18,7 @@ Hindsight reference implementation.
 ### process_message
 
 Called when the host has a message available for analysis.  Usually used in
-combination with a [message matcher](../util/message_matcher.html) expression.
+combination with a [message matcher](/util/message_matcher.md) expression.
 
 Recommenation: specify this as a `message_matcher` configuration option.
 
@@ -67,13 +67,13 @@ Provides access to the sandbox configuration variables.
 
 ### read_message
 
-Provides access to the Heka message data.
-See [read_message](analysis.html#read_message) for details.
+Provides access to the Heka message data. See
+[read_message](analysis.md#readmessage) for details.
 
 ### decode_message
 
-Converts a Heka protobuf encoded message string into a Lua table.
-See [decode_message](analysis.html#decode_message) for details.
+Converts a Heka protobuf encoded message string into a Lua table. See
+[decode_message](analysis.md#decodemessage) for details.
 
 ### encode_message
 
@@ -88,20 +88,20 @@ Note: this operation uses the internal output buffer so it is goverened by the
 `output_limit` configuration setting.
 
 *Arguments*
-* msg ([Heka message table](message.html))
+* msg ([Heka message table](message.md))
 * framed (bool default: false) A value of true includes the framing header
 
 *Return*
-* heka_pb (string) - Heka protobuf binary string, framed as specified or an
-  error is thrown
+* heka_pb (string) - Heka protobuf binary string, framed as specified
+  or an error is thrown
 
 ### create_message_matcher
 
-Returns a Heka protocol buffer message matcher; used to dynamic filter messages
-sent to the output plugin.
+Returns a Heka protocol buffer message matcher; used to dynamically filter
+messages sent to the output plugin.
 
 *Arguments*
-* message_matcher  [message matcher](../util/message_matcher.html)
+* message_matcher [message matcher](/util/message_matcher.md)
 
 *Return*
 * message_matcher (userdata) - or an error is thrown
@@ -110,7 +110,7 @@ sent to the output plugin.
 
 #### Example
 
-See: [heka_tcp_matcher.lua](https://github.com/mozilla-services/lua_sandbox_extensions/socket/sandboxes/heka/output/heka_tcp_matcher.html)
+See: [heka_tcp_matcher.lua](https://mozilla-services.github.io/lua_sandbox_extensions/socket/sandboxes/heka/output/heka_tcp_matcher.html)
 
 ### update_checkpoint
 
@@ -387,19 +387,22 @@ end
 
 #### Asynchronous
 
-* `async_buffer_size` **RECOMMENDED** that this configuration variable be set and consumed by the host
-* `process_message` is called with a sequence_id parameter and asynchronously sends the message/transformation
-to the destination and returns one of the following values:
+* `async_buffer_size` Recommendation: this configuration variable should be set
+and consumed by the host
+* `process_message` is called with a sequence_id parameter and asynchronously
+sends the message/transformation to the destination and returns one of the
+following values:
   * asynchronous (-5) - the message was successfully queued
   * failure (-1) - the message cannot be queue
     * the failure count is incremented
     * any optional error message is written to the log
     * the message is skipped
   * skip (-2) - the message was intentionally not queued
-  * retry (-3) - the message was not successfully queued and the host will call `process_message`
-  again, with the same message, after a one second delay
-* When an asynchronously sent message is acknowledged [update_checkpoint](#update_checkpoint)
-**MUST** be called to advance the checkpoint to that specific message
+  * retry (-3) - the message was not successfully queued and the host will call
+  `process_message` again, with the same message, after a one second delay
+* When an asynchronously sent message is acknowledged
+[update_checkpoint](#updatecheckpoint) **MUST** be called to advance the
+checkpoint to that specific message
 
 #### Example Kafka Output
 [kafka.lua](https://github.com/mozilla-services/lua_sandbox_extensions/blob/master/kafka/sandboxes/heka/output/kafka.lua)
