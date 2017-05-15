@@ -15,9 +15,10 @@ environment including functionality like global data preservation/restoration on
 shutdown/startup, output collection in textual or binary formats and an array of
 parsers for various data types (Nginx, Apache, Syslog, MySQL and many RFC grammars)
 
-These libraries and utilities have been mostly extracted from [Hindsight](https://github.com/mozilla-services/hindsight).
-The goal was to decouple the Heka/Hindsight functionality from any particular
-infrastructure and make it embeddable into any tool or language.
+These libraries and utilities have been mostly extracted from
+[Hindsight](https://github.com/mozilla-services/hindsight). The goal was to
+decouple the Heka/Hindsight functionality from any particular infrastructure and
+make it embeddable into any tool or language.
 
 ### Features
 
@@ -39,8 +40,8 @@ infrastructure and make it embeddable into any tool or language.
 
 #### Optional (used for documentation)
 * Graphviz (2.28.0) - http://graphviz.org/Download..php
-* Doxygen (1.8.11+)- http://www.stack.nl/~dimitri/doxygen/download.html#latestsrc
-* pandoc (1.17) - http://pandoc.org/
+* Doxygen (1.8.11+) - http://www.stack.nl/~dimitri/doxygen/download.html#latestsrc
+* gitbook (2.3) - https://www.gitbook.com/
 * lua (5.1) - https://www.lua.org/download.html
 
 ### CMake Build Instructions

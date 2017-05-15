@@ -31,7 +31,7 @@ remove_entries = {
 * **log_level** - syslog severity level, when set to  debug (7) the print
   function will be wired to the specified logger (default error (3))
 * *user defined*  any other variable (string, bool, number, table) is passed
-  through as-is and available via [read_config](#read_config)
+  through as-is and available via [read_config](#readconfig)
 
 *_0 == SIZE_MAX which in not necessarily the upper limit of the
 configuration range UINT_MAX_
@@ -116,7 +116,7 @@ The best place to start is with some examples:
 
 ### Unit Test API
 
-[Unit Test API](/lua_sandbox/doxygen/test_2sandbox_8h.html)
+[Unit Test API](https://mozilla-services.github.io/lua_sandbox/doxygen/test_2sandbox_8h.html)
 
 #### Lua Functions Exposed to C
 
@@ -136,5 +136,4 @@ The best place to start is with some examples:
 
 ### Heka Sandbox API
 
-[Heka Sandbox API](/lua_sandbox/doxygen/heka_2sandbox_8h.html)
-q
+[Heka Sandbox API](https://mozilla-services.github.io/lua_sandbox/doxygen/heka_2sandbox_8h.html)

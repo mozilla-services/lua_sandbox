@@ -1,7 +1,7 @@
 # Message Matcher Syntax
 
-The message matcher allows sandboxes to select which messages they want to consume
-(see [Heka Message Structure](../heka/message.html))
+The message matcher allows sandboxes to select which messages they want to
+consume (see [Heka Message Structure](/heka/message.md))
 
 ## Examples
 
@@ -44,8 +44,9 @@ The message matcher allows sandboxes to select which messages they want to consu
 
 ## Message Variables
 
-All message variables must be on the left hand side of the relational comparison
- 
+* All message variables must be on the left hand side of the relational
+comparison
+
 ### String
 
 * Uuid - 16 byte raw binary type 4 UUID (useful for partitioning data)
