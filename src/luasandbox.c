@@ -215,12 +215,12 @@ static int unprotected_panic(lua_State *lua)
 }
 
 
-static int get_number(lua_State *lua, int idx, const char *item)
+static size_t get_size(lua_State *lua, int idx, const char *item)
 {
   lua_getfield(lua, idx, item);
-  double d = lua_tonumber(lua, -1);
+  size_t size = (size_t)lua_tonumber(lua, -1);
   lua_pop(lua, 1);
-  return d;
+  return size;
 }
 
 
@@ -271,6 +271,31 @@ static int check_unsigned(lua_State *L, int idx, const char *name, unsigned val)
 }
 
 
+static int check_size(lua_State *L, int idx, const char *name, size_t val)
+{
+  lua_getfield(L, idx, name);
+  double d;
+  switch (lua_type(L, -1)) {
+  case LUA_TNUMBER:
+    d = lua_tonumber(L, -1);
+    if (d < 0 || d > SIZE_MAX) {
+      lua_pushfstring(L, "%s must be a size_t", name);
+      return 1;
+    }
+    break;
+  case LUA_TNIL: // add the default to the config
+    lua_pushnumber(L, (lua_Number)val);
+    lua_setglobal(L, name);
+    break; // use the default
+  default:
+    lua_pushfstring(L, "%s must be set to a number", name);
+    return 1;
+  }
+  lua_pop(L, 1);
+  return 0;
+}
+
+
 static lua_State* load_sandbox_config(const char *cfg, lsb_logger *logger)
 {
   lua_State *L = luaL_newstate();
@@ -285,13 +310,13 @@ static lua_State* load_sandbox_config(const char *cfg, lsb_logger *logger)
   int ret = luaL_dostring(L, cfg);
   if (ret) goto cleanup;
 
-  ret = check_unsigned(L, LUA_GLOBALSINDEX, LSB_OUTPUT_LIMIT, 64 * 1024);
+  ret = check_size(L, LUA_GLOBALSINDEX, LSB_OUTPUT_LIMIT, 64 * 1024);
   if (ret) goto cleanup;
 
-  ret = check_unsigned(L, LUA_GLOBALSINDEX, LSB_MEMORY_LIMIT, 8 * 1024 * 1024);
+  ret = check_size(L, LUA_GLOBALSINDEX, LSB_MEMORY_LIMIT, 8 * 1024 * 1024);
   if (ret) goto cleanup;
 
-  ret = check_unsigned(L, LUA_GLOBALSINDEX, LSB_INSTRUCTION_LIMIT, 1000000);
+  ret = check_size(L, LUA_GLOBALSINDEX, LSB_INSTRUCTION_LIMIT, 1000000);
   if (ret) goto cleanup;
 
   ret = check_unsigned(L, LUA_GLOBALSINDEX, LSB_LOG_LEVEL, 3);
@@ -473,10 +498,10 @@ lsb_lua_sandbox* lsb_create(void *parent,
   copy_table(lsb->lua, lua_cfg, &lsb->logger);
   lua_pop(lua_cfg, 2);
   lua_close(lua_cfg);
-  size_t ml = (size_t)get_number(lsb->lua, -1, LSB_MEMORY_LIMIT);
-  size_t il = (size_t)get_number(lsb->lua, -1, LSB_INSTRUCTION_LIMIT);
-  size_t ol = (size_t)get_number(lsb->lua, -1, LSB_OUTPUT_LIMIT);
-  double log_level = get_number(lsb->lua, -1, LSB_LOG_LEVEL);
+  size_t ml = get_size(lsb->lua, -1, LSB_MEMORY_LIMIT);
+  size_t il = get_size(lsb->lua, -1, LSB_INSTRUCTION_LIMIT);
+  size_t ol = get_size(lsb->lua, -1, LSB_OUTPUT_LIMIT);
+  size_t log_level = get_size(lsb->lua, -1, LSB_LOG_LEVEL);
   lua_setfield(lsb->lua, LUA_REGISTRYINDEX, LSB_CONFIG_TABLE);
   lua_pushlightuserdata(lsb->lua, lsb);
   lua_setfield(lsb->lua, LUA_REGISTRYINDEX, LSB_THIS_PTR);
