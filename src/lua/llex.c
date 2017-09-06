@@ -367,6 +367,7 @@ static int llex (LexState *ls, SemInfo *seminfo) {
         }
         else if (sep == -1) return '[';
         else luaX_lexerror(ls, "invalid long string delimiter", TK_STRING);
+        return 0; /* never reached but will silence the FALLTHRU compiler warning */
       }
       case '=': {
         next(ls);
