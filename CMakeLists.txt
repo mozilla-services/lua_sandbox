@@ -9,7 +9,9 @@ set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "Generic Lua sandbox for dynamic data anal
 set(CPACK_PACKAGE_VERSION_MAJOR ${PROJECT_VERSION_MAJOR})
 set(CPACK_PACKAGE_VERSION_MINOR ${PROJECT_VERSION_MINOR})
 set(CPACK_PACKAGE_VERSION_PATCH ${PROJECT_VERSION_PATCH})
-set(CPACK_PACKAGE_CONTACT "Mike Trinkala <trink@mozilla.com>")
+set(CPACK_PACKAGE_CONTACT     "Mike Trinkala <trink@mozilla.com>")
+set(CPACK_DEBIAN_FILE_NAME    "DEB-DEFAULT")
+set(CPACK_RPM_FILE_NAME       "RPM-DEFAULT")
 set(CPACK_RPM_PACKAGE_LICENSE "MPLv2.0")
 
 include(GNUInstallDirs)
@@ -36,7 +38,7 @@ configure_package_config_file(cmake/${PROJECT_NAME}Config.cmake.in
                               PATH_VARS CMAKE_INSTALL_INCLUDEDIR CMAKE_INSTALL_LIBDIR)
 write_basic_package_version_file(${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}ConfigVersion.cmake
                                  COMPATIBILITY SameMajorVersion)
-install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Config.cmake 
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Config.cmake
               ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}ConfigVersion.cmake
         DESTINATION ${INSTALL_CMAKE_DIR})
 
