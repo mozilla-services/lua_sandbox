@@ -59,6 +59,128 @@ read_string(int wiretype, const char *p, const char *e, lsb_const_string *s)
   return p + vi;
 }
 
+// https://stackoverflow.com/questions/7724448/simple-json-string-escape-for-c/33799784#33799784
+static void output_json_string(lsb_const_string cs)
+{
+  const char *c = cs.s;
+  for (int i = 0; i < (int)cs.len; i++) {
+    switch (c[i]) {
+      case '"': fputs("\\\"", stdout); break;
+      case '\\': fputs("\\\\", stdout); break;
+      case '\b': fputs("\\b", stdout); break;
+      case '\f': fputs("\\f", stdout); break;
+      case '\n': fputs("\\n", stdout); break;
+      case '\r': fputs("\\r", stdout); break;
+      case '\t': fputs("\\t", stdout); break;
+      default:
+        if ('\x00' <= c[i] && c[i] <= '\x1f') {
+          fprintf(stdout, "\\u%04x", c[i]);
+        } else {
+          fputc(c[i], stdout);
+        }
+    }
+  }
+}
+
+
+static void output_cson(const char *key, lsb_const_string *cs)
+{
+  if (cs->s) {
+    fprintf(stdout, "\"%s\": \"%.*s\",", key, (int)cs->len, cs->s);
+  }
+}
+
+
+static void output_json(lsb_heka_message *msg)
+{
+  if (!msg->raw.s) return;
+
+  fprintf(stdout, "{");
+  fprintf(stdout, "\"Uuid\": \"%02hhx%02hhx%02hhx%02hhx-%02hhx%02hhx-%02hhx%02hhx"
+          "-%02hhx%02hhx-%02hhx%02hhx%02hhx%02hhx%02hhx%02hhx\",",
+          msg->uuid.s[0], msg->uuid.s[1], msg->uuid.s[2], msg->uuid.s[3],
+          msg->uuid.s[4], msg->uuid.s[5], msg->uuid.s[6], msg->uuid.s[7],
+          msg->uuid.s[8], msg->uuid.s[9], msg->uuid.s[10], msg->uuid.s[11],
+          msg->uuid.s[12], msg->uuid.s[13], msg->uuid.s[14], msg->uuid.s[15]);
+  fprintf(stdout, "\"Timestamp\": \"%lld\",", msg->timestamp);
+  output_cson("Type", &msg->type);
+  output_cson("Logger", &msg->logger);
+  fprintf(stdout, "\"Severity\": %d,", msg->severity);
+  output_cson("Payload", &msg->payload);
+  output_cson("EnvVersion", &msg->env_version);
+  if (msg->pid != INT_MIN) {
+    fprintf(stdout, "\"Pid\": %d,", msg->pid);
+  }
+  output_cson("Hostname", &msg->hostname);
+
+  fprintf(stdout, "\"Fields\": {");
+  bool printComma = false;
+  for (int i = 0; i < msg->fields_len; ++i) {
+    if (printComma) {
+      fprintf(stdout, ",");
+    }
+    printComma = true;
+
+    const char *p = msg->fields[i].value.s;
+    const char *e = msg->fields[i].value.s + msg->fields[i].value.len;
+    switch (msg->fields[i].value_type) {
+    case LSB_PB_STRING:
+      {
+        lsb_const_string cs;
+        int tag = 0;
+        int wiretype = 0;
+        while (p && p < e) {
+          p = lsb_pb_read_key(p, &tag, &wiretype);
+          p = read_string(wiretype, p, e, &cs);
+          if (p) {
+            fprintf(stdout, "\"%.*s\": \"", (int)msg->fields[i].name.len, msg->fields[i].name.s);
+            output_json_string(cs);
+            fprintf(stdout, "\"");
+          }
+        }
+      }
+      break;
+    case LSB_PB_BYTES:
+      {
+        fprintf(stdout, "\"%.*s\": \"Unimplemented byte display\"", (int)msg->fields[i].name.len, msg->fields[i].name.s);
+      }
+      break;
+    case LSB_PB_INTEGER:
+      {
+        long long ll = 0;
+        while (p && p < e) {
+          p = lsb_pb_read_varint(p, e, &ll);
+          if (p) {
+            fprintf(stdout, "\"%.*s\": %lld", (int)msg->fields[i].name.len, msg->fields[i].name.s, ll);
+          }
+        }
+      }
+      break;
+    case LSB_PB_DOUBLE:
+      {
+        double d;
+        for (int i = 0; p <= (e - sizeof(double)); p += sizeof(double), ++i) {
+          memcpy(&d, p, sizeof(double));
+          fprintf(stdout, "\"%.*s\": %.17g", (int)msg->fields[i].name.len, msg->fields[i].name.s, d);
+        }
+      }
+      break;
+    case LSB_PB_BOOL:
+      {
+        long long ll = 0;
+        while (p && p < e) {
+          p = lsb_pb_read_varint(p, e, &ll);
+          if (p) {
+            fprintf(stdout, "\"%.*s\": %s", (int)msg->fields[i].name.len, msg->fields[i].name.s, ll == 0 ? "false" : "true");
+          }
+        }
+      }
+      break;
+    }
+  }
+  fprintf(stdout, "}}\n");
+}
+
 
 static void output_cs(const char *key, lsb_const_string *cs, bool eol)
 {
@@ -334,8 +456,11 @@ int main(int argc, char **argv)
   output_function ofn = output_text;
 
   int c;
-  while ((c = getopt(argc, argv, "tchfn:m:")) != -1) {
+  while ((c = getopt(argc, argv, "jtchfn:m:")) != -1) {
     switch (c) {
+    case 'j':
+      ofn = output_json;
+      break;
     case 't':
       ofn = output_text;
       break;
@@ -372,6 +497,7 @@ int main(int argc, char **argv)
     log_cb(NULL, NULL, 0,
            "usage: %s [-t|-c|-h] [-m message_matcher] [-f] [-n #] <FILE>\n"
            "description:\n"
+           "  -j output the messages in json format\n"
            "  -t output the messages in text format (default)\n"
            "  -c only output the message count\n"
            "  -h output the messages as a Heka protobuf stream\n"
