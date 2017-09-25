@@ -159,7 +159,7 @@ static void output_json(lsb_heka_message *msg)
     case LSB_PB_DOUBLE:
       {
         double d;
-        for (int i = 0; p <= (e - sizeof(double)); p += sizeof(double), ++i) {
+        for (int double_i = 0; p <= (e - sizeof(double)); p += sizeof(double), ++double_i) {
           memcpy(&d, p, sizeof(double));
           fprintf(stdout, "\"%.*s\": %.17g", (int)msg->fields[i].name.len, msg->fields[i].name.s, d);
         }
