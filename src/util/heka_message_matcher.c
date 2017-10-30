@@ -54,9 +54,17 @@ static bool string_test(match_node *mn, lsb_const_string *val)
       return cmp > 0;
     }
   case OP_RE:
-    return lsb_string_match(val->s, val->len, mn->value.s);
+    if (mn->value_mod == '%') {
+      return lsb_string_find(val->s, val->len, mn->value.s, mn->value_len);
+    } else {
+      return lsb_string_match(val->s, val->len, mn->value.s);
+    }
   case OP_NRE:
-    return !lsb_string_match(val->s, val->len, mn->value.s);
+    if (mn->value_mod == '%') {
+      return !lsb_string_find(val->s, val->len, mn->value.s, mn->value_len);
+    } else {
+      return !lsb_string_match(val->s, val->len, mn->value.s);
+    }
   default:
     break;
   }
@@ -119,25 +127,31 @@ static bool eval_node(match_node *mn, lsb_heka_message *m)
         lsb_const_string variable = { .s = mn->variable,
           .len = mn->variable_len };
 
+        if (!lsb_read_heka_field(m, &variable, mn->fi, mn->ai, &val)) {
+          if (mn->value_type == TYPE_NIL) {
+            return mn->op == OP_EQ;
+          }
+          return false;
+        }
+
         switch (mn->value_type) {
         case TYPE_STRING:
-          if (lsb_read_heka_field(m, &variable, mn->fi, mn->ai, &val)
-              && val.type == LSB_READ_STRING) {
+          if (val.type == LSB_READ_STRING) {
             return string_test(mn, &val.u.s);
           }
           break;
         case TYPE_NUMERIC:
+          if (val.type == LSB_READ_NUMERIC) {
+            return numeric_test(mn, val.u.d);
+          }
+          break;
         case TYPE_BOOLEAN:
-          if (lsb_read_heka_field(m, &variable, mn->fi, mn->ai, &val)
-              && (val.type == LSB_READ_NUMERIC || val.type == LSB_READ_BOOL)) {
+          if (val.type == LSB_READ_BOOL || val.type == LSB_READ_NUMERIC) {
             return numeric_test(mn, val.u.d);
           }
           break;
         case TYPE_NIL:
-          if (lsb_read_heka_field(m, &variable, mn->fi, mn->ai, &val)) {
-            return mn->op == OP_NE;
-          }
-          return mn->op == OP_EQ;
+          return mn->op == OP_NE;
         }
       }
       break;
@@ -176,7 +190,7 @@ void lsb_destroy_message_matcher(lsb_message_matcher *mm)
 {
   if (!mm) return;
 
-  for (int i = 0; i < mm->nodes[0].size; ++i) {
+  for (int i = 0; i < mm->size; ++i) {
     free(mm->nodes[i].variable);
     switch (mm->nodes[i].value_type) {
     case TYPE_STRING:
