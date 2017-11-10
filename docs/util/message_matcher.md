@@ -12,6 +12,7 @@ consume (see [Heka Message Structure](/heka/message.md))
 *  Fields[MyBool] == TRUE
 *  TRUE
 *  Fields[created] =~ "^2015"
+*  Fields[string] =~ "foo.example.com"% -- literal pattern vs "foo%.example%.com"
 *  Fields[widget] != NIL
 *  Timestamp >= "2016-05-24T00:00:00Z"
 *  Timestamp >= 1464048000000000000
@@ -77,6 +78,10 @@ comparison
 ## Lua Pattern Matching Expression
 
 * Patterns are quoted string values
+    * An 'escape' pattern modifier of `%` is allowed e.g. `"foo.bar"%` is
+    treated as a literal instead of a pattern and behaves like the 'plain'
+    option on string.find(). If there are no pattern match characters in the
+    string this modifier is set automatically.
 * See [Lua Patterns](http://www.lua.org/manual/5.1/manual.html#5.4.1)
 * Capture groups are ignored
 

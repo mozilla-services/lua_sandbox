@@ -39,7 +39,7 @@ typedef enum {
 typedef struct match_node {
   unsigned char id;
   unsigned char op;
-  unsigned char size;
+  unsigned char value_mod;
   unsigned char value_type;
   unsigned char value_len;
   unsigned char variable_len;
@@ -55,6 +55,7 @@ typedef struct match_node {
 
 
 struct lsb_message_matcher {
+  unsigned char size;
   match_node *nodes;
 };
 

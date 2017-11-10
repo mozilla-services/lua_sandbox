@@ -26,9 +26,22 @@ extern "C" {
  * @param p Lua match pattern
  *          http://www.lua.org/manual/5.1/manual.html#pdf-string.match
  *
- * @return bool True if the sting matches the pattern
+ * @return bool True if the string matches the pattern
  */
 LSB_UTIL_EXPORT bool lsb_string_match(const char *s, size_t len, const char *p);
+
+
+/**
+ * Searches for a string literal within a string
+ *
+ * @param s String to search
+ * @param ls Length of the string
+ * @param p Literal match string
+ * @param lp Length of the match string
+ *
+ * @return bool True if the string contains the literal
+ */
+LSB_UTIL_EXPORT bool lsb_string_find(const char *s, size_t ls, const char *p, size_t lp);
 
 #ifdef __cplusplus
 }

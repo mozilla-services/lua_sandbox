@@ -69,6 +69,24 @@ static char* test_success()
 }
 
 
+static char* test_find_success()
+{
+  char *tests[] = {
+    "foo."  , "."
+    , "foobar", "foo"
+    , "foo-bar", "o-b"
+    , NULL
+  };
+
+  for (int i = 0; tests[i]; i += 2) {
+    mu_assert(lsb_string_find(tests[i], strlen(tests[i]), tests[i + 1], strlen(tests[i + 1])),
+              "not found test: %d string: %s pattern: %s", i / 2, tests[i],
+              tests[i + 1]);
+  }
+  return NULL;
+}
+
+
 static char* test_failure()
 {
   char *tests[] = {
@@ -102,6 +120,23 @@ static char* test_failure()
 }
 
 
+static char* test_find_failure()
+{
+  char *tests[] = {
+    "foo"        , "."
+    , "foobar"  , "longer string"
+    , NULL
+  };
+
+  for (int i = 0; tests[i]; i += 2) {
+    mu_assert(!lsb_string_find(tests[i], strlen(tests[i]), tests[i + 1], strlen(tests[i + 1])),
+              "find test: %d string: %s pattern: %s", i / 2, tests[i],
+              tests[i + 1]);
+  }
+  return NULL;
+}
+
+
 static char* test_invalid()
 {
   char *tests[] = {
@@ -128,7 +163,9 @@ static char* all_tests()
 {
   mu_run_test(test_stub);
   mu_run_test(test_success);
+  mu_run_test(test_find_success);
   mu_run_test(test_failure);
+  mu_run_test(test_find_failure);
   mu_run_test(test_invalid);
   return NULL;
 }
