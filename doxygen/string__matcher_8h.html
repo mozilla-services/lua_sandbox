@@ -24,7 +24,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">luasandbox
-   &#160;<span id="projectnumber">1.2.6</span>
+   &#160;<span id="projectnumber">1.2.7</span>
    </div>
    <div id="projectbrief">Generic Lua sandbox for dynamic data analysis</div>
   </td>
@@ -115,12 +115,65 @@ Functions</h2></td></tr>
 <tr class="memitem:aaedecc3c82746a229e542f4e6f7068a7"><td class="memItemLeft" align="right" valign="top"><a class="el" href="util_8h.html#ae0f238b2a14ee752e699ed9546b8bfb2">LSB_UTIL_EXPORT</a> bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="string__matcher_8h.html#aaedecc3c82746a229e542f4e6f7068a7">lsb_string_match</a> (const char *s, size_t len, const char *p)</td></tr>
 <tr class="memdesc:aaedecc3c82746a229e542f4e6f7068a7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Matches a string using a Lua string match pattern.  <a href="#aaedecc3c82746a229e542f4e6f7068a7">More...</a><br /></td></tr>
 <tr class="separator:aaedecc3c82746a229e542f4e6f7068a7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af9f8f78cba0dba19f67d0227eaff6e67"><td class="memItemLeft" align="right" valign="top"><a class="el" href="util_8h.html#ae0f238b2a14ee752e699ed9546b8bfb2">LSB_UTIL_EXPORT</a> bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="string__matcher_8h.html#af9f8f78cba0dba19f67d0227eaff6e67">lsb_string_find</a> (const char *s, size_t ls, const char *p, size_t lp)</td></tr>
+<tr class="memdesc:af9f8f78cba0dba19f67d0227eaff6e67"><td class="mdescLeft">&#160;</td><td class="mdescRight">Searches for a string literal within a string.  <a href="#af9f8f78cba0dba19f67d0227eaff6e67">More...</a><br /></td></tr>
+<tr class="separator:af9f8f78cba0dba19f67d0227eaff6e67"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>C API for the Lua string pattern matcher. </p>
 
 <p>Definition in file <a class="el" href="string__matcher_8h_source.html">string_matcher.h</a>.</p>
 </div><h2 class="groupheader">Function Documentation</h2>
+<a class="anchor" id="af9f8f78cba0dba19f67d0227eaff6e67"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="util_8h.html#ae0f238b2a14ee752e699ed9546b8bfb2">LSB_UTIL_EXPORT</a> bool lsb_string_find </td>
+          <td>(</td>
+          <td class="paramtype">const char *&#160;</td>
+          <td class="paramname"><em>s</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>ls</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const char *&#160;</td>
+          <td class="paramname"><em>p</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>lp</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Searches for a string literal within a string. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">s</td><td>String to search </td></tr>
+    <tr><td class="paramname">ls</td><td>Length of the string </td></tr>
+    <tr><td class="paramname">p</td><td>Literal match string </td></tr>
+    <tr><td class="paramname">lp</td><td>Length of the match string</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>bool True if the string contains the literal </dd></dl>
+
+</div>
+</div>
 <a class="anchor" id="aaedecc3c82746a229e542f4e6f7068a7"></a>
 <div class="memitem">
 <div class="memproto">
@@ -160,7 +213,7 @@ Functions</h2></td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>bool True if the sting matches the pattern </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>bool True if the string matches the pattern </dd></dl>
 
 </div>
 </div>
