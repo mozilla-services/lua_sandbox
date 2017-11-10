@@ -223,6 +223,15 @@ static void set_string_value(context *ctx, char *s)
 }
 
 
+static void set_match_mod(context *ctx)
+{
+  if (ctx->mn.value_mod == '\0'
+     && strpbrk(ctx->mn.value.s, "^$*+?.[%-") == NULL) { // literal
+    ctx->mn.value_mod = '%';
+  }
+}
+
+
 static bool check_string_len(char *s)
 {
   int i, j;
@@ -286,7 +295,7 @@ or          = "||" &{cond_cnt(&yy->ctx)} {push_op(&yy->ctx, OP_OR)}   sp
 open        = '('  {push_op(&yy->ctx, OP_OPEN)}                       sp
 close       = ')'  {pop_to_paren(&yy->ctx)}                           sp
 
-string_test = string_headers sp (relational sp string_value | string_match sp string_value)
+string_test = string_headers sp (relational sp string_value | (string_match sp string_value string_match_mod?) {set_match_mod(&yy->ctx)})
 
 string_headers  = "Type"        {yy->ctx.mn.id = LSB_PB_TYPE}         sp
                 | "Logger"      {yy->ctx.mn.id = LSB_PB_LOGGER}       sp
@@ -300,6 +309,8 @@ string_value = ( '"' < ('\\\"' | (!'"' .))* > '"'
                ) &{check_string_len(yytext)} {set_string_value(&yy->ctx, yytext)}
 
 string_match = op_seq | op_sne
+
+string_match_mod = "%" {yy->ctx.mn.value_mod = '%'}
 
 numeric_headers = "Severity"  {yy->ctx.mn.id = LSB_PB_SEVERITY} sp
                 | "Pid"       {yy->ctx.mn.id = LSB_PB_PID}      sp
@@ -391,10 +402,10 @@ lsb_message_matcher* lsb_create_message_matcher(const char *exp)
     goto cleanup;
   }
   mm->nodes = yy.ctx.out.a;
-  mm->nodes[0].size = yy.ctx.out.pos;
+  mm->size = yy.ctx.out.pos;
 
   // turn the postfix stack into an executable tree
-  match_node **stack = calloc(sizeof(match_node *) * mm->nodes[0].size, 1);
+  match_node **stack = calloc(sizeof(match_node *) * mm->size, 1);
   if (!stack) {
     free(mm);
     mm = NULL;
@@ -402,7 +413,7 @@ lsb_message_matcher* lsb_create_message_matcher(const char *exp)
   }
 
   int top = 0;
-  for (int i = mm->nodes[0].size - 1; i >= 0; --i) {
+  for (int i = mm->size - 1; i >= 0; --i) {
     if (mm->nodes[i].op != OP_AND && mm->nodes[i].op != OP_OR) {
       stack[top++] = &mm->nodes[i];
     } else {
