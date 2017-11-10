@@ -124,6 +124,7 @@ static char* test_true_matcher()
     , "Fields[foo][0][255] == NIL"
     , T128
     , "Payload =~ 'unique-item'%"
+    , "Fields[Timestamp] =~ ' -0700'%"
     , NULL };
 
   lsb_heka_message m;
@@ -185,6 +186,7 @@ static char* test_false_matcher()
     , "Logger =~ '.' && Type =~ '^anything'"
     , "Type == '" S255 "'"
     , "Payload =~ 'not.found'%"
+    , "Fields[foo][1] =~ 'not.found'%"
     , NULL };
 
   lsb_heka_message m;

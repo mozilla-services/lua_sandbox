@@ -295,7 +295,7 @@ or          = "||" &{cond_cnt(&yy->ctx)} {push_op(&yy->ctx, OP_OR)}   sp
 open        = '('  {push_op(&yy->ctx, OP_OPEN)}                       sp
 close       = ')'  {pop_to_paren(&yy->ctx)}                           sp
 
-string_test = string_headers sp (relational sp string_value | (string_match sp string_value string_match_mod?) {set_match_mod(&yy->ctx)})
+string_test = string_headers sp (relational sp string_value | string_match)
 
 string_headers  = "Type"        {yy->ctx.mn.id = LSB_PB_TYPE}         sp
                 | "Logger"      {yy->ctx.mn.id = LSB_PB_LOGGER}       sp
@@ -308,7 +308,7 @@ string_value = ( '"' < ('\\\"' | (!'"' .))* > '"'
                | "'" < ("\\\'" | (!"'" .))* > "'"
                ) &{check_string_len(yytext)} {set_string_value(&yy->ctx, yytext)}
 
-string_match = op_seq | op_sne
+string_match = (op_seq | op_sne) sp string_value string_match_mod? {set_match_mod(&yy->ctx)}
 
 string_match_mod = "%" {yy->ctx.mn.value_mod = '%'}
 
@@ -324,7 +324,7 @@ decimal       = "." [0-9]+
 exponent      = [eE] sign? [0-9]+
 
 field_test  = fields sp ((relational sp (string_value | numeric_value))
-            | string_match sp string_value
+            | string_match
             | (op_eq | op_ne) sp (boolean | nil))
 fields      = "Fields[" < [^\]]* > "]" {set_field(&yy->ctx, yytext)} f:index? {yy->ctx.mn.fi = f} a:index? {yy->ctx.mn.ai = a}
 index       = "[" < zero_to_255 > "]" {$$ = atoi(yytext)}
