@@ -247,6 +247,7 @@ static char* test_malformed_matcher()
   return NULL;
 }
 
+
 static char* benchmark_matcher_create()
 {
   int iter = 100000;
@@ -264,11 +265,53 @@ static char* benchmark_matcher_create()
   return NULL;
 }
 
+
+static char* benchmark_match_hs()
+{
+  // see what a single sample looks like for a better comparison with Hindsight
+  char *tests[] = {
+    "TRUE"
+    , "Type == 'TEST' && Severity == 6"
+    , "Fields[foo] == 'bar' && Severity == 6"
+    , "Fields[number] == 64 && Severity == 6"
+    , "Fields[missing] == NIL"
+    , "Fields[int] != NIL"
+    , "Type =~ '^[Tt]EST' && Severity == 6"
+    , "Payload =~ '^Test'"
+    , "Payload =~ 'item$'"
+    , "Payload =~ 'unique%-item'"
+    , "Payload =~ 'unique-item'%"
+    , "Payload =~ 'unique'"
+    , "Payload =~ 'unique'%"
+    , NULL };
+
+  lsb_heka_message m;
+  lsb_init_heka_message(&m, 8);
+  mu_assert(lsb_decode_heka_message(&m, pb, pblen - 1, NULL), "decode failed");
+
+  unsigned long long start, end;
+  for (int i = 0; tests[i]; i++) {
+    lsb_message_matcher *mm = lsb_create_message_matcher(tests[i]);
+    mu_assert(mm, "lsb_create_message_matcher failed: %s", tests[i]);
+    start = lsb_get_time();
+    mu_assert(lsb_eval_message_matcher(mm, &m),
+              "lsb_eval_message_matcher failed");
+    end = lsb_get_time();
+    lsb_destroy_message_matcher(mm);
+    printf("matcher (lsb_get_time): '%s': %g\n", tests[i],
+           (double)(end - start) / 1e9);
+  }
+  lsb_free_heka_message(&m);
+  return NULL;
+}
+
+
 static char* benchmark_match()
 {
   int iter = 1000000;
   char *tests[] = {
-    "Type == 'TEST' && Severity == 6"
+    "TRUE"
+    , "Type == 'TEST' && Severity == 6"
     , "Fields[foo] == 'bar' && Severity == 6"
     , "Fields[number] == 64 && Severity == 6"
     , "Fields[missing] == NIL"
@@ -312,6 +355,7 @@ static char* all_tests()
   mu_run_test(test_false_matcher);
   mu_run_test(test_malformed_matcher);
 
+  mu_run_test(benchmark_match_hs);
   mu_run_test(benchmark_matcher_create);
   mu_run_test(benchmark_match);
   return NULL;

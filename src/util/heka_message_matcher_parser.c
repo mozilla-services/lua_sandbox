@@ -31,10 +31,28 @@
 #pragma warning( disable : 4267 4244 )
 #endif
 
+typedef struct match_node_tmp {
+  uint8_t id;
+  uint8_t op;
+  uint8_t val_mod;
+  uint8_t val_type;
+  uint8_t val_len;
+  uint8_t var_len;
+  uint8_t fi; // left node index for logical op
+  uint8_t ai; // right node index for logical op
+  char          *var;
+
+  union {
+    char    *s;
+    double  d;
+  } val;
+} match_node_tmp;
+
+
 typedef struct match_node_array {
-  match_node  *a;
-  int         pos;
-  int         size;
+  match_node_tmp *a;
+  int            pos;
+  int            size;
 } match_node_array;
 
 
@@ -48,7 +66,7 @@ typedef struct input_string {
 typedef struct context {
   match_node_array  out;
   match_node_array  ops;
-  match_node        mn;
+  match_node_tmp    mn;
   struct tm         tms;
   int               cond_cnt;
   input_string      is;
@@ -77,23 +95,23 @@ typedef struct context {
 }
 
 
-static void init_match_node(match_node *mn)
+static void init_match_node(match_node_tmp *mn)
 {
-  memset(mn, 0, sizeof(match_node));
+  memset(mn, 0, sizeof(match_node_tmp));
 }
 
 
-static void move_match_node(match_node *dest, match_node *src)
+static void move_match_node(match_node_tmp *dest, match_node_tmp *src)
 {
-  memcpy(dest, src, sizeof(match_node));
+  memcpy(dest, src, sizeof(match_node_tmp));
   init_match_node(src); // dest now owns the memory, wipe the pointers
 }
 
 
 static void realloc_mna(match_node_array *mna)
 {
-  size_t bytes = sizeof(match_node) * ++mna->size;
-  match_node *tmp = realloc(mna->a, bytes);
+  size_t bytes = sizeof(match_node_tmp) * ++mna->size;
+  match_node_tmp *tmp = realloc(mna->a, bytes);
   if (tmp) {
     mna->a = tmp;
     init_match_node(&mna->a[mna->size - 1]);
@@ -104,7 +122,7 @@ static void realloc_mna(match_node_array *mna)
 }
 
 
-static void push_output(context *ctx, match_node *mn)
+static void push_output(context *ctx, match_node_tmp *mn)
 {
   if (!ctx->out.a || ctx->out.pos == ctx->out.size) {
     realloc_mna(&ctx->out);
@@ -136,7 +154,7 @@ static void push_op(context *ctx, match_operation op)
 static void pop_to_paren(context *ctx)
 {
   for (; ctx->ops.pos > 0; --ctx->ops.pos) {
-    match_node *op = &ctx->ops.a[ctx->ops.pos - 1];
+    match_node_tmp *op = &ctx->ops.a[ctx->ops.pos - 1];
     if (op->op == OP_OPEN) break;
     push_output(ctx, op);
   }
@@ -146,7 +164,7 @@ static void pop_to_paren(context *ctx)
 static void pop_all_ops(context *ctx)
 {
   for (; ctx->ops.pos > 0; --ctx->ops.pos) {
-    match_node *op = &ctx->ops.a[ctx->ops.pos - 1];
+    match_node_tmp *op = &ctx->ops.a[ctx->ops.pos - 1];
     if (op->op == OP_OPEN) continue;
     push_output(ctx, op);
   }
@@ -172,30 +190,30 @@ static void update_time(context *ctx, int hour, int minute, int sec)
 
 static void update_offset(context *ctx, char sign, int hour, int minute)
 {
-  ctx->mn.value.d += (hour * 3600 + minute * 60) * (sign == '-' ? -1 : 1);
+  ctx->mn.val.d += (hour * 3600 + minute * 60) * (sign == '-' ? -1 : 1);
 }
 
 
 static void set_field(context *ctx, char *name)
 {
   ctx->mn.id = LSB_PB_FIELDS;
-  ctx->mn.variable_len = strlen(name);
-  ctx->mn.variable = malloc(ctx->mn.variable_len + 1);
-  if (!ctx->mn.variable) {
+  ctx->mn.var_len = strlen(name);
+  ctx->mn.var = malloc(ctx->mn.var_len + 1);
+  if (!ctx->mn.var) {
     fprintf(stderr, "malloc failed\n");
     exit(1);
   }
-  memcpy(ctx->mn.variable, name, ctx->mn.variable_len + 1);
+  memcpy(ctx->mn.var, name, ctx->mn.var_len + 1);
 }
 
 
 static void set_timestamp(context *ctx)
 {
   ctx->mn.id = LSB_PB_TIMESTAMP;
-  ctx->mn.value_type = TYPE_NUMERIC;
+  ctx->mn.val_type = TYPE_NUMERIC;
   if (ctx->tms.tm_isdst == -1) {
-    ctx->mn.value.d += mktime(&ctx->tms);
-    ctx->mn.value.d *= 1e9;
+    ctx->mn.val.d += mktime(&ctx->tms);
+    ctx->mn.val.d *= 1e9;
   }
   memset(&ctx->tms, 0, sizeof(struct tm));
 }
@@ -203,14 +221,14 @@ static void set_timestamp(context *ctx)
 
 static void set_numeric_value(context *ctx, char *s)
 {
-  ctx->mn.value_type = TYPE_NUMERIC;
-  ctx->mn.value.d = strtod(s, NULL);
+  ctx->mn.val_type = TYPE_NUMERIC;
+  ctx->mn.val.d = strtod(s, NULL);
 }
 
 
 static void set_string_value(context *ctx, char *s)
 {
-  ctx->mn.value_type = TYPE_STRING;
+  ctx->mn.val_type = TYPE_STRING;
   int i, j;
   for (i = 0, j = 0; s[i]; ++i, ++j) {
     if (s[i] == '\\' && (s[i + 1] == '"' || s[i + 1] == '\'')) {
@@ -220,21 +238,21 @@ static void set_string_value(context *ctx, char *s)
   }
   s[j] = 0;
 
-  ctx->mn.value_len = j;
-  ctx->mn.value.s = malloc(j + 1);
-  if (!ctx->mn.value.s) {
+  ctx->mn.val_len = j;
+  ctx->mn.val.s = malloc(j + 1);
+  if (!ctx->mn.val.s) {
     fprintf(stderr, "malloc failed\n");
     exit(1);
   }
-  memcpy(ctx->mn.value.s, s, j + 1);
+  memcpy(ctx->mn.val.s, s, j + 1);
 }
 
 
 static void set_match_mod(context *ctx)
 {
-  if (ctx->mn.value_mod == '\0'
-     && strpbrk(ctx->mn.value.s, "^$*+?.[%-") == NULL) { // literal
-    ctx->mn.value_mod = '%';
+  if (ctx->mn.val_mod == PATTERN_MOD_NONE
+     && strpbrk(ctx->mn.val.s, "^$*+?.[%-") == NULL) { // literal
+    ctx->mn.val_mod = PATTERN_MOD_ESC;
   }
 }
 
@@ -248,13 +266,6 @@ static bool check_string_len(char *s)
     }
   }
   return (j > UCHAR_MAX) ? false : true;
-}
-
-
-static void set_boolean_value(context *ctx, bool b)
-{
-  ctx->mn.value_type = TYPE_BOOLEAN;
-  ctx->mn.value.d = b;
 }
 
 
@@ -597,8 +608,8 @@ YY_ACTION(void) yy_1_nil(yycontext *yy, char *yytext, int yyleng)
 #define yythunkpos yy->__thunkpos
   yyprintf((stderr, "do yy_1_nil\n"));
   {
-#line 365
-  yy->ctx.mn.value_type = TYPE_NIL;;
+#line 376
+  yy->ctx.mn.val_type = TYPE_NIL;;
   }
 #undef yythunkpos
 #undef yypos
@@ -611,8 +622,8 @@ YY_ACTION(void) yy_1_second_frac(yycontext *yy, char *yytext, int yyleng)
 #define yythunkpos yy->__thunkpos
   yyprintf((stderr, "do yy_1_second_frac\n"));
   {
-#line 363
-  yy->ctx.mn.value.d += strtod(yytext, NULL);
+#line 374
+  yy->ctx.mn.val.d += strtod(yytext, NULL);
   }
 #undef yythunkpos
 #undef yypos
@@ -625,7 +636,7 @@ YY_ACTION(void) yy_1_second(yycontext *yy, char *yytext, int yyleng)
 #define yythunkpos yy->__thunkpos
   yyprintf((stderr, "do yy_1_second\n"));
   {
-#line 362
+#line 373
   __ = atoi(yytext);
   }
 #undef yythunkpos
@@ -639,7 +650,7 @@ YY_ACTION(void) yy_1_minute(yycontext *yy, char *yytext, int yyleng)
 #define yythunkpos yy->__thunkpos
   yyprintf((stderr, "do yy_1_minute\n"));
   {
-#line 358
+#line 369
   __ = atoi(yytext);
   }
 #undef yythunkpos
@@ -653,7 +664,7 @@ YY_ACTION(void) yy_1_hour(yycontext *yy, char *yytext, int yyleng)
 #define yythunkpos yy->__thunkpos
   yyprintf((stderr, "do yy_1_hour\n"));
   {
-#line 357
+#line 368
   __ = atoi(yytext);
   }
 #undef yythunkpos
@@ -669,7 +680,7 @@ YY_ACTION(void) yy_2_timeoffset(yycontext *yy, char *yytext, int yyleng)
 #define yythunkpos yy->__thunkpos
   yyprintf((stderr, "do yy_2_timeoffset\n"));
   {
-#line 353
+#line 364
   update_offset(&yy->ctx, yytext[0], h, m);
   }
 #undef yythunkpos
@@ -687,7 +698,7 @@ YY_ACTION(void) yy_1_timeoffset(yycontext *yy, char *yytext, int yyleng)
 #define yythunkpos yy->__thunkpos
   yyprintf((stderr, "do yy_1_timeoffset\n"));
   {
-#line 352
+#line 363
   update_offset(&yy->ctx, '+', 0, 0);
   }
 #undef yythunkpos
@@ -706,7 +717,7 @@ YY_ACTION(void) yy_1_partialtime(yycontext *yy, char *yytext, int yyleng)
 #define yythunkpos yy->__thunkpos
   yyprintf((stderr, "do yy_1_partialtime\n"));
   {
-#line 351
+#line 362
   update_time(&yy->ctx, h, m, s);
   }
 #undef yythunkpos
@@ -723,7 +734,7 @@ YY_ACTION(void) yy_1_day(yycontext *yy, char *yytext, int yyleng)
 #define yythunkpos yy->__thunkpos
   yyprintf((stderr, "do yy_1_day\n"));
   {
-#line 347
+#line 358
   __ = atoi(yytext);
   }
 #undef yythunkpos
@@ -737,7 +748,7 @@ YY_ACTION(void) yy_1_month(yycontext *yy, char *yytext, int yyleng)
 #define yythunkpos yy->__thunkpos
   yyprintf((stderr, "do yy_1_month\n"));
   {
-#line 342
+#line 353
   __ = atoi(yytext);
   }
 #undef yythunkpos
@@ -751,7 +762,7 @@ YY_ACTION(void) yy_1_year(yycontext *yy, char *yytext, int yyleng)
 #define yythunkpos yy->__thunkpos
   yyprintf((stderr, "do yy_1_year\n"));
   {
-#line 339
+#line 350
   __ = atoi(yytext);
   }
 #undef yythunkpos
@@ -768,7 +779,7 @@ YY_ACTION(void) yy_1_fulldate(yycontext *yy, char *yytext, int yyleng)
 #define yythunkpos yy->__thunkpos
   yyprintf((stderr, "do yy_1_fulldate\n"));
   {
-#line 338
+#line 349
   update_date(&yy->ctx, y, m, d);
   }
 #undef yythunkpos
@@ -785,7 +796,7 @@ YY_ACTION(void) yy_1_ts_test(yycontext *yy, char *yytext, int yyleng)
 #define yythunkpos yy->__thunkpos
   yyprintf((stderr, "do yy_1_ts_test\n"));
   {
-#line 336
+#line 347
   set_timestamp(&yy->ctx);
   }
 #undef yythunkpos
@@ -799,7 +810,7 @@ YY_ACTION(void) yy_1_index(yycontext *yy, char *yytext, int yyleng)
 #define yythunkpos yy->__thunkpos
   yyprintf((stderr, "do yy_1_index\n"));
   {
-#line 330
+#line 341
   __ = atoi(yytext);
   }
 #undef yythunkpos
@@ -815,7 +826,7 @@ YY_ACTION(void) yy_3_fields(yycontext *yy, char *yytext, int yyleng)
 #define yythunkpos yy->__thunkpos
   yyprintf((stderr, "do yy_3_fields\n"));
   {
-#line 329
+#line 340
   yy->ctx.mn.ai = a;
   }
 #undef yythunkpos
@@ -833,7 +844,7 @@ YY_ACTION(void) yy_2_fields(yycontext *yy, char *yytext, int yyleng)
 #define yythunkpos yy->__thunkpos
   yyprintf((stderr, "do yy_2_fields\n"));
   {
-#line 329
+#line 340
   yy->ctx.mn.fi = f;
   }
 #undef yythunkpos
@@ -851,7 +862,7 @@ YY_ACTION(void) yy_1_fields(yycontext *yy, char *yytext, int yyleng)
 #define yythunkpos yy->__thunkpos
   yyprintf((stderr, "do yy_1_fields\n"));
   {
-#line 329
+#line 340
   set_field(&yy->ctx, yytext);
   }
 #undef yythunkpos
@@ -867,7 +878,7 @@ YY_ACTION(void) yy_1_numeric_value(yycontext *yy, char *yytext, int yyleng)
 #define yythunkpos yy->__thunkpos
   yyprintf((stderr, "do yy_1_numeric_value\n"));
   {
-#line 319
+#line 330
   set_numeric_value(&yy->ctx, yytext);
   }
 #undef yythunkpos
@@ -881,7 +892,7 @@ YY_ACTION(void) yy_2_numeric_headers(yycontext *yy, char *yytext, int yyleng)
 #define yythunkpos yy->__thunkpos
   yyprintf((stderr, "do yy_2_numeric_headers\n"));
   {
-#line 316
+#line 327
   yy->ctx.mn.id = LSB_PB_PID;
   }
 #undef yythunkpos
@@ -895,7 +906,7 @@ YY_ACTION(void) yy_1_numeric_headers(yycontext *yy, char *yytext, int yyleng)
 #define yythunkpos yy->__thunkpos
   yyprintf((stderr, "do yy_1_numeric_headers\n"));
   {
-#line 315
+#line 326
   yy->ctx.mn.id = LSB_PB_SEVERITY;
   }
 #undef yythunkpos
@@ -909,8 +920,8 @@ YY_ACTION(void) yy_1_string_match_mod(yycontext *yy, char *yytext, int yyleng)
 #define yythunkpos yy->__thunkpos
   yyprintf((stderr, "do yy_1_string_match_mod\n"));
   {
-#line 313
-  yy->ctx.mn.value_mod = '%';
+#line 324
+  yy->ctx.mn.val_mod = PATTERN_MOD_ESC;
   }
 #undef yythunkpos
 #undef yypos
@@ -923,7 +934,7 @@ YY_ACTION(void) yy_1_string_match(yycontext *yy, char *yytext, int yyleng)
 #define yythunkpos yy->__thunkpos
   yyprintf((stderr, "do yy_1_string_match\n"));
   {
-#line 311
+#line 322
   set_match_mod(&yy->ctx);
   }
 #undef yythunkpos
@@ -937,7 +948,7 @@ YY_ACTION(void) yy_1_string_value(yycontext *yy, char *yytext, int yyleng)
 #define yythunkpos yy->__thunkpos
   yyprintf((stderr, "do yy_1_string_value\n"));
   {
-#line 309
+#line 320
   set_string_value(&yy->ctx, yytext);
   }
 #undef yythunkpos
@@ -951,7 +962,7 @@ YY_ACTION(void) yy_6_string_headers(yycontext *yy, char *yytext, int yyleng)
 #define yythunkpos yy->__thunkpos
   yyprintf((stderr, "do yy_6_string_headers\n"));
   {
-#line 305
+#line 316
   yy->ctx.mn.id = LSB_PB_UUID;
   }
 #undef yythunkpos
@@ -965,7 +976,7 @@ YY_ACTION(void) yy_5_string_headers(yycontext *yy, char *yytext, int yyleng)
 #define yythunkpos yy->__thunkpos
   yyprintf((stderr, "do yy_5_string_headers\n"));
   {
-#line 304
+#line 315
   yy->ctx.mn.id = LSB_PB_PAYLOAD;
   }
 #undef yythunkpos
@@ -979,7 +990,7 @@ YY_ACTION(void) yy_4_string_headers(yycontext *yy, char *yytext, int yyleng)
 #define yythunkpos yy->__thunkpos
   yyprintf((stderr, "do yy_4_string_headers\n"));
   {
-#line 303
+#line 314
   yy->ctx.mn.id = LSB_PB_ENV_VERSION;
   }
 #undef yythunkpos
@@ -993,7 +1004,7 @@ YY_ACTION(void) yy_3_string_headers(yycontext *yy, char *yytext, int yyleng)
 #define yythunkpos yy->__thunkpos
   yyprintf((stderr, "do yy_3_string_headers\n"));
   {
-#line 302
+#line 313
   yy->ctx.mn.id = LSB_PB_HOSTNAME;
   }
 #undef yythunkpos
@@ -1007,7 +1018,7 @@ YY_ACTION(void) yy_2_string_headers(yycontext *yy, char *yytext, int yyleng)
 #define yythunkpos yy->__thunkpos
   yyprintf((stderr, "do yy_2_string_headers\n"));
   {
-#line 301
+#line 312
   yy->ctx.mn.id = LSB_PB_LOGGER;
   }
 #undef yythunkpos
@@ -1021,7 +1032,7 @@ YY_ACTION(void) yy_1_string_headers(yycontext *yy, char *yytext, int yyleng)
 #define yythunkpos yy->__thunkpos
   yyprintf((stderr, "do yy_1_string_headers\n"));
   {
-#line 300
+#line 311
   yy->ctx.mn.id = LSB_PB_TYPE;
   }
 #undef yythunkpos
@@ -1035,7 +1046,7 @@ YY_ACTION(void) yy_1_close(yycontext *yy, char *yytext, int yyleng)
 #define yythunkpos yy->__thunkpos
   yyprintf((stderr, "do yy_1_close\n"));
   {
-#line 296
+#line 307
   pop_to_paren(&yy->ctx);
   }
 #undef yythunkpos
@@ -1049,7 +1060,7 @@ YY_ACTION(void) yy_1_open(yycontext *yy, char *yytext, int yyleng)
 #define yythunkpos yy->__thunkpos
   yyprintf((stderr, "do yy_1_open\n"));
   {
-#line 295
+#line 306
   push_op(&yy->ctx, OP_OPEN);
   }
 #undef yythunkpos
@@ -1063,7 +1074,7 @@ YY_ACTION(void) yy_1_or(yycontext *yy, char *yytext, int yyleng)
 #define yythunkpos yy->__thunkpos
   yyprintf((stderr, "do yy_1_or\n"));
   {
-#line 294
+#line 305
   push_op(&yy->ctx, OP_OR);
   }
 #undef yythunkpos
@@ -1077,7 +1088,7 @@ YY_ACTION(void) yy_1_and(yycontext *yy, char *yytext, int yyleng)
 #define yythunkpos yy->__thunkpos
   yyprintf((stderr, "do yy_1_and\n"));
   {
-#line 293
+#line 304
   push_op(&yy->ctx, OP_AND);
   }
 #undef yythunkpos
@@ -1091,8 +1102,8 @@ YY_ACTION(void) yy_2_boolean(yycontext *yy, char *yytext, int yyleng)
 #define yythunkpos yy->__thunkpos
   yyprintf((stderr, "do yy_2_boolean\n"));
   {
-#line 291
-  set_boolean_value(&yy->ctx, 0);
+#line 302
+  yy->ctx.mn.val_type = TYPE_FALSE;
   }
 #undef yythunkpos
 #undef yypos
@@ -1105,8 +1116,8 @@ YY_ACTION(void) yy_1_boolean(yycontext *yy, char *yytext, int yyleng)
 #define yythunkpos yy->__thunkpos
   yyprintf((stderr, "do yy_1_boolean\n"));
   {
-#line 290
-  set_boolean_value(&yy->ctx, 1);
+#line 301
+  yy->ctx.mn.val_type = TYPE_TRUE;
   }
 #undef yythunkpos
 #undef yypos
@@ -1119,7 +1130,7 @@ YY_ACTION(void) yy_2_boolean_test(yycontext *yy, char *yytext, int yyleng)
 #define yythunkpos yy->__thunkpos
   yyprintf((stderr, "do yy_2_boolean_test\n"));
   {
-#line 289
+#line 300
   yy->ctx.mn.op = OP_FALSE;
   }
 #undef yythunkpos
@@ -1133,7 +1144,7 @@ YY_ACTION(void) yy_1_boolean_test(yycontext *yy, char *yytext, int yyleng)
 #define yythunkpos yy->__thunkpos
   yyprintf((stderr, "do yy_1_boolean_test\n"));
   {
-#line 288
+#line 299
   yy->ctx.mn.op = OP_TRUE;
   }
 #undef yythunkpos
@@ -1147,7 +1158,7 @@ YY_ACTION(void) yy_1_op_lt(yycontext *yy, char *yytext, int yyleng)
 #define yythunkpos yy->__thunkpos
   yyprintf((stderr, "do yy_1_op_lt\n"));
   {
-#line 279
+#line 290
   yy->ctx.mn.op = OP_LT;
   }
 #undef yythunkpos
@@ -1161,7 +1172,7 @@ YY_ACTION(void) yy_1_op_lte(yycontext *yy, char *yytext, int yyleng)
 #define yythunkpos yy->__thunkpos
   yyprintf((stderr, "do yy_1_op_lte\n"));
   {
-#line 278
+#line 289
   yy->ctx.mn.op = OP_LTE;
   }
 #undef yythunkpos
@@ -1175,7 +1186,7 @@ YY_ACTION(void) yy_1_op_gt(yycontext *yy, char *yytext, int yyleng)
 #define yythunkpos yy->__thunkpos
   yyprintf((stderr, "do yy_1_op_gt\n"));
   {
-#line 277
+#line 288
   yy->ctx.mn.op = OP_GT;
   }
 #undef yythunkpos
@@ -1189,7 +1200,7 @@ YY_ACTION(void) yy_1_op_gte(yycontext *yy, char *yytext, int yyleng)
 #define yythunkpos yy->__thunkpos
   yyprintf((stderr, "do yy_1_op_gte\n"));
   {
-#line 276
+#line 287
   yy->ctx.mn.op = OP_GTE;
   }
 #undef yythunkpos
@@ -1203,7 +1214,7 @@ YY_ACTION(void) yy_1_op_sne(yycontext *yy, char *yytext, int yyleng)
 #define yythunkpos yy->__thunkpos
   yyprintf((stderr, "do yy_1_op_sne\n"));
   {
-#line 275
+#line 286
   yy->ctx.mn.op = OP_NRE;
   }
 #undef yythunkpos
@@ -1217,7 +1228,7 @@ YY_ACTION(void) yy_1_op_seq(yycontext *yy, char *yytext, int yyleng)
 #define yythunkpos yy->__thunkpos
   yyprintf((stderr, "do yy_1_op_seq\n"));
   {
-#line 274
+#line 285
   yy->ctx.mn.op = OP_RE;
   }
 #undef yythunkpos
@@ -1231,7 +1242,7 @@ YY_ACTION(void) yy_1_op_ne(yycontext *yy, char *yytext, int yyleng)
 #define yythunkpos yy->__thunkpos
   yyprintf((stderr, "do yy_1_op_ne\n"));
   {
-#line 273
+#line 284
   yy->ctx.mn.op = OP_NE;
   }
 #undef yythunkpos
@@ -1245,7 +1256,7 @@ YY_ACTION(void) yy_1_op_eq(yycontext *yy, char *yytext, int yyleng)
 #define yythunkpos yy->__thunkpos
   yyprintf((stderr, "do yy_1_op_eq\n"));
   {
-#line 272
+#line 283
   yy->ctx.mn.op = OP_EQ;
   }
 #undef yythunkpos
@@ -1259,7 +1270,7 @@ YY_ACTION(void) yy_1_test(yycontext *yy, char *yytext, int yyleng)
 #define yythunkpos yy->__thunkpos
   yyprintf((stderr, "do yy_1_test\n"));
   {
-#line 270
+#line 281
   push_output(&yy->ctx, &yy->ctx.mn);
   }
 #undef yythunkpos
@@ -1273,7 +1284,7 @@ YY_ACTION(void) yy_1_match(yycontext *yy, char *yytext, int yyleng)
 #define yythunkpos yy->__thunkpos
   yyprintf((stderr, "do yy_1_match\n"));
   {
-#line 261
+#line 272
   pop_all_ops(&yy->ctx);
   }
 #undef yythunkpos
@@ -2248,15 +2259,171 @@ YY_PARSE(yycontext *) YYRELEASE(yycontext *yyctx)
 }
 
 #endif
-#line 371 "heka_message_matcher_parser.leg"
+#line 382 "heka_message_matcher_parser.leg"
 
+
+static match_node* copy_node(unsigned char parent, match_node *mn,
+                             match_node_tmp *mnt)
+{
+  mn->op        = mnt->op;
+  mn->val_len   = 0;
+  mn->var_len   = 0;
+  mn->field_id  = mnt->id;
+  mn->val_mod   = mnt->val_mod;
+  mn->val_type  = mnt->val_type;
+
+  if (mn->op == OP_AND || mn->op == OP_OR) {
+    mn->u.off = parent;
+  } else {
+    mn->u.idx.f = mnt->fi;
+    mn->u.idx.a = mnt->ai;
+  }
+
+  if (mnt->id == LSB_PB_FIELDS) {
+    mn->var_len = mnt->var_len;
+  }
+  if (mn->var_len) {
+    memcpy(mn->data, mnt->var, mn->var_len); // no NUL terminator
+    free(mnt->var);
+    mnt->var = NULL;
+    mnt->var_len = 0;
+  }
+
+  size_t val_len = 0;
+  switch (mnt->val_type) {
+  case TYPE_STRING:
+    val_len = mnt->val_len + 1;
+    memcpy(mn->data + mn->var_len, mnt->val.s, val_len);
+    free(mnt->val.s);
+    mnt->val.s = NULL;
+    mnt->val_len = 0;
+    break;
+  case TYPE_NUMERIC:
+    val_len = sizeof(double);
+    memcpy(mn->data + mn->var_len, &mnt->val.d, val_len);
+    break;
+  default:
+    break;
+  }
+
+  mn->units = 1 + ((sizeof(match_node) - 1 + mn->var_len + val_len)
+                   / sizeof(match_node));
+  if (val_len && mnt->val_type == TYPE_STRING) {
+    mn->val_len = val_len - 1;
+  } else {
+    mn->val_len = val_len;
+  }
+  return mn + mn->units;
+}
+
+
+static match_node* inorder_traverse(unsigned char parent, match_node **offsets,
+                                    match_node *mn, match_node_tmp *root,
+                                    match_node_tmp *mnt)
+{
+  if (mnt->id == 0 && (mnt->op == OP_AND || mnt->op == OP_OR)) {
+    unsigned char idx = mnt->val_len;
+    mnt->val_len = 0;
+    mn = inorder_traverse(idx, offsets, mn, root, root + mnt->fi);
+    offsets[idx] = mn;
+    mn = copy_node(parent, mn, mnt);
+  } else {
+    mn = copy_node(parent, mn, mnt);
+  }
+  if (mnt->id == 0 && (mnt->op == OP_AND || mnt->op == OP_OR)) {
+    mn = inorder_traverse(parent, offsets, mn, root, root + mnt->ai);
+  }
+  return mn;
+}
+
+
+static size_t get_matcher_bytes(match_node_tmp nodes[], size_t size)
+{
+  size_t len = 0;
+  for (unsigned i = 0; i < size; ++i) {
+    size_t val_len = 0;
+    switch (nodes[i].val_type) {
+    case TYPE_STRING:
+      val_len = nodes[i].val_len + 1;
+      break;
+    case TYPE_NUMERIC:
+      val_len = sizeof(double);
+      break;
+    default:
+      break;
+    }
+
+    size_t var_len = 0;
+    if (nodes[i].id == LSB_PB_FIELDS) {
+      var_len = nodes[i].var_len;
+    }
+
+    len += (sizeof(match_node) * 2 + val_len + var_len - 1)
+      / sizeof(match_node) * sizeof(match_node);
+
+    if (nodes[i].op == OP_OR || nodes[i].op == OP_AND) {
+      // squirrel away the position for the short-circuit calculation
+      nodes[i].val_len = i;
+    }
+  }
+  return len;
+}
+
+
+static void make_tree(match_node_tmp nodes[], size_t size)
+{
+  // turn the postfix stack into a traversable tree
+  match_node_tmp *stack[size];
+  memset(stack, 0, sizeof(stack));
+  int top = 0;
+  for (unsigned i = 0; i < size; ++i) {
+    if (nodes[i].op != OP_AND && nodes[i].op != OP_OR) {
+      stack[top++] = &nodes[i];
+    } else {
+      nodes[i].ai = stack[--top] - nodes;
+      nodes[i].fi = stack[--top] - nodes;
+      stack[top++] = &nodes[i];
+    }
+  }
+}
+
+
+static lsb_message_matcher* make_matcher(match_node_tmp nodes[], size_t size)
+{
+  lsb_message_matcher *mm = malloc(sizeof(lsb_message_matcher));
+  if (!mm) { return NULL; }
+
+  mm->bytes = get_matcher_bytes(nodes, size);
+  mm->nodes = calloc(mm->bytes, 1);
+  if (!mm->nodes) {
+    free(mm);
+    return NULL;
+  }
+
+  match_node *offsets[size];
+  memset(offsets, 0, sizeof(offsets));
+
+  inorder_traverse(size, offsets, mm->nodes, nodes, nodes + (size - 1));
+
+  // populate the short-circuit offsets
+  match_node *e = mm->nodes + (mm->bytes / sizeof(match_node));
+  for (match_node *p = mm->nodes; p < e;){
+    if (p->op == OP_AND || p->op == OP_OR) {
+      if (p->u.off < size) {
+        p->u.off = offsets[p->u.off] - mm->nodes;
+      } else {
+        p->u.off =  mm->bytes / sizeof(match_node);
+      }
+    }
+    p += p->units;
+  }
+  return mm;
+}
 
 
 lsb_message_matcher* lsb_create_message_matcher(const char *exp)
 {
-  if (!exp) {
-    return NULL;
-  }
+  if (!exp) { return NULL; }
 
   lsb_message_matcher *mm = NULL;
   yycontext yy;
@@ -2264,48 +2431,11 @@ lsb_message_matcher* lsb_create_message_matcher(const char *exp)
   yy.ctx.is.s = exp;
   yy.ctx.is.size = strlen(exp);
   int ret = yyparse(&yy);
-  if (!ret) {
-    free(yy.ctx.out.a);
-    goto cleanup;
+  if (ret) {
+    make_tree(yy.ctx.out.a, yy.ctx.out.pos);
+    mm = make_matcher(yy.ctx.out.a, yy.ctx.out.pos);
   }
-
-  // reverse the order so the root node will be first
-  match_node *s = yy.ctx.out.a;
-  match_node *e = yy.ctx.out.a + yy.ctx.out.pos;
-  for (--e; s < e; ++s, --e) {
-    move_match_node(&yy.ctx.mn, s);
-    move_match_node(s, e);
-    move_match_node(e, &yy.ctx.mn);
-  }
-
-  mm = malloc(sizeof(lsb_message_matcher));
-  if (!mm) {
-    goto cleanup;
-  }
-  mm->nodes = yy.ctx.out.a;
-  mm->size = yy.ctx.out.pos;
-
-  // turn the postfix stack into an executable tree
-  match_node **stack = calloc(sizeof(match_node *) * mm->size, 1);
-  if (!stack) {
-    free(mm);
-    mm = NULL;
-    goto cleanup;
-  }
-
-  int top = 0;
-  for (int i = mm->size - 1; i >= 0; --i) {
-    if (mm->nodes[i].op != OP_AND && mm->nodes[i].op != OP_OR) {
-      stack[top++] = &mm->nodes[i];
-    } else {
-      mm->nodes[i].ai = stack[--top] - mm->nodes;
-      mm->nodes[i].fi = stack[--top] - mm->nodes;
-      stack[top++] = &mm->nodes[i];
-    }
-  }
-  free(stack);
-
-cleanup:
+  free(yy.ctx.out.a);
   free(yy.ctx.ops.a);
   yyrelease(&yy);
   return mm;
