@@ -32,6 +32,7 @@
 #define LSB_THIS_PTR          "lsb_this_ptr"
 #define LSB_MEMORY_LIMIT      "memory_limit"
 #define LSB_INSTRUCTION_LIMIT "instruction_limit"
+#define LSB_INPUT_LIMIT       "input_limit"
 #define LSB_OUTPUT_LIMIT      "output_limit"
 #define LSB_LOG_LEVEL         "log_level"
 #define LSB_LUA_PATH          "path"
