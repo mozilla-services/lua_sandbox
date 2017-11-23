@@ -185,6 +185,66 @@ static char* test_outputd()
 }
 
 
+static char* test_outputc_full()
+{
+  lsb_output_buffer b;
+  mu_assert(!lsb_init_output_buffer(&b, 0), "init failed");
+  for (int i = 0; i < LSB_OUTPUT_SIZE; ++i) {
+    lsb_outputc(&b, 'a');
+  }
+  mu_assert(b.size == LSB_OUTPUT_SIZE * 2, "received: %" PRIuSIZE, b.size);
+  mu_assert(b.pos == LSB_OUTPUT_SIZE, "received: %" PRIuSIZE, b.pos);
+  mu_assert(b.buf[b.pos] == '\0', "missing NUL");
+  lsb_free_output_buffer(&b);
+  return NULL;
+}
+
+
+static char* test_outputf_full()
+{
+  lsb_output_buffer b;
+  mu_assert(!lsb_init_output_buffer(&b, 0), "init failed");
+  for (int i = 0; i < LSB_OUTPUT_SIZE; ++i) {
+    lsb_outputf(&b, "%s", "f");
+  }
+  mu_assert(b.size == LSB_OUTPUT_SIZE * 2, "received: %" PRIuSIZE, b.size);
+  mu_assert(b.pos == LSB_OUTPUT_SIZE, "received: %" PRIuSIZE, b.pos);
+  mu_assert(b.buf[b.pos] == '\0', "missing NUL");
+  lsb_free_output_buffer(&b);
+  return NULL;
+}
+
+
+static char* test_outputs_full()
+{
+  lsb_output_buffer b;
+  mu_assert(!lsb_init_output_buffer(&b, 0), "init failed");
+  for (int i = 0; i < LSB_OUTPUT_SIZE; ++i) {
+    lsb_outputs(&b, "s", 1);
+  }
+  mu_assert(b.size == LSB_OUTPUT_SIZE * 2, "received: %" PRIuSIZE, b.size);
+  mu_assert(b.pos == LSB_OUTPUT_SIZE, "received: %" PRIuSIZE, b.pos);
+  mu_assert(b.buf[b.pos] == '\0', "missing NUL");
+  lsb_free_output_buffer(&b);
+  return NULL;
+}
+
+
+static char* test_outputd_full()
+{
+  lsb_output_buffer b;
+  mu_assert(!lsb_init_output_buffer(&b, 0), "init failed");
+  for (int i = 0; i < LSB_OUTPUT_SIZE; ++i) {
+    lsb_outputd(&b, 1);
+  }
+  mu_assert(b.size == LSB_OUTPUT_SIZE * 2, "received: %" PRIuSIZE, b.size);
+  mu_assert(b.pos == LSB_OUTPUT_SIZE, "received: %" PRIuSIZE, b.pos);
+  mu_assert(b.buf[b.pos] == '\0', "missing NUL");
+  lsb_free_output_buffer(&b);
+  return NULL;
+}
+
+
 static char* all_tests()
 {
   mu_run_test(test_stub);
@@ -197,6 +257,12 @@ static char* all_tests()
   mu_run_test(test_outputf);
   mu_run_test(test_outputs);
   mu_run_test(test_outputd);
+
+  // make sure the terminating NUL is included in the size of the buffer
+  mu_run_test(test_outputc_full);
+  mu_run_test(test_outputf_full);
+  mu_run_test(test_outputs_full);
+  mu_run_test(test_outputd_full);
   return NULL;
 }
 

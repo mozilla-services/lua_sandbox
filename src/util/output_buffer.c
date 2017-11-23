@@ -231,7 +231,7 @@ lsb_err_value lsb_outputfd(lsb_output_buffer *b, double d)
     number /= 10;
   } while (number > 0);
 
-  lsb_err_value ret = lsb_expand_output_buffer(b, (p - buffer) + negative);
+  lsb_err_value ret = lsb_expand_output_buffer(b, (p - buffer) + negative + 1);
   if (!ret) {
     if (negative) {
       b->buf[b->pos++] = '-';
