@@ -201,6 +201,9 @@ static char* test_create_error()
   lsb_lua_sandbox *sb = lsb_create(NULL, NULL, NULL, NULL);
   mu_assert(!sb, "lsb_create() null lua_file");
 
+  sb = lsb_create(NULL, "lua/counter.lua", "input_limit = 'aaa'", NULL);
+  mu_assert(!sb, "lsb_create() invalid config");
+
   sb = lsb_create(NULL, "lua/counter.lua", "output_limit = 'aaa'", NULL);
   mu_assert(!sb, "lsb_create() invalid config");
 

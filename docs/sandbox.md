@@ -2,6 +2,9 @@
 
 ## Configuration
 
+* **input_limit** - the largest input string that is allowed to be processed
+  (bytes (unsigned), default 65536, 0 for unlimited*). This is not directly used
+  by the sandbox it is made availble to modules to standardize the configuration.
 * **output_limit** - the largest output string an input or analysis plugin can
   inject into the host (bytes (unsigned), default 65536, 0 for unlimited*)
 * **memory_limit** - the maximum amount of memory a plugin can use before being
