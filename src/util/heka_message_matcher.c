@@ -20,50 +20,51 @@
 
 static bool string_test(match_node *mn, lsb_const_string *val)
 {
+  const char *mn_val = mn->data + mn->var_len;
   switch (mn->op) {
   case OP_EQ:
-    if (val->len != mn->value_len) return false;
-    return strncmp(val->s, mn->value.s, val->len) == 0;
+    if (val->len != mn->val_len) return false;
+    return strncmp(val->s, mn_val, val->len) == 0;
   case OP_NE:
-    if (val->len != mn->value_len) return true;
-    return strncmp(val->s, mn->value.s, val->len) != 0;
+    if (val->len != mn->val_len) return true;
+    return strncmp(val->s, mn_val, val->len) != 0;
   case OP_LT:
     {
-      int cmp = strncmp(val->s, mn->value.s, val->len);
+      int cmp = strncmp(val->s, mn_val, val->len);
       if (cmp == 0) {
-        return val->len < mn->value_len;
+        return val->len < mn->val_len;
       }
       return cmp < 0;
     }
   case OP_LTE:
-    return strncmp(val->s, mn->value.s, val->len) <= 0;
+    return strncmp(val->s, mn_val, val->len) <= 0;
   case OP_GT:
     {
-      int cmp = strncmp(val->s, mn->value.s, val->len);
+      int cmp = strncmp(val->s, mn_val, val->len);
       if (cmp == 0) {
-        return val->len > mn->value_len;
+        return val->len > mn->val_len;
       }
       return cmp > 0;
     }
   case OP_GTE:
     {
-      int cmp = strncmp(val->s, mn->value.s, val->len);
+      int cmp = strncmp(val->s, mn_val, val->len);
       if (cmp == 0) {
-        return val->len >= mn->value_len;
+        return val->len >= mn->val_len;
       }
       return cmp > 0;
     }
   case OP_RE:
-    if (mn->value_mod == '%') {
-      return lsb_string_find(val->s, val->len, mn->value.s, mn->value_len);
+    if (mn->val_mod == PATTERN_MOD_ESC) {
+      return lsb_string_find(val->s, val->len, mn_val, mn->val_len);
     } else {
-      return lsb_string_match(val->s, val->len, mn->value.s);
+      return lsb_string_match(val->s, val->len, mn_val);
     }
   case OP_NRE:
-    if (mn->value_mod == '%') {
-      return !lsb_string_find(val->s, val->len, mn->value.s, mn->value_len);
+    if (mn->val_mod == PATTERN_MOD_ESC) {
+      return !lsb_string_find(val->s, val->len, mn_val, mn->val_len);
     } else {
-      return !lsb_string_match(val->s, val->len, mn->value.s);
+      return !lsb_string_match(val->s, val->len, mn_val);
     }
   default:
     break;
@@ -74,19 +75,21 @@ static bool string_test(match_node *mn, lsb_const_string *val)
 
 static bool numeric_test(match_node *mn, double val)
 {
+  double d;
+  memcpy(&d, mn->data + mn->var_len, sizeof(double));
   switch (mn->op) {
   case OP_EQ:
-    return val == mn->value.d;
+    return val == d;
   case OP_NE:
-    return val != mn->value.d;
+    return val != d;
   case OP_LT:
-    return val < mn->value.d;
+    return val < d;
   case OP_LTE:
-    return val <= mn->value.d;
+    return val <= d;
   case OP_GT:
-    return val > mn->value.d;
+    return val > d;
   case OP_GTE:
-    return val >= mn->value.d;
+    return val >= d;
   default:
     break;
   }
@@ -102,7 +105,7 @@ static bool eval_node(match_node *mn, lsb_heka_message *m)
   case OP_FALSE:
     return false;
   default:
-    switch (mn->id) {
+    switch (mn->field_id) {
     case LSB_PB_TIMESTAMP:
       return numeric_test(mn, (double)m->timestamp);
     case LSB_PB_TYPE:
@@ -124,17 +127,17 @@ static bool eval_node(match_node *mn, lsb_heka_message *m)
     default:
       {
         lsb_read_value val;
-        lsb_const_string variable = { .s = mn->variable,
-          .len = mn->variable_len };
+        lsb_const_string variable = { .s = mn->data, .len = mn->var_len };
 
-        if (!lsb_read_heka_field(m, &variable, mn->fi, mn->ai, &val)) {
-          if (mn->value_type == TYPE_NIL) {
+        if (!lsb_read_heka_field(m, &variable, mn->u.idx.f, mn->u.idx.a,
+                                 &val)) {
+          if (mn->val_type == TYPE_NIL) {
             return mn->op == OP_EQ;
           }
           return false;
         }
 
-        switch (mn->value_type) {
+        switch (mn->val_type) {
         case TYPE_STRING:
           if (val.type == LSB_READ_STRING) {
             return string_test(mn, &val.u.s);
@@ -145,9 +148,14 @@ static bool eval_node(match_node *mn, lsb_heka_message *m)
             return numeric_test(mn, val.u.d);
           }
           break;
-        case TYPE_BOOLEAN:
+        case TYPE_TRUE:
           if (val.type == LSB_READ_BOOL || val.type == LSB_READ_NUMERIC) {
-            return numeric_test(mn, val.u.d);
+            return mn->op == OP_EQ ? val.u.d == true : val.u.d != true;
+          }
+          break;
+        case TYPE_FALSE:
+          if (val.type == LSB_READ_BOOL || val.type == LSB_READ_NUMERIC) {
+            return mn->op == OP_EQ ? val.u.d == false: val.u.d != false;
           }
           break;
         case TYPE_NIL:
@@ -162,45 +170,9 @@ static bool eval_node(match_node *mn, lsb_heka_message *m)
 }
 
 
-static bool eval_tree(match_node *root, match_node *mn, lsb_heka_message *m)
-{
-  bool match;
-  if (mn->id == 0 && mn->fi) {
-    match = eval_tree(root, root + mn->fi, m);
-  } else {
-    match = eval_node(mn, m);
-  }
-
-  if (match && mn->op == OP_OR) {
-    return match; // short circuit
-  }
-
-  if (!match && mn->op == OP_AND) {
-    return match; // short circuit
-  }
-
-  if (mn->id == 0 && mn->ai) {
-    match = eval_tree(root, root + mn->ai, m);
-  }
-  return match;
-}
-
-
 void lsb_destroy_message_matcher(lsb_message_matcher *mm)
 {
   if (!mm) return;
-
-  for (int i = 0; i < mm->size; ++i) {
-    free(mm->nodes[i].variable);
-    switch (mm->nodes[i].value_type) {
-    case TYPE_STRING:
-      free(mm->nodes[i].value.s);
-      break;
-    default:
-      // no action required
-      break;
-    }
-  }
   free(mm->nodes);
   free(mm);
 }
@@ -208,5 +180,30 @@ void lsb_destroy_message_matcher(lsb_message_matcher *mm)
 
 bool lsb_eval_message_matcher(lsb_message_matcher *mm, lsb_heka_message *m)
 {
-  return eval_tree(mm->nodes, mm->nodes, m);
+  bool match = false;
+  if (!mm) return match;
+
+  match_node *s = mm->nodes;
+  match_node *e = mm->nodes + (mm->bytes / sizeof(match_node));
+  for (match_node *p = mm->nodes; p < e;) {
+    switch (p->op) {
+    case OP_OR:
+      if (match) {
+        p = s + p->u.off; // short circuit
+        continue;
+      }
+      break;
+    case OP_AND:
+      if (!match) {
+        p = s + p->u.off; // short circuit
+        continue;
+      }
+      break;
+    default:
+      match = eval_node(p, m);
+      break;
+    }
+    p += p->units;
+  }
+  return match;
 }

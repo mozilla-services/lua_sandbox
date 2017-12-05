@@ -310,6 +310,9 @@ static lua_State* load_sandbox_config(const char *cfg, lsb_logger *logger)
   int ret = luaL_dostring(L, cfg);
   if (ret) goto cleanup;
 
+  ret = check_size(L, LUA_GLOBALSINDEX, LSB_INPUT_LIMIT, 64 * 1024);
+  if (ret) goto cleanup;
+
   ret = check_size(L, LUA_GLOBALSINDEX, LSB_OUTPUT_LIMIT, 64 * 1024);
   if (ret) goto cleanup;
 

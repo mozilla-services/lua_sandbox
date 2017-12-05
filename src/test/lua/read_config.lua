@@ -2,6 +2,7 @@ assert(type(read_config) == "function")
 assert(read_config("memory_limit") == 65765)
 assert(read_config("instruction_limit") == 1000)
 assert(read_config("output_limit") == 1024)
+assert(read_config("input_limit") == 1024 * 64)
 
 local array = read_config("array")
 assert(type(array) ==  "table")
