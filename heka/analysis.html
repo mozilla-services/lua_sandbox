@@ -17,6 +17,10 @@
     
             
                 
+                <link rel="stylesheet" href="../gitbook/gitbook-plugin-navigator/plugin.css">
+                
+            
+                
                 <link rel="stylesheet" href="../gitbook/gitbook-plugin-highlight/website.css">
                 
             
@@ -94,7 +98,7 @@
                 <a href="../">
             
                     
-                    Lua Sandbox Library (1.2.7)
+                    Lua Sandbox Library (1.2.8)
             
                 </a>
             
@@ -283,12 +287,12 @@
     
                                 <section class="normal markdown-section">
                                 
-                                <h1 id="analysis-sandbox-interface">Analysis Sandbox Interface</h1>
-<h2 id="recommendations">Recommendations</h2>
+                                <h1 id="Analysis_Sandbox_Interface">Analysis Sandbox Interface</h1>
+<h2 id="Recommendations">1. Recommendations</h2>
 <p>Since the sandbox does not run in isolation there are some expectations of how
 the host infrastructure behaves.  The current recommendations are based on the
 Hindsight reference implementation.</p>
-<h2 id="disabled-functionality">Disabled Functionality</h2>
+<h2 id="Disabled_Functionality">2. Disabled Functionality</h2>
 <ul>
 <li><a href="http://www.lua.org/manual/5.1/manual.html#5.1" target="_blank">base library</a><ul>
 <li>collectgarbage, dofile, load, loadfile, loadstring, newproxy</li>
@@ -311,8 +315,8 @@ Hindsight reference implementation.</p>
 </ul>
 </li>
 </ul>
-<h2 id="required-lua-functions-called-by-the-host">Required Lua Functions (called by the host)</h2>
-<h3 id="processmessage">process_message</h3>
+<h2 id="Required_Lua_Functions_(called_by_the_host)">3. Required Lua Functions (called by the host)</h2>
+<h3 id="process_message">3.1. process_message</h3>
 <p>Called when the host has a message available for analysis.  Usually used in
 combination with a <a href="../util/message_matcher.html">message matcher</a> expression.</p>
 <p>Recommenation: specify this as a <code>message_matcher</code> configuration option.</p>
@@ -330,7 +334,7 @@ combination with a <a href="../util/message_matcher.html">message matcher</a> ex
 <li>status_message (optional: string) logged when the status code is less than
 zero</li>
 </ul>
-<h3 id="timerevent">timer_event</h3>
+<h3 id="timer_event">3.2. timer_event</h3>
 <p>Called when the host timer expires or on shutdown.</p>
 <p>Recommendation: specify this as a <code>ticker_interval</code> configuration option.</p>
 <p><em>Arguments</em></p>
@@ -344,8 +348,8 @@ one second resolution)</li>
 <ul>
 <li>none</li>
 </ul>
-<h2 id="available-c-functions-called-from-the-plugin">Available C Functions (called from the plugin)</h2>
-<h3 id="readconfig">read_config</h3>
+<h2 id="Available_C_Functions_(called_from_the_plugin)">4. Available C Functions (called from the plugin)</h2>
+<h3 id="read_config">4.1. read_config</h3>
 <p>Provides access to the sandbox configuration variables.</p>
 <p><em>Arguments</em></p>
 <ul>
@@ -355,7 +359,7 @@ one second resolution)</li>
 <ul>
 <li>value (string, number, bool, table)</li>
 </ul>
-<h3 id="readmessage">read_message</h3>
+<h3 id="read_message">4.2. read_message</h3>
 <p>Provides access to the Heka message data. Note that both fieldIndex and
 arrayIndex are zero-based (i.e. the first element is 0) as opposed to Lua&apos;s
 standard indexing, which is one-based.</p>
@@ -392,7 +396,7 @@ error during construction, non string fields throw an error on data retrieval.</
 <li>value (number, string, bool, nil, userdata depending on the type of variable
 requested)</li>
 </ul>
-<h3 id="decodemessage">decode_message</h3>
+<h3 id="decode_message">4.3. decode_message</h3>
 <p>Converts a Heka protobuf encoded message string into a Lua table or throws an
 error.</p>
 <p><em>Arguments</em></p>
@@ -408,7 +412,7 @@ single item). This format makes working with the output more consistent. The
 wide variation in the inject table formats is to ease the construction of the
 message especially when using an LPeg grammar transformation.</li>
 </ul>
-<h3 id="injectmessage">inject_message</h3>
+<h3 id="inject_message">4.4. inject_message</h3>
 <p>Creates a new Heka protocol buffer message using the contents of the specified
 Lua table (overwriting whatever is in the payload buffer). <code>Logger</code> and
 <code>Hostname</code> are restricted header values.  An override configuration option is
@@ -424,7 +428,7 @@ appropriate configuration value.</p>
 <ul>
 <li>none (throws an error if the table does not match the Heka message schema)</li>
 </ul>
-<h3 id="addtopayload">add_to_payload</h3>
+<h3 id="add_to_payload">4.5. add_to_payload</h3>
 <p>Appends the arguments to the payload buffer for incremental construction of the
 final payload output (<code>inject_payload</code> finalizes the buffer and sends the
 message to the infrastructure). This function is a rename of the generic sandbox
@@ -437,7 +441,7 @@ output function to improve the readability of the plugin code.</p>
 <ul>
 <li>none (throws an error if arg is an unsupported type)</li>
 </ul>
-<h3 id="injectpayload">inject_payload</h3>
+<h3 id="inject_payload">4.6. inject_payload</h3>
 <p>This is a wrapper function for <code>inject_message</code> that is included for backwards
 compatibility. The function creates a new Heka message using the contents of the
 payload buffer (pre-populated with <code>add_to_payload</code>) and combined with any
@@ -471,13 +475,13 @@ downstream filtering</li>
 <ul>
 <li>none (throws an error if arg is an unsupported type)</li>
 </ul>
-<h3 id="modes-of-operation">Modes of Operation</h3>
-<h4 id="lock-step">Lock Step</h4>
+<h3 id="Modes_of_Operation">4.7. Modes of Operation</h3>
+<h4 id="Lock_Step">4.7.1. Lock Step</h4>
 <ul>
 <li>Receives one call to <code>process_message</code>, operates on the message, and returns
 success (0) or failure (-1)</li>
 </ul>
-<h4 id="example-simple-counter-plugin">Example simple counter plugin</h4>
+<h4 id="Example_simple_counter_plugin">4.7.2. Example simple counter plugin</h4>
 <pre><code class="lang-lua"><span class="hljs-comment">-- cfg</span>
 message_matcher = <span class="hljs-string">&quot;TRUE&quot;</span>
 ticker_interval = <span class="hljs-number">5</span>
@@ -497,7 +501,7 @@ ticker_interval = <span class="hljs-number">5</span>
     inject_payload(<span class="hljs-string">&quot;txt&quot;</span>, <span class="hljs-string">&quot;count&quot;</span>, cnt)
 <span class="hljs-keyword">end</span>
 </code></pre>
-
+<div id="anchors-navbar"><i class="fa fa-anchor"></i><ul><p><a href="#Analysis_Sandbox_Interface">Analysis Sandbox Interface</a></p><li><a href="#Recommendations">1. Recommendations</a></li><li><a href="#Disabled_Functionality">2. Disabled Functionality</a></li><li><a href="#Required_Lua_Functions_(called_by_the_host)">3. Required Lua Functions (called by the host)</a></li><ul><li><a href="#process_message">3.1. process_message</a></li><li><a href="#timer_event">3.2. timer_event</a></li></ul><li><a href="#Available_C_Functions_(called_from_the_plugin)">4. Available C Functions (called from the plugin)</a></li><ul><li><a href="#read_config">4.1. read_config</a></li><li><a href="#read_message">4.2. read_message</a></li><li><a href="#decode_message">4.3. decode_message</a></li><li><a href="#inject_message">4.4. inject_message</a></li><li><a href="#add_to_payload">4.5. add_to_payload</a></li><li><a href="#inject_payload">4.6. inject_payload</a></li><li><a href="#Modes_of_Operation">4.7. Modes of Operation</a></li><ul><li><a href="#Lock_Step">4.7.1. Lock Step</a></li><li><a href="#Example_simple_counter_plugin">4.7.2. Example simple counter plugin</a></li></ul></ul></ul></div><a href="#Recommendations" id="goTop"><i class="fa fa-arrow-up"></i></a>
                                 
                                 </section>
                             
@@ -540,7 +544,7 @@ ticker_interval = <span class="hljs-number">5</span>
     <script>
         var gitbook = gitbook || [];
         gitbook.push(function() {
-            gitbook.page.hasChanged({"page":{"title":"Analysis Interface","level":"1.3.2","depth":2,"next":{"title":"Output Interface","level":"1.3.3","depth":2,"path":"heka/output.md","ref":"heka/output.md","articles":[]},"previous":{"title":"Input Interface","level":"1.3.1","depth":2,"path":"heka/input.md","ref":"heka/input.md","articles":[]},"dir":"ltr"},"config":{"gitbook":"*","theme":"default","variables":{},"plugins":[],"pluginsConfig":{"highlight":{},"search":{},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"sharing":{"facebook":true,"twitter":true,"google":false,"weibo":false,"instapaper":false,"vk":false,"all":["facebook","google","twitter","weibo","instapaper"]},"fontsettings":{"theme":"white","family":"sans","size":2},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false}},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56}},"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"}},"file":{"path":"heka/analysis.md","mtime":"2017-05-15T14:52:09.954Z","type":"markdown"},"gitbook":{"version":"3.2.2","time":"2017-11-10T18:47:18.068Z"},"basePath":"..","book":{"language":""}});
+            gitbook.page.hasChanged({"page":{"title":"Analysis Interface","level":"1.3.2","depth":2,"next":{"title":"Output Interface","level":"1.3.3","depth":2,"path":"heka/output.md","ref":"heka/output.md","articles":[]},"previous":{"title":"Input Interface","level":"1.3.1","depth":2,"path":"heka/input.md","ref":"heka/input.md","articles":[]},"dir":"ltr"},"config":{"gitbook":"*","theme":"default","variables":{},"plugins":["collapsible-menu","navigator"],"pluginsConfig":{"collapsible-menu":{},"navigator":{},"highlight":{},"search":{},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"sharing":{"facebook":true,"twitter":true,"google":false,"weibo":false,"instapaper":false,"vk":false,"all":["facebook","google","twitter","weibo","instapaper"]},"fontsettings":{"theme":"white","family":"sans","size":2},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false}},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56}},"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"}},"file":{"path":"heka/analysis.md","mtime":"2017-05-15T15:15:28.250Z","type":"markdown"},"gitbook":{"version":"3.2.2","time":"2018-01-03T19:06:38.643Z"},"basePath":"..","book":{"language":""}});
         });
     </script>
 </div>
@@ -548,6 +552,10 @@ ticker_interval = <span class="hljs-number">5</span>
         
     <script src="../gitbook/gitbook.js"></script>
     <script src="../gitbook/theme.js"></script>
+    
+        
+        <script src="../gitbook/gitbook-plugin-collapsible-menu/plugin.js"></script>
+        
     
         
         <script src="../gitbook/gitbook-plugin-search/search-engine.js"></script>

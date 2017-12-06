@@ -17,6 +17,10 @@
     
             
                 
+                <link rel="stylesheet" href="../gitbook/gitbook-plugin-navigator/plugin.css">
+                
+            
+                
                 <link rel="stylesheet" href="../gitbook/gitbook-plugin-highlight/website.css">
                 
             
@@ -94,7 +98,7 @@
                 <a href="../">
             
                     
-                    Lua Sandbox Library (1.2.7)
+                    Lua Sandbox Library (1.2.8)
             
                 </a>
             
@@ -283,12 +287,12 @@
     
                                 <section class="normal markdown-section">
                                 
-                                <h1 id="input-sandbox-interface">Input Sandbox Interface</h1>
-<h2 id="recommendations">Recommendations</h2>
+                                <h1 id="Input_Sandbox_Interface">Input Sandbox Interface</h1>
+<h2 id="Recommendations">1. Recommendations</h2>
 <p>Since the sandbox does not run in isolation there are some expectations of how
 the host infrastructure behaves.  The current recommendations are based on the
 Hindsight reference implementation.</p>
-<h2 id="disabled-functionality">Disabled Functionality</h2>
+<h2 id="Disabled_Functionality">2. Disabled Functionality</h2>
 <ul>
 <li><a href="http://www.lua.org/manual/5.1/manual.html#5.1" target="_blank">base library</a><ul>
 <li>dofile, load, loadfile, loadstring, newproxy</li>
@@ -303,8 +307,8 @@ Hindsight reference implementation.</p>
 </ul>
 </li>
 </ul>
-<h2 id="required-lua-functions-called-by-the-host">Required Lua Functions (called by the host)</h2>
-<h3 id="processmessage">process_message</h3>
+<h2 id="Required_Lua_Functions_(called_by_the_host)">3. Required Lua Functions (called by the host)</h2>
+<h3 id="process_message">3.1. process_message</h3>
 <p>Entry point for message creation.</p>
 <p><em>Arguments</em></p>
 <ul>
@@ -321,8 +325,8 @@ into <code>inject_message</code></li>
 <li>status_message (optional: string) logged when the status code is less than
 zero</li>
 </ul>
-<h2 id="available-c-functions-called-from-the-plugin">Available C Functions (called from the plugin)</h2>
-<h3 id="readconfig">read_config</h3>
+<h2 id="Available_C_Functions_(called_from_the_plugin)">4. Available C Functions (called from the plugin)</h2>
+<h3 id="read_config">4.1. read_config</h3>
 <p>Provides access to the sandbox configuration variables.</p>
 <p><em>Arguments</em></p>
 <ul>
@@ -332,7 +336,7 @@ zero</li>
 <ul>
 <li>value (string, number, bool, table)</li>
 </ul>
-<h3 id="isrunning">is_running</h3>
+<h3 id="is_running">4.2. is_running</h3>
 <p>Provides a synchronization point for collecting statistics and communicating
 shutdown status.</p>
 <p><em>Arguments</em></p>
@@ -344,10 +348,10 @@ shutdown status.</p>
 <li>running (boolean) - true if a sandbox state is LSB_RUNNING, false if not or
 throws an error if the request to the host fails.</li>
 </ul>
-<h3 id="decodemessage">decode_message</h3>
+<h3 id="decode_message">4.3. decode_message</h3>
 <p>Converts a Heka protobuf encoded message string into a Lua table. See
 <a href="analysis.html#decodemessage">decode_message</a> for details.</p>
-<h3 id="injectmessage">inject_message</h3>
+<h3 id="inject_message">4.4. inject_message</h3>
 <p>Sends a Heka protocol buffer message into the host. For the Heka message table
 argument <code>Logger</code> and <code>Hostname</code> are restricted header values.  An override
 configuration option is provided <code>restricted_headers</code>; when true the headers are
@@ -367,7 +371,7 @@ or nil (if only updating the checkpoint))</li>
 <ul>
 <li>none - throws an error on invalid input</li>
 </ul>
-<h3 id="createstreamreader">create_stream_reader</h3>
+<h3 id="create_stream_reader">4.5. create_stream_reader</h3>
 <p>Creates a Heka stream reader to enable parsing of a framed Heka protobuf stream
 in a Lua sandbox. See:
 <a href="#example-of-a-heka-protobuf-stdin-reader">Example of a Heka protobuf reader</a></p>
@@ -379,8 +383,8 @@ in a Lua sandbox. See:
 <ul>
 <li>hsr (userdata) - Heka stream reader or an error is thrown</li>
 </ul>
-<h4 id="heka-stream-reader-methods">Heka Stream Reader Methods</h4>
-<h5 id="findmessage">find_message</h5>
+<h4 id="Heka_Stream_Reader_Methods">4.5.1. Heka Stream Reader Methods</h4>
+<h5 id="find_message">find_message</h5>
 <p>Locates a Heka message within the stream.</p>
 <pre><code class="lang-lua"><span class="hljs-keyword">local</span> found, consumed, need = hsr:find_message(buf)
 </code></pre>
@@ -400,7 +404,7 @@ checkpointing purposes</li>
 the underlying buffer or in the case of a file object the number of bytes
 added to the buffer</li>
 </ul>
-<h5 id="decodemessage">decode_message</h5>
+<h5 id="decode_message">decode_message</h5>
 <p>Converts a Heka protobuf encoded message string into a stream reader
 representation. Note: this operation clears the internal stream reader buffer.</p>
 <p><em>Arguments</em></p>
@@ -411,19 +415,19 @@ representation. Note: this operation clears the internal stream reader buffer.</
 <ul>
 <li>none - throws an error on failure</li>
 </ul>
-<h5 id="readmessage">read_message</h5>
+<h5 id="read_message">read_message</h5>
 <p>Provides access to the Heka message data within the reader object. The zeroCopy
 flag is not accepted here.</p>
 <pre><code class="lang-lua"><span class="hljs-keyword">local</span> ts = hsr:read_message(<span class="hljs-string">&quot;Timestamp&quot;</span>)
 </code></pre>
 <p>See <a href="analysis.html#readmessage">read_message</a> for details.</p>
-<h2 id="modes-of-operation">Modes of Operation</h2>
-<h3 id="run-once">Run Once</h3>
+<h2 id="Modes_of_Operation">5. Modes of Operation</h2>
+<h3 id="Run_Once">5.1. Run Once</h3>
 <ul>
 <li>Set the <code>ticker_interval</code> to zero and return from <code>process_message</code> done.</li>
 <li>The <code>instruction_limit</code> configuration can be set if desired.</li>
 </ul>
-<h4 id="example-startup-ping">Example startup ping</h4>
+<h4 id="Example_startup_ping">5.1.1. Example startup ping</h4>
 <pre><code class="lang-lua"><span class="hljs-comment">-- cfg</span>
 <span class="hljs-comment">-- send a simple &apos;hello&apos; messages every time the host is started</span>
 ticker_interval = <span class="hljs-number">0</span>
@@ -438,14 +442,14 @@ ticker_interval = <span class="hljs-number">0</span>
     <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>
 <span class="hljs-keyword">end</span>
 </code></pre>
-<h3 id="polling">Polling</h3>
+<h3 id="Polling">5.2. Polling</h3>
 <ul>
 <li>Set the <code>ticker_interval</code> greater than zero and non fatally (&lt;=0) return from
 <code>process_message</code>, when the ticker interval expires <code>process_message</code> will be
 called again.</li>
 <li>The <code>instruction_limit</code> configuration can be set if desired.</li>
 </ul>
-<h4 id="example-heartbeat-ping">Example heartbeat ping</h4>
+<h4 id="Example_heartbeat_ping">5.2.1. Example heartbeat ping</h4>
 <pre><code class="lang-lua"><span class="hljs-comment">-- cfg</span>
 ticker_interval = <span class="hljs-number">60</span>
 </code></pre>
@@ -472,12 +476,12 @@ Payload     = <span class="hljs-string">&quot;&quot;</span>,
     <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>
 <span class="hljs-keyword">end</span>
 </code></pre>
-<h3 id="continuous">Continuous</h3>
+<h3 id="Continuous">5.3. Continuous</h3>
 <ul>
 <li>Don&apos;t return from <code>process_message</code>.</li>
 <li>The <code>instruction_limit</code> configuration <strong>MUST</strong> be set to zero.</li>
 </ul>
-<h4 id="example-of-a-heka-protobuf-stdin-reader">Example of a Heka protobuf stdin reader</h4>
+<h4 id="Example_of_a_Heka_protobuf_stdin_reader">5.3.1. Example of a Heka protobuf stdin reader</h4>
 <pre><code class="lang-lua"><span class="hljs-comment">-- This Source Code Form is subject to the terms of the Mozilla Public</span>
 <span class="hljs-comment">-- License, v. 2.0. If a copy of the MPL was not distributed with this</span>
 <span class="hljs-comment">-- file, You can obtain one at http://mozilla.org/MPL/2.0/.</span>
@@ -511,7 +515,7 @@ instruction_limit = 0
     <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>, <span class="hljs-built_in">string</span>.format(<span class="hljs-string">&quot;processed %d messages&quot;</span>, cnt)
 <span class="hljs-keyword">end</span>
 </code></pre>
-
+<div id="anchors-navbar"><i class="fa fa-anchor"></i><ul><p><a href="#Input_Sandbox_Interface">Input Sandbox Interface</a></p><li><a href="#Recommendations">1. Recommendations</a></li><li><a href="#Disabled_Functionality">2. Disabled Functionality</a></li><li><a href="#Required_Lua_Functions_(called_by_the_host)">3. Required Lua Functions (called by the host)</a></li><ul><li><a href="#process_message">3.1. process_message</a></li></ul><li><a href="#Available_C_Functions_(called_from_the_plugin)">4. Available C Functions (called from the plugin)</a></li><ul><li><a href="#read_config">4.1. read_config</a></li><li><a href="#is_running">4.2. is_running</a></li><li><a href="#decode_message">4.3. decode_message</a></li><li><a href="#inject_message">4.4. inject_message</a></li><li><a href="#create_stream_reader">4.5. create_stream_reader</a></li><ul><li><a href="#Heka_Stream_Reader_Methods">4.5.1. Heka Stream Reader Methods</a></li></ul></ul><li><a href="#Modes_of_Operation">5. Modes of Operation</a></li><ul><li><a href="#Run_Once">5.1. Run Once</a></li><ul><li><a href="#Example_startup_ping">5.1.1. Example startup ping</a></li></ul><li><a href="#Polling">5.2. Polling</a></li><ul><li><a href="#Example_heartbeat_ping">5.2.1. Example heartbeat ping</a></li></ul><li><a href="#Continuous">5.3. Continuous</a></li><ul><li><a href="#Example_of_a_Heka_protobuf_stdin_reader">5.3.1. Example of a Heka protobuf stdin reader</a></li></ul></ul></ul></div><a href="#Recommendations" id="goTop"><i class="fa fa-arrow-up"></i></a>
                                 
                                 </section>
                             
@@ -554,7 +558,7 @@ instruction_limit = 0
     <script>
         var gitbook = gitbook || [];
         gitbook.push(function() {
-            gitbook.page.hasChanged({"page":{"title":"Input Interface","level":"1.3.1","depth":2,"next":{"title":"Analysis Interface","level":"1.3.2","depth":2,"path":"heka/analysis.md","ref":"heka/analysis.md","articles":[]},"previous":{"title":"Heka Sandbox","level":"1.3","depth":1,"path":"heka/index.md","ref":"heka/index.md","articles":[{"title":"Input Interface","level":"1.3.1","depth":2,"path":"heka/input.md","ref":"heka/input.md","articles":[]},{"title":"Analysis Interface","level":"1.3.2","depth":2,"path":"heka/analysis.md","ref":"heka/analysis.md","articles":[]},{"title":"Output Interface","level":"1.3.3","depth":2,"path":"heka/output.md","ref":"heka/output.md","articles":[]},{"title":"Message Schema","level":"1.3.4","depth":2,"path":"heka/message.md","ref":"heka/message.md","articles":[]},{"title":"Message Matcher","level":"1.3.5","depth":2,"path":"util/message_matcher.md","ref":"util/message_matcher.md","articles":[]}]},"dir":"ltr"},"config":{"gitbook":"*","theme":"default","variables":{},"plugins":[],"pluginsConfig":{"highlight":{},"search":{},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"sharing":{"facebook":true,"twitter":true,"google":false,"weibo":false,"instapaper":false,"vk":false,"all":["facebook","google","twitter","weibo","instapaper"]},"fontsettings":{"theme":"white","family":"sans","size":2},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false}},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56}},"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"}},"file":{"path":"heka/input.md","mtime":"2017-05-15T14:52:09.954Z","type":"markdown"},"gitbook":{"version":"3.2.2","time":"2017-11-10T18:47:18.068Z"},"basePath":"..","book":{"language":""}});
+            gitbook.page.hasChanged({"page":{"title":"Input Interface","level":"1.3.1","depth":2,"next":{"title":"Analysis Interface","level":"1.3.2","depth":2,"path":"heka/analysis.md","ref":"heka/analysis.md","articles":[]},"previous":{"title":"Heka Sandbox","level":"1.3","depth":1,"path":"heka/index.md","ref":"heka/index.md","articles":[{"title":"Input Interface","level":"1.3.1","depth":2,"path":"heka/input.md","ref":"heka/input.md","articles":[]},{"title":"Analysis Interface","level":"1.3.2","depth":2,"path":"heka/analysis.md","ref":"heka/analysis.md","articles":[]},{"title":"Output Interface","level":"1.3.3","depth":2,"path":"heka/output.md","ref":"heka/output.md","articles":[]},{"title":"Message Schema","level":"1.3.4","depth":2,"path":"heka/message.md","ref":"heka/message.md","articles":[]},{"title":"Message Matcher","level":"1.3.5","depth":2,"path":"util/message_matcher.md","ref":"util/message_matcher.md","articles":[]}]},"dir":"ltr"},"config":{"gitbook":"*","theme":"default","variables":{},"plugins":["collapsible-menu","navigator"],"pluginsConfig":{"collapsible-menu":{},"navigator":{},"highlight":{},"search":{},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"sharing":{"facebook":true,"twitter":true,"google":false,"weibo":false,"instapaper":false,"vk":false,"all":["facebook","google","twitter","weibo","instapaper"]},"fontsettings":{"theme":"white","family":"sans","size":2},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false}},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56}},"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"}},"file":{"path":"heka/input.md","mtime":"2017-05-15T15:15:28.250Z","type":"markdown"},"gitbook":{"version":"3.2.2","time":"2018-01-03T19:06:38.643Z"},"basePath":"..","book":{"language":""}});
         });
     </script>
 </div>
@@ -562,6 +566,10 @@ instruction_limit = 0
         
     <script src="../gitbook/gitbook.js"></script>
     <script src="../gitbook/theme.js"></script>
+    
+        
+        <script src="../gitbook/gitbook-plugin-collapsible-menu/plugin.js"></script>
+        
     
         
         <script src="../gitbook/gitbook-plugin-search/search-engine.js"></script>

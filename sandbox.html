@@ -17,6 +17,10 @@
     
             
                 
+                <link rel="stylesheet" href="gitbook/gitbook-plugin-navigator/plugin.css">
+                
+            
+                
                 <link rel="stylesheet" href="gitbook/gitbook-plugin-highlight/website.css">
                 
             
@@ -94,7 +98,7 @@
                 <a href="./">
             
                     
-                    Lua Sandbox Library (1.2.7)
+                    Lua Sandbox Library (1.2.8)
             
                 </a>
             
@@ -283,9 +287,12 @@
     
                                 <section class="normal markdown-section">
                                 
-                                <h1 id="generic-sandbox-interface">Generic Sandbox Interface</h1>
-<h2 id="configuration">Configuration</h2>
+                                <h1 id="Generic_Sandbox_Interface">Generic Sandbox Interface</h1>
+<h2 id="Configuration">1. Configuration</h2>
 <ul>
+<li><strong>input_limit</strong> - the largest input string that is allowed to be processed
+(bytes (unsigned), default 65536, 0 for unlimited*). This is not directly used
+by the sandbox it is made availble to modules to standardize the configuration.</li>
 <li><strong>output_limit</strong> - the largest output string an input or analysis plugin can
 inject into the host (bytes (unsigned), default 65536, 0 for unlimited*)</li>
 <li><strong>memory_limit</strong> - the maximum amount of memory a plugin can use before being
@@ -317,11 +324,11 @@ through as-is and available via <a href="#readconfig">read_config</a></li>
 </ul>
 <p>*<em>0 == SIZE_MAX which in not necessarily the upper limit of the
 configuration range UINT_MAX</em></p>
-<h2 id="lua-functions-exposed-to-c-by-the-core-sandbox">Lua functions exposed to C by the core sandbox</h2>
+<h2 id="Lua_functions_exposed_to_C_by_the_core_sandbox">2. Lua functions exposed to C by the core sandbox</h2>
 <p>There are no functions exposed by default, see lsb_pcall_setup() and
 lsb_pcall_teardown() when defining an API.</p>
-<h2 id="functions-exposed-to-lua-by-the-core-sandbox">Functions exposed to Lua by the core sandbox</h2>
-<h3 id="require">require</h3>
+<h2 id="Functions_exposed_to_Lua_by_the_core_sandbox">3. Functions exposed to Lua by the core sandbox</h2>
+<h3 id="require">3.1. require</h3>
 <p>By default only the base library is loaded, additional libraries must be loaded
 with require().</p>
 <p><em>Arguments</em></p>
@@ -357,7 +364,7 @@ table to the sandbox.</li>
 </ul>
 </li>
 </ul>
-<h3 id="readconfig">read_config</h3>
+<h3 id="read_config">3.2. read_config</h3>
 <p>Provides access to the sandbox configuration variables.</p>
 <p><em>Arguments</em></p>
 <ul>
@@ -367,7 +374,7 @@ table to the sandbox.</li>
 <ul>
 <li>value (string, number, bool, table)</li>
 </ul>
-<h3 id="output">output</h3>
+<h3 id="output">3.3. output</h3>
 <p>Receives any number of arguments and appends data to the output buffer, which
 cannot exceed the output_limit configuration parameter. See lsb_get_output() to
 connect the output to the host application.</p>
@@ -380,7 +387,7 @@ variable or literal to be appended the output buffer</li>
 <ul>
 <li>none</li>
 </ul>
-<h3 id="print">print</h3>
+<h3 id="print">3.4. print</h3>
 <p>Receives any number of arguments and sends a debug message to the host&apos;s logger
 function as a tab delimited message. The function clears and then uses the
 output buffer so if pending output has been queued and not flushed it will be
@@ -396,11 +403,11 @@ NULs terminate each argument.</p>
 <li>none</li>
 </ul>
 <p><strong>Note:</strong> To extend the function set exposed to Lua see lsb_add_function()</p>
-<h2 id="how-to-interact-with-the-sandbox-creating-an-api">How to interact with the sandbox (creating an API)</h2>
+<h2 id="How_to_interact_with_the_sandbox_(creating_an_API)">4. How to interact with the sandbox (creating an API)</h2>
 <p>The best place to start is with some examples:</p>
-<h3 id="unit-test-api">Unit Test API</h3>
+<h3 id="Unit_Test_API">4.1. Unit Test API</h3>
 <p><a href="https://mozilla-services.github.io/lua_sandbox/doxygen/test_2sandbox_8h.html" target="_blank">Unit Test API</a></p>
-<h4 id="lua-functions-exposed-to-c">Lua Functions Exposed to C</h4>
+<h4 id="Lua_Functions_Exposed_to_C">4.1.1. Lua Functions Exposed to C</h4>
 <ul>
 <li>int <strong>process</strong> (double)<ul>
 <li>exposes a process function that takes a test case number as its argument
@@ -413,7 +420,7 @@ and returns nothing.</li>
 </ul>
 </li>
 </ul>
-<h4 id="c-functions-exposed-to-lua">C Functions Exposed to Lua</h4>
+<h4 id="C_Functions_Exposed_to_Lua">4.1.2. C Functions Exposed to Lua</h4>
 <ul>
 <li>void <strong>write_output</strong> (optionalArg1, optionalArg2, optionalArgN)<ul>
 <li>captures whatever is in the output buffer for use by the host application,
@@ -422,9 +429,9 @@ restriction as output).</li>
 </ul>
 </li>
 </ul>
-<h3 id="heka-sandbox-api">Heka Sandbox API</h3>
+<h3 id="Heka_Sandbox_API">4.2. Heka Sandbox API</h3>
 <p><a href="https://mozilla-services.github.io/lua_sandbox/doxygen/heka_2sandbox_8h.html" target="_blank">Heka Sandbox API</a></p>
-
+<div id="anchors-navbar"><i class="fa fa-anchor"></i><ul><p><a href="#Generic_Sandbox_Interface">Generic Sandbox Interface</a></p><li><a href="#Configuration">1. Configuration</a></li><li><a href="#Lua_functions_exposed_to_C_by_the_core_sandbox">2. Lua functions exposed to C by the core sandbox</a></li><li><a href="#Functions_exposed_to_Lua_by_the_core_sandbox">3. Functions exposed to Lua by the core sandbox</a></li><ul><li><a href="#require">3.1. require</a></li><li><a href="#read_config">3.2. read_config</a></li><li><a href="#output">3.3. output</a></li><li><a href="#print">3.4. print</a></li></ul><li><a href="#How_to_interact_with_the_sandbox_(creating_an_API)">4. How to interact with the sandbox (creating an API)</a></li><ul><li><a href="#Unit_Test_API">4.1. Unit Test API</a></li><ul><li><a href="#Lua_Functions_Exposed_to_C">4.1.1. Lua Functions Exposed to C</a></li><li><a href="#C_Functions_Exposed_to_Lua">4.1.2. C Functions Exposed to Lua</a></li></ul><li><a href="#Heka_Sandbox_API">4.2. Heka Sandbox API</a></li></ul></ul></div><a href="#Configuration" id="goTop"><i class="fa fa-arrow-up"></i></a>
                                 
                                 </section>
                             
@@ -451,7 +458,7 @@ restriction as output).</li>
 
             
                 
-                <a href="./" class="navigation navigation-prev " aria-label="Previous page: Lua Sandbox Library (1.2.7)">
+                <a href="./" class="navigation navigation-prev " aria-label="Previous page: Lua Sandbox Library (1.2.8)">
                     <i class="fa fa-angle-left"></i>
                 </a>
                 
@@ -467,7 +474,7 @@ restriction as output).</li>
     <script>
         var gitbook = gitbook || [];
         gitbook.push(function() {
-            gitbook.page.hasChanged({"page":{"title":"Generic Sandbox","level":"1.2","depth":1,"next":{"title":"Heka Sandbox","level":"1.3","depth":1,"path":"heka/index.md","ref":"heka/index.md","articles":[{"title":"Input Interface","level":"1.3.1","depth":2,"path":"heka/input.md","ref":"heka/input.md","articles":[]},{"title":"Analysis Interface","level":"1.3.2","depth":2,"path":"heka/analysis.md","ref":"heka/analysis.md","articles":[]},{"title":"Output Interface","level":"1.3.3","depth":2,"path":"heka/output.md","ref":"heka/output.md","articles":[]},{"title":"Message Schema","level":"1.3.4","depth":2,"path":"heka/message.md","ref":"heka/message.md","articles":[]},{"title":"Message Matcher","level":"1.3.5","depth":2,"path":"util/message_matcher.md","ref":"util/message_matcher.md","articles":[]}]},"previous":{"title":"Lua Sandbox Library (1.2.7)","level":"1.1","depth":1,"path":"README.md","ref":"README.md","articles":[]},"dir":"ltr"},"config":{"gitbook":"*","theme":"default","variables":{},"plugins":[],"pluginsConfig":{"highlight":{},"search":{},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"sharing":{"facebook":true,"twitter":true,"google":false,"weibo":false,"instapaper":false,"vk":false,"all":["facebook","google","twitter","weibo","instapaper"]},"fontsettings":{"theme":"white","family":"sans","size":2},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false}},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56}},"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"}},"file":{"path":"sandbox.md","mtime":"2017-05-15T14:52:09.958Z","type":"markdown"},"gitbook":{"version":"3.2.2","time":"2017-11-10T18:47:18.068Z"},"basePath":".","book":{"language":""}});
+            gitbook.page.hasChanged({"page":{"title":"Generic Sandbox","level":"1.2","depth":1,"next":{"title":"Heka Sandbox","level":"1.3","depth":1,"path":"heka/index.md","ref":"heka/index.md","articles":[{"title":"Input Interface","level":"1.3.1","depth":2,"path":"heka/input.md","ref":"heka/input.md","articles":[]},{"title":"Analysis Interface","level":"1.3.2","depth":2,"path":"heka/analysis.md","ref":"heka/analysis.md","articles":[]},{"title":"Output Interface","level":"1.3.3","depth":2,"path":"heka/output.md","ref":"heka/output.md","articles":[]},{"title":"Message Schema","level":"1.3.4","depth":2,"path":"heka/message.md","ref":"heka/message.md","articles":[]},{"title":"Message Matcher","level":"1.3.5","depth":2,"path":"util/message_matcher.md","ref":"util/message_matcher.md","articles":[]}]},"previous":{"title":"Lua Sandbox Library (1.2.8)","level":"1.1","depth":1,"path":"README.md","ref":"README.md","articles":[]},"dir":"ltr"},"config":{"gitbook":"*","theme":"default","variables":{},"plugins":["collapsible-menu","navigator"],"pluginsConfig":{"collapsible-menu":{},"navigator":{},"highlight":{},"search":{},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"sharing":{"facebook":true,"twitter":true,"google":false,"weibo":false,"instapaper":false,"vk":false,"all":["facebook","google","twitter","weibo","instapaper"]},"fontsettings":{"theme":"white","family":"sans","size":2},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false}},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56}},"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"}},"file":{"path":"sandbox.md","mtime":"2017-12-06T16:19:41.257Z","type":"markdown"},"gitbook":{"version":"3.2.2","time":"2018-01-03T19:06:38.643Z"},"basePath":".","book":{"language":""}});
         });
     </script>
 </div>
@@ -475,6 +482,10 @@ restriction as output).</li>
         
     <script src="gitbook/gitbook.js"></script>
     <script src="gitbook/theme.js"></script>
+    
+        
+        <script src="gitbook/gitbook-plugin-collapsible-menu/plugin.js"></script>
+        
     
         
         <script src="gitbook/gitbook-plugin-search/search-engine.js"></script>
