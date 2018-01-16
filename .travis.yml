@@ -13,7 +13,7 @@ env:
         - DOCKER_IMAGE=debian:stretch
         - DOCKER_IMAGE=fedora:latest
         - DOCKER_IMAGE=ubuntu:12.04 CMAKE_URL=auto
-        - DOCKER_IMAGE=ubuntu:latest # LTS
+        - DOCKER_IMAGE=ubuntu:latest CMAKE_URL=auto # LTS
         - DOCKER_IMAGE=ubuntu:devel
 
 script:
