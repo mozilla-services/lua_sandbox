@@ -215,7 +215,7 @@ bool lsb_decode_heka_message(lsb_heka_message *m,
 {
   if (!m || !buf || len == 0) {
     if (logger && logger->cb) {
-      logger->cb(logger->context, __func__, 4, LSB_ERR_UTIL_NULL);
+      logger->cb(logger->context, __func__, 4, "%s", LSB_ERR_UTIL_NULL);
     }
     return false;
   }
@@ -315,14 +315,14 @@ bool lsb_decode_heka_message(lsb_heka_message *m,
 
   if (!m->uuid.s) {
     if (logger && logger->cb) {
-      logger->cb(logger->context, __func__, 4, "missing " LSB_UUID);
+      logger->cb(logger->context, __func__, 4, "%s", "missing " LSB_UUID);
     }
     return false;
   }
 
   if (!timestamp) {
     if (logger && logger->cb) {
-      logger->cb(logger->context, __func__, 4, "missing " LSB_TIMESTAMP);
+      logger->cb(logger->context, __func__, 4, "%s", "missing " LSB_TIMESTAMP);
     }
     return false;
   }
@@ -341,7 +341,7 @@ bool lsb_find_heka_message(lsb_heka_message *m,
 {
   if (!m || !ib || !discarded_bytes) {
     if (logger && logger->cb) {
-      logger->cb(logger->context, __func__, 4, LSB_ERR_UTIL_NULL);
+      logger->cb(logger->context, __func__, 4, "%s", LSB_ERR_UTIL_NULL);
     }
     return false;
   }
