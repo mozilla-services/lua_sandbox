@@ -513,7 +513,7 @@ lsb_heka_sandbox* lsb_heka_create_input(void *parent,
 
   if (lsb_init(hsb->lsb, state_file)) {
     if (logger && logger->cb) {
-      logger->cb(logger->context, hsb->name, 3, lsb_get_error(hsb->lsb));
+      logger->cb(logger->context, hsb->name, 3, "%s", lsb_get_error(hsb->lsb));
     }
     lsb_destroy(hsb->lsb);
     free(hsb->hostname);
@@ -710,7 +710,7 @@ lsb_heka_sandbox* lsb_heka_create_analysis(void *parent,
 
   if (lsb_init(hsb->lsb, state_file)) {
     if (logger && logger->cb) {
-      logger->cb(logger->context, hsb->name, 3, lsb_get_error(hsb->lsb));
+      logger->cb(logger->context, hsb->name, 3, "%s", lsb_get_error(hsb->lsb));
     }
     lsb_destroy(hsb->lsb);
     free(hsb->hostname);
@@ -929,7 +929,7 @@ lsb_heka_sandbox* lsb_heka_create_output(void *parent,
 
   if (lsb_init(hsb->lsb, state_file)) {
     if (logger && logger->cb) {
-      logger->cb(logger->context, hsb->name, 3, lsb_get_error(hsb->lsb));
+      logger->cb(logger->context, hsb->name, 3, "%s", lsb_get_error(hsb->lsb));
     }
     lsb_destroy(hsb->lsb);
     free(hsb->hostname);
