@@ -21,6 +21,7 @@ usage() {
     echo "  - CXX: C++ compiler (default: g++)" >&2
 }
 
+
 # =================================================================
 # Run command within container
 docker_run() {
@@ -38,6 +39,7 @@ docker_run() {
             --env "CMAKE_SHA256=${CMAKE_SHA256}" \
             --env "CC=${CC}" \
             --env "CXX=${CXX}" \
+            --env "DISTRO=${DOCKER_IMAGE}" \
             "$DOCKER_IMAGE" \
             $@
     )
