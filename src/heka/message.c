@@ -302,9 +302,12 @@ encode_int(lua_State *lua, lsb_output_buffer *ob, char tag, const char *name,
  * @param lsb  Pointer to the sandbox.
  * @param lua Pointer to the lua_State.
  * @param ob  Pointer to the output data buffer.
- * @param first Boolean indicator used to add addition protobuf data in the
- *              correct order.
- * @param representation String representation of the field i.e., "ms"
+ * @param first Flag set on the first field value to add
+ *              additional protobuf data in the correct order.
+ *              In the case of arrays the value should contain
+ *              the number of items in the array.
+ * @param representation String representation of the field
+ *                       i.e., "ms"
  * @param value_type Protobuf value type
  *
  * @return lsb_err_value NULL on success error message on failure
@@ -329,26 +332,21 @@ static lsb_err_value
 encode_field_array(lsb_lua_sandbox *lsb, lua_State *lua, lsb_output_buffer *ob,
                    int t, const char *representation, int value_type)
 {
-  lsb_err_value ret = NULL;
-  int first = (int)lua_objlen(lua, -1);
-  int multiple = first > 1 ? first : 0;
-  size_t len_pos = 0;
-  lua_checkstack(lua, 2);
-  lua_pushnil(lua);
-  while (!ret && lua_next(lua, -2) != 0) {
+  int alen = (int)lua_objlen(lua, -2);
+  lsb_err_value ret = encode_field_value(lsb, lua, ob, alen, representation,
+                                         value_type);
+  size_t len_pos = ob->pos;
+  lua_pop(lua, 1);
+  for (int idx = 2; !ret && idx <= alen; ++idx) {
+    lua_rawgeti(lua, -1, idx);
     if (lua_type(lua, -1) != t) {
       snprintf(lsb->error_message, LSB_ERROR_SIZE, "array has mixed types");
       return LSB_ERR_HEKA_INPUT;
     }
-    ret = encode_field_value(lsb, lua, ob, first, representation, value_type);
-    if (first) {
-      len_pos = ob->pos;
-      first = 0;
-    }
-    lua_pop(lua, 1); // Remove the value leaving the key on top for
-                     // the next interation.
+    ret = encode_field_value(lsb, lua, ob, 0, representation, value_type);
+    lua_pop(lua, 1);
   }
-  if (!ret && multiple && value_type == LSB_PB_INTEGER) {
+  if (!ret && alen > 1 && value_type == LSB_PB_INTEGER) {
     // fix up the varint packed length
     size_t i = len_pos - 2;
     int y = 0;
@@ -523,9 +521,9 @@ encode_field_value(lsb_lua_sandbox *lsb, lua_State *lua, lsb_output_buffer *ob,
     {
       lua_rawgeti(lua, -1, 1);
       int t = lua_type(lua, -1);
-      lua_pop(lua, 1); // remove the array test value
       switch (t) {
       case LUA_TNIL:
+        lua_pop(lua, 1); // remove the array test value
         ret = encode_field_object(lsb, lua, ob);
         break;
       case LUA_TNUMBER:
@@ -534,6 +532,7 @@ encode_field_value(lsb_lua_sandbox *lsb, lua_State *lua, lsb_output_buffer *ob,
         ret = encode_field_array(lsb, lua, ob, t, representation, value_type);
         break;
       default:
+        lua_pop(lua, 1); // remove the array test value
         snprintf(lsb->error_message, LSB_ERROR_SIZE,
                  "unsupported array type: %s", lua_typename(lua, t));
         return LSB_ERR_LUA;
