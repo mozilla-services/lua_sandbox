@@ -41,7 +41,15 @@ static void set_missing_headers(lua_State *lua, int idx, lsb_heka_sandbox *hsb)
   lua_pop(lua, 1);
   if (t == LUA_TNIL && hsb->hostname) {
     lua_pushstring(lua, hsb->hostname);
-    lua_setfield(lua, 1, LSB_HOSTNAME);
+    lua_setfield(lua, idx, LSB_HOSTNAME);
+  }
+
+  lua_getfield(lua, idx, LSB_PID);
+  t = lua_type(lua, -1);
+  lua_pop(lua, 1);
+  if (t == LUA_TNIL) {
+    lua_pushinteger(lua, hsb->pid);
+    lua_setfield(lua, idx, LSB_PID);
   }
 }
 
@@ -894,35 +902,36 @@ int heka_encode_message(lua_State *lua)
 lsb_err_value
 heka_encode_message_table(lsb_lua_sandbox *lsb, lua_State *lua, int idx)
 {
+  lsb_heka_sandbox *hsb = lsb_get_parent(lsb);
   lsb_err_value ret = NULL;
   lsb_output_buffer *ob = &lsb->output;
   ob->pos = 0;
 
-  // use existing or create a type 4 uuid
-  lua_getfield(lua, idx, LSB_UUID);
-  size_t len;
-  const char *uuid = lua_tolstring(lua, -1, &len);
-  ret = lsb_write_heka_uuid(ob, uuid, len);
-  lua_pop(lua, 1); // remove uuid
-  if (ret) return ret;
-
-  // use existing or create a timestamp
-  lua_getfield(lua, idx, LSB_TIMESTAMP);
   long long ts;
-  if (lua_isnumber(lua, -1)) {
-    ts = (long long)lua_tonumber(lua, -1);
-  } else {
-    ts = lsb_get_timestamp();
-  }
-  lua_pop(lua, 1); // remove timestamp
-
-  lsb_heka_sandbox *hsb = lsb_get_parent(lsb);
   if (hsb->restricted_headers) {
+    ret = lsb_write_heka_uuid(ob, NULL, 0);
+    if (ret) return ret;
+    ts = lsb_get_timestamp();
     lua_pushstring(lua, hsb->name);
     lua_setfield(lua, idx, LSB_LOGGER);
     lua_pushstring(lua, hsb->hostname);
     lua_setfield(lua, idx, LSB_HOSTNAME);
+    lua_pushinteger(lua, hsb->pid);
+    lua_setfield(lua, idx, LSB_PID);
   } else {
+    lua_getfield(lua, idx, LSB_UUID);
+    size_t len;
+    const char *uuid = lua_tolstring(lua, -1, &len);
+    ret = lsb_write_heka_uuid(ob, uuid, len);
+    lua_pop(lua, 1); // remove uuid
+
+    lua_getfield(lua, idx, LSB_TIMESTAMP);
+    if (lua_isnumber(lua, -1)) {
+      ts = (long long)lua_tonumber(lua, -1);
+    } else {
+      ts = lsb_get_timestamp();
+    }
+    lua_pop(lua, 1); // remove timestamp
     set_missing_headers(lua, idx, hsb);
   }
 

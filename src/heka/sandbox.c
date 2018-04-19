@@ -448,6 +448,10 @@ static void set_restrictions(lua_State *lua, lsb_heka_sandbox *hsb)
   }
   lua_pop(lua, 1); // remove the Hostname
 
+  lua_getfield(lua, 1, LSB_PID);
+  hsb->pid = (int)lua_tointeger(lua, -1);
+  lua_pop(lua, 1);
+
   lua_getfield(lua, 1, "restricted_headers");
   if (lua_type(lua, -1) == LUA_TBOOLEAN) {
     hsb->restricted_headers = lua_toboolean(lua, -1);

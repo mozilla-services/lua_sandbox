@@ -62,11 +62,11 @@ Converts a Heka protobuf encoded message string into a Lua table. See
 ### inject_message
 
 Sends a Heka protocol buffer message into the host. For the Heka message table
-argument `Logger` and `Hostname` are restricted header values.  An override
-configuration option is provided `restricted_headers`; when true the headers are
-always set to the configuration values; when false (default) the headers are set
-to the values provide in the message table, if no value is provided it defaults
-to the appropriate configuration value.
+arguments `Timestamp`, `Logger`, `Hostname` and `Pid` are restricted header
+values. An override configuration option is provided `restricted_headers`; when
+true the headers are always set to the configuration values; when false
+(default) the headers are set to the values provide in the message table,
+if no value is provided it defaults to the appropriate value.
 
 *Arguments*
 * msg ([Heka message table](message.md),
