@@ -40,6 +40,7 @@ struct lsb_heka_sandbox {
   struct heka_stats                 stats;
   char                              type;
   bool                              restricted_headers;
+  int                               pid;
 };
 
 #endif

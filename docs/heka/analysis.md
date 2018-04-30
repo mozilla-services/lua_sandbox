@@ -117,12 +117,12 @@ message especially when using an LPeg grammar transformation.
 ### inject_message
 
 Creates a new Heka protocol buffer message using the contents of the specified
-Lua table (overwriting whatever is in the payload buffer). `Logger` and
-`Hostname` are restricted header values.  An override configuration option is
-provided `restricted_headers`; when true (default) the headers are always set
-to the configuration values; when false the headers are set to the values
-provide in the message table, if no value is provided it defaults to the
-appropriate configuration value.
+Lua table (overwriting whatever is in the payload buffer). `Timestamp`,
+`Logger`, `Hostname` and `Pid` are restricted header values. An override
+configuration option is provided `restricted_headers`; when true (default) the
+headers are always set to the configuration values; when false the headers are
+set to the values provided in the message table, if no value is provided it
+defaults to the appropriate value.
 
 *Arguments*
 * msg ([Heka message table](message.md))

@@ -4,14 +4,14 @@
 
 ```lua
 {
-Uuid        = "data",               -- auto generated if not a 16 byte raw binary UUID or a 36 character human readable UUID
-Logger      = "nginx",              -- defaults to the Logger configuration value but can be overridden with the `restricted_headers` configuration
-Hostname    = "example.com",        -- defaults to the Hostname configuration value but can be overridden with the `restricted_headers` configuration
-Timestamp   = 1e9,                  -- auto generated if not a number
+Uuid        = "data",               -- restricted header, auto generated if not a 16 byte raw binary UUID or a 36 character human readable UUID
+Logger      = "nginx",              -- restricted header, defaults to the Logger configuration value
+Hostname    = "example.com",        -- restricted header, defaults to the Hostname configuration value
+Timestamp   = 1e9,                  -- restricted header, defaults to the current time
 Type        = "TEST",
 Payload     = "Test Payload",
 EnvVersion  = "0.8",
-Pid         = 1234,
+Pid         = 1234,                 -- restricted header, defaults to the Pid configuration value
 Severity    = 6,
 Fields      = {
             http_status     = 200,  -- encoded as a double
