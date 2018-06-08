@@ -42,6 +42,13 @@ data = ud.new("ud2")
 
 dataRef = data
 
+empty_array = {nil}
+empty_array1 = {}
+empty_array1[1] = nil
+empty_object = {}
+empty_object1 = {[1] = nil}
+array = {1, "two", 3, "four", 5}
+
 function process_message ()
     return 0
 end

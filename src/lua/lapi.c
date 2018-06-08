@@ -257,6 +257,18 @@ LUA_API int lua_iscfunction (lua_State *L, int idx) {
 }
 
 
+LUA_API int lua_tabletype (lua_State *L, int idx) {
+  StkId t;
+  int tt;
+  lua_lock(L);
+  t = index2adr(L, idx);
+  api_check(L, ttistable(t));
+  tt = luaH_type(hvalue(t));
+  lua_unlock(L);
+  return tt;
+}
+
+
 LUA_API int lua_isnumber (lua_State *L, int idx) {
   TValue n;
   const TValue *o = index2adr(L, idx);

@@ -81,6 +81,13 @@ typedef void * (*lua_Alloc) (void *ud, void *ptr, size_t osize, size_t nsize);
 #define LUA_TUSERDATA		7
 #define LUA_TTHREAD		8
 
+/*
+** table types
+*/
+#define LUA_TTEMPTY             0
+#define LUA_TTARRAY             1
+#define LUA_TTHASH              2
+#define LUA_TTMIXED             3
 
 
 /* minimum Lua stack available to a C function */
@@ -132,6 +139,7 @@ LUA_API void  (lua_xmove) (lua_State *from, lua_State *to, int n);
 ** access functions (stack -> C)
 */
 
+LUA_API int             (lua_tabletype) (lua_State *L, int idx);
 LUA_API int             (lua_isnumber) (lua_State *L, int idx);
 LUA_API int             (lua_isstring) (lua_State *L, int idx);
 LUA_API int             (lua_iscfunction) (lua_State *L, int idx);

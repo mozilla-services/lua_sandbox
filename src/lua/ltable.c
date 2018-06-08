@@ -577,6 +577,13 @@ int luaH_getn (Table *t) {
 }
 
 
+int luaH_type (Table *t) {
+  if (t->sizearray == 0) {
+    return t->node == dummynode ? LUA_TTEMPTY : LUA_TTHASH;
+  }
+  return t->node == dummynode ? LUA_TTARRAY : LUA_TTMIXED;
+}
+
 
 #if defined(LUA_DEBUG)
 
