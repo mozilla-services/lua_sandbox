@@ -12,6 +12,7 @@
 #include <stdbool.h>
 #include <time.h>
 
+#include "../../luasandbox.h"
 #include "../error.h"
 #include "../util/heka_message.h"
 
@@ -339,13 +340,23 @@ LSB_HEKA_EXPORT const char* lsb_heka_get_lua_file(lsb_heka_sandbox *hsb);
 LSB_HEKA_EXPORT lsb_heka_stats lsb_heka_get_stats(lsb_heka_sandbox *hsb);
 
 /**
- * Queries the state of the sandbox.
+ * Convenience function to test if a sandbox is running.
  *
  * @param hsb Heka sandbox
  *
  * @return True if the sandbox has not been terminated
  */
 LSB_HEKA_EXPORT bool lsb_heka_is_running(lsb_heka_sandbox *hsb);
+
+/**
+ * Queries the state of the sandbox.
+ *
+ * @param hsb
+ *
+ * @return lsb_state
+ *
+ */
+LSB_HEKA_EXPORT lsb_state lsb_heka_get_state(lsb_heka_sandbox *hsb);
 
 /**
  * Retrieve the currently active sandbox message.  This call returns a handle to

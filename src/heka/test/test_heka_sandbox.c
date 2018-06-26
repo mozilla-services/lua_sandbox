@@ -260,6 +260,8 @@ static char* test_api_assertion()
   lsb_heka_stats stats = lsb_heka_get_stats(NULL);
   mu_assert(0 == stats.mem_cur, "received: %llu", stats.mem_cur);
   mu_assert(!lsb_heka_is_running(NULL), "running is true");
+  int state = lsb_heka_get_state(NULL);
+  mu_assert(LSB_UNKNOWN == state, "received: %d", state);
   return NULL;
 }
 
@@ -353,6 +355,8 @@ static char* test_timer_event()
   mu_assert(0 == stats.te_avg, "received %g", stats.te_avg);
   mu_assert(0 == stats.te_sd, "received %g", stats.te_sd);
   mu_assert(true == lsb_heka_is_running(hsb), "not running");
+  int state = lsb_heka_get_state(hsb);
+  mu_assert(LSB_RUNNING == state, "received: %d", state);
 
   mu_assert(0 == lsb_heka_timer_event(hsb, 0, false), "err: %s",
             lsb_heka_get_error(hsb));
@@ -361,6 +365,8 @@ static char* test_timer_event()
   mu_assert(1 == lsb_heka_timer_event(hsb, 2, false), "err: %s",
             lsb_heka_get_error(hsb));
   mu_assert(false == lsb_heka_is_running(hsb), "not running");
+  state = lsb_heka_get_state(hsb);
+  mu_assert(LSB_TERMINATED == state, "received: %d", state);
 
   stats = lsb_heka_get_stats(hsb);
   mu_assert(0 == stats.im_cnt, "received %llu", stats.im_cnt);

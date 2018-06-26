@@ -1089,6 +1089,13 @@ bool lsb_heka_is_running(lsb_heka_sandbox *hsb)
 }
 
 
+lsb_state lsb_heka_get_state(lsb_heka_sandbox *hsb)
+{
+  if (!hsb) return LSB_UNKNOWN;
+  return lsb_get_state(hsb->lsb);
+}
+
+
 const lsb_heka_message* lsb_heka_get_message(lsb_heka_sandbox *hsb)
 {
   if (!hsb) return NULL;
