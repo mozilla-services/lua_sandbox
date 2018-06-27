@@ -24,7 +24,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">luasandbox
-   &#160;<span id="projectnumber">1.2.10</span>
+   &#160;<span id="projectnumber">1.3.0</span>
    </div>
    <div id="projectbrief">Generic Lua sandbox for dynamic data analysis</div>
   </td>
@@ -102,6 +102,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <a href="#details">More...</a></p>
 <div class="textblock"><code>#include &lt;stdbool.h&gt;</code><br />
 <code>#include &lt;time.h&gt;</code><br />
+<code>#include &quot;<a class="el" href="luasandbox_8h_source.html">../../luasandbox.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="error_8h_source.html">../error.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="heka__message_8h_source.html">../util/heka_message.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="lauxlib_8h_source.html">../lauxlib.h</a>&quot;</code><br />
@@ -111,15 +112,16 @@ Include dependency graph for sandbox.h:</div>
 <div class="dyncontent">
 <div class="center"><img src="heka_2sandbox_8h__incl.png" border="0" usemap="#include_2luasandbox_2heka_2sandbox_8h" alt=""/></div>
 <map name="include_2luasandbox_2heka_2sandbox_8h" id="include_2luasandbox_2heka_2sandbox_8h">
-<area shape="rect" id="node4" href="error_8h.html" title="Error handling and logging. " alt="" coords="34,319,104,345"/>
-<area shape="rect" id="node5" href="heka__message_8h.html" title="Heka message representation. " alt="" coords="269,95,424,121"/>
-<area shape="rect" id="node12" href="lauxlib_8h.html" title="../lauxlib.h" alt="" coords="620,95,702,121"/>
-<area shape="rect" id="node14" href="lua_8h.html" title="lua.h" alt="" coords="766,169,817,196"/>
-<area shape="rect" id="node7" href="input__buffer_8h.html" title="Data stream input buffer. " alt="" coords="454,169,556,196"/>
-<area shape="rect" id="node8" href="util_8h.html" title="Shared types and structures. " alt="" coords="321,244,372,271"/>
-<area shape="rect" id="node10" href="output__buffer_8h.html" title="Data stream output buffer. " alt="" coords="180,169,289,196"/>
-<area shape="rect" id="node11" href="string_8h.html" title="Heka message string. " alt="" coords="314,169,379,196"/>
-<area shape="rect" id="node16" href="luaconf_8h.html" title="luaconf.h" alt="" coords="825,244,900,271"/>
+<area shape="rect" id="node4" href="luasandbox_8h.html" title="Generic Lua sandbox for dynamic data analysis. " alt="" coords="688,95,811,121"/>
+<area shape="rect" id="node5" href="error_8h.html" title="Error handling and logging. " alt="" coords="756,319,885,345"/>
+<area shape="rect" id="node6" href="lua_8h.html" title="luasandbox/lua.h" alt="" coords="627,169,747,196"/>
+<area shape="rect" id="node11" href="heka__message_8h.html" title="Heka message representation. " alt="" coords="198,95,352,121"/>
+<area shape="rect" id="node17" href="lauxlib_8h.html" title="../lauxlib.h" alt="" coords="531,95,614,121"/>
+<area shape="rect" id="node9" href="luaconf_8h.html" title="luaconf.h" alt="" coords="686,244,760,271"/>
+<area shape="rect" id="node12" href="input__buffer_8h.html" title="Data stream input buffer. " alt="" coords="224,169,326,196"/>
+<area shape="rect" id="node13" href="util_8h.html" title="Shared types and structures. " alt="" coords="250,244,300,271"/>
+<area shape="rect" id="node15" href="output__buffer_8h.html" title="Data stream output buffer. " alt="" coords="40,169,150,196"/>
+<area shape="rect" id="node16" href="string_8h.html" title="Heka message string. " alt="" coords="350,169,416,196"/>
 </map>
 </div>
 </div>
@@ -222,8 +224,11 @@ Functions</h2></td></tr>
 <tr class="memdesc:a0bcd84bdd94d6f4dab1f4c4820cfa58d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retrieve the sandbox profiling/monitoring statistics.  <a href="#a0bcd84bdd94d6f4dab1f4c4820cfa58d">More...</a><br /></td></tr>
 <tr class="separator:a0bcd84bdd94d6f4dab1f4c4820cfa58d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9b99e47f73fd9989cc82f2606212b9f5"><td class="memItemLeft" align="right" valign="top"><a class="el" href="heka_2sandbox_8h.html#acd7bfad98c412254d12cfcafc4be7b4c">LSB_HEKA_EXPORT</a> bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="heka_2sandbox_8h.html#a9b99e47f73fd9989cc82f2606212b9f5">lsb_heka_is_running</a> (<a class="el" href="heka_2sandbox_8h.html#a44d198540fb5dd8f538e9a2134e49cbc">lsb_heka_sandbox</a> *hsb)</td></tr>
-<tr class="memdesc:a9b99e47f73fd9989cc82f2606212b9f5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Queries the state of the sandbox.  <a href="#a9b99e47f73fd9989cc82f2606212b9f5">More...</a><br /></td></tr>
+<tr class="memdesc:a9b99e47f73fd9989cc82f2606212b9f5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Convenience function to test if a sandbox is running.  <a href="#a9b99e47f73fd9989cc82f2606212b9f5">More...</a><br /></td></tr>
 <tr class="separator:a9b99e47f73fd9989cc82f2606212b9f5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ada3725623f63e7cc2995662b0cd20a42"><td class="memItemLeft" align="right" valign="top"><a class="el" href="heka_2sandbox_8h.html#acd7bfad98c412254d12cfcafc4be7b4c">LSB_HEKA_EXPORT</a> <a class="el" href="luasandbox_8h.html#a6c44052ea49bca2e9b3aabebff9e3424">lsb_state</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="heka_2sandbox_8h.html#ada3725623f63e7cc2995662b0cd20a42">lsb_heka_get_state</a> (<a class="el" href="heka_2sandbox_8h.html#a44d198540fb5dd8f538e9a2134e49cbc">lsb_heka_sandbox</a> *hsb)</td></tr>
+<tr class="memdesc:ada3725623f63e7cc2995662b0cd20a42"><td class="mdescLeft">&#160;</td><td class="mdescRight">Queries the state of the sandbox.  <a href="#ada3725623f63e7cc2995662b0cd20a42">More...</a><br /></td></tr>
+<tr class="separator:ada3725623f63e7cc2995662b0cd20a42"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae603a42c56a144354ff3ad756cb9c4e9"><td class="memItemLeft" align="right" valign="top"><a class="el" href="heka_2sandbox_8h.html#acd7bfad98c412254d12cfcafc4be7b4c">LSB_HEKA_EXPORT</a> const <a class="el" href="structlsb__heka__message.html">lsb_heka_message</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="heka_2sandbox_8h.html#ae603a42c56a144354ff3ad756cb9c4e9">lsb_heka_get_message</a> (<a class="el" href="heka_2sandbox_8h.html#a44d198540fb5dd8f538e9a2134e49cbc">lsb_heka_sandbox</a> *hsb)</td></tr>
 <tr class="memdesc:ae603a42c56a144354ff3ad756cb9c4e9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retrieve the currently active sandbox message.  <a href="#ae603a42c56a144354ff3ad756cb9c4e9">More...</a><br /></td></tr>
 <tr class="separator:ae603a42c56a144354ff3ad756cb9c4e9"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -251,7 +256,7 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="heka_2sandbox_8h_source.html#l00028">28</a> of file <a class="el" href="heka_2sandbox_8h_source.html">sandbox.h</a>.</p>
+<p>Definition at line <a class="el" href="heka_2sandbox_8h_source.html#l00029">29</a> of file <a class="el" href="heka_2sandbox_8h_source.html">sandbox.h</a>.</p>
 
 </div>
 </div>
@@ -265,7 +270,7 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="heka_2sandbox_8h_source.html#l00032">32</a> of file <a class="el" href="heka_2sandbox_8h_source.html">sandbox.h</a>.</p>
+<p>Definition at line <a class="el" href="heka_2sandbox_8h_source.html#l00033">33</a> of file <a class="el" href="heka_2sandbox_8h_source.html">sandbox.h</a>.</p>
 
 </div>
 </div>
@@ -279,7 +284,7 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="heka_2sandbox_8h_source.html#l00034">34</a> of file <a class="el" href="heka_2sandbox_8h_source.html">sandbox.h</a>.</p>
+<p>Definition at line <a class="el" href="heka_2sandbox_8h_source.html#l00035">35</a> of file <a class="el" href="heka_2sandbox_8h_source.html">sandbox.h</a>.</p>
 
 </div>
 </div>
@@ -293,7 +298,7 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="heka_2sandbox_8h_source.html#l00033">33</a> of file <a class="el" href="heka_2sandbox_8h_source.html">sandbox.h</a>.</p>
+<p>Definition at line <a class="el" href="heka_2sandbox_8h_source.html#l00034">34</a> of file <a class="el" href="heka_2sandbox_8h_source.html">sandbox.h</a>.</p>
 
 </div>
 </div>
@@ -319,7 +324,7 @@ Variables</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>0 on success </dd></dl>
 
-<p>Definition at line <a class="el" href="heka_2sandbox_8h_source.html#l00112">112</a> of file <a class="el" href="heka_2sandbox_8h_source.html">sandbox.h</a>.</p>
+<p>Definition at line <a class="el" href="heka_2sandbox_8h_source.html#l00113">113</a> of file <a class="el" href="heka_2sandbox_8h_source.html">sandbox.h</a>.</p>
 
 </div>
 </div>
@@ -347,7 +352,7 @@ Variables</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>0 on success </dd></dl>
 
-<p>Definition at line <a class="el" href="heka_2sandbox_8h_source.html#l00097">97</a> of file <a class="el" href="heka_2sandbox_8h_source.html">sandbox.h</a>.</p>
+<p>Definition at line <a class="el" href="heka_2sandbox_8h_source.html#l00098">98</a> of file <a class="el" href="heka_2sandbox_8h_source.html">sandbox.h</a>.</p>
 
 </div>
 </div>
@@ -361,7 +366,7 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="heka_2sandbox_8h_source.html#l00052">52</a> of file <a class="el" href="heka_2sandbox_8h_source.html">sandbox.h</a>.</p>
+<p>Definition at line <a class="el" href="heka_2sandbox_8h_source.html#l00053">53</a> of file <a class="el" href="heka_2sandbox_8h_source.html">sandbox.h</a>.</p>
 
 </div>
 </div>
@@ -397,7 +402,7 @@ Variables</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>0 on success </dd></dl>
 
-<p>Definition at line <a class="el" href="heka_2sandbox_8h_source.html#l00125">125</a> of file <a class="el" href="heka_2sandbox_8h_source.html">sandbox.h</a>.</p>
+<p>Definition at line <a class="el" href="heka_2sandbox_8h_source.html#l00126">126</a> of file <a class="el" href="heka_2sandbox_8h_source.html">sandbox.h</a>.</p>
 
 </div>
 </div>
@@ -422,7 +427,7 @@ Variables</h2></td></tr>
 </td></tr>
 </table>
 
-<p>Definition at line <a class="el" href="heka_2sandbox_8h_source.html#l00045">45</a> of file <a class="el" href="heka_2sandbox_8h_source.html">sandbox.h</a>.</p>
+<p>Definition at line <a class="el" href="heka_2sandbox_8h_source.html#l00046">46</a> of file <a class="el" href="heka_2sandbox_8h_source.html">sandbox.h</a>.</p>
 
 </div>
 </div>
@@ -450,7 +455,7 @@ Variables</h2></td></tr>
 </td></tr>
 </table>
 
-<p>Definition at line <a class="el" href="heka_2sandbox_8h_source.html#l00036">36</a> of file <a class="el" href="heka_2sandbox_8h_source.html">sandbox.h</a>.</p>
+<p>Definition at line <a class="el" href="heka_2sandbox_8h_source.html#l00037">37</a> of file <a class="el" href="heka_2sandbox_8h_source.html">sandbox.h</a>.</p>
 
 </div>
 </div>
@@ -750,6 +755,31 @@ Variables</h2></td></tr>
 
 </div>
 </div>
+<a class="anchor" id="ada3725623f63e7cc2995662b0cd20a42"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="heka_2sandbox_8h.html#acd7bfad98c412254d12cfcafc4be7b4c">LSB_HEKA_EXPORT</a> <a class="el" href="luasandbox_8h.html#a6c44052ea49bca2e9b3aabebff9e3424">lsb_state</a> lsb_heka_get_state </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="heka_2sandbox_8h.html#a44d198540fb5dd8f538e9a2134e49cbc">lsb_heka_sandbox</a> *&#160;</td>
+          <td class="paramname"><em>hsb</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Queries the state of the sandbox. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">hsb</td><td></td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>lsb_state </dd></dl>
+
+</div>
+</div>
 <a class="anchor" id="a0bcd84bdd94d6f4dab1f4c4820cfa58d"></a>
 <div class="memitem">
 <div class="memproto">
@@ -818,7 +848,7 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Queries the state of the sandbox. </p>
+<p>Convenience function to test if a sandbox is running. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">hsb</td><td>Heka sandbox</td></tr>

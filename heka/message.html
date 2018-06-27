@@ -98,7 +98,7 @@
                 <a href="../">
             
                     
-                    Lua Sandbox Library (1.2.10)
+                    Lua Sandbox Library (1.3.0)
             
                 </a>
             
@@ -290,14 +290,14 @@
                                 <h1 id="Heka_Message_Table">Heka Message Table</h1>
 <h2 id="Hash_Based_Message_Fields">1. Hash Based Message Fields</h2>
 <pre><code class="lang-lua">{
-Uuid        = <span class="hljs-string">&quot;data&quot;</span>,               <span class="hljs-comment">-- auto generated if not a 16 byte raw binary UUID or a 36 character human readable UUID</span>
-Logger      = <span class="hljs-string">&quot;nginx&quot;</span>,              <span class="hljs-comment">-- defaults to the Logger configuration value but can be overridden with the `restricted_headers` configuration</span>
-Hostname    = <span class="hljs-string">&quot;example.com&quot;</span>,        <span class="hljs-comment">-- defaults to the Hostname configuration value but can be overridden with the `restricted_headers` configuration</span>
-Timestamp   = <span class="hljs-number">1e9</span>,                  <span class="hljs-comment">-- auto generated if not a number</span>
+Uuid        = <span class="hljs-string">&quot;data&quot;</span>,               <span class="hljs-comment">-- restricted header, auto generated if not a 16 byte raw binary UUID or a 36 character human readable UUID</span>
+Logger      = <span class="hljs-string">&quot;nginx&quot;</span>,              <span class="hljs-comment">-- restricted header, defaults to the Logger configuration value</span>
+Hostname    = <span class="hljs-string">&quot;example.com&quot;</span>,        <span class="hljs-comment">-- restricted header, defaults to the Hostname configuration value</span>
+Timestamp   = <span class="hljs-number">1e9</span>,                  <span class="hljs-comment">-- restricted header, defaults to the current time</span>
 Type        = <span class="hljs-string">&quot;TEST&quot;</span>,
 Payload     = <span class="hljs-string">&quot;Test Payload&quot;</span>,
 EnvVersion  = <span class="hljs-string">&quot;0.8&quot;</span>,
-Pid         = <span class="hljs-number">1234</span>,
+Pid         = <span class="hljs-number">1234</span>,                 <span class="hljs-comment">-- restricted header, defaults to the Pid configuration value</span>
 Severity    = <span class="hljs-number">6</span>,
 Fields      = {
             http_status     = <span class="hljs-number">200</span>,  <span class="hljs-comment">-- encoded as a double</span>
@@ -357,7 +357,7 @@ Fields      = {
     <script>
         var gitbook = gitbook || [];
         gitbook.push(function() {
-            gitbook.page.hasChanged({"page":{"title":"Message Schema","level":"1.3.4","depth":2,"next":{"title":"Message Matcher","level":"1.3.5","depth":2,"path":"util/message_matcher.md","ref":"util/message_matcher.md","articles":[]},"previous":{"title":"Output Interface","level":"1.3.3","depth":2,"path":"heka/output.md","ref":"heka/output.md","articles":[]},"dir":"ltr"},"config":{"gitbook":"*","theme":"default","variables":{},"plugins":["collapsible-menu","navigator"],"pluginsConfig":{"collapsible-menu":{},"navigator":{},"highlight":{},"search":{},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"sharing":{"facebook":true,"twitter":true,"google":false,"weibo":false,"instapaper":false,"vk":false,"all":["facebook","google","twitter","weibo","instapaper"]},"fontsettings":{"theme":"white","family":"sans","size":2},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false}},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56}},"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"}},"file":{"path":"heka/message.md","mtime":"2017-03-06T16:07:10.108Z","type":"markdown"},"gitbook":{"version":"3.2.2","time":"2018-04-17T15:51:14.287Z"},"basePath":"..","book":{"language":""}});
+            gitbook.page.hasChanged({"page":{"title":"Message Schema","level":"1.3.4","depth":2,"next":{"title":"Message Matcher","level":"1.3.5","depth":2,"path":"util/message_matcher.md","ref":"util/message_matcher.md","articles":[]},"previous":{"title":"Output Interface","level":"1.3.3","depth":2,"path":"heka/output.md","ref":"heka/output.md","articles":[]},"dir":"ltr"},"config":{"gitbook":"*","theme":"default","variables":{},"plugins":["collapsible-menu","navigator"],"pluginsConfig":{"collapsible-menu":{},"navigator":{},"highlight":{},"search":{},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"sharing":{"facebook":true,"twitter":true,"google":false,"weibo":false,"instapaper":false,"vk":false,"all":["facebook","google","twitter","weibo","instapaper"]},"fontsettings":{"theme":"white","family":"sans","size":2},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false}},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56}},"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"}},"file":{"path":"heka/message.md","mtime":"2018-06-27T21:50:52.526Z","type":"markdown"},"gitbook":{"version":"3.2.2","time":"2018-06-27T21:51:08.892Z"},"basePath":"..","book":{"language":""}});
         });
     </script>
 </div>

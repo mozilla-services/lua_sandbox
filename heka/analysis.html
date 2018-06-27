@@ -98,7 +98,7 @@
                 <a href="../">
             
                     
-                    Lua Sandbox Library (1.2.10)
+                    Lua Sandbox Library (1.3.0)
             
                 </a>
             
@@ -414,12 +414,12 @@ message especially when using an LPeg grammar transformation.</li>
 </ul>
 <h3 id="inject_message">4.4. inject_message</h3>
 <p>Creates a new Heka protocol buffer message using the contents of the specified
-Lua table (overwriting whatever is in the payload buffer). <code>Logger</code> and
-<code>Hostname</code> are restricted header values.  An override configuration option is
-provided <code>restricted_headers</code>; when true (default) the headers are always set
-to the configuration values; when false the headers are set to the values
-provide in the message table, if no value is provided it defaults to the
-appropriate configuration value.</p>
+Lua table (overwriting whatever is in the payload buffer). <code>Timestamp</code>,
+<code>Logger</code>, <code>Hostname</code> and <code>Pid</code> are restricted header values. An override
+configuration option is provided <code>restricted_headers</code>; when true (default) the
+headers are always set to the configuration values; when false the headers are
+set to the values provided in the message table, if no value is provided it
+defaults to the appropriate value.</p>
 <p><em>Arguments</em></p>
 <ul>
 <li>msg (<a href="message.html">Heka message table</a>)</li>
@@ -544,7 +544,7 @@ ticker_interval = <span class="hljs-number">5</span>
     <script>
         var gitbook = gitbook || [];
         gitbook.push(function() {
-            gitbook.page.hasChanged({"page":{"title":"Analysis Interface","level":"1.3.2","depth":2,"next":{"title":"Output Interface","level":"1.3.3","depth":2,"path":"heka/output.md","ref":"heka/output.md","articles":[]},"previous":{"title":"Input Interface","level":"1.3.1","depth":2,"path":"heka/input.md","ref":"heka/input.md","articles":[]},"dir":"ltr"},"config":{"gitbook":"*","theme":"default","variables":{},"plugins":["collapsible-menu","navigator"],"pluginsConfig":{"collapsible-menu":{},"navigator":{},"highlight":{},"search":{},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"sharing":{"facebook":true,"twitter":true,"google":false,"weibo":false,"instapaper":false,"vk":false,"all":["facebook","google","twitter","weibo","instapaper"]},"fontsettings":{"theme":"white","family":"sans","size":2},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false}},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56}},"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"}},"file":{"path":"heka/analysis.md","mtime":"2017-05-15T14:52:09.954Z","type":"markdown"},"gitbook":{"version":"3.2.2","time":"2018-04-17T15:51:14.287Z"},"basePath":"..","book":{"language":""}});
+            gitbook.page.hasChanged({"page":{"title":"Analysis Interface","level":"1.3.2","depth":2,"next":{"title":"Output Interface","level":"1.3.3","depth":2,"path":"heka/output.md","ref":"heka/output.md","articles":[]},"previous":{"title":"Input Interface","level":"1.3.1","depth":2,"path":"heka/input.md","ref":"heka/input.md","articles":[]},"dir":"ltr"},"config":{"gitbook":"*","theme":"default","variables":{},"plugins":["collapsible-menu","navigator"],"pluginsConfig":{"collapsible-menu":{},"navigator":{},"highlight":{},"search":{},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"sharing":{"facebook":true,"twitter":true,"google":false,"weibo":false,"instapaper":false,"vk":false,"all":["facebook","google","twitter","weibo","instapaper"]},"fontsettings":{"theme":"white","family":"sans","size":2},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false}},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56}},"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"}},"file":{"path":"heka/analysis.md","mtime":"2018-06-27T21:50:52.526Z","type":"markdown"},"gitbook":{"version":"3.2.2","time":"2018-06-27T21:51:08.892Z"},"basePath":"..","book":{"language":""}});
         });
     </script>
 </div>

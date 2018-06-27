@@ -1,5 +1,6 @@
 <map id="include/luasandbox.h" name="include/luasandbox.h">
-<area shape="rect" id="node2" href="$test_2sandbox_8h.html" title="Test interface for the generic lua sandbox. " alt="" coords="5,80,139,121"/>
-<area shape="rect" id="node3" href="$luasandbox__output_8h.html" title="Lua sandbox output generation/retrieval functions. " alt="" coords="163,80,296,121"/>
-<area shape="rect" id="node4" href="$luasandbox__serialize_8h.html" title="Lua sandbox serialization. " alt="" coords="163,169,296,211"/>
+<area shape="rect" id="node2" href="$heka_2sandbox_8h.html" title="Heka sandbox implementation. " alt="" coords="5,80,139,121"/>
+<area shape="rect" id="node3" href="$test_2sandbox_8h.html" title="Test interface for the generic lua sandbox. " alt="" coords="163,80,296,121"/>
+<area shape="rect" id="node4" href="$luasandbox__output_8h.html" title="Lua sandbox output generation/retrieval functions. " alt="" coords="320,80,453,121"/>
+<area shape="rect" id="node5" href="$luasandbox__serialize_8h.html" title="Lua sandbox serialization. " alt="" coords="320,169,453,211"/>
 </map>

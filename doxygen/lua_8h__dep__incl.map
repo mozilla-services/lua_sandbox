@@ -1,9 +1,9 @@
 <map id="include/luasandbox/lua.h" name="include/luasandbox/lua.h">
-<area shape="rect" id="node2" href="$lauxlib_8h.html" title="include/luasandbox\l/lauxlib.h" alt="" coords="5,95,139,136"/>
-<area shape="rect" id="node3" href="$heka_2sandbox_8h.html" title="Heka sandbox implementation. " alt="" coords="57,184,191,225"/>
-<area shape="rect" id="node4" href="$lualib_8h.html" title="include/luasandbox\l/lualib.h" alt="" coords="213,95,347,136"/>
-<area shape="rect" id="node5" href="$luasandbox_8h.html" title="Generic Lua sandbox for dynamic data analysis. " alt="" coords="421,102,565,129"/>
-<area shape="rect" id="node6" href="$test_2sandbox_8h.html" title="Test interface for the generic lua sandbox. " alt="" coords="321,184,455,225"/>
-<area shape="rect" id="node7" href="$luasandbox__output_8h.html" title="Lua sandbox output generation/retrieval functions. " alt="" coords="483,184,616,225"/>
-<area shape="rect" id="node8" href="$luasandbox__serialize_8h.html" title="Lua sandbox serialization. " alt="" coords="535,273,668,315"/>
+<area shape="rect" id="node2" href="$luasandbox_8h.html" title="Generic Lua sandbox for dynamic data analysis. " alt="" coords="264,102,408,129"/>
+<area shape="rect" id="node3" href="$heka_2sandbox_8h.html" title="Heka sandbox implementation. " alt="" coords="11,184,144,225"/>
+<area shape="rect" id="node4" href="$test_2sandbox_8h.html" title="Test interface for the generic lua sandbox. " alt="" coords="168,184,301,225"/>
+<area shape="rect" id="node5" href="$luasandbox__output_8h.html" title="Lua sandbox output generation/retrieval functions. " alt="" coords="325,184,459,225"/>
+<area shape="rect" id="node6" href="$luasandbox__serialize_8h.html" title="Lua sandbox serialization. " alt="" coords="377,273,511,315"/>
+<area shape="rect" id="node7" href="$lauxlib_8h.html" title="include/luasandbox\l/lauxlib.h" alt="" coords="5,95,139,136"/>
+<area shape="rect" id="node8" href="$lualib_8h.html" title="include/luasandbox\l/lualib.h" alt="" coords="533,95,667,136"/>
 </map>
