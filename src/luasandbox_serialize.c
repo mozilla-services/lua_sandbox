@@ -311,8 +311,13 @@ serialize_kvp(lsb_lua_sandbox *lsb, serialization_data *data, size_t parent)
       seen = add_table_ref(&data->tables, ptr, pos);
       if (seen != NULL) {
         data->keys.pos += 1;
-        fprintf(data->fh, "%s = {}\n", data->keys.buf + pos);
-        ret = serialize_table(lsb, data, pos);
+        if (lua_tabletype(lsb->lua, vindex) == LUA_TTARRAY
+            && lua_objlen(lsb->lua, vindex) == 0) {
+            fprintf(data->fh, "%s = {nil}\n", data->keys.buf + pos);
+        } else {
+          fprintf(data->fh, "%s = {}\n", data->keys.buf + pos);
+          ret = serialize_table(lsb, data, pos);
+        }
       } else {
         snprintf(lsb->error_message, LSB_ERROR_SIZE,
                  "lsb_serialize preserve table out of memory");
