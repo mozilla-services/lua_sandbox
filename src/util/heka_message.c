@@ -54,7 +54,7 @@ read_string(int wiretype, const char *p, const char *e, lsb_const_string *s)
 
   long long vi;
   p = lsb_pb_read_varint(p, e, &vi);
-  if (!p || vi < 0 || p + vi > e) {
+  if (!p || vi < 0 || vi > e - p) {
     return NULL;
   }
   s->s = p;
@@ -135,7 +135,7 @@ process_fields(lsb_heka_field *f, const char *p, const char *e)
   long long vi  = 0;
 
   p = lsb_pb_read_varint(p, e, &vi);
-  if (!p || vi < 0 || p + vi > e) {
+  if (!p || vi < 0 || vi > e - p) {
     return NULL;
   }
   e = p + vi; // only process to the end of the current field record
@@ -188,7 +188,7 @@ process_fields(lsb_heka_field *f, const char *p, const char *e)
       }
       if (wiretype == 2) {
         p = lsb_pb_read_varint(p, e, &vi);
-        if (!p || vi < 0 || p + vi > e) {
+        if (!p || vi < 0 || vi > e - p) {
           p = NULL;
           break;
         }

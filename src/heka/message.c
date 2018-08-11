@@ -65,7 +65,7 @@ static const char* read_string(lua_State *lua,
 
   long long len = 0;
   p = lsb_pb_read_varint(p, e, &len);
-  if (!p || len < 0 || p + len > e) {
+  if (!p || len < 0 || len > e - p) {
     return NULL;
   }
   lua_pushlstring(lua, p, (size_t)len);
@@ -104,7 +104,7 @@ static const char* process_fields(lua_State *lua, const char *p, const char *e)
   long long len = 0;
 
   p = lsb_pb_read_varint(p, e, &len);
-  if (!p || len < 0 || p + len > e) {
+  if (!p || len < 0 || len > e - p) {
     return NULL;
   }
   e = p + len; // only process to the end of the current field record
@@ -154,7 +154,7 @@ static const char* process_fields(lua_State *lua, const char *p, const char *e)
           break;
         case 2:
           p = lsb_pb_read_varint(p, e, &len);
-          if (!p || len < 0 || p + len > e) {
+          if (!p || len < 0 || len > e - p) {
             p = NULL;
             break;
           }
@@ -188,7 +188,7 @@ static const char* process_fields(lua_State *lua, const char *p, const char *e)
           break;
         case 2:
           p = lsb_pb_read_varint(p, e, &len);
-          if (!p || len < 0 || p + len > e || len % sizeof(double) != 0) {
+          if (!p || len < 0 || len > e - p || len % sizeof(double) != 0) {
             p = NULL;
             break;
           }
@@ -218,7 +218,7 @@ static const char* process_fields(lua_State *lua, const char *p, const char *e)
           break;
         case 2:
           p = lsb_pb_read_varint(p, e, &len);
-          if (!p || len < 0 || p + len > e) {
+          if (!p || len < 0 || len > e - p) {
             p = NULL;
             break;
           }
