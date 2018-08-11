@@ -8,6 +8,7 @@
 
 #include "heka_message_matcher_impl.h"
 
+#include <limits.h>
 #include <stdbool.h>
 #include <stdlib.h>
 #include <string.h>
@@ -23,36 +24,30 @@ static bool string_test(match_node *mn, lsb_const_string *val)
   const char *mn_val = mn->data + mn->var_len;
   switch (mn->op) {
   case OP_EQ:
-    if (val->len != mn->val_len) return false;
+    if (val->len != mn->val_len || !val->s) return false;
     return strncmp(val->s, mn_val, val->len) == 0;
   case OP_NE:
-    if (val->len != mn->val_len) return true;
+    if (val->len != mn->val_len || !val->s) return true;
     return strncmp(val->s, mn_val, val->len) != 0;
   case OP_LT:
     {
+      if (!val->s) return true;
       int cmp = strncmp(val->s, mn_val, val->len);
-      if (cmp == 0) {
-        return val->len < mn->val_len;
-      }
-      return cmp < 0;
+      return cmp == 0 ? val->len < mn->val_len : cmp < 0;
     }
   case OP_LTE:
-    return strncmp(val->s, mn_val, val->len) <= 0;
+    return val->s ? strncmp(val->s, mn_val, val->len) <= 0 : true;
   case OP_GT:
     {
+      if (!val->s) return false;
       int cmp = strncmp(val->s, mn_val, val->len);
-      if (cmp == 0) {
-        return val->len > mn->val_len;
-      }
-      return cmp > 0;
+      return cmp == 0 ? val->len > mn->val_len : cmp > 0;
     }
   case OP_GTE:
     {
+      if (!val->s) return false;
       int cmp = strncmp(val->s, mn_val, val->len);
-      if (cmp == 0) {
-        return val->len >= mn->val_len;
-      }
-      return cmp > 0;
+      return cmp == 0 ? val->len >= mn->val_len : cmp > 0;
     }
   case OP_RE:
     if (mn->val_mod == PATTERN_MOD_ESC) {
@@ -75,7 +70,7 @@ static bool string_test(match_node *mn, lsb_const_string *val)
 
 static bool numeric_test(match_node *mn, double val)
 {
-  double d;
+  double d = 0;
   memcpy(&d, mn->data + mn->var_len, sizeof(double));
   switch (mn->op) {
   case OP_EQ:
@@ -109,18 +104,42 @@ static bool eval_node(match_node *mn, lsb_heka_message *m)
     case LSB_PB_TIMESTAMP:
       return numeric_test(mn, (double)m->timestamp);
     case LSB_PB_TYPE:
+      if (mn->val_type == TYPE_NIL) {
+        bool is_nil = m->type.s == NULL;
+        return mn->op == OP_EQ  ? is_nil : !is_nil;
+      }
       return string_test(mn, &m->type);
     case LSB_PB_LOGGER:
+      if (mn->val_type == TYPE_NIL) {
+        bool is_nil = m->logger.s == NULL;
+        return mn->op == OP_EQ  ? is_nil : !is_nil;
+      }
       return string_test(mn, &m->logger);
     case LSB_PB_SEVERITY:
       return numeric_test(mn, m->severity);
     case LSB_PB_PAYLOAD:
+      if (mn->val_type == TYPE_NIL) {
+        bool is_nil = m->payload.s == NULL;
+        return mn->op == OP_EQ  ? is_nil : !is_nil;
+      }
       return string_test(mn, &m->payload);
     case LSB_PB_ENV_VERSION:
+      if (mn->val_type == TYPE_NIL) {
+        bool is_nil = m->env_version.s == NULL;
+        return mn->op == OP_EQ  ? is_nil : !is_nil;
+      }
       return string_test(mn, &m->env_version);
     case LSB_PB_PID:
+      if (mn->val_type == TYPE_NIL) {
+        bool is_nil = m->pid == INT_MIN;
+        return mn->op == OP_EQ  ? is_nil : !is_nil;
+      }
       return numeric_test(mn, m->pid);
     case LSB_PB_HOSTNAME:
+      if (mn->val_type == TYPE_NIL) {
+        bool is_nil = m->hostname.s == NULL;
+        return mn->op == OP_EQ  ? is_nil : !is_nil;
+      }
       return string_test(mn, &m->hostname);
     case LSB_PB_UUID:
       return string_test(mn, &m->uuid);

@@ -21,6 +21,9 @@
 char pb[] = "\x0a\x10\x23\x00\x81\xdc\x32\x6f\x4e\x3f\x9a\x5a\x93\x86\xa3\x7e\x24\x6f\x10\xe4\x9e\xf1\xff\xc6\xbb\x81\xea\x13\x1a\x04\x54\x45\x53\x54\x22\x06\x47\x6f\x53\x70\x65\x63\x28\x06\x32\x90\x01Test Payload with a longer string to attempt to create a difference in pattern match time versus the string literal match time for a unique-item\x3a\x03\x30\x2e\x38\x40\x9d\xfb\x01\x4a\x0a\x74\x72\x69\x6e\x6b\x2d\x78\x32\x33\x30\x52\x0c\x0a\x03\x66\x6f\x6f\x10\x00\x22\x03\x62\x61\x72\x52\x0d\x0a\x06\x6e\x75\x6d\x62\x65\x72\x10\x02\x32\x01\x40\x52\x0f\x0a\x05\x62\x79\x74\x65\x73\x10\x01\x2a\x04\x64\x61\x74\x61\x52\x0d\x0a\x03\x69\x6e\x74\x10\x02\x32\x04\xe7\x07\x80\x08\x52\x14\x0a\x06\x64\x6f\x75\x62\x6c\x65\x10\x03\x3a\x08\x9a\x99\x99\x99\x99\xf9\x58\x40\x52\x0b\x0a\x04\x62\x6f\x6f\x6c\x10\x04\x42\x01\x01\x52\x12\x0a\x03\x66\x6f\x6f\x10\x00\x22\x09\x61\x6c\x74\x65\x72\x6e\x61\x74\x65\x52\x20\x0a\x07\x50\x61\x79\x6c\x6f\x61\x64\x10\x00\x22\x13\x6e\x61\x6d\x65\x3d\x74\x65\x73\x74\x3b\x74\x79\x70\x65\x3d\x77\x65\x62\x3b\x52\x38\x0a\x09\x54\x69\x6d\x65\x73\x74\x61\x6d\x70\x10\x00\x1a\x09\x64\x61\x74\x65\x2d\x74\x69\x6d\x65\x22\x1e\x4d\x6f\x6e\x20\x4a\x61\x6e\x20\x30\x32\x20\x31\x35\x3a\x30\x34\x3a\x30\x35\x20\x2d\x30\x37\x30\x30\x20\x32\x30\x30\x36\x52\x0b\x0a\x04\x7a\x65\x72\x6f\x10\x02\x32\x01\x00\x52\x0e\x0a\x06\x73\x74\x72\x69\x6e\x67\x10\x00\x22\x02\x34\x33";
 size_t pblen = sizeof(pb);
 
+char pbmin[] = "\x0a\x10\x23\x00\x81\xdc\x32\x6f\x4e\x3f\x9a\x5a\x93\x86\xa3\x7e\x24\x6f\x10\x00";
+size_t pbminlen = sizeof(pbmin);
+
 
 static char* test_stub()
 {
@@ -74,6 +77,7 @@ static char* test_true_matcher()
     , "Hostname != ''"
     , "Logger == 'GoSpec'"
     , "Pid != 0"
+    , "Pid != NIL"
     , "Severity != 5"
     , "Severity < 7"
     , "Severity <= 7"
@@ -125,6 +129,13 @@ static char* test_true_matcher()
     , T128
     , "Payload =~ 'unique-item'%"
     , "Fields[Timestamp] =~ ' -0700'%"
+    , "Type != NIL"
+    , "Hostname != NIL"
+    , "EnvVersion != NIL"
+    , "Pid != NIL"
+    , "Logger != NIL"
+    , "Payload != NIL"
+    , "Pid == 32157"
     , NULL };
 
   lsb_heka_message m;
@@ -134,6 +145,71 @@ static char* test_true_matcher()
     lsb_message_matcher *mm = lsb_create_message_matcher(tests[i]);
     mu_assert(mm, "failed to create the matcher %s", tests[i]);
     mu_assert(lsb_eval_message_matcher(mm, &m), "%s", tests[i]);
+    lsb_destroy_message_matcher(mm);
+  }
+  lsb_free_heka_message(&m);
+  return NULL;
+}
+
+
+static char* test_nil_header_true_matcher()
+{
+  char *tests[] = {
+    "Type == NIL"
+    , "Type != ''"
+    , "Type < ''"
+    , "Type <= ''"
+    , "Type !~ '.'"
+    , "Type !~ 'foo'"
+    , "Hostname == NIL"
+    , "EnvVersion == NIL"
+    , "Pid == NIL"
+    , "Logger == NIL"
+    , "Payload == NIL"
+    , NULL };
+
+  lsb_heka_message m;
+  lsb_init_heka_message(&m, 1);
+  mu_assert(lsb_decode_heka_message(&m, pbmin, pbminlen - 1, NULL), "decode failed");
+  for (int i = 0; tests[i]; ++i) {
+    lsb_message_matcher *mm = lsb_create_message_matcher(tests[i]);
+    mu_assert(mm, "failed to create the matcher %s", tests[i]);
+    mu_assert(lsb_eval_message_matcher(mm, &m), "%s", tests[i]);
+    lsb_destroy_message_matcher(mm);
+  }
+  lsb_free_heka_message(&m);
+  return NULL;
+}
+
+
+static char* test_nil_header_false_matcher()
+{
+  char *tests[] = {
+    "Type != NIL"
+    , "Type == '%b()'"
+    , "Type == ''"
+    , "Type > ''"
+    , "Type >= ''"
+    , "Type =~ '.'"
+    , "Type =~ 'foo'"
+    , "Hostname != NIL"
+    , "Hostname == ''"
+    , "EnvVersion != NIL"
+    , "EnvVersion == ''"
+    , "Pid != NIL"
+    , "Logger != NIL"
+    , "Logger == ''"
+    , "Payload != NIL"
+    , "Payload == ''"
+    , NULL };
+
+  lsb_heka_message m;
+  lsb_init_heka_message(&m, 1);
+  mu_assert(lsb_decode_heka_message(&m, pbmin, pbminlen - 1, NULL), "decode failed");
+  for (int i = 0; tests[i]; ++i) {
+    lsb_message_matcher *mm = lsb_create_message_matcher(tests[i]);
+    mu_assert(mm, "failed to create the matcher %s", tests[i]);
+    mu_assert(lsb_eval_message_matcher(mm, &m) == false, "%s", tests[i]);
     lsb_destroy_message_matcher(mm);
   }
   lsb_free_heka_message(&m);
@@ -187,6 +263,12 @@ static char* test_false_matcher()
     , "Type == '" S255 "'"
     , "Payload =~ 'not.found'%"
     , "Fields[foo][1] =~ 'not.found'%"
+    , "Type == NIL"
+    , "Hostname == NIL"
+    , "EnvVersion == NIL"
+    , "Pid == NIL"
+    , "Logger == NIL"
+    , "Payload == NIL"
     , NULL };
 
   lsb_heka_message m;
@@ -225,8 +307,11 @@ static char* test_malformed_matcher()
     , "Type != 'test\""                                             // mis matched quote types
     , "Pid =~ 6"                                                    // incorrect type for the operator
     , "NIL"                                                         // invalid use of constant
-    , "Type == NIL"                                                 // existence check only works on fields
-    , "Fields[test] > NIL"                                          // existence check only works with equals and not equals
+    , "Type         > NIL"                                          // existence check only works with equals and not equals
+    , "Pid > NIL"
+    , "Fields[test] > NIL"
+    , "Uuid == NIL"                                                 // required header, cannot be nil
+    , "Severity == NIL"                                             // defaulted header, cannot be nil
     , "TRUE FALSE"                                                  // missing operator
     , "Timestamp == '20150411T173026'"                              // non rfc3339 timestamp
     , T128 " && Type =~ '.'"                                        // too many tests
@@ -352,7 +437,9 @@ static char* all_tests()
   mu_run_test(test_stub);
   mu_run_test(test_api_assertion);
   mu_run_test(test_true_matcher);
+  mu_run_test(test_nil_header_true_matcher);
   mu_run_test(test_false_matcher);
+  mu_run_test(test_nil_header_false_matcher);
   mu_run_test(test_malformed_matcher);
 
   mu_run_test(benchmark_match_hs);
