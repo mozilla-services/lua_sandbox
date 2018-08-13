@@ -41,7 +41,7 @@ consume (see [Heka Message Structure](/heka/message.md))
 
 ## Constants
 
-* NIL used to test the existence (!=) or non-existence (==) of a field variable
+* NIL used to test the existence (!=) or non-existence (==) of optional headers or field variables
 
 ## Message Variables
 

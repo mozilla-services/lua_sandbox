@@ -273,10 +273,12 @@ match = sp ored eol {pop_all_ops(&yy->ctx)}
 ored  = anded (or anded)* sp
 anded = expr (and expr)* sp
 expr  = test | open ored close
-test  = ( string_test
-        | numeric_test
+test  = ( uuid
+        | timestamp
+        | optional_string_headers
+        | severity
+        | pid
         | field_test
-        | ts_test
         | boolean_test
         ) {push_output(&yy->ctx, &yy->ctx.mn)} sp
 
@@ -306,14 +308,14 @@ or          = "||" &{cond_cnt(&yy->ctx)} {push_op(&yy->ctx, OP_OR)}   sp
 open        = '('  {push_op(&yy->ctx, OP_OPEN)}                       sp
 close       = ')'  {pop_to_paren(&yy->ctx)}                           sp
 
-string_test = string_headers sp (relational sp string_value | string_match)
+optional_string_headers = string_headers sp (relational sp string_value | string_match | (op_eq | op_ne) sp nil)
 
-string_headers  = "Type"        {yy->ctx.mn.id = LSB_PB_TYPE}         sp
-                | "Logger"      {yy->ctx.mn.id = LSB_PB_LOGGER}       sp
-                | "Hostname"    {yy->ctx.mn.id = LSB_PB_HOSTNAME}     sp
-                | "EnvVersion"  {yy->ctx.mn.id = LSB_PB_ENV_VERSION}  sp
-                | "Payload"     {yy->ctx.mn.id = LSB_PB_PAYLOAD}      sp
-                | "Uuid"        {yy->ctx.mn.id = LSB_PB_UUID}         sp
+uuid            = "Uuid"        {yy->ctx.mn.id = LSB_PB_UUID} sp (relational sp string_value | string_match)
+string_headers  = "Type"        {yy->ctx.mn.id = LSB_PB_TYPE}
+                | "Logger"      {yy->ctx.mn.id = LSB_PB_LOGGER}
+                | "Hostname"    {yy->ctx.mn.id = LSB_PB_HOSTNAME}
+                | "EnvVersion"  {yy->ctx.mn.id = LSB_PB_ENV_VERSION}
+                | "Payload"     {yy->ctx.mn.id = LSB_PB_PAYLOAD}
 
 string_value = ( '"' < ('\\\"' | (!'"' .))* > '"'
                | "'" < ("\\\'" | (!"'" .))* > "'"
@@ -323,10 +325,9 @@ string_match = (op_seq | op_sne) sp string_value string_match_mod? {set_match_mo
 
 string_match_mod = "%" {yy->ctx.mn.val_mod = PATTERN_MOD_ESC}
 
-numeric_headers = "Severity"  {yy->ctx.mn.id = LSB_PB_SEVERITY} sp
-                | "Pid"       {yy->ctx.mn.id = LSB_PB_PID}      sp
+severity = "Severity"  {yy->ctx.mn.id = LSB_PB_SEVERITY} sp relational sp numeric_value
+pid      = "Pid"       {yy->ctx.mn.id = LSB_PB_PID} sp (relational sp numeric_value | (op_eq | op_ne) sp nil)
 
-numeric_test  = numeric_headers sp relational sp numeric_value
 numeric_value = < sign? number decimal? exponent? > {set_numeric_value(&yy->ctx, yytext)}
 sign          = [-+]
 number        = "0"
@@ -344,7 +345,7 @@ zero_to_255 = "2" [0-5] [0-5]
             | [1-9] [0-9]
             | [0-9]
 
-ts_test   = ("Timestamp" sp relational sp (numeric_value | ts_quoted)) {set_timestamp(&yy->ctx)}
+timestamp = ("Timestamp" sp relational sp (numeric_value | ts_quoted)) {set_timestamp(&yy->ctx)}
 ts_quoted = '"' rfc3339 '"' | "'" rfc3339 "'"
 fulldate  = (y:year "-" m:month "-" d:day) {update_date(&yy->ctx, y, m, d)}
 year      = < [0-9] [0-9] [0-9] [0-9] > {$$ = atoi(yytext)}
@@ -373,7 +374,7 @@ second      = (
               ) {$$ = atoi(yytext)}
 second_frac = < decimal > {yy->ctx.mn.val.d += strtod(yytext, NULL)}
 
-nil       = "NIL" {yy->ctx.mn.val_type = TYPE_NIL;} sp
+nil       = "NIL" {yy->ctx.mn.val_type = TYPE_NIL} sp
 true      = "TRUE" sp
 false     = "FALSE" sp
 sp        = [ \t]*
