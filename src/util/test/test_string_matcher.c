@@ -133,6 +133,10 @@ static char* test_find_failure()
               "find test: %d string: %s pattern: %s", i / 2, tests[i],
               tests[i + 1]);
   }
+  mu_assert(!lsb_string_find(NULL, 0, tests[0], strlen(tests[1])),
+            "find test: string: NULL pattern: %s", tests[1]);
+  mu_assert(!lsb_string_find(tests[0], strlen(tests[0]), NULL, 0),
+            "find test: string: %s pattern: NULL", tests[0]);
   return NULL;
 }
 
@@ -155,6 +159,10 @@ static char* test_invalid()
               "invalid test: %d string: %s pattern: %s", i / 2, tests[i],
               tests[i + 1]);
   }
+  mu_assert(!lsb_string_match(NULL, 0, tests[1]),
+            "invalid test: string: NULL pattern: %s", tests[1]);
+  mu_assert(!lsb_string_match(tests[0], strlen(tests[0]), NULL),
+            "invalid test: string: %s pattern: NULL", tests[0]);
   return NULL;
 }
 

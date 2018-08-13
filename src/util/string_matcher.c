@@ -281,6 +281,7 @@ static const char* lmemfind(const char *s1, size_t l1,
 
 bool lsb_string_match(const char *s, size_t len, const char *p)
 {
+  if (!s || !p) { return false; }
   MatchState ms;
   int anchor = (*p == '^') ? (p++, 1) : 0;
   const char *s1 = s;
@@ -298,6 +299,7 @@ bool lsb_string_match(const char *s, size_t len, const char *p)
 
 bool lsb_string_find(const char *s, size_t ls, const char *p, size_t lp)
 {
+  if (!s || !p) { return false; }
   if (lmemfind(s, ls, p, lp)) {
     return true;
   }
