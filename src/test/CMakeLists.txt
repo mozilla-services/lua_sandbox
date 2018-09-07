@@ -12,7 +12,6 @@ add_executable(test_generic_sandbox test_generic_sandbox.c)
 target_link_libraries(test_generic_sandbox luasandboxtest)
 set(LIBRARY_PATHS "${CMAKE_BINARY_DIR}/src;${CMAKE_BINARY_DIR}/src/util;${CMAKE_BINARY_DIR}/src/test")
 
-add_test(NAME test_move_luasandbox_lua_modules COMMAND cmake -E copy_directory ${CMAKE_SOURCE_DIR}/modules ${CMAKE_CURRENT_BINARY_DIR}/modules)
 add_test(NAME test_move_luasandbox_tests COMMAND cmake -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR})
 add_test(NAME test_generic_sandbox COMMAND test_generic_sandbox)
 
