@@ -134,6 +134,7 @@ process_fields(lsb_heka_field *f, const char *p, const char *e)
   int wiretype  = 0;
   long long vi  = 0;
 
+  memset(f, 0, sizeof(lsb_heka_field));
   p = lsb_pb_read_varint(p, e, &vi);
   if (!p || vi < 0 || vi > e - p) {
     return NULL;
@@ -291,8 +292,8 @@ bool lsb_decode_heka_message(lsb_heka_message *m,
           }
           return false;
         }
+        // the new memory will be initialized as needed Issue #231
         m->fields = tmp;
-        memset(&m->fields[m->fields_len], 0, step * sizeof(lsb_heka_field));
       }
       cp = process_fields(&m->fields[m->fields_len], cp, ep);
       ++m->fields_len;
@@ -457,7 +458,8 @@ void lsb_clear_heka_message(lsb_heka_message *m)
   lsb_init_const_string(&m->env_version);
   lsb_init_const_string(&m->hostname);
 
-  if (m->fields) memset(m->fields, 0, m->fields_size * sizeof(lsb_heka_field));
+  // The fields will be cleared as they are built out anything beyond fields_len
+  // should be considered uninitialized Issue #231.
   m->timestamp = 0;
   m->severity = 7;
   m->pid = INT_MIN;
@@ -469,10 +471,10 @@ void lsb_free_heka_message(lsb_heka_message *m)
 {
   if (!m) return;
 
+  lsb_clear_heka_message(m);
   free(m->fields);
   m->fields = NULL;
   m->fields_size = 0;
-  lsb_clear_heka_message(m);
 }
 
 
