@@ -113,6 +113,24 @@ NULs terminate each argument.
 
 **Note:** To extend the function set exposed to Lua see lsb_add_function()
 
+## Special Lua Global Variables
+
+- **_PRESERVATION_VERSION** (number) This variable is examined during state
+restoration; if the previous version does not match the current version the
+restoration is aborted and the sandbox starts cleanly. The version should be
+incremented any time an incompatible change is made to the global data schema.
+
+When versioning is required, the use of a configuration variable name
+`preservation_version` with the following syntax is recommended.
+```lua
+-- initial (allows the user to bump the version due to a cfg change)
+_PRESERVATION_VERSION = read_config("preservation_version") or 0
+
+-- if the plugin code alters the global data schema in an incompatible way this
+-- ensures the state is properly cleared when there is a user provided version.
+_PRESERVATION_VERSION = (read_config("preservation_version") or 0) + 1
+```
+
 ## How to interact with the sandbox (creating an API)
 
 The best place to start is with some examples:
