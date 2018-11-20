@@ -4,6 +4,7 @@
 
 find_package(Doxygen QUIET)
 find_program(LUA_EXE lua QUIET)
+find_program(PANDOC_EXE pandoc QUIET)
 find_program(gitbook gitbook QUIET)
 if(DOXYGEN_FOUND AND LUA_EXE AND PANDOC_EXE)
     set(DOXYCONF_IN  ${CMAKE_SOURCE_DIR}/doxygen.in.conf)
@@ -14,12 +15,12 @@ if(DOXYGEN_FOUND AND LUA_EXE AND PANDOC_EXE)
         file(WRITE ${DOXYCONF_OUT} "
 PROJECT_NAME            = \"${PROJECT_NAME}\"
 PROJECT_BRIEF           = \"${CPACK_PACKAGE_DESCRIPTION_SUMMARY}\"
-OUTPUT_DIRECTORY        =  \"${CMAKE_SOURCE_DIR}/gh-pages\"
+OUTPUT_DIRECTORY        = \"${CMAKE_SOURCE_DIR}/gh-pages\"
 HTML_OUTPUT             = doxygen
 GENERATE_LATEX          = NO
 GENERATE_TODOLIST       = YES
 FULL_PATH_NAMES         = YES
-STRIP_FROPATH           = \"${CMAKE_SOURCE_DIR}\"
+STRIP_FROM_PATH         = \"${CMAKE_SOURCE_DIR}\"
 SOURCE_BROWSER          = YES
 TAB_SIZE                = 4
 EXTRACT_ALL             = YES
