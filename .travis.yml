@@ -7,7 +7,6 @@ env:
     matrix:
         - DOCKER_IMAGE=centos:6 CMAKE_URL=auto
         - DOCKER_IMAGE=centos:7 CMAKE_URL=auto
-        - DOCKER_IMAGE=debian:7 CMAKE_URL=auto
         - DOCKER_IMAGE=debian:8 CMAKE_URL=auto
         - DOCKER_IMAGE=debian:8 CC=clang CMAKE_URL=auto
         - DOCKER_IMAGE=debian:stretch
