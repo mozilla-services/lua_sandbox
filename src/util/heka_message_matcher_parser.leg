@@ -224,7 +224,8 @@ static void set_string_value(context *ctx, char *s)
   ctx->mn.val_type = TYPE_STRING;
   int i, j;
   for (i = 0, j = 0; s[i]; ++i, ++j) {
-    if (s[i] == '\\' && (s[i + 1] == '"' || s[i + 1] == '\'')) {
+    if (s[i] == '\\'
+    && (s[i + 1] == '"' || s[i + 1] == '\'' || s[i + 1] == '\\')) {
       ++i;
     }
     s[j] = s[i];
@@ -254,7 +255,8 @@ static bool check_string_len(char *s)
 {
   int i, j;
   for (i = 0, j = 0; s[i]; ++i, ++j) {
-    if (s[i] == '\\' && (s[i + 1] == '"' || s[i + 1] == '\'')) {
+    if (s[i] == '\\'
+    && (s[i + 1] == '"' || s[i + 1] == '\'' || s[i + 1] == '\\')) {
       ++i;
     }
   }
@@ -305,8 +307,8 @@ boolean       = true  {yy->ctx.mn.val_type = TYPE_TRUE}
 
 and         = "&&" &{cond_cnt(&yy->ctx)} {push_op(&yy->ctx, OP_AND)}  sp
 or          = "||" &{cond_cnt(&yy->ctx)} {push_op(&yy->ctx, OP_OR)}   sp
-open        = '('  {push_op(&yy->ctx, OP_OPEN)}                       sp
-close       = ')'  {pop_to_paren(&yy->ctx)}                           sp
+open        = "("  {push_op(&yy->ctx, OP_OPEN)}                       sp
+close       = ")"  {pop_to_paren(&yy->ctx)}                           sp
 
 optional_string_headers = string_headers sp (relational sp string_value | string_match | (op_eq | op_ne) sp nil)
 
@@ -317,8 +319,8 @@ string_headers  = "Type"        {yy->ctx.mn.id = LSB_PB_TYPE}
                 | "EnvVersion"  {yy->ctx.mn.id = LSB_PB_ENV_VERSION}
                 | "Payload"     {yy->ctx.mn.id = LSB_PB_PAYLOAD}
 
-string_value = ( '"' < ('\\\"' | (!'"' .))* > '"'
-               | "'" < ("\\\'" | (!"'" .))* > "'"
+string_value = ( '"' < (("\\" ["\\]) | (!'"' .))* > '"'
+               | "'" < (("\\" ['\\]) | (!"'" .))* > "'"
                ) &{check_string_len(yytext)} {set_string_value(&yy->ctx, yytext)}
 
 string_match = (op_seq | op_sne) sp string_value string_match_mod? {set_match_mod(&yy->ctx)}
