@@ -136,6 +136,8 @@ static char* test_true_matcher()
     , "Logger != NIL"
     , "Payload != NIL"
     , "Pid == 32157"
+    , "Uuid < '\\\\'"
+    , "Uuid < \"\\\\\""
     , NULL };
 
   lsb_heka_message m;
@@ -269,6 +271,7 @@ static char* test_false_matcher()
     , "Pid == NIL"
     , "Logger == NIL"
     , "Payload == NIL"
+    , "Uuid > '\\\\'"
     , NULL };
 
   lsb_heka_message m;
@@ -319,6 +322,7 @@ static char* test_malformed_matcher()
     , "Fields[test][256] == 1"                                      // field index out of bounds
     , "Fields[test][0][256] == 1"                                   // array index out of bounds
     , "Payload =~ 'foo'i"                                           // invalid string match pattern modifier
+    , "Uuid < '\\'"                                                 // unescaped backslash leaving an open string '\'
     , NULL };
 
   lsb_heka_message m;
