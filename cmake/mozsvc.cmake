@@ -24,7 +24,7 @@ if(MSVC)
 else()
     # Predefined Macros: clang|gcc -dM -E -x c /dev/null
     # Compiler options: http://gcc.gnu.org/onlinedocs/gcc/Invoking-GCC.html#Invoking-GCC
-    set(CMAKE_C_FLAGS   "-std=gnu99 -pedantic $ENV{CFLAGS} $ENV{CPPFLAGS} -Wall -Wextra -fPIC -fvisibility=hidden")
+    set(CMAKE_C_FLAGS   "-std=gnu11 -pedantic $ENV{CFLAGS} $ENV{CPPFLAGS} -Wall -Wextra -fPIC -fvisibility=hidden")
     set(CMAKE_CXX_FLAGS "-std=c++11 -pedantic $ENV{CXXFLAGS} $ENV{CPPFLAGS} -Wall -Wextra -fPIC -isystem /usr/local/include -isystem /opt/local/include")
     set(CMAKE_C_FLAGS_DEBUG     "-g")
     set(CMAKE_CXX_FLAGS_DEBUG   ${CMAKE_C_FLAGS_DEBUG})
