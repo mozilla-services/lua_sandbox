@@ -223,11 +223,15 @@ static size_t read_file(FILE *fh, lsb_input_buffer *ib)
     log_cb(NULL, NULL, 0, "buffer reallocation failed");
     exit(EXIT_FAILURE);
   }
+  size_t cnt = ib->size - ib->readpos;
   size_t nread = fread(ib->buf + ib->readpos,
                        1,
-                       ib->size - ib->readpos,
+                       cnt,
                        fh);
   ib->readpos += nread;
+  if (cnt != nread) {
+    clearerr(fh);
+  }
   return nread;
 }
 
