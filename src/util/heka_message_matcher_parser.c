@@ -2221,7 +2221,7 @@ YY_RULE(int) yy_sp(yycontext *yy)
 {
   yyprintf((stderr, "%s\n", "sp"));
   l164:;	
-  {  int yypos165= yy->__pos, yythunkpos165= yy->__thunkpos;  if (!yymatchClass(yy, (unsigned char *)"\000\002\000\000\001\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000")) goto l165;  goto l164;
+  {  int yypos165= yy->__pos, yythunkpos165= yy->__thunkpos;  if (!yymatchClass(yy, (unsigned char *)"\000\046\000\000\001\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000")) goto l165;  goto l164;
   l165:;	  yy->__pos= yypos165; yy->__thunkpos= yythunkpos165;
   }
   yyprintf((stderr, "  ok   %s @ %s\n", "sp", yy->__buf+yy->__pos));

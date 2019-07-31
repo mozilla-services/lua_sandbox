@@ -379,7 +379,7 @@ second_frac = < decimal > {yy->ctx.mn.val.d += strtod(yytext, NULL)}
 nil       = "NIL" {yy->ctx.mn.val_type = TYPE_NIL} sp
 true      = "TRUE" sp
 false     = "FALSE" sp
-sp        = [ \t]*
+sp        = [ \r\n\t]*
 eol       = !.
 
 %%

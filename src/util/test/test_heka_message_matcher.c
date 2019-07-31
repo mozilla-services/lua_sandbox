@@ -138,6 +138,7 @@ static char* test_true_matcher()
     , "Pid == 32157"
     , "Uuid < '\\\\'"
     , "Uuid < \"\\\\\""
+    , "(Severity == 7 || Logger == 'GoSpec') \r\n\t&& Type == 'TEST'"
     , NULL };
 
   lsb_heka_message m;
