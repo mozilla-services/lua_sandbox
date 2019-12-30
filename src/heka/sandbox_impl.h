@@ -33,14 +33,14 @@ struct lsb_heka_sandbox {
   char                              *name;
   char                              *hostname;
   union {
-    lsb_heka_im_input           iim;
-    lsb_heka_im_analysis        aim;
-    lsb_heka_update_checkpoint  ucp;
+    lsb_heka_im_input           iim; // used in input plugins only
+    lsb_heka_im_analysis        aim; // used in analysis and output plugins
   } cb;
   struct heka_stats                 stats;
   char                              type;
   bool                              restricted_headers;
   int                               pid;
+  lsb_heka_update_checkpoint        ucp; // used in output plugins only
 };
 
 #endif

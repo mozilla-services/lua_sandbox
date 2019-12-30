@@ -229,6 +229,30 @@ lsb_heka_sandbox* lsb_heka_create_output(void *parent,
                                          lsb_heka_update_checkpoint ucp);
 
 /**
+ * Create a sandbox supporting the Heka Output Plugin API with
+ * inject_message support
+ *
+ * @param parent Opaque pointer the host object owning this sandbox
+ * @param lua_file Fully qualified path to the Lua source file
+ * @param state_file Fully qualified filename to the state preservation file
+ *                   (NULL if no preservation is required)
+ * @param lsb_cfg Full configuration string as a Lua table (NULL for lsb
+ *                defaults)
+ * @param logger Struct for error reporting/debug printing (NULL to disable)
+ * @param ucp checkpoint_updated callback when using batch or async output
+ * @param im inject_message callback
+ *
+ * @return lsb_heka_sandbox* On success a pointer to the sandbox otherwise NULL
+ */
+LSB_HEKA_EXPORT
+lsb_heka_sandbox* lsb_heka_create_output_im(void *parent,
+                                         const char *lua_file,
+                                         const char *state_file,
+                                         const char *lsb_cfg,
+                                         lsb_logger *logger,
+                                         lsb_heka_update_checkpoint ucp,
+                                         lsb_heka_im_analysis im);
+/**
  * Host access to the output sandbox process_message API
  *
  * @param hsb Heka output sandbox
