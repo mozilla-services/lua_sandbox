@@ -344,10 +344,10 @@ static int update_checkpoint(lua_State *lua)
     // fall thru
   case 1:
     luaL_checktype(lua, 1, LUA_TLIGHTUSERDATA);
-    result = hsb->cb.ucp(hsb->parent, lua_touserdata(lua, 1));
+    result = hsb->ucp(hsb->parent, lua_touserdata(lua, 1));
     break;
   case 0: // batch case
-    result = hsb->cb.ucp(hsb->parent, NULL);
+    result = hsb->ucp(hsb->parent, NULL);
     break;
   default:
     return luaL_error(lua, "%s() invalid number of args: %d", __func__, n);
@@ -877,6 +877,19 @@ lsb_heka_sandbox* lsb_heka_create_output(void *parent,
                                          lsb_logger *logger,
                                          lsb_heka_update_checkpoint ucp)
 {
+  return lsb_heka_create_output_im(parent, lua_file, state_file, lsb_cfg,
+                                   logger, ucp, NULL);
+}
+
+
+lsb_heka_sandbox* lsb_heka_create_output_im(void *parent,
+                                         const char *lua_file,
+                                         const char *state_file,
+                                         const char *lsb_cfg,
+                                         lsb_logger *logger,
+                                         lsb_heka_update_checkpoint ucp,
+                                         lsb_heka_im_analysis im)
+{
   if (!lua_file) {
     if (logger && logger->cb) {
       logger->cb(logger->context, __func__, 3, "lua_file must be specified");
@@ -892,7 +905,6 @@ lsb_heka_sandbox* lsb_heka_create_output(void *parent,
     return NULL;
   }
 
-
   lsb_heka_sandbox *hsb = calloc(1, sizeof(lsb_heka_sandbox));
   if (!hsb) {
     if (logger && logger->cb) {
@@ -904,7 +916,8 @@ lsb_heka_sandbox* lsb_heka_create_output(void *parent,
   hsb->type = 'o';
   hsb->parent = parent;
   hsb->msg = NULL;
-  hsb->cb.ucp = ucp;
+  hsb->ucp = ucp;
+  hsb->cb.aim = im;
   hsb->name = NULL;
   hsb->hostname = NULL;
 
@@ -922,6 +935,11 @@ lsb_heka_sandbox* lsb_heka_create_output(void *parent,
   lsb_add_function(hsb->lsb, heka_encode_message, "encode_message");
   lsb_add_function(hsb->lsb, update_checkpoint, LSB_HEKA_UPDATE_CHECKPOINT);
   lsb_add_function(hsb->lsb, mm_create, "create_message_matcher");
+  if (im) {
+    lsb_add_function(hsb->lsb, inject_message_analysis, "inject_message");
+    // inject_payload is intentionally excluded from output plugins
+    // you can construct whatever you need with inject_message
+  }
 
   // start io.write override with zero copy functionality
   lua_getfield(lua, LUA_REGISTRYINDEX, "_PRELOADED");
@@ -948,6 +966,7 @@ lsb_heka_sandbox* lsb_heka_create_output(void *parent,
 
   return hsb;
 }
+
 
 
 void lsb_heka_stop_sandbox_clean(lsb_heka_sandbox *hsb)

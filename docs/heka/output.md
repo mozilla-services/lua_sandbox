@@ -78,11 +78,11 @@ Converts a Heka protobuf encoded message string into a Lua table. See
 ### encode_message
 
 Returns a Heka protocol buffer message using the contents of the specified Lua
-table. `Logger` and `Hostname` are restricted header values.  An override
-configuration option is provided `restricted_headers`; when true the headers are
-always set to the configuration values; when false (default) the headers are set
-to the values provide in the message table, if no value is provided it defaults
-to the appropriate configuration value.
+table. `Timestamp`, `Logger`, `Hostname` and `Pid` are restricted header values.
+An override configuration option is provided `restricted_headers`; when true the
+headers are always set to the configuration values; when false (default) the
+headers are set to the values provided in the message table, if no value is
+provided it defaults to the appropriate configuration value.
 
 Note: this operation uses the internal output buffer so it is goverened by the
 `output_limit` configuration setting.
@@ -94,6 +94,18 @@ Note: this operation uses the internal output buffer so it is goverened by the
 *Return*
 * heka_pb (string) - Heka protobuf binary string, framed as specified
   or an error is thrown
+
+### inject_message
+
+Creates a new Heka protocol buffer message, in the input queue, using the
+contents of the specified Lua table. The `restricted_headers` configuration
+defaults to false (see encode_message above for a full description).
+
+*Arguments*
+* msg ([Heka message table](message.md))
+
+*Return*
+* none (throws an error if the table does not match the Heka message schema)
 
 ### create_message_matcher
 
