@@ -5,7 +5,7 @@
 This document describes the 1.0 release of the Heka sandbox API built on the
 [Generic Sandbox Interface](/sandbox.md). The 1.0 release is a refined
 implementation of its predecessor which was developed in
-[Heka](https://github.com/mozilla-services/heka). The goal is to decople it from
+[Heka](https://github.com/mozilla-services/heka). The goal is to decouple it from
 Go and make it easily embeddable in any language. The Go version of Heka has
 been deprecated and replaced by
 [Hindsight](https://github.com/mozilla-services/hindsight).
