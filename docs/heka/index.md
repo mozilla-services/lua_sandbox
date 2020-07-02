@@ -5,7 +5,7 @@
 This document describes the 1.0 release of the Heka sandbox API built on the
 [Generic Sandbox Interface](/sandbox.md). The 1.0 release is a refined
 implementation of its predecessor which was developed in
-[Heka](https://github.com/mozilla-services/heka). The goal is to decople it from
+[Heka](https://github.com/mozilla-services/heka). The goal is to decouple it from
 Go and make it easily embeddable in any language. The Go version of Heka has
 been deprecated and replaced by
 [Hindsight](https://github.com/mozilla-services/hindsight).
@@ -35,8 +35,8 @@ support skipping, retrying, batching, and asynchronous output.
 1. `read_message`
     * returns `nil` for optional header fields if they don't exist instead of an
     empty string or zero
-    * added a `framed` parameter to retrive the raw message with stream framing
-    * added a `size` parameter to retrive size of the raw message without having
+    * added a `framed` parameter to retrieve the raw message with stream framing
+    * added a `size` parameter to retrieve size of the raw message without having
     to copy it down
 1. `timer_event` has a second parameter `shutdown` that is set to true when the
 sandbox is exiting.
