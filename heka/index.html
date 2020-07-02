@@ -98,7 +98,7 @@
                 <a href="../">
             
                     
-                    Lua Sandbox Library (1.3.2)
+                    Lua Sandbox Library (1.4.0)
             
                 </a>
             
@@ -292,7 +292,7 @@
 <p>This document describes the 1.0 release of the Heka sandbox API built on the
 <a href="../sandbox.html">Generic Sandbox Interface</a>. The 1.0 release is a refined
 implementation of its predecessor which was developed in
-<a href="https://github.com/mozilla-services/heka" target="_blank">Heka</a>. The goal is to decople it from
+<a href="https://github.com/mozilla-services/heka" target="_blank">Heka</a>. The goal is to decouple it from
 Go and make it easily embeddable in any language. The Go version of Heka has
 been deprecated and replaced by
 <a href="https://github.com/mozilla-services/hindsight" target="_blank">Hindsight</a>.</p>
@@ -318,8 +318,8 @@ support skipping, retrying, batching, and asynchronous output.</li>
 <li><code>read_message</code><ul>
 <li>returns <code>nil</code> for optional header fields if they don&apos;t exist instead of an
 empty string or zero</li>
-<li>added a <code>framed</code> parameter to retrive the raw message with stream framing</li>
-<li>added a <code>size</code> parameter to retrive size of the raw message without having
+<li>added a <code>framed</code> parameter to retrieve the raw message with stream framing</li>
+<li>added a <code>size</code> parameter to retrieve size of the raw message without having
 to copy it down</li>
 </ul>
 </li>
@@ -392,7 +392,7 @@ decoded and the Lua table iterated.</li>
     <script>
         var gitbook = gitbook || [];
         gitbook.push(function() {
-            gitbook.page.hasChanged({"page":{"title":"Heka Sandbox","level":"1.3","depth":1,"next":{"title":"Input Interface","level":"1.3.1","depth":2,"path":"heka/input.md","ref":"heka/input.md","articles":[]},"previous":{"title":"Generic Sandbox","level":"1.2","depth":1,"path":"sandbox.md","ref":"sandbox.md","articles":[]},"dir":"ltr"},"config":{"gitbook":"*","theme":"default","variables":{},"plugins":["collapsible-menu","navigator"],"pluginsConfig":{"collapsible-menu":{},"navigator":{},"highlight":{},"search":{},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"sharing":{"facebook":true,"twitter":true,"google":false,"weibo":false,"instapaper":false,"vk":false,"all":["facebook","google","twitter","weibo","instapaper"]},"fontsettings":{"theme":"white","family":"sans","size":2},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false}},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56}},"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"}},"file":{"path":"heka/index.md","mtime":"2017-05-15T14:52:09.955Z","type":"markdown"},"gitbook":{"version":"3.2.2","time":"2018-11-07T21:03:04.711Z"},"basePath":"..","book":{"language":""}});
+            gitbook.page.hasChanged({"page":{"title":"Heka Sandbox","level":"1.3","depth":1,"next":{"title":"Input Interface","level":"1.3.1","depth":2,"path":"heka/input.md","ref":"heka/input.md","articles":[]},"previous":{"title":"Generic Sandbox","level":"1.2","depth":1,"path":"sandbox.md","ref":"sandbox.md","articles":[]},"dir":"ltr"},"config":{"gitbook":"*","theme":"default","variables":{},"plugins":["collapsible-menu","navigator"],"pluginsConfig":{"collapsible-menu":{},"navigator":{},"highlight":{},"search":{},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"sharing":{"facebook":true,"twitter":true,"google":false,"weibo":false,"instapaper":false,"vk":false,"all":["facebook","google","twitter","weibo","instapaper"]},"fontsettings":{"theme":"white","family":"sans","size":2},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false}},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56}},"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"}},"file":{"path":"heka/index.md","mtime":"2020-07-02T21:13:20.262Z","type":"markdown"},"gitbook":{"version":"3.2.2","time":"2020-07-02T21:19:36.257Z"},"basePath":"..","book":{"language":""}});
         });
     </script>
 </div>

@@ -31,6 +31,7 @@ var searchData=
   ['lsb_5fheka_5fcreate_5fanalysis',['lsb_heka_create_analysis',['../heka_2sandbox_8h.html#a5b75f1f0b7b135b88a241935fc996f60',1,'sandbox.h']]],
   ['lsb_5fheka_5fcreate_5finput',['lsb_heka_create_input',['../heka_2sandbox_8h.html#a716213efc97af35b926e7cdeaabf4d72',1,'sandbox.h']]],
   ['lsb_5fheka_5fcreate_5foutput',['lsb_heka_create_output',['../heka_2sandbox_8h.html#af9367fa1354ac4fd8efe5a285ea3c02c',1,'sandbox.h']]],
+  ['lsb_5fheka_5fcreate_5foutput_5fim',['lsb_heka_create_output_im',['../heka_2sandbox_8h.html#aa1974d7d72e5a2a6d31a7420d2387d86',1,'sandbox.h']]],
   ['lsb_5fheka_5fdestroy_5fsandbox',['lsb_heka_destroy_sandbox',['../heka_2sandbox_8h.html#ac424d316a31be52ebfa798cce47bb1de',1,'sandbox.h']]],
   ['lsb_5fheka_5fget_5ferror',['lsb_heka_get_error',['../heka_2sandbox_8h.html#a35b664356d5de0811738579602e6bfbb',1,'sandbox.h']]],
   ['lsb_5fheka_5fget_5flua_5ffile',['lsb_heka_get_lua_file',['../heka_2sandbox_8h.html#a9934d5bec863128824d57618d387012e',1,'sandbox.h']]],

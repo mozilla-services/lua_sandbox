@@ -24,7 +24,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">luasandbox
-   &#160;<span id="projectnumber">1.3.2</span>
+   &#160;<span id="projectnumber">1.4.0</span>
    </div>
    <div id="projectbrief">Generic Lua sandbox for dynamic data analysis</div>
   </td>
@@ -196,6 +196,9 @@ Functions</h2></td></tr>
 <tr class="memitem:af9367fa1354ac4fd8efe5a285ea3c02c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="heka_2sandbox_8h.html#acd7bfad98c412254d12cfcafc4be7b4c">LSB_HEKA_EXPORT</a> <a class="el" href="heka_2sandbox_8h.html#a44d198540fb5dd8f538e9a2134e49cbc">lsb_heka_sandbox</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="heka_2sandbox_8h.html#af9367fa1354ac4fd8efe5a285ea3c02c">lsb_heka_create_output</a> (void *parent, const char *lua_file, const char *state_file, const char *lsb_cfg, <a class="el" href="structlsb__logger.html">lsb_logger</a> *logger, <a class="el" href="heka_2sandbox_8h.html#ab73bea0ae205ae75807be9e151dd04ab">lsb_heka_update_checkpoint</a> ucp)</td></tr>
 <tr class="memdesc:af9367fa1354ac4fd8efe5a285ea3c02c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a sandbox supporting the Heka Output Plugin API.  <a href="#af9367fa1354ac4fd8efe5a285ea3c02c">More...</a><br /></td></tr>
 <tr class="separator:af9367fa1354ac4fd8efe5a285ea3c02c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa1974d7d72e5a2a6d31a7420d2387d86"><td class="memItemLeft" align="right" valign="top"><a class="el" href="heka_2sandbox_8h.html#acd7bfad98c412254d12cfcafc4be7b4c">LSB_HEKA_EXPORT</a> <a class="el" href="heka_2sandbox_8h.html#a44d198540fb5dd8f538e9a2134e49cbc">lsb_heka_sandbox</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="heka_2sandbox_8h.html#aa1974d7d72e5a2a6d31a7420d2387d86">lsb_heka_create_output_im</a> (void *parent, const char *lua_file, const char *state_file, const char *lsb_cfg, <a class="el" href="structlsb__logger.html">lsb_logger</a> *logger, <a class="el" href="heka_2sandbox_8h.html#ab73bea0ae205ae75807be9e151dd04ab">lsb_heka_update_checkpoint</a> ucp, <a class="el" href="heka_2sandbox_8h.html#aa2eb967af8b2fe655c14ae4d45eb6e56">lsb_heka_im_analysis</a> im)</td></tr>
+<tr class="memdesc:aa1974d7d72e5a2a6d31a7420d2387d86"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a sandbox supporting the Heka Output Plugin API with inject_message support.  <a href="#aa1974d7d72e5a2a6d31a7420d2387d86">More...</a><br /></td></tr>
+<tr class="separator:aa1974d7d72e5a2a6d31a7420d2387d86"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a18bcbd51c72982cfc210395572f308f6"><td class="memItemLeft" align="right" valign="top"><a class="el" href="heka_2sandbox_8h.html#acd7bfad98c412254d12cfcafc4be7b4c">LSB_HEKA_EXPORT</a> int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="heka_2sandbox_8h.html#a18bcbd51c72982cfc210395572f308f6">lsb_heka_pm_output</a> (<a class="el" href="heka_2sandbox_8h.html#a44d198540fb5dd8f538e9a2134e49cbc">lsb_heka_sandbox</a> *hsb, <a class="el" href="structlsb__heka__message.html">lsb_heka_message</a> *msg, void *sequence_id, bool profile)</td></tr>
 <tr class="memdesc:a18bcbd51c72982cfc210395572f308f6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Host access to the output sandbox process_message API.  <a href="#a18bcbd51c72982cfc210395572f308f6">More...</a><br /></td></tr>
 <tr class="separator:a18bcbd51c72982cfc210395572f308f6"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -645,6 +648,77 @@ Variables</h2></td></tr>
     <tr><td class="paramname">lsb_cfg</td><td>Full configuration string as a Lua table (NULL for lsb defaults) </td></tr>
     <tr><td class="paramname">logger</td><td>Struct for error reporting/debug printing (NULL to disable) </td></tr>
     <tr><td class="paramname">ucp</td><td>checkpoint_updated callback when using batch or async output</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>lsb_heka_sandbox* On success a pointer to the sandbox otherwise NULL </dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="aa1974d7d72e5a2a6d31a7420d2387d86"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="heka_2sandbox_8h.html#acd7bfad98c412254d12cfcafc4be7b4c">LSB_HEKA_EXPORT</a> <a class="el" href="heka_2sandbox_8h.html#a44d198540fb5dd8f538e9a2134e49cbc">lsb_heka_sandbox</a>* lsb_heka_create_output_im </td>
+          <td>(</td>
+          <td class="paramtype">void *&#160;</td>
+          <td class="paramname"><em>parent</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const char *&#160;</td>
+          <td class="paramname"><em>lua_file</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const char *&#160;</td>
+          <td class="paramname"><em>state_file</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const char *&#160;</td>
+          <td class="paramname"><em>lsb_cfg</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structlsb__logger.html">lsb_logger</a> *&#160;</td>
+          <td class="paramname"><em>logger</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="heka_2sandbox_8h.html#ab73bea0ae205ae75807be9e151dd04ab">lsb_heka_update_checkpoint</a>&#160;</td>
+          <td class="paramname"><em>ucp</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="heka_2sandbox_8h.html#aa2eb967af8b2fe655c14ae4d45eb6e56">lsb_heka_im_analysis</a>&#160;</td>
+          <td class="paramname"><em>im</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Create a sandbox supporting the Heka Output Plugin API with inject_message support. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">parent</td><td>Opaque pointer the host object owning this sandbox </td></tr>
+    <tr><td class="paramname">lua_file</td><td>Fully qualified path to the Lua source file </td></tr>
+    <tr><td class="paramname">state_file</td><td>Fully qualified filename to the state preservation file (NULL if no preservation is required) </td></tr>
+    <tr><td class="paramname">lsb_cfg</td><td>Full configuration string as a Lua table (NULL for lsb defaults) </td></tr>
+    <tr><td class="paramname">logger</td><td>Struct for error reporting/debug printing (NULL to disable) </td></tr>
+    <tr><td class="paramname">ucp</td><td>checkpoint_updated callback when using batch or async output </td></tr>
+    <tr><td class="paramname">im</td><td>inject_message callback</td></tr>
   </table>
   </dd>
 </dl>

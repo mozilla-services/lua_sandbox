@@ -98,7 +98,7 @@
                 <a href="../">
             
                     
-                    Lua Sandbox Library (1.3.2)
+                    Lua Sandbox Library (1.4.0)
             
                 </a>
             
@@ -365,11 +365,11 @@ one second resolution)</li>
 <a href="analysis.html#decodemessage">decode_message</a> for details.</p>
 <h3 id="encode_message">4.4. encode_message</h3>
 <p>Returns a Heka protocol buffer message using the contents of the specified Lua
-table. <code>Logger</code> and <code>Hostname</code> are restricted header values.  An override
-configuration option is provided <code>restricted_headers</code>; when true the headers are
-always set to the configuration values; when false (default) the headers are set
-to the values provide in the message table, if no value is provided it defaults
-to the appropriate configuration value.</p>
+table. <code>Timestamp</code>, <code>Logger</code>, <code>Hostname</code> and <code>Pid</code> are restricted header values.
+An override configuration option is provided <code>restricted_headers</code>; when true the
+headers are always set to the configuration values; when false (default) the
+headers are set to the values provided in the message table, if no value is
+provided it defaults to the appropriate configuration value.</p>
 <p>Note: this operation uses the internal output buffer so it is goverened by the
 <code>output_limit</code> configuration setting.</p>
 <p><em>Arguments</em></p>
@@ -382,7 +382,19 @@ to the appropriate configuration value.</p>
 <li>heka_pb (string) - Heka protobuf binary string, framed as specified
 or an error is thrown</li>
 </ul>
-<h3 id="create_message_matcher">4.5. create_message_matcher</h3>
+<h3 id="inject_message">4.5. inject_message</h3>
+<p>Creates a new Heka protocol buffer message, in the input queue, using the
+contents of the specified Lua table. The <code>restricted_headers</code> configuration
+defaults to false (see encode_message above for a full description).</p>
+<p><em>Arguments</em></p>
+<ul>
+<li>msg (<a href="message.html">Heka message table</a>)</li>
+</ul>
+<p><em>Return</em></p>
+<ul>
+<li>none (throws an error if the table does not match the Heka message schema)</li>
+</ul>
+<h3 id="create_message_matcher">4.6. create_message_matcher</h3>
 <p>Returns a Heka protocol buffer message matcher; used to dynamically filter
 messages sent to the output plugin.</p>
 <p><em>Arguments</em></p>
@@ -395,10 +407,10 @@ messages sent to the output plugin.</p>
 The message matcher object has one method <code>eval</code> that returns true if the
 current message matches, false if it does not.</li>
 </ul>
-<h4 id="Example">4.5.1. Example</h4>
+<h4 id="Example">4.6.1. Example</h4>
 <p>See: <a href="https://mozilla-services.github.io/lua_sandbox_extensions/socket/sandboxes/heka/output/heka_tcp_matcher.html" target="_blank">heka_tcp_matcher.lua</a></p>
-<h3 id="update_checkpoint">4.6. update_checkpoint</h3>
-<h4 id="Batch_Mode">4.6.1. Batch Mode</h4>
+<h3 id="update_checkpoint">4.7. update_checkpoint</h3>
+<h4 id="Batch_Mode">4.7.1. Batch Mode</h4>
 <p>Advances the output checkpoint when in batching mode. The standard use case is
 to call it from <code>timer_event</code> after successfully flushing a batch on
 timeout/shutdown.</p>
@@ -406,7 +418,7 @@ timeout/shutdown.</p>
 <ul>
 <li>none</li>
 </ul>
-<h4 id="Asynchronous_Mode">4.6.2. Asynchronous Mode</h4>
+<h4 id="Asynchronous_Mode">4.7.2. Asynchronous Mode</h4>
 <p>Advances the output checkpoint and optionally reports the number of failures
 that occured.</p>
 <p><em>Arguments</em></p>
@@ -420,8 +432,8 @@ asynchronus processing (added to the failure count)</li>
 <ul>
 <li>none (throws an error on invalid arg types)</li>
 </ul>
-<h3 id="Modes_of_Operation">4.7. Modes of Operation</h3>
-<h4 id="Lock_Step">4.7.1. Lock Step</h4>
+<h3 id="Modes_of_Operation">4.8. Modes of Operation</h3>
+<h4 id="Lock_Step">4.8.1. Lock Step</h4>
 <ul>
 <li><code>process_message</code> operates on the message and returns one of the following
 values:<ul>
@@ -442,7 +454,7 @@ delay</li>
 </ul>
 </li>
 </ul>
-<h4 id="Example_Payload_Output">4.7.2. Example Payload Output</h4>
+<h4 id="Example_Payload_Output">4.8.2. Example Payload Output</h4>
 <pre><code class="lang-lua"><span class="hljs-comment">-- cfg</span>
 message_matcher = <span class="hljs-string">&quot;Type == &apos;inject_payload&apos;&quot;</span>
 ticker_interval = <span class="hljs-number">0</span>
@@ -486,7 +498,7 @@ output_dir      = <span class="hljs-string">&quot;/tmp&quot;</span>
     <span class="hljs-comment">-- no op</span>
 <span class="hljs-keyword">end</span>
 </code></pre>
-<h4 id="Batching">4.7.3. Batching</h4>
+<h4 id="Batching">4.8.3. Batching</h4>
 <ul>
 <li><code>process_message</code> batches the message/transformation in memory or on disk and
 returns one of the following values:<ul>
@@ -506,7 +518,7 @@ checkpoint is advanced to the most recent message</li>
 </ul>
 </li>
 </ul>
-<h4 id="Example_Postgres_Output">4.7.4. Example Postgres Output</h4>
+<h4 id="Example_Postgres_Output">4.8.4. Example Postgres Output</h4>
 <pre><code class="lang-lua"><span class="hljs-comment">-- cfg</span>
 message_matcher = <span class="hljs-string">&quot;Type == &apos;logfile&apos;&quot;</span>
 memory_limit = <span class="hljs-number">0</span>
@@ -667,7 +679,7 @@ db_config = {
     <span class="hljs-keyword">end</span>
 <span class="hljs-keyword">end</span>
 </code></pre>
-<h4 id="Asynchronous">4.7.5. Asynchronous</h4>
+<h4 id="Asynchronous">4.8.5. Asynchronous</h4>
 <ul>
 <li><code>async_buffer_size</code> Recommendation: this configuration variable should be set
 and consumed by the host</li>
@@ -690,9 +702,9 @@ following values:<ul>
 <a href="#updatecheckpoint">update_checkpoint</a> <strong>MUST</strong> be called to advance the
 checkpoint to that specific message</li>
 </ul>
-<h4 id="Example_Kafka_Output">4.7.6. Example Kafka Output</h4>
+<h4 id="Example_Kafka_Output">4.8.6. Example Kafka Output</h4>
 <p><a href="https://github.com/mozilla-services/lua_sandbox_extensions/blob/master/kafka/sandboxes/heka/output/kafka.lua" target="_blank">kafka.lua</a></p>
-<div id="anchors-navbar"><i class="fa fa-anchor"></i><ul><p><a href="#Output_Sandbox_Interface">Output Sandbox Interface</a></p><li><a href="#Recommendations">1. Recommendations</a></li><li><a href="#Disabled_Functionality">2. Disabled Functionality</a></li><li><a href="#Required_Lua_Functions_(called_by_the_host)">3. Required Lua Functions (called by the host)</a></li><ul><li><a href="#process_message">3.1. process_message</a></li><li><a href="#timer_event">3.2. timer_event</a></li></ul><li><a href="#Available_C_Functions_(called_from_the_plugin)">4. Available C Functions (called from the plugin)</a></li><ul><li><a href="#read_config">4.1. read_config</a></li><li><a href="#read_message">4.2. read_message</a></li><li><a href="#decode_message">4.3. decode_message</a></li><li><a href="#encode_message">4.4. encode_message</a></li><li><a href="#create_message_matcher">4.5. create_message_matcher</a></li><ul><li><a href="#Example">4.5.1. Example</a></li></ul><li><a href="#update_checkpoint">4.6. update_checkpoint</a></li><ul><li><a href="#Batch_Mode">4.6.1. Batch Mode</a></li><li><a href="#Asynchronous_Mode">4.6.2. Asynchronous Mode</a></li></ul><li><a href="#Modes_of_Operation">4.7. Modes of Operation</a></li><ul><li><a href="#Lock_Step">4.7.1. Lock Step</a></li><li><a href="#Example_Payload_Output">4.7.2. Example Payload Output</a></li><li><a href="#Batching">4.7.3. Batching</a></li><li><a href="#Example_Postgres_Output">4.7.4. Example Postgres Output</a></li><li><a href="#Asynchronous">4.7.5. Asynchronous</a></li><li><a href="#Example_Kafka_Output">4.7.6. Example Kafka Output</a></li></ul></ul></ul></div><a href="#Recommendations" id="goTop"><i class="fa fa-arrow-up"></i></a>
+<div id="anchors-navbar"><i class="fa fa-anchor"></i><ul><p><a href="#Output_Sandbox_Interface">Output Sandbox Interface</a></p><li><a href="#Recommendations">1. Recommendations</a></li><li><a href="#Disabled_Functionality">2. Disabled Functionality</a></li><li><a href="#Required_Lua_Functions_(called_by_the_host)">3. Required Lua Functions (called by the host)</a></li><ul><li><a href="#process_message">3.1. process_message</a></li><li><a href="#timer_event">3.2. timer_event</a></li></ul><li><a href="#Available_C_Functions_(called_from_the_plugin)">4. Available C Functions (called from the plugin)</a></li><ul><li><a href="#read_config">4.1. read_config</a></li><li><a href="#read_message">4.2. read_message</a></li><li><a href="#decode_message">4.3. decode_message</a></li><li><a href="#encode_message">4.4. encode_message</a></li><li><a href="#inject_message">4.5. inject_message</a></li><li><a href="#create_message_matcher">4.6. create_message_matcher</a></li><ul><li><a href="#Example">4.6.1. Example</a></li></ul><li><a href="#update_checkpoint">4.7. update_checkpoint</a></li><ul><li><a href="#Batch_Mode">4.7.1. Batch Mode</a></li><li><a href="#Asynchronous_Mode">4.7.2. Asynchronous Mode</a></li></ul><li><a href="#Modes_of_Operation">4.8. Modes of Operation</a></li><ul><li><a href="#Lock_Step">4.8.1. Lock Step</a></li><li><a href="#Example_Payload_Output">4.8.2. Example Payload Output</a></li><li><a href="#Batching">4.8.3. Batching</a></li><li><a href="#Example_Postgres_Output">4.8.4. Example Postgres Output</a></li><li><a href="#Asynchronous">4.8.5. Asynchronous</a></li><li><a href="#Example_Kafka_Output">4.8.6. Example Kafka Output</a></li></ul></ul></ul></div><a href="#Recommendations" id="goTop"><i class="fa fa-arrow-up"></i></a>
                                 
                                 </section>
                             
@@ -735,7 +747,7 @@ checkpoint to that specific message</li>
     <script>
         var gitbook = gitbook || [];
         gitbook.push(function() {
-            gitbook.page.hasChanged({"page":{"title":"Output Interface","level":"1.3.3","depth":2,"next":{"title":"Message Schema","level":"1.3.4","depth":2,"path":"heka/message.md","ref":"heka/message.md","articles":[]},"previous":{"title":"Analysis Interface","level":"1.3.2","depth":2,"path":"heka/analysis.md","ref":"heka/analysis.md","articles":[]},"dir":"ltr"},"config":{"gitbook":"*","theme":"default","variables":{},"plugins":["collapsible-menu","navigator"],"pluginsConfig":{"collapsible-menu":{},"navigator":{},"highlight":{},"search":{},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"sharing":{"facebook":true,"twitter":true,"google":false,"weibo":false,"instapaper":false,"vk":false,"all":["facebook","google","twitter","weibo","instapaper"]},"fontsettings":{"theme":"white","family":"sans","size":2},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false}},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56}},"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"}},"file":{"path":"heka/output.md","mtime":"2017-05-15T14:52:09.955Z","type":"markdown"},"gitbook":{"version":"3.2.2","time":"2018-11-07T21:03:04.711Z"},"basePath":"..","book":{"language":""}});
+            gitbook.page.hasChanged({"page":{"title":"Output Interface","level":"1.3.3","depth":2,"next":{"title":"Message Schema","level":"1.3.4","depth":2,"path":"heka/message.md","ref":"heka/message.md","articles":[]},"previous":{"title":"Analysis Interface","level":"1.3.2","depth":2,"path":"heka/analysis.md","ref":"heka/analysis.md","articles":[]},"dir":"ltr"},"config":{"gitbook":"*","theme":"default","variables":{},"plugins":["collapsible-menu","navigator"],"pluginsConfig":{"collapsible-menu":{},"navigator":{},"highlight":{},"search":{},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"sharing":{"facebook":true,"twitter":true,"google":false,"weibo":false,"instapaper":false,"vk":false,"all":["facebook","google","twitter","weibo","instapaper"]},"fontsettings":{"theme":"white","family":"sans","size":2},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false}},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56}},"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"}},"file":{"path":"heka/output.md","mtime":"2020-07-02T21:11:54.205Z","type":"markdown"},"gitbook":{"version":"3.2.2","time":"2020-07-02T21:19:36.257Z"},"basePath":"..","book":{"language":""}});
         });
     </script>
 </div>
