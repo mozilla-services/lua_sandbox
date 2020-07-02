@@ -35,8 +35,8 @@ support skipping, retrying, batching, and asynchronous output.
 1. `read_message`
     * returns `nil` for optional header fields if they don't exist instead of an
     empty string or zero
-    * added a `framed` parameter to retrive the raw message with stream framing
-    * added a `size` parameter to retrive size of the raw message without having
+    * added a `framed` parameter to retrieve the raw message with stream framing
+    * added a `size` parameter to retrieve size of the raw message without having
     to copy it down
 1. `timer_event` has a second parameter `shutdown` that is set to true when the
 sandbox is exiting.
