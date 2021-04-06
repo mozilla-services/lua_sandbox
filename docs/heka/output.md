@@ -417,5 +417,4 @@ following values:
 checkpoint to that specific message
 
 #### Example Kafka Output
-[kafka.lua](https://github.com/mozilla-services/lua_sandbox_extensions/blob/master/kafka/sandboxes/heka/output/kafka.lua)
-
+[kafka.lua](https://github.com/mozilla-services/lua_sandbox_extensions/blob/main/kafka/sandboxes/heka/output/kafka.lua)
